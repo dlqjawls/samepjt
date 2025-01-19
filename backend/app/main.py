@@ -1,15 +1,11 @@
-from typing import Union
-
 from fastapi import FastAPI
+from app.routes import user_route
 
-app = FastAPI()
+app = FastAPI(title="ModuCar API")
 
+# API 라우터 등록
+app.include_router(user_route.router)
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+async def root():
+    return {"message": "ModuCar FastAPI 서버 실행 중"}
