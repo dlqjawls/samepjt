@@ -13,7 +13,13 @@
         "ms-python.vscode-pylance",
         "njpwerner.autodocstring",
         "ms-azuretools.vscode-docker",
-        "matangover.mypy"
+        "matangover.mypy",
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "postman.postman-for-vscode",
+        "meezilla.json",
+        "yzhang.markdown-all-in-one",
+        "emmanuelbeziat.vscode-great-icons"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python",
