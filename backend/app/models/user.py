@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from typing import Union, List
 
 class UserRegisterRequest(BaseModel):
     userId: str
@@ -11,4 +12,4 @@ class UserRegisterRequest(BaseModel):
 class UserRegisterResponse(BaseModel):
     resultCode: str
     message: str
-    errors: list | None = None
+    errors: Union[List, None] = None  # 수정된 부분
