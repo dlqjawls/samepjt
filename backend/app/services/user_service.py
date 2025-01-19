@@ -1,10 +1,11 @@
 from fastapi import HTTPException
 from app.models.user import UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
 from app.dummy_data import dummy_users
+from app.utils.bcrypt import hash_password, verify_password
 
 class UserService:
     """
-    회원가입 관련 비즈니스 로직을 처리하는 서비스 클래스
+    회원가입 및 로그인 관련 비즈니스 로직을 처리하는 서비스 클래스
     """
 
     @staticmethod
@@ -58,9 +59,13 @@ class UserService:
                     "errors": errors
                 }
             )
+        
+        # 비밀번호 해싱 후 저장
+        hashed_password = hash_password(user.userPassword)  # 🔹 bcrypt 유틸리티 적용
 
         # 새로운 유저 추가
         new_user = user.dict()
+        new_user["userPassword"] = hashed_password  # 해싱된 비밀번호 저장
         dummy_users.append(new_user)
 
         return UserRegisterResponse(resultCode="SUCCESS", message="User registered successfully")
@@ -89,7 +94,7 @@ class UserService:
         if not matched_user:
             errors.append({"field": "userId", "message": "User ID does not exist"})
 
-        elif matched_user["userPassword"] != user.userPassword:
+        elif not verify_password(user.userPassword, matched_user["userPassword"]):  # 🔹 bcrypt 유틸리티 적용
             errors.append({"field": "userPassword", "message": "Incorrect password"})
 
         if errors:
