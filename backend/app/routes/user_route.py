@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models.user import UserRegisterRequest, UserRegisterResponse
+from app.models.user import UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
 from app.services.user_service import UserService
 from app.dummy_data import dummy_users  # 더미 데이터
 
@@ -76,3 +76,48 @@ def register_user(user: UserRegisterRequest):
     ```
     """
     return UserService.register_user(user)
+
+
+@router.post("/user/login", response_model=UserLoginResponse)
+def login_user(user: UserLoginRequest):
+    """
+    로그인 API
+
+    주어진 userId와 userPassword를 검증하고, 성공 시 JWT 토큰을 반환합니다.
+
+    Args:
+        user (UserLoginRequest): 로그인 요청 데이터
+
+    Returns:
+        UserLoginResponse: 로그인 응답 데이터
+
+    예제 요청:
+    ```
+    POST /user/login
+    {
+        "userId": "testUser",
+        "userPassword": "securePassword123"
+    }
+    ```
+
+    예제 응답 (성공 시):
+    ```
+    {
+        "resultCode": "SUCCESS",
+        "message": "Login successful",
+        "token": "eyJhbGciOi..."
+    }
+    ```
+
+    예제 응답 (실패 시):
+    ```
+    {
+        "resultCode": "FAILURE",
+        "message": "Login failed",
+        "errors": [
+            {"field": "userId", "message": "User ID does not exist"}
+        ]
+    }
+    ```
+    """
+    return UserService.login_user(user)

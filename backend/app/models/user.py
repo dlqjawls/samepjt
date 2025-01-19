@@ -32,3 +32,29 @@ class UserRegisterResponse(BaseModel):
     resultCode: str
     message: str
     errors: Union[List, None] = None  # 수정된 부분
+
+class UserLoginRequest(BaseModel):
+    """
+    로그인 요청 모델
+
+    Attributes:
+        userId (str): 사용자의 아이디
+        userPassword (str): 사용자의 비밀번호
+    """
+    userId: str
+    userPassword: str
+
+class UserLoginResponse(BaseModel):
+    """
+    로그인 응답 모델
+
+    Attributes:
+        resultCode (str): 응답 코드 ("SUCCESS" 또는 "FAILURE")
+        message (str): 응답 메시지
+        token (Union[str, None]): 로그인 성공 시 JWT 토큰 반환
+        errors (Union[List, None]): 로그인 실패 시 오류 목록 포함
+    """
+    resultCode: str
+    message: str
+    token: Union[str, None] = None
+    errors: Union[List, None] = None

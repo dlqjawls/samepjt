@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.models.user import UserRegisterRequest, UserRegisterResponse
+from app.models.user import UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
 from app.dummy_data import dummy_users
 
 class UserService:
@@ -64,3 +64,46 @@ class UserService:
         dummy_users.append(new_user)
 
         return UserRegisterResponse(resultCode="SUCCESS", message="User registered successfully")
+
+    @staticmethod
+    def login_user(user: UserLoginRequest) -> UserLoginResponse:
+        """
+        로그인 기능
+
+        주어진 사용자 정보를 검증하고, 로그인 성공 시 JWT 토큰을 생성합니다. #TODO: JWT 토큰 생성
+
+        Args:
+            user (UserLoginRequest): 로그인 요청 데이터
+
+        Returns:
+            UserLoginResponse: 로그인 응답 데이터
+
+        Raises:
+            HTTPException: 로그인 실패 시 예외 발생
+        """
+        errors = []
+
+        # 사용자 조회
+        matched_user = next((u for u in dummy_users if u["userId"] == user.userId), None)
+
+        if not matched_user:
+            errors.append({"field": "userId", "message": "User ID does not exist"})
+
+        elif matched_user["userPassword"] != user.userPassword:
+            errors.append({"field": "userPassword", "message": "Incorrect password"})
+
+        if errors:
+            raise HTTPException(
+                status_code=401,
+                detail={
+                    "resultCode": "FAILURE",
+                    "message": "Login failed",
+                    "errors": errors
+                }
+            )
+
+        return UserLoginResponse(
+            resultCode="SUCCESS",
+            message="Login successful",
+            token= "token"
+        )
