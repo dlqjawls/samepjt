@@ -3,9 +3,9 @@ from app.models.user import UserRegisterRequest, UserRegisterResponse, UserLogin
 from app.services.user_service import UserService
 from app.dummy_data import dummy_users  # 더미 데이터
 
-router = APIRouter()
+router = APIRouter(prefix="/user", tags=["User"])
 
-@router.get("/user/list")
+@router.get("/list")
 def get_user_list():
     """
     개발용: 더미 사용자 데이터를 확인하는 API
@@ -30,7 +30,7 @@ def get_user_list():
     """
     return dummy_users
 
-@router.post("/user/register", response_model=UserRegisterResponse)
+@router.post("/register", response_model=UserRegisterResponse)
 def register_user(user: UserRegisterRequest):
     """
     회원가입 API 엔드포인트
@@ -78,7 +78,7 @@ def register_user(user: UserRegisterRequest):
     return UserService.register_user(user)
 
 
-@router.post("/user/login", response_model=UserLoginResponse)
+@router.post("/login", response_model=UserLoginResponse)
 def login_user(user: UserLoginRequest):
     """
     로그인 API
