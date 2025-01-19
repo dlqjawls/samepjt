@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from app.models.user import UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
 from app.dummy_data import dummy_users
 from app.utils.bcrypt import hash_password, verify_password
+from app.utils.jwt import create_jwt_token
 
 class UserService:
     """
@@ -107,8 +108,12 @@ class UserService:
                 }
             )
 
+
+        # JWT 토큰 생성
+        token = create_jwt_token(user.userId, role="user")  # 기본 역할 "user"
+
         return UserLoginResponse(
             resultCode="SUCCESS",
             message="Login successful",
-            token= "token"
+            token= token
         )
