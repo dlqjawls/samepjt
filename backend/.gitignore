@@ -1,0 +1,43 @@
+# 🐍 Python 캐시 파일 및 빌드 파일
+*.__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.dist-info/
+.Python
+.env
+.venv/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+poetry.lock
+
+# 🔹 VS Code 관련 파일
+.vscode/
+*.code-workspace
+
+# 🚀 FastAPI 관련
+instance/
+config.yaml
+*.db
+*.sqlite3
+
+# 🐳 Docker 관련
+docker-compose.override.yml
+docker-compose.dev.yml
+.dockerignore
+.DS_Store
+*.log
+
+# ⚙️ IDE / OS 관련
+.idea/
+*.swp
+*.swo
+*.swn
+Thumbs.db
+
+# 🛠️ DevContainer 설정 관련
+.devcontainer/.history/
+.devcontainer/.tmp/
