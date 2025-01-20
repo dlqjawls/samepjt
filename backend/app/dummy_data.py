@@ -67,7 +67,7 @@ dummy_options = [
 
 dummy_module_sets = [
     {
-        "moduleSetId": i,
+        "moduleSetId": i, 
         "moduleSetName": fake.word().capitalize() + " Module Set",
         "description": fake.sentence(),
         "totalCost": random.randint(1000, 5000),
@@ -78,15 +78,15 @@ dummy_module_sets = [
     for i in range(1, 31)
 ]
 
-# 각 모듈 세트에 0~5개의 옵션을 랜덤하게 배정
+# 각 모듈 세트에 0~5개의 고유한 옵션을 랜덤하게 배정
 dummy_module_set_options = [
     {
         "moduleSetId": module_set["moduleSetId"],
-        "optionId": random.randint(1, 10),  # 옵션 ID 범위 1~10
+        "optionId": option_id,  # 중복 없는 옵션 ID 선택
         "quantity": random.randint(1, 3),
     }
     for module_set in dummy_module_sets
-    for _ in range(random.randint(0, 5))  # 각 모듈 세트당 최소 0개 ~ 최대 5개 옵션 포함
+    for option_id in random.sample(range(1, 11), random.randint(0, 5))  # 1~10 중에서 중복 없이 선택
 ]
 
 dummy_vehicles_maintenance = [
