@@ -69,8 +69,8 @@ router = APIRouter(prefix="/user/module-set", tags=["Module Set"])
     }
 )
 async def get_module_set_list(
-    page: int = Query(1, description="페이지 번호"),
-    page_size: int = Query(10, description="페이지 크기 (기본값: 10)")
+    page: int = Query(1, description="페이지 번호 (최소 1)", gt=0),  # ✅ 최소 1
+    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0)  # ✅ 최소 1
 ):
     """
     ✅ 모듈 세트 목록 조회 API
