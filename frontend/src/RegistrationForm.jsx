@@ -48,7 +48,7 @@ function RegistrationForm() {
 
     try {
       // API 요청
-      const response = await axios.post('/user/register', formData);
+      const response = await axios.post('https://backend-wandering-river-6835.fly.dev/user/register', formData);
 
       if (response.data.resultCode === 'SUCCESS') {
         setSuccessMessage(response.data.message);

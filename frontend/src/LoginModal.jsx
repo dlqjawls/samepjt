@@ -1,68 +1,128 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-function LoginModal({ onClose }) {
+const LoginModal = ({ onClose }) => {
+  const [formData, setFormData] = useState({
+    userId: '',
+    userPassword: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post(
+        'https://backend-wandering-river-6835.fly.dev/user/login',
+        formData
+      );
+      
+      console.log('로그인 성공:', response.data);
+      onClose();
+      
+    } catch (err) {
+      setError(
+        err.response?.data?.message || 
+        '로그인 중 오류가 발생했습니다. 다시 시도해 주세요.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div style={modalStyle}>
-      <div style={modalContentStyle}>
-        <h2>로그인</h2>
-        <input type="text" placeholder="아이디" style={inputStyle} />
-        <input type="password" placeholder="비밀번호" style={inputStyle} />
-        <button style={buttonStyle}>로그인</button>
-        <p>
-          계정이 없으신가요? <Link to="/signup" onClick={onClose}>회원가입</Link>
-        </p>
-        <button onClick={onClose} style={closeButtonStyle}>닫기</button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+        <button 
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+        >
+          ✕
+        </button>
+        
+        <h2 className="text-2xl font-bold text-center mb-6">로그인</h2>
+        
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label 
+              htmlFor="userId" 
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              아이디
+            </label>
+            <input
+              id="userId"
+              name="userId"
+              type="text"
+              placeholder="아이디를 입력하세요"
+              value={formData.userId}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
+            />
+          </div>
+          
+          <div>
+            <label 
+              htmlFor="userPassword" 
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              비밀번호
+            </label>
+            <input
+              id="userPassword"
+              name="userPassword"
+              type="password"
+              placeholder="비밀번호를 입력하세요"
+              value={formData.userPassword}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            disabled={isLoading}
+          >
+            {isLoading ? '로그인 중...' : '로그인'}
+          </button>
+
+          <div className="text-center text-sm text-gray-600">
+            계정이 없으신가요?{' '}
+            <Link 
+              to="/RegistrationForm" 
+              className="text-blue-600 hover:underline"
+              onClick={onClose}
+            >
+              회원가입
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );
-}
-
-const modalStyle = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
-
-const modalContentStyle = {
-  backgroundColor: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  textAlign: "center",
-};
-
-const inputStyle = {
-  display: "block",
-  width: "80%",
-  margin: "10px auto",
-  padding: "10px",
-  borderRadius: "5px",
-  border: "1px solid #ccc",
-};
-
-const buttonStyle = {
-  padding: "10px 20px",
-  margin: "10px",
-  borderRadius: "5px",
-  backgroundColor: "#007BFF",
-  color: "white",
-  border: "none",
-  cursor: "pointer",
-};
-
-const closeButtonStyle = {
-  padding: "5px 10px",
-  backgroundColor: "red",
-  color: "white",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
 };
 
 export default LoginModal;
