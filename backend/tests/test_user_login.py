@@ -25,7 +25,6 @@ def test_login_success(client):
     })
 
     json_response = response.json()
-    print(json_response)  # 응답 확인
 
     assert response.status_code == 200
     assert json_response["resultCode"] == "SUCCESS"
@@ -47,7 +46,6 @@ def test_login_invalid_user(client):
     })
 
     json_response = response.json()
-    print(json_response)  # 응답 확인
 
     assert response.status_code == 401
     assert json_response["detail"]["resultCode"] == "FAILURE"
@@ -80,7 +78,6 @@ def test_login_wrong_password(client):
     })
 
     json_response = response.json()
-    print(json_response)  # 응답 확인
 
     assert response.status_code == 401
     assert json_response["detail"]["resultCode"] == "FAILURE"
@@ -97,12 +94,9 @@ def test_login_empty_fields(client):
     Then: 응답 상태 코드 422와 FastAPI의 유효성 검사 오류가 발생해야 한다.
     """
     response = client.post("/user/login", json={
-        "userId": "",
+        "userId": "", # 빈 값
         "userPassword": "password123"
     })
-
-    json_response = response.json()
-    print(json_response)  # 응답 확인
 
     assert response.status_code == 422  # FastAPI가 자동으로 422 반환
 
@@ -119,8 +113,5 @@ def test_login_invalid_json_format(client):
         "userId": "validUser"
         # userPassword 필드가 누락됨
     })
-
-    json_response = response.json()
-    print(json_response)  # 응답 확인
 
     assert response.status_code == 422  # FastAPI의 데이터 검증 오류
