@@ -27,8 +27,6 @@ router = APIRouter(prefix="/user/module-set", tags=["Module Set"])
                                     "description": "캠핑에 최적화된 모듈 세트입니다.",
                                     "totalCost": 2500.0,
                                     "imgsUrls": ["https://example.com/module1.jpg"],
-                                    "createdAt": "2024-01-20T12:00:00",
-                                    "updatedAt": "2024-01-21T14:30:00",
                                     "suppliedOptions": [
                                         {
                                             "optionId": 101,
