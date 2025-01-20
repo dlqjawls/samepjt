@@ -8,6 +8,8 @@
 *.dist-info/
 .Python
 .env
+*.env
+.env.*
 .venv/
 venv/
 pip-log.txt
