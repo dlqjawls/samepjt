@@ -2,6 +2,8 @@ from faker import Faker
 from datetime import datetime
 import random
 
+from app.utils.bcrypt import hash_password
+
 fake = Faker()
 
 # 더미 사용자 데이터 생성
@@ -199,6 +201,26 @@ dummy_video_storage = [
     }
     for i in range(1, 6)
 ]
+
+dummy_admins = [
+    {
+        "adminPK": 1,
+        "adminId": "admin",
+        "adminPassword": hash_password("admin123"),
+        "role": "master",
+        "createdAt": datetime.now().isoformat(),
+        "updatedAt": datetime.now().isoformat(),
+    },
+    {
+        "adminPK": 2,
+        "adminId": "semi",
+        "adminPassword": hash_password("semi123"),
+        "role": "semi",
+        "createdAt": datetime.now().isoformat(),
+        "updatedAt": datetime.now().isoformat(),
+    }
+]
+
 
 if __name__ == "__main__":
     print(dummy_users)
