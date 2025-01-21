@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import "./LoginModal.css"
 
@@ -18,7 +18,10 @@ const LoginModal = ({ onClose }) => {
       [name]: value,
     }))
   }
-
+  const navigate= useNavigate();
+  const resist = ()=>{
+    navigate("/RegistrationForm")
+  };
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
@@ -26,8 +29,11 @@ const LoginModal = ({ onClose }) => {
 
     try {
       const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/login", formData)
-
+      alert("로그인 성공!")
       console.log("로그인 성공:", response.data)
+      console.log(response.data.token)
+      const token = response.data.token
+      localStorage.setItem("token",token)
       onClose()
     } catch (err) {
       setError(err.response?.data?.message || "로그인 중 오류가 발생했습니다. 다시 시도해 주세요.")
@@ -65,9 +71,7 @@ const LoginModal = ({ onClose }) => {
           <div className="modal-regist">
             계정이 없으신가요?
             <div>
-              <Link to="/RegistrationForm" onClick={onClose}>
-                회원가입
-              </Link>
+              <button onClick={resist} >회원가입 </button>
             </div>
           </div>
         </form>

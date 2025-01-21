@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './RegistrationForm.css';
-
+import { useNavigate } from 'react-router-dom';
 function RegistrationForm() {
   // 폼 필드 상태 관리
   const [formData, setFormData] = useState({
@@ -24,7 +24,13 @@ function RegistrationForm() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  // 홈 네비게이터 
+  const navigate = useNavigate() ;
+  const home = ()=>{
+    navigate("/")
+  }
 
+  
   // 폼 제출 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +66,8 @@ function RegistrationForm() {
           userPhoneNum: '',
           userAddress: '',
         });
+        alert("회원가입 성공")
+        navigate("/")
       } else {
         setApiError(response.data.message);
         if (response.data.errors) {
@@ -142,7 +150,8 @@ function RegistrationForm() {
           />
           {errors.userAddress && <span className="error">{errors.userAddress}</span>}
         </div>
-        <button type="submit">Register</button>
+        <button type="submit"  >Register</button>
+        <button onClick={home}>메인페이지로</button>
       </form>
     </div>
   );
