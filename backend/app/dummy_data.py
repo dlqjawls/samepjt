@@ -56,6 +56,7 @@ dummy_options = [
         "optionType": random.choice(["extra-seating", "kitchen", "solar-charging"]),
         "optionSize": f"{random.randint(1, 5)}x{random.randint(1, 5)}",
         "optionCost": random.randint(500, 2000),
+        "description": fake.sentence(),
         "status": random.choice(["active", "maintenance", "inactive"]),
         "stockQuantity": random.randint(0, 20),
         "imgUrls": [fake.image_url() for _ in range(3)],
@@ -82,17 +83,17 @@ dummy_module_sets = [
 dummy_module_set_options = [
     {
         "moduleSetId": module_set["moduleSetId"],
-        "optionId": option_id,  # 중복 없는 옵션 ID 선택
+        "optionId": option["optionId"],
         "quantity": random.randint(1, 3),
     }
     for module_set in dummy_module_sets
-    for option_id in random.sample(range(1, 11), random.randint(0, 5))  # 1~10 중에서 중복 없이 선택
+    for option in random.sample(dummy_options, random.randint(0, 5))  # 실제 존재하는 옵션을 배정
 ]
 
 dummy_vehicles_maintenance = [
     {
         "maintenanceId": i,
-        "vehicleId": i,
+        "vehicleId": random.choice(dummy_vehicles)["vehicleId"],
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
         "cost": random.randint(100, 500),
@@ -106,7 +107,7 @@ dummy_vehicles_maintenance = [
 dummy_module_maintenance = [
     {
         "maintenanceId": i,
-        "moduleId": i,
+        "moduleId": random.choice(dummy_modules)["moduleId"],
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
         "rentId": random.randint(1, 5),
@@ -121,7 +122,7 @@ dummy_module_maintenance = [
 dummy_option_maintenance = [
     {
         "maintenanceId": i,
-        "optionId": i,
+        "optionId": random.choice(dummy_options)["optionId"],
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
         "optionMaintenanceCost": random.randint(100, 500),
@@ -136,7 +137,7 @@ dummy_option_maintenance = [
 dummy_rent_history = [
     {
         "rentId": i,
-        "userPK": random.randint(1, 5),
+        "userPK": random.choice(dummy_users)["userPK"],
         "autonomousArrivalPoint": {"x": fake.latitude(), "y": fake.longitude()},
         "autonomousDeparturePoint": {"x": fake.latitude(), "y": fake.longitude()},
         "rentStatus": random.choice(["reserved", "in-progress", "completed", "canceled"]),
@@ -149,26 +150,26 @@ dummy_rent_history = [
         "createdAt": datetime.now().isoformat(),
     }
     for i in range(1, 6)
-]
+] 
 
 dummy_vehicles_usage_history = [
-  {
-    "vehicleUsageId": i,
-    "vehicleId": random.randint(1, 5),
-    "rentId": i,
-    "usage_start":  datetime.now().isoformat(),
-    "usage_end": datetime.now().isoformat(),
-    "status": random.choice(["in-use", "completed"]),
-  }
-  for i in range(1, 6)
+    {
+        "vehicleUsageId": i,
+        "vehicleId": random.choice(dummy_vehicles)["vehicleId"],
+        "rentId": random.choice(dummy_rent_history)["rentId"],
+        "usage_start": datetime.now().isoformat(),
+        "usage_end": datetime.now().isoformat(),
+        "status": random.choice(["in-use", "completed"]),
+    }
+    for i in range(1, 6)
 ]
 
 dummy_module_usage_history = [
     {
         "moduleUsageId": i,
-        "moduleId": random.randint(1, 5),        
-        "rentId": i,
-        "usage_start":  datetime.now().isoformat(),
+        "moduleId": random.choice(dummy_modules)["moduleId"],
+        "rentId": random.choice(dummy_rent_history)["rentId"],
+        "usage_start": datetime.now().isoformat(),
         "usage_end": datetime.now().isoformat(),
         "status": random.choice(["in-use", "completed"]),
     }
@@ -178,10 +179,10 @@ dummy_module_usage_history = [
 dummy_option_usage_history = [
     {
         "optionUsageId": i,
-        "optionId": random.randint(1, 5),
-        "rentId": i,
+        "optionId": random.choice(dummy_options)["optionId"],
+        "rentId": random.choice(dummy_rent_history)["rentId"],
         "quantity": random.randint(1, 3),
-        "usage_start":  datetime.now().isoformat(),
+        "usage_start": datetime.now().isoformat(),
         "usage_end": datetime.now().isoformat(),
         "status": random.choice(["in-use", "completed"]),
     }
@@ -191,7 +192,7 @@ dummy_option_usage_history = [
 dummy_video_storage = [
     {
         "videoId": i,
-        "rentId": i,
+        "rentId": random.choice(dummy_rent_history)["rentId"],
         "videoType": random.choice(["module_installation", "autonomous_driving"]),
         "videoUrl": fake.url(),
         "recordedAt": datetime.now().isoformat(),
