@@ -9,7 +9,7 @@ import ModuleSetList from "./ModuleSetList"
 import AdminLogin from "./admin/Login"
 import AdminLayout from "./admin/AdminLayout"
 import MainDashboard from "./admin/MainDashboard"
-
+import OptionsPage from "./optionSelect/option_list"
 function App() {
   return (
     <Router>
@@ -19,6 +19,7 @@ function App() {
           <Route path="signup" element={<SignupPage />} />
           <Route path="RegistrationForm" element={<RegistrationForm />} />
           <Route path="ModuleSetList" element={<ModuleSetList />} />
+          <Route path="optionlist" element={<OptionsPage />}></Route>
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminLayout />}>
