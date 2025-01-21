@@ -12,7 +12,7 @@ def test_get_option_list_success():
     When: 기본 페이지(page=1)와 페이지 크기(page_size=5)로 요청하면
     Then: 응답 상태 코드 200과 "SUCCESS" 메시지를 반환하고, 데이터가 포함되어 있어야 한다.
     """
-    response = client.get("/user/option/list?page=1&page_size=5")
+    response = client.get("/user/options?page=1&page_size=5")
 
     json_response = response.json()
     print(json_response)  # 응답 확인
@@ -34,7 +34,7 @@ def test_get_option_list_search_from_module_sets():
     """
 
     # 모듈 리스트를 가져옴
-    module_response = client.get("/user/module-set/list?page=1&page_size=5")
+    module_response = client.get("/user/module-sets?page=1&page_size=5")
     assert module_response.status_code == 200
     module_data = module_response.json()
 
@@ -51,7 +51,7 @@ def test_get_option_list_search_from_module_sets():
         pytest.skip("검색할 옵션이 포함된 모듈 세트를 찾을 수 없어 테스트를 건너뜁니다.")
 
     # 옵션 검색 API를 호출하여 확인 (옵션 ID로 검색)
-    response = client.get(f"/user/option/list?option_id={option_id}")
+    response = client.get(f"/user/options?option_id={option_id}")
     json_response = response.json()
 
     assert response.status_code == 200
@@ -68,7 +68,7 @@ def test_get_option_list_no_data():
     When: 해당 ID로 조회하면
     Then: 응답 상태 코드 200과 빈 목록을 반환해야 한다.
     """
-    response = client.get("/user/option/list?option_id=9999")
+    response = client.get("/user/options?option_id=9999")
 
     json_response = response.json()
     assert response.status_code == 200
@@ -86,7 +86,7 @@ def test_get_option_list_invalid_page_size():
     When: 조회 요청을 보내면
     Then: 응답 상태 코드 422와 "ensure this value is greater than 0" 메시지를 반환해야 한다.
     """
-    response = client.get("/user/option/list?page=1&page_size=0")
+    response = client.get("/user/options?page=1&page_size=0")
 
     json_response = response.json()
     assert response.status_code == 422  # FastAPI의 데이터 검증 오류
@@ -101,7 +101,7 @@ def test_get_option_list_invalid_page():
     When: 조회 요청을 보내면
     Then: 응답 상태 코드 422와 "ensure this value is greater than 0" 메시지를 반환해야 한다.
     """
-    response = client.get("/user/option/list?page=0&page_size=5")
+    response = client.get("/user/options?page=0&page_size=5")
 
     json_response = response.json()
     assert response.status_code == 422  # FastAPI의 데이터 검증 오류
@@ -116,7 +116,7 @@ def test_get_option_list_missing_query_params():
     When: 기본값으로 요청이 처리되면
     Then: 응답 상태 코드 200과 기본 페이지 크기(10개)로 응답해야 한다.
     """
-    response = client.get("/user/option/list")
+    response = client.get("/user/options")
 
     json_response = response.json()
     assert response.status_code == 200

@@ -8,7 +8,7 @@ def test_get_module_set_list_success(client):
     When: 기본 페이지(page=1)와 페이지 크기(page_size=5)로 요청을 보내면
     Then: 응답 상태 코드 200과 "SUCCESS" 메시지를 반환하고, 데이터가 포함되어 있어야 한다.
     """
-    response = client.get("/user/module-set/list?page=1&page_size=5")
+    response = client.get("/user/module-sets?page=1&page_size=5")
 
     json_response = response.json()
     print(json_response)  # 응답 확인
@@ -28,7 +28,7 @@ def test_get_module_set_list_no_data(client):
     When: 조회 요청을 보내면
     Then: 응답 상태 코드 200과 빈 목록을 반환해야 한다.
     """
-    response = client.get("/user/module-set/list?page=999&page_size=9999")
+    response = client.get("/user/module-sets?page=999&page_size=9999")
 
     json_response = response.json()
 
@@ -47,7 +47,7 @@ def test_get_module_set_list_invalid_page_size(client):
     When: 조회 요청을 보내면
     Then: 응답 상태 코드 422와 "ensure this value is greater than 0" 메시지를 반환해야 한다.
     """
-    response = client.get("/user/module-set/list?page=1&page_size=0")
+    response = client.get("/user/module-sets?page=1&page_size=0")
 
     json_response = response.json()
 
@@ -63,7 +63,7 @@ def test_get_module_set_list_invalid_page(client):
     When: 조회 요청을 보내면
     Then: 응답 상태 코드 422와 "ensure this value is greater than 0" 메시지를 반환해야 한다.
     """
-    response = client.get("/user/module-set/list?page=0&page_size=5")
+    response = client.get("/user/module-sets?page=0&page_size=5")
 
     json_response = response.json()
 
@@ -79,7 +79,7 @@ def test_get_module_set_list_missing_query_params(client):
     When: 기본값으로 요청이 처리되면
     Then: 응답 상태 코드 200과 기본 페이지 크기(10개)로 응답해야 한다.
     """
-    response = client.get("/user/module-set/list")
+    response = client.get("/user/module-sets")
 
     json_response = response.json()
 
