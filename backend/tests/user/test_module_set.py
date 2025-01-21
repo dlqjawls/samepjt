@@ -2,7 +2,7 @@ import pytest
 
 def test_get_module_set_list_success(client):
     """
-    ✅ 정상적인 모듈 세트 목록 조회 테스트
+    (Success) 정상적인 모듈 세트 목록 조회 테스트
 
     Given: 모듈 세트 데이터가 존재할 때
     When: 기본 페이지(page=1)와 페이지 크기(page_size=5)로 요청을 보내면
@@ -22,26 +22,26 @@ def test_get_module_set_list_success(client):
 
 def test_get_module_set_list_no_data(client):
     """
-    ❌ 모듈 세트 데이터가 없을 때
+    (Success) 모듈 세트 데이터가 없을 때
 
     Given: 모듈 세트 데이터가 비어 있을 때
     When: 조회 요청을 보내면
-    Then: 응답 상태 코드 404와 "No matching module sets found" 메시지를 반환해야 한다.
+    Then: 응답 상태 코드 200과 빈 목록을 반환해야 한다.
     """
-    # 더미 데이터가 없도록 설정 
-    # TODO:DB 연동 후에는 Mock 처리 필요
-    response = client.get("/user/module-set/list?page=100&page_size=5")
+    response = client.get("/user/module-set/list?page=999&page_size=9999")
 
     json_response = response.json()
 
-    assert response.status_code == 404
-    assert json_response["detail"]["resultCode"] == "FAILURE"
-    assert json_response["detail"]["message"] == "No matching module sets found"
+    assert response.status_code == 200
+    assert json_response["resultCode"] == "SUCCESS"
+    assert json_response["message"] == "Module sets retrieved successfully"
+    assert "moduleSets" in json_response["data"]
+    assert len(json_response["data"]["moduleSets"]) == 0  # 데이터가 비어 있음을 확인
 
 
 def test_get_module_set_list_invalid_page_size(client):
     """
-    ❌ page_size가 0이거나 음수일 때
+    (Fail) page_size가 0이거나 음수일 때
 
     Given: page_size가 0 또는 음수일 때
     When: 조회 요청을 보내면
@@ -51,13 +51,13 @@ def test_get_module_set_list_invalid_page_size(client):
 
     json_response = response.json()
 
-    assert response.status_code == 422  
+    assert response.status_code == 422  # FastAPI의 데이터 검증 오류
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0" 
 
 
 def test_get_module_set_list_invalid_page(client):
     """
-    ❌ page가 0이거나 음수일 때
+    (Fail) page가 0이거나 음수일 때
 
     Given: page 값이 0 또는 음수일 때
     When: 조회 요청을 보내면
@@ -67,13 +67,13 @@ def test_get_module_set_list_invalid_page(client):
 
     json_response = response.json()
 
-    assert response.status_code == 422  
+    assert response.status_code == 422  # FastAPI의 데이터 검증 오류
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0"  
 
 
 def test_get_module_set_list_missing_query_params(client):
     """
-    ✅ 쿼리 파라미터가 누락된 경우 기본값으로 정상 처리
+    (Success) 쿼리 파라미터가 누락된 경우 기본값으로 정상 처리
 
     Given: page 또는 page_size를 전달하지 않을 때
     When: 기본값으로 요청이 처리되면

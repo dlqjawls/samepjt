@@ -2,7 +2,7 @@ import pytest
 
 def test_register_user_success(client):
     """
-    ✅ 정상적인 회원가입 테스트
+    (Success) 정상적인 회원가입 테스트
 
     Given: 유효한 사용자 정보가 주어졌을 때
     When: 회원가입 API(`/user/register`)에 유효한 정보를 포함하여 POST 요청을 보내면
@@ -24,7 +24,7 @@ def test_register_user_success(client):
 
 def test_register_user_duplicate_id(client):
     """
-    ❌ 중복된 userId로 회원가입 시 실패
+    (Fail) 중복된 userId로 회원가입 시 실패
 
     Given: 이미 존재하는 userId가 있을 때
     When: 동일한 userId로 회원가입을 시도하면
@@ -56,7 +56,7 @@ def test_register_user_duplicate_id(client):
 
 def test_register_user_duplicate_email(client):
     """
-    ❌ 중복된 이메일로 회원가입 시 실패
+    (Fail) 중복된 이메일로 회원가입 시 실패
 
     Given: 이미 존재하는 userEmail이 있을 때
     When: 동일한 userEmail로 회원가입을 시도하면
@@ -88,7 +88,7 @@ def test_register_user_duplicate_email(client):
 
 def test_register_user_empty_email(client):
     """
-    ❌ 이메일이 빈 값일 때 회원가입 시 실패
+    (Fail) 이메일이 빈 값일 때 회원가입 시 실패
 
     Given: 사용자가 이메일을 입력하지 않았을 때
     When: email 필드가 빈 문자열("")인 상태로 회원가입을 요청하면
@@ -103,13 +103,13 @@ def test_register_user_empty_email(client):
         "userAddress": "123 Main St, City, Country"
     })
 
-    assert response.status_code == 422  # FastAPI가 자동으로 422 반환
+    assert response.status_code == 422  # FastAPI의 데이터 검증 오류
     assert any(error["msg"] == "value is not a valid email address" for error in response.json()["detail"])
 
 
 def test_register_user_invalid_email(client):
     """
-    ❌ 잘못된 이메일 형식 입력 시 회원가입 실패
+    (Fail) 잘못된 이메일 형식 입력 시 회원가입 실패
 
     Given: 사용자가 잘못된 이메일 형식을 입력했을 때
     When: "invalid-email"과 같은 잘못된 형식의 email을 회원가입 요청으로 보내면

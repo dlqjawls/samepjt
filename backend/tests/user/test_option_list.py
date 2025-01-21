@@ -6,7 +6,7 @@ client = TestClient(app)  # FastAPI 애플리케이션 클라이언트 생성
 
 def test_get_option_list_success():
     """
-    ✅ 정상적인 옵션 목록 조회 테스트
+    (Success) 정상적인 옵션 목록 조회 테스트
 
     Given: 옵션 데이터가 존재할 때
     When: 기본 페이지(page=1)와 페이지 크기(page_size=5)로 요청하면
@@ -26,19 +26,19 @@ def test_get_option_list_success():
 
 def test_get_option_list_search_from_module_sets():
     """
-    ✅ 모듈 리스트에서 옵션이 포함된 첫 번째 모듈을 찾아 검색하는 테스트
+    (Success) 모듈 세트에서 옵션 검색 테스트
 
     Given: 모듈 리스트가 존재하고 최소 하나의 모듈에 옵션이 있을 때
     When: 옵션이 포함된 첫 번째 모듈의 첫 번째 옵션 ID를 검색하면
     Then: 응답 상태 코드 200과 해당 옵션이 포함된 결과를 반환해야 한다.
     """
 
-    # 1️⃣ ✅ 먼저 모듈 리스트를 가져옴
+    # 모듈 리스트를 가져옴
     module_response = client.get("/user/module-set/list?page=1&page_size=5")
     assert module_response.status_code == 200
     module_data = module_response.json()
 
-    # 2️⃣ ✅ 옵션이 포함된 첫 번째 모듈을 찾을 때까지 반복
+    # 옵션이 포함된 첫 번째 모듈을 찾을 때까지 반복
     option_id = None
 
     for module_set in module_data["data"]["moduleSets"]:
@@ -46,11 +46,11 @@ def test_get_option_list_search_from_module_sets():
             option_id = module_set["suppliedOptions"][0]["optionId"]
             break  # 첫 번째 옵션이 있는 모듈을 찾으면 종료
 
-    # 3️⃣ ✅ 옵션이 없는 경우 테스트 건너뛰기
+    # 옵션이 없는 경우 테스트 건너뛰기
     if not option_id:
-        pytest.skip("🚨 검색할 옵션이 포함된 모듈 세트를 찾을 수 없어 테스트를 건너뜁니다.")
+        pytest.skip("검색할 옵션이 포함된 모듈 세트를 찾을 수 없어 테스트를 건너뜁니다.")
 
-    # 4️⃣ ✅ 옵션 검색 API를 호출하여 확인 (옵션 ID로 검색)
+    # 옵션 검색 API를 호출하여 확인 (옵션 ID로 검색)
     response = client.get(f"/user/option/list?option_id={option_id}")
     json_response = response.json()
 
@@ -62,23 +62,25 @@ def test_get_option_list_search_from_module_sets():
 
 def test_get_option_list_no_data():
     """
-    ❌ 존재하지 않는 옵션 검색 테스트
+    (Success) 옵션 데이터가 없을 때
 
     Given: 존재하지 않는 옵션 ID (9999)를 입력할 때
     When: 해당 ID로 조회하면
-    Then: 응답 상태 코드 404와 "No matching options found" 메시지를 반환해야 한다.
+    Then: 응답 상태 코드 200과 빈 목록을 반환해야 한다.
     """
     response = client.get("/user/option/list?option_id=9999")
 
     json_response = response.json()
-    assert response.status_code == 404
-    assert json_response["detail"]["resultCode"] == "FAILURE"
-    assert json_response["detail"]["message"] == "No matching options found"
+    assert response.status_code == 200
+    assert json_response["resultCode"] == "SUCCESS"
+    assert json_response["message"] == "Options retrieved successfully"
+    assert "options" in json_response["data"]
+    assert len(json_response["data"]["options"]) == 0  # 데이터가 비어 있음을 확인
 
 
 def test_get_option_list_invalid_page_size():
     """
-    ❌ page_size가 0이거나 음수일 때
+    (Fail) page_size가 0이거나 음수일 때
 
     Given: page_size가 0 또는 음수일 때
     When: 조회 요청을 보내면
@@ -87,13 +89,13 @@ def test_get_option_list_invalid_page_size():
     response = client.get("/user/option/list?page=1&page_size=0")
 
     json_response = response.json()
-    assert response.status_code == 422  
+    assert response.status_code == 422  # FastAPI의 데이터 검증 오류
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0"
 
 
 def test_get_option_list_invalid_page():
     """
-    ❌ page 값이 0이거나 음수일 때
+    (Fail) page 값이 0이거나 음수일 때
 
     Given: page 값이 0 또는 음수일 때
     When: 조회 요청을 보내면
@@ -102,13 +104,13 @@ def test_get_option_list_invalid_page():
     response = client.get("/user/option/list?page=0&page_size=5")
 
     json_response = response.json()
-    assert response.status_code == 422  
+    assert response.status_code == 422  # FastAPI의 데이터 검증 오류
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0"
 
 
 def test_get_option_list_missing_query_params():
     """
-    ✅ 쿼리 파라미터가 누락된 경우 기본값으로 정상 처리
+    (Success) 쿼리 파라미터가 누락된 경우 기본값으로 정상 처리
 
     Given: page 또는 page_size를 전달하지 않을 때
     When: 기본값으로 요청이 처리되면
