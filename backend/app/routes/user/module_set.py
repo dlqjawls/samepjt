@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Query
 from typing import Optional
-from app.services.module_set_service import ModuleSetService
-from app.models.module_set import ModuleSetListResponse
+from app.services.user.module_set import ModuleSetService
+from app.schemas.user.module_set import ModuleSetListResponse
 
-router = APIRouter(prefix="/user/module-set", tags=["Module Set"])
+
+router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.get(
-    "/list",
+    "/module-set/list",
     summary="모듈 세트 목록 조회",
     description="사용자가 선택 가능한 모듈 세트 목록을 조회합니다. 페이지네이션을 지원합니다.",
     response_model=ModuleSetListResponse,

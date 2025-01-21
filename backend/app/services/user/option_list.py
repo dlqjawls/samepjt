@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from app.models.option_list import OptionListResponse, OptionListData, Option
+from app.schemas.user.option_list import OptionListResponse, OptionListData, Option
 from app.dummy_data import dummy_options
-from app.services.pagination_service import paginate
+from app.services.pagination import paginate
 
 class OptionService:
     """🛠️ 옵션 목록을 조회하는 서비스 클래스"""

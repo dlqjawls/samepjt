@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Query
 from typing import Optional
-from app.services.option_list_service import OptionService
-from app.models.option_list import OptionListResponse
+from app.services.user.option_list import OptionService
+from app.schemas.user.option_list import OptionListResponse
 
-router = APIRouter(prefix="/user/option", tags=["Option"])
+router = APIRouter(prefix="/user", tags=["User"])
 
 @router.get(
-    "/list",
+    "/option/list",
     summary="옵션 목록 조회",
     description="사용자가 선택 가능한 개별 옵션 목록을 조회합니다. 페이지네이션 및 검색을 지원합니다.",
     response_model=OptionListResponse,

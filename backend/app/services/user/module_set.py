@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from app.models.module_set import ModuleSetListResponse, ModuleSetData, ModuleSet, SuppliedOption
+from app.schemas.user.module_set import ModuleSetListResponse, ModuleSetData, ModuleSet, SuppliedOption
 from app.dummy_data import dummy_module_sets, dummy_module_set_options
-from app.services.pagination_service import paginate
+from app.services.pagination import paginate
 
 class ModuleSetService:
     """🛠️ 모듈 세트 목록을 조회하는 서비스 클래스"""

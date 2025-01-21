@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware 
 from fastapi.responses import RedirectResponse
-from app.routes import user_route, module_set_route, option_list_route
+from app.routes.user import login, register, user_list, module_set, option_list
 
 app = FastAPI(title="ModuCar API")
 
@@ -15,9 +15,11 @@ app.add_middleware(
 
 
 # API 라우터 등록
-app.include_router(user_route.router)
-app.include_router(module_set_route.router)
-app.include_router(option_list_route.router)
+app.include_router(user_list.router)
+app.include_router(login.router)
+app.include_router(register.router)
+app.include_router(module_set.router)
+app.include_router(option_list.router)
 
 @app.get("/", include_in_schema=False)  # 🔹 Swagger 문서에서 제외
 async def redirect_to_docs():

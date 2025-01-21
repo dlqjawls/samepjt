@@ -1,5 +1,5 @@
 from typing import List, TypeVar
-from app.models.pagination_model import Pagination, PaginatedResponse
+from app.schemas.pagination import Pagination, PaginatedResponse
 
 T = TypeVar("T")
 
