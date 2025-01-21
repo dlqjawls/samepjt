@@ -41,18 +41,6 @@ router = APIRouter(prefix="/user", tags=["User"])
                     }
                 }
             }
-        },
-        404: {
-            "description": "검색 결과가 없거나 옵션 목록이 없음",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resultCode": "FAILURE",
-                        "message": "No matching options found",
-                        "data": None
-                    }
-                }
-            }
         }
     }
 )
@@ -61,11 +49,4 @@ async def option_list(
     page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0),
     option_id: Optional[int] = Query(None, description="옵션 ID 검색 (선택)")
 ):
-    """
-    ✅ 옵션 목록 조회 API
-
-    - 사용자가 선택 가능한 개별 옵션 목록을 조회합니다.
-    - 페이지네이션 지원 (page, page_size).
-    - `optionId`로 검색 가능.
-    """
     return OptionService.get_options(page, page_size, option_id)

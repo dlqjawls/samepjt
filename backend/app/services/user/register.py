@@ -5,22 +5,12 @@ from app.utils.bcrypt import hash_password
 
 
 class UserRegisterService:
-    """🛠️ 회원가입 관련 비즈니스 로직을 처리하는 서비스 클래스"""
+    """ 사용자 회원가입 서비스 클래스 """
 
     @staticmethod
     def register_user(user: UserRegisterRequest) -> UserRegisterResponse:
-        """
-        회원가입 기능
+        """ 새로운 사용자를 등록합니다 """
 
-        - `userId` 및 `userEmail`은 중복될 수 없음
-        - `userPassword`는 `bcrypt`를 사용하여 해싱하여 저장
-        - 회원가입 성공 시 `SUCCESS` 메시지를 반환
-
-        예외 발생 시:
-        - 이미 존재하는 `userId` 또는 `userEmail`
-        - 필수 입력값 누락 (예: 이메일이 빈 문자열일 경우)
-        - `400 Bad Request` 응답 반환
-        """
         errors = []
 
         # 중복 검사

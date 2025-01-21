@@ -6,7 +6,7 @@ T = TypeVar("T")
 
 def paginate(data: List[T], page: int, page_size: int) -> PaginatedResponse[T]:
     """
-    ✅ 리스트 데이터를 페이지네이션하여 반환
+    리스트를 페이지네이션하여 반환합니다.
 
     - `data`: 원본 리스트
     - `page`: 현재 페이지 번호

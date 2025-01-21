@@ -52,30 +52,11 @@ router = APIRouter(prefix="/user", tags=["User"])
                     }
                 }
             }
-        },
-        404: {
-            "description": "모듈 세트 목록이 없음",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resultCode": "FAILURE",
-                        "message": "No matching module sets found",
-                        "data": None
-                    }
-                }
-            }
         }
     }
 )
 async def get_module_set_list(
-    page: int = Query(1, description="페이지 번호 (최소 1)", gt=0),  # ✅ 최소 1
-    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0)  # ✅ 최소 1
+    page: int = Query(1, description="페이지 번호 (최소 1)", gt=0), 
+    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0) 
 ):
-    """
-    ✅ 모듈 세트 목록 조회 API
-
-    - 사용자가 선택 가능한 모듈 세트 목록을 조회합니다.
-    - 페이지네이션을 지원합니다.
-    - 각 모듈 세트에 포함된 옵션 목록을 함께 반환합니다.
-    """
     return ModuleSetService.get_module_sets(page, page_size)

@@ -1,29 +1,18 @@
-from fastapi import HTTPException
 from app.schemas.user.module_set import ModuleSetListResponse, ModuleSetData, ModuleSet, SuppliedOption
 from app.dummy_data import dummy_module_sets, dummy_module_set_options
 from app.services.pagination import paginate
 
 class ModuleSetService:
-    """🛠️ 모듈 세트 목록을 조회하는 서비스 클래스"""
+    """ 모듈 세트 목록 조회 서비스 클래스 """
 
     @staticmethod
     def get_module_sets(page: int = 1, page_size: int = 10) -> ModuleSetListResponse:
-        """모듈 세트 목록을 조회하고 페이지네이션을 적용"""
+        """ 모듈 세트 목록을 조회합니다 """
 
-        # ✅ 공통 페이지네이션 로직 적용
+        # 페이지네이션
         paginated_result = paginate(dummy_module_sets, page, page_size)
 
-        # ✅ 모듈 세트가 없을 경우 404 예외 발생
-        if not paginated_result.items:
-            raise HTTPException(
-                status_code=404,
-                detail={
-                    "resultCode": "FAILURE",
-                    "message": "No matching module sets found",
-                    "data": None
-                }
-            )
-
+        # 모듈 세트 목록 생성
         module_set_list = []
         for module_set in paginated_result.items:
             supplied_options = [
@@ -36,6 +25,7 @@ class ModuleSetService:
                 if opt["moduleSetId"] == module_set["moduleSetId"]
             ]
 
+            # 모듈 세트 객체 생성
             module_set_list.append(
                 ModuleSet(
                     moduleSetId=module_set["moduleSetId"],
@@ -49,6 +39,7 @@ class ModuleSetService:
                 )
             )
 
+        # 응답 반환
         return ModuleSetListResponse(
             resultCode="SUCCESS",
             message="Module sets retrieved successfully",
