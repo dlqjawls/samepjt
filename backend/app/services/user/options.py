@@ -1,5 +1,5 @@
 from typing import Optional
-from app.schemas.user.option_list import OptionListResponse, OptionListData, Option
+from app.schemas.user.options import OptionsResponse, OptionsData, Option
 from app.dummy_data import dummy_options
 from app.services.pagination import paginate
 
@@ -7,7 +7,7 @@ class OptionService:
     """옵션 목록 조회 서비스 클래스"""
 
     @staticmethod
-    def get_options(page: int = 1, page_size: int = 10, option_id: Optional[int] = None) -> OptionListResponse:
+    def get_options(page: int = 1, page_size: int = 10, option_id: Optional[int] = None) -> OptionsResponse:
         """ 옵션 목록을 조회합니다 """
 
         # 옵션 목록 필터링
@@ -19,7 +19,7 @@ class OptionService:
         paginated_result = paginate(filtered_options, page, page_size)
 
         # 옵션 목록 생성
-        option_list = [
+        options = [
             Option(
                 optionId=option["optionId"],
                 optionName=option["optionName"],
@@ -34,11 +34,11 @@ class OptionService:
         ]
 
         # 응답 반환 
-        return OptionListResponse(
+        return OptionsResponse(
             resultCode="SUCCESS",
             message="Options retrieved successfully",
-            data=OptionListData(
-                options=option_list,  
+            data=OptionsData(
+                options=options,  
                 pagination=paginated_result.pagination
             )
         )

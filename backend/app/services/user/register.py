@@ -43,4 +43,4 @@ class UserRegisterService:
         new_user["userPassword"] = hashed_password
         dummy_users.append(new_user)
 
-        return UserRegisterResponse(resultCode="SUCCESS", message="User registered successfully")
+        return UserRegisterResponse(resultCode="SUCCESS", message="User registered successfully", errors=[])

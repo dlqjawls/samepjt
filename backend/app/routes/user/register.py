@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.schemas.user.register import UserRegisterRequest, UserRegisterResponse
 from app.services.user.register import UserRegisterService
 
-router = APIRouter(prefix="/user", tags=["User"])
+router = APIRouter()
 
 @router.post(
     "/register",

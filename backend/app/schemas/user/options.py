@@ -15,14 +15,14 @@ class Option(BaseModel):
     description: str = Field(..., example="캠핑 모듈용 배터리 팩")
 
 
-class OptionListData(BaseModel):
+class OptionsData(BaseModel):
     """옵션 목록 데이터"""
     options: List[Option]
     pagination: Pagination
 
 
-class OptionListResponse(BaseModel):
+class OptionsResponse(BaseModel):
     """옵션 목록 조회 응답 모델"""
     resultCode: str = Field(..., example="SUCCESS")
     message: str = Field(..., example="Options retrieved successfully")
-    data: Optional[OptionListData]
+    data: Optional[OptionsData]
