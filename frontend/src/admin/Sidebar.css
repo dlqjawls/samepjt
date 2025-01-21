@@ -1,0 +1,15 @@
+.sidebar {
+    color:  rgb(red, green, blue);
+}
+
+.sidebar-logo {
+    max-width: 100px;
+}
+
+.sidebar-menu {
+    text-align: center;
+}
+
+.sidebar-footer {
+    color: darkcyan;
+}
