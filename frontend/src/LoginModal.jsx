@@ -1,128 +1,79 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
+import axios from "axios"
+import "./LoginModal.css"
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
-    userId: '',
-    userPassword: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+    userId: "",
+    userPassword: "",
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
+    const { name, value } = e.target
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value
-    }));
-  };
+      [name]: value,
+    }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    e.preventDefault()
+    setIsLoading(true)
+    setError("")
 
     try {
-      const response = await axios.post(
-        'https://backend-wandering-river-6835.fly.dev/user/login',
-        formData
-      );
-      
-      console.log('로그인 성공:', response.data);
-      onClose();
-      
+      const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/login", formData)
+
+      console.log("로그인 성공:", response.data)
+      onClose()
     } catch (err) {
-      setError(
-        err.response?.data?.message || 
-        '로그인 중 오류가 발생했습니다. 다시 시도해 주세요.'
-      );
+      setError(err.response?.data?.message || "로그인 중 오류가 발생했습니다. 다시 시도해 주세요.")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
-        <button 
-          onClick={onClose}
-          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
-        >
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <button onClick={onClose} className="close-button">
           ✕
         </button>
-        
-        <h2 className="text-2xl font-bold text-center mb-6">로그인</h2>
-        
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
+
+        <h2>로그인</h2>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
           <div>
-            <label 
-              htmlFor="userId" 
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              아이디
-            </label>
-            <input
-              id="userId"
-              name="userId"
-              type="text"
-              placeholder="아이디를 입력하세요"
-              value={formData.userId}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isLoading}
-            />
-          </div>
-          
-          <div>
-            <label 
-              htmlFor="userPassword" 
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              비밀번호
-            </label>
-            <input
-              id="userPassword"
-              name="userPassword"
-              type="password"
-              placeholder="비밀번호를 입력하세요"
-              value={formData.userPassword}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isLoading}
-            />
+            <label htmlFor="userId">아이디</label>
+            <input id="userId" name="userId" type="text" placeholder="아이디를 입력하세요" value={formData.userId} onChange={handleChange} required disabled={isLoading} />
           </div>
 
-          <button 
-            type="submit" 
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-            disabled={isLoading}
-          >
-            {isLoading ? '로그인 중...' : '로그인'}
+          <div>
+            <label htmlFor="userPassword">비밀번호</label>
+            <input id="userPassword" name="userPassword" type="password" placeholder="비밀번호를 입력하세요" value={formData.userPassword} onChange={handleChange} required disabled={isLoading} />
+          </div>
+
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "로그인 중..." : "로그인"}
           </button>
 
-          <div className="text-center text-sm text-gray-600">
-            계정이 없으신가요?{' '}
-            <Link 
-              to="/RegistrationForm" 
-              className="text-blue-600 hover:underline"
-              onClick={onClose}
-            >
-              회원가입
-            </Link>
+          <div className="modal-regist">
+            계정이 없으신가요?
+            <div>
+              <Link to="/RegistrationForm" onClick={onClose}>
+                회원가입
+              </Link>
+            </div>
           </div>
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LoginModal;
+export default LoginModal
