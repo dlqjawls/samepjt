@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from app.models.module_set import ModuleSetListResponse, ModuleSetData, ModuleSet, SuppliedOption, Pagination
+from app.models.module_set import ModuleSetListResponse, ModuleSetData, ModuleSet, SuppliedOption
 from app.dummy_data import dummy_module_sets, dummy_module_set_options
-
+from app.services.pagination_service import paginate
 
 class ModuleSetService:
     """🛠️ 모듈 세트 목록을 조회하는 서비스 클래스"""
@@ -10,10 +10,11 @@ class ModuleSetService:
     def get_module_sets(page: int = 1, page_size: int = 10) -> ModuleSetListResponse:
         """모듈 세트 목록을 조회하고 페이지네이션을 적용"""
 
-        total_items = len(dummy_module_sets)
-        total_pages = (total_items // page_size) + (1 if total_items % page_size > 0 else 0)
+        # ✅ 공통 페이지네이션 로직 적용
+        paginated_result = paginate(dummy_module_sets, page, page_size)
 
-        if page > total_pages and total_pages != 0:
+        # ✅ 모듈 세트가 없을 경우 404 예외 발생
+        if not paginated_result.items:
             raise HTTPException(
                 status_code=404,
                 detail={
@@ -23,10 +24,8 @@ class ModuleSetService:
                 }
             )
 
-        module_sets = dummy_module_sets[(page - 1) * page_size : page * page_size]
-
         module_set_list = []
-        for module_set in module_sets:
+        for module_set in paginated_result.items:
             supplied_options = [
                 SuppliedOption(
                     optionId=opt["optionId"],
@@ -50,15 +49,8 @@ class ModuleSetService:
                 )
             )
 
-        pagination = Pagination(
-            currentPage=page,
-            totalPages=total_pages,
-            totalItems=total_items,
-            pageSize=page_size
-        )
-
         return ModuleSetListResponse(
             resultCode="SUCCESS",
             message="Module sets retrieved successfully",
-            data=ModuleSetData(moduleSets=module_set_list, pagination=pagination) 
+            data=ModuleSetData(moduleSets=module_set_list, pagination=paginated_result.pagination)
         )

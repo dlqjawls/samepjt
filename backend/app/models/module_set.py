@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from app.models.pagination_model import Pagination
 
 
 class SuppliedOption(BaseModel):
@@ -20,14 +21,6 @@ class ModuleSet(BaseModel):
         {"optionId": 101, "optionName": "배터리 팩", "quantity": 2},
         {"optionId": 102, "optionName": "냉장고", "quantity": 1}
     ])
-
-
-class Pagination(BaseModel):
-    """페이지네이션 정보"""
-    currentPage: int = Field(..., example=1)
-    totalPages: int = Field(..., example=5)
-    totalItems: int = Field(..., example=50)
-    pageSize: int = Field(..., example=10)
 
 class ModuleSetData(BaseModel):
     moduleSets: List[ModuleSet]
