@@ -1,37 +1,58 @@
-/* src/components/ModuleSetList.css */
-.module-set-list {
-  max-width: 800px;
-  margin: 0 auto;
+.module-list-container {
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.loading,
-.error-message {
-  text-align: center;
-  margin: 20px 0;
-  font-size: 1.2em;
-}
-
-.error-message {
-  color: red;
-}
-
-.module-sets {
-  display: flex;
-  flex-direction: column;
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
+  margin-bottom: 20px;
 }
 
-.module-set {
-  border: 1px solid #ccc;
-  padding: 15px;
-  border-radius: 5px;
+.module-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.module-set-image {
+.module-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.module-card-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.module-card-image img {
   width: 100%;
-  max-width: 200px;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+}
+
+.module-card-content {
+  padding: 15px;
+}
+
+.module-card-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+}
+
+.module-card-content p {
+  margin: 0;
+  color: #666;
+}
+
+.module-card-content .price {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
 }
 
 .pagination {
@@ -42,10 +63,153 @@
   margin-top: 20px;
 }
 
-.pagination button {
-  padding: 5px 10px;
+.pagination-button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
 }
 
-.pagination select {
-  padding: 5px;
+.pagination-button:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.page-size-select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-image-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.modal-image-container img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.image-navigation {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.image-navigation button {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-details h4 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+}
+
+.options ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.total-cost {
+  text-align: right;
+  font-weight: bold;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-footer button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background: white;
+  border: 1px solid #ddd;
+}
+
+.next-button {
+  background: #007bff;
+  color: white;
+  border: none;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  padding: 20px;
 }
