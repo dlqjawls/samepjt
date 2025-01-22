@@ -10,6 +10,7 @@ import AdminLogin from "./admin/Login"
 import AdminLayout from "./admin/AdminLayout"
 import MainDashboard from "./admin/MainDashboard"
 import OptionsPage from "./optionSelect/option_list"
+import ExistOptionsPage from "./optionSelect/exitsting_option"
 function App() {
   return (
     <Router>
@@ -20,6 +21,7 @@ function App() {
           <Route path="RegistrationForm" element={<RegistrationForm />} />
           <Route path="ModuleSetList" element={<ModuleSetList />} />
           <Route path="optionlist" element={<OptionsPage />}></Route>
+          <Route path="exist_option" element={<ExistOptionsPage/>}></Route>
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminLayout />}>
