@@ -26,7 +26,7 @@ class ModuleSetData(BaseModel):
     moduleSets: List[ModuleSet]
     pagination: Pagination
 
-class ModuleSetListResponse(BaseModel):
+class ModuleSetsResponse(BaseModel):
     """모듈 세트 목록 조회 응답 모델"""
     resultCode: str = Field(..., example="SUCCESS")
     message: str = Field(..., example="Module sets retrieved successfully")

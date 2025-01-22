@@ -1,4 +1,4 @@
-from app.schemas.user.module_set import ModuleSetListResponse, ModuleSetData, ModuleSet, SuppliedOption
+from app.schemas.user.module_sets import ModuleSetsResponse, ModuleSetData, ModuleSet, SuppliedOption
 from app.dummy_data import dummy_module_sets, dummy_module_set_options
 from app.services.pagination import paginate
 
@@ -6,14 +6,14 @@ class ModuleSetService:
     """ 모듈 세트 목록 조회 서비스 클래스 """
 
     @staticmethod
-    def get_module_sets(page: int = 1, page_size: int = 10) -> ModuleSetListResponse:
+    def get_module_sets(page: int = 1, page_size: int = 10) -> ModuleSetsResponse:
         """ 모듈 세트 목록을 조회합니다 """
 
         # 페이지네이션
         paginated_result = paginate(dummy_module_sets, page, page_size)
 
         # 모듈 세트 목록 생성
-        module_set_list = []
+        module_sets = []
         for module_set in paginated_result.items:
             supplied_options = [
                 SuppliedOption(
@@ -26,7 +26,7 @@ class ModuleSetService:
             ]
 
             # 모듈 세트 객체 생성
-            module_set_list.append(
+            module_sets.append(
                 ModuleSet(
                     moduleSetId=module_set["moduleSetId"],
                     moduleSetName=module_set["moduleSetName"],
@@ -40,8 +40,8 @@ class ModuleSetService:
             )
 
         # 응답 반환
-        return ModuleSetListResponse(
+        return ModuleSetsResponse(
             resultCode="SUCCESS",
             message="Module sets retrieved successfully",
-            data=ModuleSetData(moduleSets=module_set_list, pagination=paginated_result.pagination)
+            data=ModuleSetData(moduleSets=module_sets, pagination=paginated_result.pagination)
         )

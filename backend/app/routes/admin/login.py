@@ -1,14 +1,14 @@
 from fastapi import APIRouter
-from app.schemas.user.login import UserLoginRequest, UserLoginResponse
-from app.services.user.login import UserLoginService
+from app.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
+from app.services.admin.login import AdminLoginService
 
 router = APIRouter()
 
 @router.post(
     "/login",
-    response_model=UserLoginResponse,
+    response_model=AdminLoginResponse,
     summary="로그인",
-    description="사용자 로그인 후 JWT 토큰을 반환합니다.",
+    description="관리자 로그인 후 JWT 토큰을 반환합니다.",
     responses={
         200: {
             "description": "로그인 성공",
@@ -55,5 +55,5 @@ router = APIRouter()
         },
     },
 )
-def login_user(user: UserLoginRequest):
-    return UserLoginService.login_user(user)
+def login_user(user: AdminLoginRequest):
+    return AdminLoginService.login_admin(user)

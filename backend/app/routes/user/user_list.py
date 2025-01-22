@@ -3,7 +3,7 @@ from typing import List
 from app.schemas.user.user_list import UserSchema
 from app.dummy_data import dummy_users  # 더미 데이터
 
-router = APIRouter(prefix="/user", tags=["User"])
+router = APIRouter()
 
 @router.get(
     "/list",

@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Query
 from typing import Optional
-from app.services.user.module_set import ModuleSetService
-from app.schemas.user.module_set import ModuleSetListResponse
+from app.services.user.module_sets import ModuleSetService
+from app.schemas.user.module_sets import ModuleSetsResponse
 
 
-router = APIRouter(prefix="/user", tags=["User"])
+router = APIRouter()
 
 
 @router.get(
-    "/module-set/list",
+    "/module-sets",
     summary="모듈 세트 목록 조회",
     description="사용자가 선택 가능한 모듈 세트 목록을 조회합니다. 페이지네이션을 지원합니다.",
-    response_model=ModuleSetListResponse,
+    response_model=ModuleSetsResponse,
     responses={
         200: {
             "description": "모듈 세트 목록 조회 성공",
@@ -55,7 +55,7 @@ router = APIRouter(prefix="/user", tags=["User"])
         }
     }
 )
-async def get_module_set_list(
+async def get_module_sets(
     page: int = Query(1, description="페이지 번호 (최소 1)", gt=0), 
     page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0) 
 ):
