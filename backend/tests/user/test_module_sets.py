@@ -1,6 +1,6 @@
 import pytest
 
-def test_get_module_set_list_success(client):
+def test_get_module_sets_success(client):
     """
     (Success) 정상적인 모듈 세트 목록 조회 테스트
 
@@ -20,7 +20,7 @@ def test_get_module_set_list_success(client):
     assert len(json_response["data"]["moduleSets"]) > 0  # 최소 한 개의 데이터 존재 확인
 
 
-def test_get_module_set_list_no_data(client):
+def test_get_module_sets_no_data(client):
     """
     (Success) 모듈 세트 데이터가 없을 때
 
@@ -39,7 +39,7 @@ def test_get_module_set_list_no_data(client):
     assert len(json_response["data"]["moduleSets"]) == 0  # 데이터가 비어 있음을 확인
 
 
-def test_get_module_set_list_invalid_page_size(client):
+def test_get_module_sets_invalid_page_size(client):
     """
     (Fail) page_size가 0이거나 음수일 때
 
@@ -55,7 +55,7 @@ def test_get_module_set_list_invalid_page_size(client):
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0" 
 
 
-def test_get_module_set_list_invalid_page(client):
+def test_get_module_sets_invalid_page(client):
     """
     (Fail) page가 0이거나 음수일 때
 
@@ -71,7 +71,7 @@ def test_get_module_set_list_invalid_page(client):
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0"  
 
 
-def test_get_module_set_list_missing_query_params(client):
+def test_get_module_sets_missing_query_params(client):
     """
     (Success) 쿼리 파라미터가 누락된 경우 기본값으로 정상 처리
 

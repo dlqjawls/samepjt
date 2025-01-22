@@ -4,7 +4,7 @@ from app.main import app
 
 client = TestClient(app)  # FastAPI 애플리케이션 클라이언트 생성
 
-def test_get_option_list_success():
+def test_get_options_success():
     """
     (Success) 정상적인 옵션 목록 조회 테스트
 
@@ -24,7 +24,7 @@ def test_get_option_list_success():
     assert len(json_response["data"]["options"]) > 0  # 최소 한 개의 데이터 존재 확인
 
 
-def test_get_option_list_search_from_module_sets():
+def test_get_options_search_from_module_sets():
     """
     (Success) 모듈 세트에서 옵션 검색 테스트
 
@@ -60,7 +60,7 @@ def test_get_option_list_search_from_module_sets():
     assert any(option["optionId"] == option_id for option in json_response["data"]["options"])
 
 
-def test_get_option_list_no_data():
+def test_get_options_no_data():
     """
     (Success) 옵션 데이터가 없을 때
 
@@ -78,7 +78,7 @@ def test_get_option_list_no_data():
     assert len(json_response["data"]["options"]) == 0  # 데이터가 비어 있음을 확인
 
 
-def test_get_option_list_invalid_page_size():
+def test_get_options_invalid_page_size():
     """
     (Fail) page_size가 0이거나 음수일 때
 
@@ -93,7 +93,7 @@ def test_get_option_list_invalid_page_size():
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0"
 
 
-def test_get_option_list_invalid_page():
+def test_get_options_invalid_page():
     """
     (Fail) page 값이 0이거나 음수일 때
 
@@ -108,7 +108,7 @@ def test_get_option_list_invalid_page():
     assert json_response["detail"][0]["msg"] == "ensure this value is greater than 0"
 
 
-def test_get_option_list_missing_query_params():
+def test_get_options_missing_query_params():
     """
     (Success) 쿼리 파라미터가 누락된 경우 기본값으로 정상 처리
 
