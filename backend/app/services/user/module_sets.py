@@ -33,8 +33,6 @@ class ModuleSetService:
                     description=module_set["description"],
                     totalCost=module_set["totalCost"],
                     imgsUrls=module_set["imgsUrls"],
-                    createdAt=module_set["createdAt"],
-                    updatedAt=module_set["updatedAt"],
                     suppliedOptions=supplied_options
                 )
             )
