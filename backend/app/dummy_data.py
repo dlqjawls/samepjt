@@ -154,14 +154,13 @@ dummy_option_types = [
         "createdAt": base_date.isoformat(),
         "updatedAt": base_date.isoformat(),
     }
-    for i, option in enumerate(option_data, start=1)
+    for i, option in enumerate(option_data)
 ]
-
 
 dummy_options = [
     {
         "optionId": i,
-        "optionType": option["optionName"],
+        "optionType": dummy_option_types[i]["optionTypeId"],
         "status": random.choice(["available", "unavailable"]),
         "createdAt": base_date.isoformat(),
         "updatedAt": base_date.isoformat(),
@@ -180,7 +179,7 @@ dummy_module_sets = [
         "createdAt": base_date.isoformat(),
         "updatedAt": base_date.isoformat(),
     }
-    for i, module_set in enumerate(module_set_data, start=0)
+    for i, module_set in enumerate(module_set_data)
 ]
 
 dummy_module_set_options = []
@@ -189,8 +188,12 @@ for module_set in module_set_data:
                         if ms["moduleSetName"] == module_set["moduleSetName"])
     
     for option_name in module_set["defaultOptions"]:
+        option_type_id = next((opt_type["optionTypeId"] for opt_type in dummy_option_types 
+                               if opt_type["optionName"] == option_name), None)
+        
         option_id = next((opt["optionId"] for opt in dummy_options 
-                         if opt["optionType"] == option_name), None)
+                          if opt["optionType"] == option_type_id), None)
+        
         if option_id is not None:
             dummy_module_set_options.append({
                 "moduleSetId": module_set_id,
@@ -381,24 +384,40 @@ def validate_data(
         if calculated_total != rent["totalCost"]:
             errors.append(f"Invalid cost calculation for rentId {rent['rentId']}")
 
-    # 모듈셋-옵션 매핑 검증
+    # 모듈 세트-옵션 매핑 검증
     module_set_options_map = {}
     for mso in dummy_module_set_options:
         key = mso["moduleSetId"]
         if key not in module_set_options_map:
             module_set_options_map[key] = []
         module_set_options_map[key].append(mso["optionId"])
-    
+
     for module_set in module_set_data:
-        module_set_id = next(ms["moduleSetId"] for ms in dummy_module_sets 
-                           if ms["moduleSetName"] == module_set["moduleSetName"])
+        # 모듈 세트 ID 찾기
+        module_set_id = next(
+            (ms["moduleSetId"] for ms in dummy_module_sets if ms["moduleSetName"] == module_set["moduleSetName"]),
+            None
+        )
+
+        if module_set_id is None:
+            errors.append(f"❌ 모듈 세트 '{module_set['moduleSetName']}'에 대한 moduleSetId가 존재하지 않음")
+            continue
+
         mapped_options = module_set_options_map.get(module_set_id, [])
-        
+
         for option_name in module_set["defaultOptions"]:
-            option_id = next((opt["optionId"] for opt in dummy_options 
-                            if opt["optionType"] == option_name), None)
-            if option_id not in mapped_options:
-                errors.append(f"Missing option {option_name} for moduleSet {module_set['moduleSetName']}")
+            # 올바른 optionId 찾기 (option_type.optionTypeId를 참조)
+            option_id = next(
+                (opt["optionId"] for opt in dummy_options 
+                if dummy_option_types[opt["optionType"]]["optionName"] == option_name),
+                None
+            )
+
+            if option_id is None:
+                errors.append(f"❌ 옵션 '{option_name}'에 해당하는 optionId가 존재하지 않음")
+            elif option_id not in mapped_options:
+                errors.append(f"❌ 모듈 세트 '{module_set['moduleSetName']}'에 '{option_name}' 옵션이 누락됨 (optionId: {option_id})")
+
 
     # 3) vehicles_maintenance 검증
     #   - adminPK, vehicleId 유효성 체크
@@ -470,20 +489,21 @@ def validate_data(
     return errors
 
 if __name__ == "__main__":
-    print(dummy_users)
-    print(dummy_vehicles)
-    print(dummy_modules)
-    print(dummy_options)
-    print(dummy_module_sets)
-    print(dummy_module_set_options)
-    print(dummy_vehicles_maintenance)
-    print(dummy_module_maintenance)
-    print(dummy_option_maintenance)
-    print(dummy_rent_history)
-    print(dummy_vehicles_usage_history)
-    print(dummy_module_usage_history)
-    print(dummy_option_usage_history)
-    print(dummy_video_storage)
+    # print(dummy_users)
+    # print(dummy_vehicles)
+    # # print(dummy_modules)
+    # print(dummy_options)
+    # print(dummy_option_types)
+    # print(dummy_module_sets)
+    # print(dummy_module_set_options)
+    # print(dummy_vehicles_maintenance)
+    # print(dummy_module_maintenance)
+    # print(dummy_option_maintenance)
+    # print(dummy_rent_history)
+    # print(dummy_vehicles_usage_history)
+    # print(dummy_module_usage_history)
+    # print(dummy_option_usage_history)
+    # print(dummy_video_storage)
 
     invalid_entries = [entry for entry in dummy_module_set_options if entry["optionId"] == -1]
     if invalid_entries:
