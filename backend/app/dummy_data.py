@@ -1,6 +1,7 @@
 from faker import Faker
 from datetime import datetime
 import random
+from datetime import timedelta
 
 from app.utils.bcrypt import hash_password
 
@@ -86,21 +87,24 @@ dummy_admins = [
 ]
 
 # 더미 차량 데이터 생성
+base_date = datetime.now()
 dummy_vehicles = [
     {
         "vehicleId": 0,
         "vin": fake.uuid4(),
         "vehicleNumber": f"PBV-{random.randint(1000, 9999)}",
-        "currentLocation": {"x": 0, "y": 0},
+        "currentLocation": {
+            "x": round(random.uniform(35.0, 38.0), 6),  # 한국 위도 범위
+            "y": round(random.uniform(126.0, 129.0), 6)  # 한국 경도 범위
+        },
         "status": "inactive",
         "mileage": random.randint(1000, 5000),
-        "lastMaintenanceAt": datetime.now().isoformat(),
-        "nextMaintenanceAt": datetime.now().isoformat(),
-        "createdAt": datetime.now().isoformat(),
-        "updatedAt": datetime.now().isoformat(),
+        "lastMaintenanceAt": base_date.isoformat(),
+        "nextMaintenanceAt": (base_date + timedelta(days=90)).isoformat(),  # 90일 후 정비
+        "createdAt": base_date.isoformat(),
+        "updatedAt": base_date.isoformat(),
     }
 ]
-
 
 dummy_vehicles_maintenance = [
     {
@@ -128,6 +132,9 @@ dummy_modules = [
         "moduleSize": f"{random.randint(10, 50)}x{random.randint(10, 50)}",
         "moduleCost": random.randint(1000, 5000),
         "status": random.choice(["active", "maintenance", "inactive"]),
+        "lastMaintenanceAt" : datetime.now().isoformat(),
+        "nextMaintenanceAt" : datetime.now().isoformat(),
+        "currentLocation" : {"x": 0, "y": 0},
         "createdAt": datetime.now().isoformat(),
         "updatedAt": datetime.now().isoformat(),
     }
@@ -135,65 +142,73 @@ dummy_modules = [
 ]
 
 # 더미 옵션 데이터 생성
+dummy_option_types = [
+    {
+        "optionTypeId": i,
+        "optionName": option["optionName"],
+        "optionSize": option["optionSize"],
+        "optionCost": round(random.uniform(10.0, 100.0), 2),
+        "description": option["description"],
+        "optionImages": fake.image_url(),
+        "optionFeatures": ", ".join(option["displayFeatures"]),
+        "createdAt": base_date.isoformat(),
+        "updatedAt": base_date.isoformat(),
+    }
+    for i, option in enumerate(option_data, start=1)
+]
+
+
 dummy_options = [
     {
         "optionId": i,
-        "optionName": option["optionName"],
-        "optionType": option["optionType"],
-        "optionSize": option["optionSize"],
-        "optionCost": random.randint(500, 2000),
-        "description": option["description"],
-        "displayFeatures": option["displayFeatures"],
-        "status": "inactive",
-        "stockQuantity": random.randint(0, 20),
-        "imgUrls": [fake.image_url() for _ in range(3)],
-        "createdAt": datetime.now().isoformat(),
-        "updatedAt": datetime.now().isoformat(),
+        "optionType": option["optionName"],
+        "status": random.choice(["available", "unavailable"]),
+        "createdAt": base_date.isoformat(),
+        "updatedAt": base_date.isoformat(),
     }
     for i, option in enumerate(option_data)
 ]
 
 dummy_module_sets = [
     {
-        "moduleSetId": i, 
-        "moduleSetName": module["moduleSetName"],
-        "description": f"{module['moduleSetName']} 세트 입니다.",
-        "totalCost": random.randint(1000, 5000),
-        "imgsUrls": [fake.image_url() for _ in range(random.randint(1, 3))],
-        "displayFeatures": module["displayFeatures"],
-        "createdAt": datetime.now().isoformat(),
-        "updatedAt": datetime.now().isoformat(),
+        "moduleSetId": i,
+        "moduleSetName": module_set["moduleSetName"],
+        "description": fake.text(),
+        "moduleSetImages": fake.image_url(),
+        "moduleSetFeatures": ", ".join(module_set["displayFeatures"]),
+        "basePrice": random.randint(1000, 5000),
+        "createdAt": base_date.isoformat(),
+        "updatedAt": base_date.isoformat(),
     }
-    for i, module in enumerate(module_set_data)
+    for i, module_set in enumerate(module_set_data, start=0)
 ]
 
-# 모듈 세트 옵션 매핑
-dummy_module_set_options = [
-    {
-        "moduleSetId": module_set["moduleSetId"],
-        "optionId": next(
-            (opt["optionId"] for opt in dummy_options if opt["optionName"] == option_name),
-            -1
-        ),
-        "quantity": random.randint(1, 3),
-    }
-    for module_set in dummy_module_sets
-    for option_name in next(
-        (mod["defaultOptions"] for mod in module_set_data if mod["moduleSetName"] == module_set["moduleSetName"]),
-        []
-    )
-]
-
+dummy_module_set_options = []
+for module_set in module_set_data:
+    module_set_id = next(ms["moduleSetId"] for ms in dummy_module_sets 
+                        if ms["moduleSetName"] == module_set["moduleSetName"])
+    
+    for option_name in module_set["defaultOptions"]:
+        option_id = next((opt["optionId"] for opt in dummy_options 
+                         if opt["optionType"] == option_name), None)
+        if option_id is not None:
+            dummy_module_set_options.append({
+                "moduleSetId": module_set_id,
+                "optionId": option_id,
+                "quantity": 1,
+            })
 
 dummy_module_maintenance = [
     {
         "maintenanceId": i,
+        "adminPK": random.choice(dummy_admins)["adminPK"],
         "moduleId": random.choice(dummy_modules)["moduleId"],
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
-        "rentId": random.randint(1, 5),
-        "cost": random.randint(100, 500),
-        "status": random.choice(["pending", "completed", "in-progress"]),
+        "cost": random.randint(100, 500), 
+        "MaintenanceStatus" : random.choice(["pending", "completed", "in-progress"]),
+        "completedAt ": datetime.now().isoformat(),
+        "notes": fake.sentence(),
         "createdAt": datetime.now().isoformat(),
         "updatedAt": datetime.now().isoformat(),
     }
@@ -203,11 +218,14 @@ dummy_module_maintenance = [
 dummy_option_maintenance = [
     {
         "maintenanceId": i,
+        "adminPK": random.choice(dummy_admins)["adminPK"],
         "optionId": random.choice(dummy_options)["optionId"],
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
-        "optionMaintenanceCost": random.randint(100, 500),
-        "status": random.choice(["pending", "completed", "in-progress"]),
+        "cost": random.randint(100, 500),
+        "MaintenanceStatus" : random.choice(["pending", "completed", "in-progress"]),
+        "completedAt ": datetime.now().isoformat(),
+        "notes": fake.sentence(),
         "createdAt": datetime.now().isoformat(),
         "updatedAt": datetime.now().isoformat(),
     }
@@ -215,32 +233,69 @@ dummy_option_maintenance = [
 ]
 
 # 더미 대여 기록 생성
-dummy_rent_history = [
-    {
+dummy_rent_history = []
+for i in range(1):
+    start_time = base_date + timedelta(days=random.randint(1, 30))
+    end_time = start_time + timedelta(hours=random.randint(1, 48))
+    base_cost = random.randint(100, 500)
+    additional_cost = random.randint(100, 500)
+    
+    dummy_rent_history.append({
         "rentId": i,
         "userPK": random.choice(dummy_users)["userPK"],
-        "autonomousArrivalPoint": {"x": fake.latitude(), "y": fake.longitude()},
-        "autonomousDeparturePoint": {"x": fake.latitude(), "y": fake.longitude()},
+        "departureLocation": {
+            "x": round(random.uniform(35.0, 38.0), 6),
+            "y": round(random.uniform(126.0, 129.0), 6)
+        },
+        "arrivalLocation": {
+            "x": round(random.uniform(35.0, 38.0), 6),
+            "y": round(random.uniform(126.0, 129.0), 6)
+        },
         "rentStatus": random.choice(["reserved", "in-progress", "completed", "canceled"]),
-        "eventType": random.choice(["start", "end"]),
-        "startTime": datetime.now().isoformat(),
-        "endTime": datetime.now().isoformat(),
-        "totalCost": random.randint(100, 500),
+        "startTime": start_time.isoformat(),
+        "endTime": end_time.isoformat(),
+        "baseCost": base_cost,
+        "additionalCost": additional_cost,
+        "totalCost": base_cost + additional_cost,
         "totalDistance": random.randint(10, 100),
-        "statusUpdateAt": datetime.now().isoformat(),
-        "createdAt": datetime.now().isoformat(),
-    }
-    for i in range(1)
-] 
+        "statusUpdateAt": base_date.isoformat(),
+        "createdAt": base_date.isoformat(),
+    })
+
+dummy_payments = []
+for i, rent in enumerate(dummy_rent_history):
+    payment_date = datetime.fromisoformat(rent["startTime"])
+    refund_date = None
+    refund_amount = 0
+    
+    if rent["rentStatus"] == "canceled":
+        refund_date = payment_date + timedelta(days=1)
+        refund_amount = rent["totalCost"]
+    
+    dummy_payments.append({
+        "paymentId": i,
+        "rentId": rent["rentId"],
+        "amount": rent["totalCost"],
+        "status": "paid" if rent["rentStatus"] != "canceled" else "refunded",
+        "paymentMethod": random.choice(["credit_card", "cash"]),
+        "paymentDate": payment_date.isoformat(),
+        "refundAmount": refund_amount,
+        "refundDate": refund_date.isoformat() if refund_date else None,
+        "createdAt": base_date.isoformat(),
+        "updatedAt": base_date.isoformat(),
+    })
 
 dummy_vehicles_usage_history = [
     {
         "vehicleUsageId": i,
         "vehicleId": random.choice(dummy_vehicles)["vehicleId"],
         "rentId": random.choice(dummy_rent_history)["rentId"],
-        "usage_start": datetime.now().isoformat(),
-        "usage_end": datetime.now().isoformat(),
+        "startLocation": fake.address(),
+        "endLocation": fake.address(),
+        "startTime": datetime.now().isoformat(),
+        "endTime": datetime.now().isoformat(),
         "status": random.choice(["in-use", "completed"]),
+        "mileage": random.randint(1000, 5000),
     }
     for i in range(1)
 ]
@@ -250,8 +305,8 @@ dummy_module_usage_history = [
         "moduleUsageId": i,
         "moduleId": random.choice(dummy_modules)["moduleId"],
         "rentId": random.choice(dummy_rent_history)["rentId"],
-        "usage_start": datetime.now().isoformat(),
-        "usage_end": datetime.now().isoformat(),
+        "startTime": datetime.now().isoformat(),
+        "endTime": datetime.now().isoformat(),
         "status": random.choice(["in-use", "completed"]),
     }
     for i in range(1)
@@ -262,10 +317,10 @@ dummy_option_usage_history = [
         "optionUsageId": i,
         "optionId": random.choice(dummy_options)["optionId"],
         "rentId": random.choice(dummy_rent_history)["rentId"],
-        "quantity": random.randint(1, 3),
-        "usage_start": datetime.now().isoformat(),
-        "usage_end": datetime.now().isoformat(),
+        "startTime": datetime.now().isoformat(),
+        "endTime": datetime.now().isoformat(),
         "status": random.choice(["in-use", "completed"]),
+        "createdAt": datetime.now().isoformat(),
     }
     for i in range(1)
 ]
@@ -274,21 +329,153 @@ dummy_video_storage = [
     {
         "videoId": i,
         "rentId": random.choice(dummy_rent_history)["rentId"],
-        "videoType": random.choice(["module_installation", "autonomous_driving"]),
+        "videoType": random.choice(["automonous_driving", "module_usage"]),
         "videoUrl": fake.url(),
+        "duration": random.randint(1, 100),
+        "size": random.randint(1, 100),
         "recordedAt": datetime.now().isoformat(),
+        "createdAt": datetime.now().isoformat(),
     }
     for i in range(1)
 ]
 
+def validate_data(
+    dummy_users, 
+    dummy_admins,
+    dummy_vehicles,
+    dummy_modules,
+    dummy_options,
+    dummy_module_sets,
+    dummy_module_set_options,
+    dummy_vehicles_maintenance,
+    dummy_module_maintenance,
+    dummy_option_maintenance,
+    dummy_rent_history,
+    dummy_payments,
+    dummy_vehicles_usage_history,
+    dummy_module_usage_history,
+    dummy_option_usage_history,
+    dummy_video_storage
+):
+    errors = []
+
+    # 1) ID 리스트 추출 (참조 대상)
+    user_pk_list = [u["userPK"] for u in dummy_users]
+    admin_pk_list = [a["adminPK"] for a in dummy_admins]
+    vehicle_id_list = [v["vehicleId"] for v in dummy_vehicles]
+    module_id_list = [m["moduleId"] for m in dummy_modules]
+    option_id_list = [o["optionId"] for o in dummy_options]
+    module_set_id_list = [ms["moduleSetId"] for ms in dummy_module_sets]
+    rent_id_list = [r["rentId"] for r in dummy_rent_history]
+
+    # 시간 순서 검증
+    for rent in dummy_rent_history:
+        start_time = datetime.fromisoformat(rent["startTime"])
+        end_time = datetime.fromisoformat(rent["endTime"])
+        if start_time >= end_time:
+            errors.append(f"Invalid time order for rentId {rent['rentId']}")
+    
+    #  비용 계산 검증
+    for rent in dummy_rent_history:
+        calculated_total = rent["baseCost"] + rent["additionalCost"]
+        if calculated_total != rent["totalCost"]:
+            errors.append(f"Invalid cost calculation for rentId {rent['rentId']}")
+
+    # 모듈셋-옵션 매핑 검증
+    module_set_options_map = {}
+    for mso in dummy_module_set_options:
+        key = mso["moduleSetId"]
+        if key not in module_set_options_map:
+            module_set_options_map[key] = []
+        module_set_options_map[key].append(mso["optionId"])
+    
+    for module_set in module_set_data:
+        module_set_id = next(ms["moduleSetId"] for ms in dummy_module_sets 
+                           if ms["moduleSetName"] == module_set["moduleSetName"])
+        mapped_options = module_set_options_map.get(module_set_id, [])
+        
+        for option_name in module_set["defaultOptions"]:
+            option_id = next((opt["optionId"] for opt in dummy_options 
+                            if opt["optionType"] == option_name), None)
+            if option_id not in mapped_options:
+                errors.append(f"Missing option {option_name} for moduleSet {module_set['moduleSetName']}")
+
+    # 3) vehicles_maintenance 검증
+    #   - adminPK, vehicleId 유효성 체크
+    for idx, entry in enumerate(dummy_vehicles_maintenance):
+        if entry["adminPK"] not in admin_pk_list:
+            errors.append(f"[vehicles_maintenance][idx={idx}] 잘못된 adminPK: {entry['adminPK']}")
+        if entry["vehicleId"] not in vehicle_id_list:
+            errors.append(f"[vehicles_maintenance][idx={idx}] 잘못된 vehicleId: {entry['vehicleId']}")
+
+    # 4) module_maintenance 검증
+    #   - adminPK, moduleId 유효성 체크
+    for idx, entry in enumerate(dummy_module_maintenance):
+        if entry["adminPK"] not in admin_pk_list:
+            errors.append(f"[module_maintenance][idx={idx}] 잘못된 adminPK: {entry['adminPK']}")
+        if entry["moduleId"] not in module_id_list:
+            errors.append(f"[module_maintenance][idx={idx}] 잘못된 moduleId: {entry['moduleId']}")
+
+    # 5) option_maintenance 검증
+    #   - adminPK, optionId 유효성 체크
+    for idx, entry in enumerate(dummy_option_maintenance):
+        if entry["adminPK"] not in admin_pk_list:
+            errors.append(f"[option_maintenance][idx={idx}] 잘못된 adminPK: {entry['adminPK']}")
+        if entry["optionId"] not in option_id_list:
+            errors.append(f"[option_maintenance][idx={idx}] 잘못된 optionId: {entry['optionId']}")
+
+    # 6) rent_history 검증
+    #   - userPK가 존재하는지 등
+    for idx, entry in enumerate(dummy_rent_history):
+        if entry["userPK"] not in user_pk_list:
+            errors.append(f"[rent_history][idx={idx}] 잘못된 userPK: {entry['userPK']}")
+
+    # 7) payments 검증
+    #   - rentId가 실제 존재하는지
+    for idx, entry in enumerate(dummy_payments):
+        if entry["rentId"] not in rent_id_list:
+            errors.append(f"[payments][idx={idx}] 잘못된 rentId: {entry['rentId']}")
+
+    # 8) vehicles_usage_history 검증
+    #   - vehicleId, rentId가 실제 존재하는지
+    for idx, entry in enumerate(dummy_vehicles_usage_history):
+        if entry["vehicleId"] not in vehicle_id_list:
+            errors.append(f"[vehicles_usage_history][idx={idx}] 잘못된 vehicleId: {entry['vehicleId']}")
+        if entry["rentId"] not in rent_id_list:
+            errors.append(f"[vehicles_usage_history][idx={idx}] 잘못된 rentId: {entry['rentId']}")
+
+    # 9) module_usage_history 검증
+    #   - moduleId, rentId
+    for idx, entry in enumerate(dummy_module_usage_history):
+        if entry["moduleId"] not in module_id_list:
+            errors.append(f"[module_usage_history][idx={idx}] 잘못된 moduleId: {entry['moduleId']}")
+        if entry["rentId"] not in rent_id_list:
+            errors.append(f"[module_usage_history][idx={idx}] 잘못된 rentId: {entry['rentId']}")
+
+    # 10) option_usage_history 검증
+    #   - optionId, rentId
+    for idx, entry in enumerate(dummy_option_usage_history):
+        if entry["optionId"] not in option_id_list:
+            errors.append(f"[option_usage_history][idx={idx}] 잘못된 optionId: {entry['optionId']}")
+        if entry["rentId"] not in rent_id_list:
+            errors.append(f"[option_usage_history][idx={idx}] 잘못된 rentId: {entry['rentId']}")
+
+    # 11) video_storage 검증
+    #   - rentId
+    for idx, entry in enumerate(dummy_video_storage):
+        if entry["rentId"] not in rent_id_list:
+            errors.append(f"[video_storage][idx={idx}] 잘못된 rentId: {entry['rentId']}")
+
+    # 결과 리턴
+    return errors
 
 if __name__ == "__main__":
-    # print(dummy_users)
-    # print(dummy_vehicles)
-    # print(dummy_modules)
-    # print(dummy_options)
-    # print(dummy_module_sets)
-    # print(dummy_module_set_options)
+    print(dummy_users)
+    print(dummy_vehicles)
+    print(dummy_modules)
+    print(dummy_options)
+    print(dummy_module_sets)
+    print(dummy_module_set_options)
     print(dummy_vehicles_maintenance)
     print(dummy_module_maintenance)
     print(dummy_option_maintenance)
@@ -298,13 +485,36 @@ if __name__ == "__main__":
     print(dummy_option_usage_history)
     print(dummy_video_storage)
 
-invalid_entries = [entry for entry in dummy_module_set_options if entry["optionId"] == -1]
-if invalid_entries:
-    print("❌ 매칭되지 않은 옵션 ID 리스트:", invalid_entries)
-else:
-    print("✅ 모든 옵션이 정상적으로 매칭되었습니다.")
+    invalid_entries = [entry for entry in dummy_module_set_options if entry["optionId"] == -1]
+    if invalid_entries:
+        print("❌ 매칭되지 않은 옵션 ID 리스트:", invalid_entries)
+    else:
+        print("✅ 모든 옵션이 정상적으로 매칭되었습니다.")
 
-print("✅ 초기 데이터 생성 완료!")
-print("✔ dummy_options:", len(dummy_options), "개")
-print("✔ dummy_module_sets:", len(dummy_module_sets), "개")
-print("✔ dummy_module_set_options:", len(dummy_module_set_options), "개")
+    # 검증 로직 호출
+    errors = validate_data(
+        dummy_users, 
+        dummy_admins,
+        dummy_vehicles,
+        dummy_modules,
+        dummy_options,
+        dummy_module_sets,
+        dummy_module_set_options,
+        dummy_vehicles_maintenance,
+        dummy_module_maintenance,
+        dummy_option_maintenance,
+        dummy_rent_history,
+        dummy_payments,
+        dummy_vehicles_usage_history,
+        dummy_module_usage_history,
+        dummy_option_usage_history,
+        dummy_video_storage
+    )
+    if errors:
+        print("\n[데이터 검증 결과] 총", len(errors), "개의 오류가 발견되었습니다.")
+        for err in errors:
+            print(" -", err)
+    else:
+        print("\n[데이터 검증 결과] 모든 참조가 정상적입니다.")
+
+    print("✅ 초기 데이터 생성 및 검증 완료!")
