@@ -7,48 +7,48 @@ from app.utils.bcrypt import hash_password
 
 fake = Faker()
 
-option_data = [
-    {"optionName": "침대", "optionType": "default", "optionSize": "2x2", "displayFeatures": [], "description": "푹신한 침대입니다."},
-    {"optionName": "테이블", "optionType": "default", "optionSize": "2x2", "displayFeatures": [], "description": "넓은 테이블입니다."},
-    {"optionName": "의자", "optionType": "default", "optionSize": "0x0", "displayFeatures": [], "description": "편안한 의자입니다."},
-    {"optionName": "냉장고", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "음식을 보관할 수 있습니다."},
-    {"optionName": "배터리", "optionType": "extra", "optionSize": "0x0", "displayFeatures": ["배터리 잔여량"], "description": "전력을 공급합니다."},
-    {"optionName": "수납장", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "물건을 보관할 수 있습니다."},
-    {"optionName": "물탱크", "optionType": "extra", "optionSize": "0x0", "displayFeatures": ["물탱크 잔여량", "폐수량"], "description": "물을 저장합니다."},
-    {"optionName": "냉난방기", "optionType": "extra", "optionSize": "0x0", "displayFeatures": ["실내온도"], "description": "실내 온도를 조절합니다."},
-    {"optionName": "조명", "optionType": "default", "optionSize": "0x0", "displayFeatures": ["조명세기"], "description": "실내 조명을 제공합니다."},
-    {"optionName": "대형모니터", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "대형 화면을 제공합니다."},
-    {"optionName": "좌변기", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "좌변기 옵션입니다."},
-    {"optionName": "세면대", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "세면대 옵션입니다."},
-    {"optionName": "거울", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "거울 옵션입니다."},
-    {"optionName": "간이계단", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "간이계단 옵션입니다."},
-    {"optionName": "LPG", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "LPG 옵션입니다."},
-    {"optionName": "버너", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "버너 옵션입니다."},
-    {"optionName": "싱크대", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "싱크대 옵션입니다."},
-    {"optionName": "튀김기", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "튀김기 옵션입니다."},
-    {"optionName": "냄비", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "냄비 옵션입니다."},
-    {"optionName": "전자레인지", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "전자레인지 옵션입니다."},
-    {"optionName": "에어컨", "optionType": "extra", "optionSize": "1x1", "displayFeatures": ["실내온도"], "description": "에어컨 옵션입니다."},
-    {"optionName": "커피 머신", "optionType": "extra", "optionSize": "1x1", "displayFeatures": ["커피머신 잔량"], "description": "커피 머신 옵션입니다."},
-    {"optionName": "자판기", "optionType": "extra", "optionSize": "1x1", "displayFeatures": ["자판기 물품 재고량"], "description": "자판기 옵션입니다."},
-    {"optionName": "스크린 골프", "optionType": "extra", "optionSize": "2x2", "displayFeatures": [], "description": "스크린 골프 옵션입니다."},
-    {"optionName": "탁구", "optionType": "extra", "optionSize": "2x2", "displayFeatures": [], "description": "탁구 옵션입니다."},
-    {"optionName": "보드게임", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "보드게임 옵션입니다."},
-    {"optionName": "게임기", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "게임기 옵션입니다."},
-    {"optionName": "리클라이닝 의자", "optionType": "extra", "optionSize": "1x1", "displayFeatures": [], "description": "리클라이닝 의자 옵션입니다."},
-    {"optionName": "가스경보기", "optionType": "extra", "optionSize": "0x0", "displayFeatures": ["가스경보"], "description": "가스경보기 옵션입니다."},
+option_type_data = [
+    {"optionTypeName": "침대", "optionType": "default", "optionTypeSize": "2x2", "displayFeatures": [], "description": "푹신한 침대입니다."},
+    {"optionTypeName": "테이블", "optionType": "default", "optionTypeSize": "2x2", "displayFeatures": [], "description": "넓은 테이블입니다."},
+    {"optionTypeName": "의자", "optionType": "default", "optionTypeSize": "0x0", "displayFeatures": [], "description": "편안한 의자입니다."},
+    {"optionTypeName": "냉장고", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "음식을 보관할 수 있습니다."},
+    {"optionTypeName": "배터리", "optionType": "extra", "optionTypeSize": "0x0", "displayFeatures": ["배터리 잔여량"], "description": "전력을 공급합니다."},
+    {"optionTypeName": "수납장", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "물건을 보관할 수 있습니다."},
+    {"optionTypeName": "물탱크", "optionType": "extra", "optionTypeSize": "0x0", "displayFeatures": ["물탱크 잔여량", "폐수량"], "description": "물을 저장합니다."},
+    {"optionTypeName": "냉난방기", "optionType": "extra", "optionTypeSize": "0x0", "displayFeatures": ["실내온도"], "description": "실내 온도를 조절합니다."},
+    {"optionTypeName": "조명", "optionType": "default", "optionTypeSize": "0x0", "displayFeatures": ["조명세기"], "description": "실내 조명을 제공합니다."},
+    {"optionTypeName": "대형모니터", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "대형 화면을 제공합니다."},
+    {"optionTypeName": "좌변기", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "좌변기 옵션입니다."},
+    {"optionTypeName": "세면대", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "세면대 옵션입니다."},
+    {"optionTypeName": "거울", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "거울 옵션입니다."},
+    {"optionTypeName": "간이계단", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "간이계단 옵션입니다."},
+    {"optionTypeName": "LPG", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "LPG 옵션입니다."},
+    {"optionTypeName": "버너", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "버너 옵션입니다."},
+    {"optionTypeName": "싱크대", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "싱크대 옵션입니다."},
+    {"optionTypeName": "튀김기", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "튀김기 옵션입니다."},
+    {"optionTypeName": "냄비", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "냄비 옵션입니다."},
+    {"optionTypeName": "전자레인지", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "전자레인지 옵션입니다."},
+    {"optionTypeName": "에어컨", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": ["실내온도"], "description": "에어컨 옵션입니다."},
+    {"optionTypeName": "커피 머신", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": ["커피머신 잔량"], "description": "커피 머신 옵션입니다."},
+    {"optionTypeName": "자판기", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": ["자판기 물품 재고량"], "description": "자판기 옵션입니다."},
+    {"optionTypeName": "스크린 골프", "optionType": "extra", "optionTypeSize": "2x2", "displayFeatures": [], "description": "스크린 골프 옵션입니다."},
+    {"optionTypeName": "탁구", "optionType": "extra", "optionTypeSize": "2x2", "displayFeatures": [], "description": "탁구 옵션입니다."},
+    {"optionTypeName": "보드게임", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "보드게임 옵션입니다."},
+    {"optionTypeName": "게임기", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "게임기 옵션입니다."},
+    {"optionTypeName": "리클라이닝 의자", "optionType": "extra", "optionTypeSize": "1x1", "displayFeatures": [], "description": "리클라이닝 의자 옵션입니다."},
+    {"optionTypeName": "가스경보기", "optionType": "extra", "optionTypeSize": "0x0", "displayFeatures": ["가스경보"], "description": "가스경보기 옵션입니다."},
 ]
 
 module_set_data = [
-    {"moduleSetName": "기본본 모듈", "defaultOptions": ["조명"], "displayFeatures": []},
-    {"moduleSetName": "캠핑 모듈", "defaultOptions": ["침대", "테이블", "의자", "냉장고", "배터리", "수납장", "물탱크", "냉난방기", "조명"], "displayFeatures": []},
-    {"moduleSetName": "오피스 모듈", "defaultOptions": ["테이블", "의자", "대형모니터", "배터리", "냉장고"], "displayFeatures": ["실내온도", "조명세기", "배터리 잔량"]},
-    {"moduleSetName": "화장실 모듈", "defaultOptions": ["좌변기", "세면대", "거울", "간이계단"], "displayFeatures": ["물탱크", "조명세기", "오물처리"]},
-    {"moduleSetName": "푸드트럭 모듈", "defaultOptions": ["LPG", "버너", "싱크대", "튀김기", "냄비", "냉장고", "전자레인지", "의자", "에어컨", "가스경보기"], "displayFeatures": ["LPG 양", "물탱크 양", "배터리 잔량", "조명세기", "가스경보기", "가스 ON/OFF 여부"]},
-    {"moduleSetName": "카페 모듈", "defaultOptions": ["테이블", "의자", "커피 머신", "자판기", "냉난방기", "싱크대"], "displayFeatures": ["물탱크 양", "커피머신 잔량", "자판기 물품 재고량", "실내온도"]},
-    {"moduleSetName": "스포츠 모듈", "defaultOptions": ["스크린 골프", "탁구", "보드게임"], "displayFeatures": ["실내온도", "조명세기"]},
-    {"moduleSetName": "게임 모듈", "defaultOptions": ["대형모니터", "테이블", "배터리", "게임기", "냉난방기"], "displayFeatures": ["실내온도", "조명세기", "배터리"]},
-    {"moduleSetName": "영화관 모듈", "defaultOptions": ["대형모니터", "리클라이닝 의자", "테이블", "냉난방기", "배터리"], "displayFeatures": ["실내온도", "조명세기", "배터리"]},
+    {"moduleSetName": "기본본 모듈", "defaultOptionTypes": ["조명"], "displayFeatures": []},
+    {"moduleSetName": "캠핑 모듈", "defaultOptionTypes": ["침대", "테이블", "의자", "냉장고", "배터리", "수납장", "물탱크", "냉난방기", "조명"], "displayFeatures": []},
+    {"moduleSetName": "오피스 모듈", "defaultOptionTypes": ["테이블", "의자", "대형모니터", "배터리", "냉장고"], "displayFeatures": ["실내온도", "조명세기", "배터리 잔량"]},
+    {"moduleSetName": "화장실 모듈", "defaultOptionTypes": ["좌변기", "세면대", "거울", "간이계단"], "displayFeatures": ["물탱크", "조명세기", "오물처리"]},
+    {"moduleSetName": "푸드트럭 모듈", "defaultOptionTypes": ["LPG", "버너", "싱크대", "튀김기", "냄비", "냉장고", "전자레인지", "의자", "에어컨", "가스경보기"], "displayFeatures": ["LPG 양", "물탱크 양", "배터리 잔량", "조명세기", "가스경보기", "가스 ON/OFF 여부"]},
+    {"moduleSetName": "카페 모듈", "defaultOptionTypes": ["테이블", "의자", "커피 머신", "자판기", "냉난방기", "싱크대"], "displayFeatures": ["물탱크 양", "커피머신 잔량", "자판기 물품 재고량", "실내온도"]},
+    {"moduleSetName": "스포츠 모듈", "defaultOptionTypes": ["스크린 골프", "탁구", "보드게임"], "displayFeatures": ["실내온도", "조명세기"]},
+    {"moduleSetName": "게임 모듈", "defaultOptionTypes": ["대형모니터", "테이블", "배터리", "게임기", "냉난방기"], "displayFeatures": ["실내온도", "조명세기", "배터리"]},
+    {"moduleSetName": "영화관 모듈", "defaultOptionTypes": ["대형모니터", "리클라이닝 의자", "테이블", "냉난방기", "배터리"], "displayFeatures": ["실내온도", "조명세기", "배터리"]},
 ]
 
 
@@ -145,16 +145,16 @@ dummy_modules = [
 dummy_option_types = [
     {
         "optionTypeId": i,
-        "optionName": option["optionName"],
-        "optionSize": option["optionSize"],
-        "optionCost": round(random.uniform(10.0, 100.0), 2),
+        "optionTypeName": option["optionTypeName"],
+        "optionTypeSize": option["optionTypeSize"],
+        "optionTypeCost": round(random.uniform(10.0, 100.0), 2),
         "description": option["description"],
-        "optionImages": fake.image_url(),
-        "optionFeatures": ", ".join(option["displayFeatures"]),
+        "optionTypeImages": fake.image_url(),
+        "optionTypeFeatures": ", ".join(option["displayFeatures"]),
         "createdAt": base_date.isoformat(),
         "updatedAt": base_date.isoformat(),
     }
-    for i, option in enumerate(option_data)
+    for i, option in enumerate(option_type_data)
 ]
 
 dummy_options = [
@@ -165,7 +165,7 @@ dummy_options = [
         "createdAt": base_date.isoformat(),
         "updatedAt": base_date.isoformat(),
     }
-    for i, option in enumerate(option_data)
+    for i, option in enumerate(option_type_data)
 ]
 
 dummy_module_sets = [
@@ -182,20 +182,20 @@ dummy_module_sets = [
     for i, module_set in enumerate(module_set_data)
 ]
 
-dummy_module_set_options = []
+dummy_module_set_option_types = []
 for module_set in module_set_data:
     module_set_id = next(ms["moduleSetId"] for ms in dummy_module_sets 
                         if ms["moduleSetName"] == module_set["moduleSetName"])
     
-    for option_name in module_set["defaultOptions"]:
+    for option_name in module_set["defaultOptionTypes"]:
         option_type_id = next((opt_type["optionTypeId"] for opt_type in dummy_option_types 
-                               if opt_type["optionName"] == option_name), None)
+                               if opt_type["optionTypeName"] == option_name), None)
         
         option_id = next((opt["optionId"] for opt in dummy_options 
                           if opt["optionType"] == option_type_id), None)
         
         if option_id is not None:
-            dummy_module_set_options.append({
+            dummy_module_set_option_types.append({
                 "moduleSetId": module_set_id,
                 "optionId": option_id,
                 "quantity": 1,
@@ -349,7 +349,7 @@ def validate_data(
     dummy_modules,
     dummy_options,
     dummy_module_sets,
-    dummy_module_set_options,
+    dummy_module_set_option_types,
     dummy_vehicles_maintenance,
     dummy_module_maintenance,
     dummy_option_maintenance,
@@ -386,7 +386,7 @@ def validate_data(
 
     # 모듈 세트-옵션 매핑 검증
     module_set_options_map = {}
-    for mso in dummy_module_set_options:
+    for mso in dummy_module_set_option_types:
         key = mso["moduleSetId"]
         if key not in module_set_options_map:
             module_set_options_map[key] = []
@@ -405,11 +405,11 @@ def validate_data(
 
         mapped_options = module_set_options_map.get(module_set_id, [])
 
-        for option_name in module_set["defaultOptions"]:
+        for option_name in module_set["defaultOptionTypes"]:
             # 올바른 optionId 찾기 (option_type.optionTypeId를 참조)
             option_id = next(
                 (opt["optionId"] for opt in dummy_options 
-                if dummy_option_types[opt["optionType"]]["optionName"] == option_name),
+                if dummy_option_types[opt["optionType"]]["optionTypeName"] == option_name),
                 None
             )
 
@@ -495,7 +495,7 @@ if __name__ == "__main__":
     # print(dummy_options)
     # print(dummy_option_types)
     # print(dummy_module_sets)
-    # print(dummy_module_set_options)
+    # print(dummy_module_set_option_types)
     # print(dummy_vehicles_maintenance)
     # print(dummy_module_maintenance)
     # print(dummy_option_maintenance)
@@ -505,7 +505,7 @@ if __name__ == "__main__":
     # print(dummy_option_usage_history)
     # print(dummy_video_storage)
 
-    invalid_entries = [entry for entry in dummy_module_set_options if entry["optionId"] == -1]
+    invalid_entries = [entry for entry in dummy_module_set_option_types if entry["optionId"] == -1]
     if invalid_entries:
         print("❌ 매칭되지 않은 옵션 ID 리스트:", invalid_entries)
     else:
@@ -519,7 +519,7 @@ if __name__ == "__main__":
         dummy_modules,
         dummy_options,
         dummy_module_sets,
-        dummy_module_set_options,
+        dummy_module_set_option_types,
         dummy_vehicles_maintenance,
         dummy_module_maintenance,
         dummy_option_maintenance,
