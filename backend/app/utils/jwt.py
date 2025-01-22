@@ -9,7 +9,7 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "default_secret_key")  # JWT 서명용 
 ROLE_ENCRYPTION_KEY = os.getenv("ROLE_ENCRYPTION_KEY", Fernet.generate_key().decode())  # 역할 암호화 키
 
 HASH_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_SECONDS = 43200  # 12시간
+ACCESS_TOKEN_EXPIRE_SECONDS = 3600  # 1시간
 REFRESH_TOKEN_EXPIRE_DAYS = 7  # 리프레시 토큰 만료 시간 (7일)
 
 # 대칭키 암호화 도구 초기화
