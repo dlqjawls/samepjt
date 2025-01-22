@@ -191,13 +191,10 @@ for module_set in module_set_data:
         option_type_id = next((opt_type["optionTypeId"] for opt_type in dummy_option_types 
                                if opt_type["optionTypeName"] == option_name), None)
         
-        option_id = next((opt["optionId"] for opt in dummy_options 
-                          if opt["optionType"] == option_type_id), None)
-        
-        if option_id is not None:
+        if option_type_id is not None:
             dummy_module_set_option_types.append({
                 "moduleSetId": module_set_id,
-                "optionId": option_id,
+                "optionTypeId": option_type_id,
                 "quantity": 1,
             })
 
@@ -390,7 +387,7 @@ def validate_data(
         key = mso["moduleSetId"]
         if key not in module_set_options_map:
             module_set_options_map[key] = []
-        module_set_options_map[key].append(mso["optionId"])
+        module_set_options_map[key].append(mso["optionTypeId"])
 
     for module_set in module_set_data:
         # 모듈 세트 ID 찾기
@@ -505,7 +502,7 @@ if __name__ == "__main__":
     # print(dummy_option_usage_history)
     # print(dummy_video_storage)
 
-    invalid_entries = [entry for entry in dummy_module_set_option_types if entry["optionId"] == -1]
+    invalid_entries = [entry for entry in dummy_module_set_option_types if entry["optionTypeId"] == -1]
     if invalid_entries:
         print("❌ 매칭되지 않은 옵션 ID 리스트:", invalid_entries)
     else:
@@ -538,3 +535,59 @@ if __name__ == "__main__":
         print("\n[데이터 검증 결과] 모든 참조가 정상적입니다.")
 
     print("✅ 초기 데이터 생성 및 검증 완료!")
+
+
+    # 데이터 검증을 위한 함수
+def validate_option_relationships(dummy_option_types, dummy_options, dummy_module_set_option_types, dummy_module_sets):
+    errors = []
+
+    # 1) 옵션 타입 ID 리스트
+    option_type_id_list = {opt["optionTypeId"] for opt in dummy_option_types}
+
+    # 2) 옵션 ID 리스트 (옵션 타입과 연결된 옵션)
+    option_id_list = {opt["optionId"]: opt["optionType"] for opt in dummy_options}
+
+    # 3) 모듈 세트 - 옵션 타입 관계 검증
+    for entry in dummy_module_set_option_types:
+        module_set_id = entry["moduleSetId"]
+        option_type_id = entry["optionTypeId"]
+
+        if option_type_id not in option_type_id_list:
+            errors.append(f"❌ [module_set_option_types] moduleSetId {module_set_id}에 속한 optionTypeId {option_type_id}가 존재하지 않음.")
+
+    # 4) 옵션 - 옵션 타입 관계 검증
+    for option_id, option_type_id in option_id_list.items():
+        if option_type_id not in option_type_id_list:
+            errors.append(f"❌ [options] optionId {option_id}에 연결된 optionTypeId {option_type_id}가 존재하지 않음.")
+
+    # 5) 모듈 세트 - 옵션 매핑이 정확한지 확인
+    module_set_option_map = {}
+    for entry in dummy_module_set_option_types:
+        module_set_id = entry["moduleSetId"]
+        option_type_id = entry["optionTypeId"]
+
+        if module_set_id not in module_set_option_map:
+            module_set_option_map[module_set_id] = set()
+        module_set_option_map[module_set_id].add(option_type_id)
+
+    for module_set in dummy_module_sets:
+        module_set_id = module_set["moduleSetId"]
+        expected_options = {opt["optionTypeId"] for opt in dummy_module_set_option_types if opt["moduleSetId"] == module_set_id}
+        
+        if module_set_id in module_set_option_map:
+            actual_options = module_set_option_map[module_set_id]
+            if expected_options != actual_options:
+                errors.append(f"⚠️ [module_sets] moduleSetId {module_set_id}의 옵션 타입이 예상과 다름. (expected={expected_options}, actual={actual_options})")
+
+    return errors
+
+# 검증 실행
+errors = validate_option_relationships(dummy_option_types, dummy_options, dummy_module_set_option_types, dummy_module_sets)
+
+# 결과 출력
+if errors:
+    print("\n[데이터 검증 결과] 총", len(errors), "개의 오류가 발견되었습니다.")
+    for err in errors:
+        print(" -", err)
+else:
+    print("\n[데이터 검증 결과] 옵션, 옵션 타입, 모듈 세트 옵션 타입 관계가 정상적입니다. ✅")
