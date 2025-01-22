@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./ModuleSetList.css";
-
+import { useNavigate } from "react-router-dom";
 function ModuleSetList() {
   // 상태 관리
   const [moduleSets, setModuleSets] = useState([]);
@@ -70,21 +70,8 @@ function ModuleSetList() {
     }
   };
 
-  const handleNextImage = () => {
-    if (selectedModule) {
-      setCurrentImageIndex((prev) => 
-        prev === selectedModule.imgsUrls.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
+  
 
-  const handlePrevImage = () => {
-    if (selectedModule) {
-      setCurrentImageIndex((prev) => 
-        prev === 0 ? selectedModule.imgsUrls.length - 1 : prev - 1
-      );
-    }
-  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
@@ -96,12 +83,14 @@ function ModuleSetList() {
     setPageSize(Number(e.target.value));
     setCurrentPage(1);
   };
-
+  const navigator=useNavigate();
   const handleNextStep = (moduleSet) => {
     // 여기에 다음 단계로 이동하는 로직을 구현하세요
     console.log(selectedModule.suppliedOptions);
-    setShowModal(false);
+    navigator("/exist_option",{state: {selectedModule:selectedModule.suppliedOptions}});
+    // setShowModal(false);
   };
+  const prepage=()=>{ navigator("/")}
 
   return (
     <div className="module-list-container">
@@ -232,7 +221,9 @@ function ModuleSetList() {
           </div>
         </div>
       )}
+  <button onClick={prepage}>이전페이지로</button>
     </div>
+
   );
 }
 
