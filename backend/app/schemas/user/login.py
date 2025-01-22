@@ -12,5 +12,6 @@ class UserLoginResponse(BaseModel):
     """로그인 응답 모델"""
     resultCode: str = Field(..., example="SUCCESS")
     message: str = Field(..., example="Login successful")
-    token: Optional[str] = Field(None, example="eyJhbGciOi...")
+    accessToken: str = Field(..., example="eyJhbGciOiJ...")
+    refreshToken: str = Field(..., example="eyJhbGciOiJ...")
     errors: Optional[List[str]] = Field(None, example=["Incorrect password"])

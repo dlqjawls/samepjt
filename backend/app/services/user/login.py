@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from app.schemas.user.login import UserLoginRequest, UserLoginResponse
 from app.dummy_data import dummy_users
 from app.utils.bcrypt import verify_password
-from app.utils.jwt import create_jwt_token
+from app.utils.jwt import create_access_token, create_refresh_token
 
 
 class UserLoginService:
@@ -36,11 +36,13 @@ class UserLoginService:
             )
 
         # JWT 토큰 생성
-        token = create_jwt_token(user.userId, role="user")
+        access_token = create_access_token(matched_user["userPK"])
+        refresh_token = create_refresh_token(matched_user["userPK"])
 
         return UserLoginResponse(
             resultCode="SUCCESS",
             message="Login successful",
-            token=token,
+            accessToken=access_token,
+            refreshToken=refresh_token,
             errors=[] 
         )
