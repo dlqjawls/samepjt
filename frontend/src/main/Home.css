@@ -1,0 +1,16 @@
+.image-container {
+  position: relative;
+  width: 100vw; /* 뷰포트 너비 전체 */
+  height: 100vh; /* 뷰포트 높이 전체 */
+  overflow: hidden; /* 이미지를 넘어서지 않도록 처리 */
+}
+
+/* 이미지가 부모를 가득 채움 */
+.full-screen-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* 가로를 부모에 맞춤 */
+  height: 100%; /* 세로를 부모에 맞춤 */
+  object-fit: cover; /* 이미지의 비율을 유지하며 화면을 꽉 채움 */
+}

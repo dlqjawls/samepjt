@@ -1,0 +1,51 @@
+.navbar {
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 2px solid #000;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+  color: #000;
+  gap: 10px;
+}
+
+.navbar-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.navbar-login .login-button {
+  background-color: #1e90ff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-login .login-button:hover {
+  background-color: #187bcd;
+}
+
+.hide-button {
+  all: unset;
+  cursor: pointer;
+}

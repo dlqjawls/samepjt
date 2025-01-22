@@ -84,7 +84,7 @@
 }
 
 /* Modal styles */
-.modal-overlay {
+.card-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -97,7 +97,7 @@
   z-index: 1000;
 }
 
-.modal-content {
+.card-modal-content {
   background: white;
   border-radius: 8px;
   width: 90%;
