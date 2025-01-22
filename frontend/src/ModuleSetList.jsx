@@ -1,36 +1,38 @@
-// src/components/ModuleSetList.jsx
-import React, { useEffect, useState } from "react"
-import axios from "axios"
-import "./ModuleSetList.css" // 스타일링을 위한 CSS 파일 (선택 사항)
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./ModuleSetList.css";
 
 function ModuleSetList() {
   // 상태 관리
-  const [moduleSets, setModuleSets] = useState([])
+  const [moduleSets, setModuleSets] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
     pageSize: 10,
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // 모달 관련 상태
+  const [selectedModule, setSelectedModule] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // 페이지 상태
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  // API 엔드포인트 (환경 변수 사용 권장)
-  const API_URL = `https://backend-wandering-river-6835.fly.dev/user/module-set/list`
+  // API 엔드포인트
+  const API_URL = `https://backend-wandering-river-6835.fly.dev/user/module-sets`;
 
   useEffect(() => {
-    fetchModuleSets(currentPage, pageSize)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize])
+    fetchModuleSets(currentPage, pageSize);
+  }, [currentPage, pageSize]);
 
-  // 데이터 fetching 함수
   const fetchModuleSets = async (page, size) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await axios.get(API_URL, {
@@ -38,103 +40,128 @@ function ModuleSetList() {
           page: page,
           pageSize: size,
         },
-      })
+      });
 
       if (response.data.resultCode === "SUCCESS") {
-        setModuleSets(response.data.data.moduleSets)
-        setPagination(response.data.data.pagination)
+        setModuleSets(response.data.data.moduleSets);
+        setPagination(response.data.data.pagination);
       } else {
-        setError(response.data.message)
-        setModuleSets([])
+        setError(response.data.message);
+        setModuleSets([]);
         setPagination({
           currentPage: 1,
           totalPages: 1,
           totalItems: 0,
           pageSize: size,
-        })
+        });
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again later.")
-      setModuleSets([])
+      setError("An unexpected error occurred. Please try again later.");
+      setModuleSets([]);
       setPagination({
         currentPage: 1,
         totalPages: 1,
         totalItems: 0,
         pageSize: size,
-      })
-      console.error(err)
+      });
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // 페이지 변경 핸들러
+  const handleNextImage = () => {
+    if (selectedModule) {
+      setCurrentImageIndex((prev) => 
+        prev === selectedModule.imgsUrls.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (selectedModule) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? selectedModule.imgsUrls.length - 1 : prev - 1
+      );
+    }
+  };
+
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setCurrentPage(newPage)
+      setCurrentPage(newPage);
     }
-  }
+  };
 
-  // 페이지 크기 변경 핸들러
   const handlePageSizeChange = (e) => {
-    setPageSize(Number(e.target.value))
-    setCurrentPage(1) // 페이지 크기 변경 시 페이지 번호를 1로 초기화
-  }
+    setPageSize(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
+  const handleNextStep = (moduleSet) => {
+    // 여기에 다음 단계로 이동하는 로직을 구현하세요
+    console.log(selectedModule.suppliedOptions);
+    setShowModal(false);
+  };
 
   return (
-    <div className="module-set-list">
+    <div className="module-list-container">
       <h2>모듈 세트 목록</h2>
 
-      {/* 로딩 상태 */}
       {loading && <div className="loading">Loading...</div>}
 
-      {/* 에러 메시지 */}
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="error">{error}</div>}
 
-      {/* 모듈 세트 목록 */}
       {!loading && !error && (
         <>
-          <div className="module-sets">
-            {moduleSets.length > 0 ? (
-              moduleSets.map((moduleSet) => (
-                <div key={moduleSet.moduleSetId} className="module-set">
-                  <h3>{moduleSet.moduleSetName}</h3>
+          <div className="module-grid">
+            {moduleSets.map((moduleSet) => (
+              <div
+                key={moduleSet.moduleSetId}
+                className="module-card"
+                onClick={() => {
+                  setSelectedModule(moduleSet);
+                  setCurrentImageIndex(0);
+                  setShowModal(true);
+                }}
+              >
+                <div className="module-card-image">
                   <img
-                    src={moduleSet.imgsUrls[0]} // 첫 번째 이미지 사용
+                    src={moduleSet.imgsUrls[0]}
                     alt={moduleSet.moduleSetName}
-                    className="module-set-image"
                   />
-                  <p>{moduleSet.description}</p>
-                  <p>총 비용: ${moduleSet.totalCost}</p>
-                  <h4>포함된 옵션:</h4>
-                  <ul>
-                    {moduleSet.suppliedOptions.map((option) => (
-                      <li key={option.optionId}>
-                        {option.optionName} (수량: {option.quantity})
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              ))
-            ) : (
-              <div>No module sets available.</div>
-            )}
+                <div className="module-card-content">
+                  <h3>{moduleSet.moduleSetName}</h3>
+                  <p>{moduleSet.description}</p>
+                  <p className="price">총 비용: ${moduleSet.totalCost}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* 페이지네이션 컨트롤 */}
           <div className="pagination">
-            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="pagination-button"
+            >
               이전
             </button>
-            <span>
+            <span className="page-info">
               {pagination.currentPage} / {pagination.totalPages}
             </span>
-            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === pagination.totalPages}>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === pagination.totalPages}
+              className="pagination-button"
+            >
               다음
             </button>
-
-            {/* 페이지 크기 선택 */}
-            <select value={pageSize} onChange={handlePageSizeChange}>
+            <select
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className="page-size-select"
+            >
               <option value={5}>5개씩</option>
               <option value={10}>10개씩</option>
               <option value={20}>20개씩</option>
@@ -142,8 +169,71 @@ function ModuleSetList() {
           </div>
         </>
       )}
+
+      {showModal && selectedModule && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{selectedModule.moduleSetName}</h2>
+              <button 
+                className="close-button"
+                onClick={() => setShowModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="modal-image-container">
+                <img
+                  src={selectedModule.imgsUrls[currentImageIndex]}
+                  alt={`${selectedModule.moduleSetName} - 이미지 ${currentImageIndex + 1}`}
+                />
+               
+              </div>
+
+              <div className="modal-details">
+                <div className="description">
+                  <h4>상세 설명</h4>
+                  <p>{selectedModule.description}</p>
+                </div>
+
+                <div className="options">
+                  <h4>포함된 옵션</h4>
+                  <ul>
+                    {selectedModule.suppliedOptions.map((option) => (
+                      <li key={option.optionId}>
+                        {option.optionName} (수량: {option.quantity})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="total-cost">
+                  <p>총 비용: ${selectedModule.totalCost}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button 
+                onClick={() => setShowModal(false)}
+                className="cancel-button"
+              >
+                닫기
+              </button>
+              <button 
+                onClick={() => handleNextStep(selectedModule)}
+                className="next-button"
+              >
+                다음 단계 →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default ModuleSetList
+export default ModuleSetList;
