@@ -3,10 +3,10 @@ from typing import List, Optional
 from app.schemas.pagination import Pagination
 
 
-class SuppliedOption(BaseModel):
-    """모듈 세트에 포함된 옵션 정보"""
-    optionId: int = Field(..., example=101)
-    optionName: str = Field(..., example="배터리 팩")
+class moduleSetOptionType(BaseModel):
+    """모듈 세트에 포함된 옵션 타입 정보"""
+    optionTypeId: int = Field(..., example=1)
+    optionTypeName: str = Field(..., example="배터리 팩")
     quantity: int = Field(..., example=2)
 
 
@@ -15,11 +15,11 @@ class ModuleSet(BaseModel):
     moduleSetId: int = Field(..., example=1)
     moduleSetName: str = Field(..., example="캠핑카 모듈 세트")
     description: str = Field(..., example="캠핑에 최적화된 모듈 세트입니다.")
-    totalCost: float = Field(..., example=2500.0)
+    basePrice: float = Field(..., example=2500.0)
     imgsUrls: List[str] = Field(..., example=["https://example.com/module1.jpg"])
-    suppliedOptions: List[SuppliedOption] = Field(..., example=[
-        {"optionId": 101, "optionName": "배터리 팩", "quantity": 2},
-        {"optionId": 102, "optionName": "냉장고", "quantity": 1}
+    moduleSetOptionTypes: List[moduleSetOptionType] = Field(..., example=[
+        {"optionTypeId": 101, "optionTypeName": "배터리 팩", "quantity": 2},
+        {"optionTypeId": 102, "optionTypeName": "냉장고", "quantity": 1}
     ])
 
 class ModuleSetData(BaseModel):

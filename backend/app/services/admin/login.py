@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from app.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
 from app.dummy_data import dummy_admins
 from app.utils.bcrypt import verify_password
-from app.utils.jwt import create_jwt_token
+from app.utils.jwt import create_access_token, create_refresh_token
 
 
 class AdminLoginService:
@@ -36,11 +36,13 @@ class AdminLoginService:
             )
 
         # JWT 토큰 생성
-        token = create_jwt_token(admin.adminId, role=str(matched_user["role"]))
+        access_token = create_access_token(matched_user["adminPK"], role=str(matched_user["role"]))
+        refresh_token = create_refresh_token(matched_user["adminPK"])
 
         return AdminLoginResponse(
             resultCode="SUCCESS",
             message="Login successful",
-            token=token,
+            accessToken=access_token,
+            refreshToken=refresh_token,
             errors=[]
         )

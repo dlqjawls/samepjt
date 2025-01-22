@@ -7,8 +7,8 @@ router = APIRouter()
 @router.post(
     "/login",
     response_model=AdminLoginResponse,
-    summary="로그인",
-    description="관리자 로그인 후 JWT 토큰을 반환합니다.",
+    summary="관리자 로그인",
+    description="관리자 로그인 후 **JWT Access Token** 및 **Refresh Token**을 반환합니다.",
     responses={
         200: {
             "description": "로그인 성공",
@@ -17,21 +17,23 @@ router = APIRouter()
                     "example": {
                         "resultCode": "SUCCESS",
                         "message": "Login successful",
-                        "token": "eyJhbGciOi..."
+                        "accessToken": "eyJhbGciOi...",
+                        "refreshToken": "eyJhbGciOi...",
+                        "errors": []
                     }
                 }
             }
         },
         401: {
-            "description": "로그인 실패 - 잘못된 ID 또는 비밀번호",
+            "description": "로그인 실패 - 잘못된 관리자 ID 또는 비밀번호",
             "content": {
                 "application/json": {
                     "example": {
                         "resultCode": "FAILURE",
                         "message": "Login failed",
                         "errors": [
-                            {"field": "userId", "message": "User ID does not exist"},
-                            {"field": "userPassword", "message": "Incorrect password"}
+                            {"field": "adminId", "message": "Admin ID does not exist"},
+                            {"field": "adminPassword", "message": "Incorrect password"}
                         ]
                     }
                 }
@@ -44,9 +46,14 @@ router = APIRouter()
                     "example": {
                         "detail": [
                             {
-                                "loc": ["body", "userId"],
+                                "loc": ["body", "adminId"],
                                 "msg": "field required",
                                 "type": "value_error.missing"
+                            },
+                            {
+                                "loc": ["body", "adminPassword"],
+                                "msg": "ensure this value has at least 6 characters",
+                                "type": "value_error.any_str.min_length",
                             }
                         ]
                     }
@@ -55,5 +62,5 @@ router = APIRouter()
         },
     },
 )
-def login_user(user: AdminLoginRequest):
-    return AdminLoginService.login_admin(user)
+def login_admin(admin: AdminLoginRequest):
+    return AdminLoginService.login_admin(admin)

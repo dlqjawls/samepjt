@@ -26,17 +26,17 @@ router = APIRouter()
                                     "moduleSetId": 1,
                                     "moduleSetName": "캠핑카 모듈 세트",
                                     "description": "캠핑에 최적화된 모듈 세트입니다.",
-                                    "totalCost": 2500.0,
+                                    "basePrice": 2500.0,
                                     "imgsUrls": ["https://example.com/module1.jpg"],
-                                    "suppliedOptions": [
+                                    "moduleSetOptionTypes": [
                                         {
-                                            "optionId": 101,
-                                            "optionName": "배터리 팩",
+                                            "optionTypeId": 101,
+                                            "optionTypeName": "배터리 팩",
                                             "quantity": 2
                                         },
                                         {
-                                            "optionId": 102,
-                                            "optionName": "냉장고",
+                                            "optionTypeId": 102,
+                                            "optionTypeName": "냉장고",
                                             "quantity": 1
                                         }
                                     ]

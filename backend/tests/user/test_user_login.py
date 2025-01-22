@@ -1,8 +1,9 @@
 import pytest
 
-def test_login_success(client):
+
+def test_user_login_success(client):
     """
-    (Success) 정상적인 로그인 테스트
+    (Success) 정상적인 사용자 로그인 테스트
 
     Given: 회원가입이 완료된 사용자가 있을 때
     When: 올바른 userId와 userPassword로 로그인 요청을 보내면
@@ -29,10 +30,11 @@ def test_login_success(client):
     assert response.status_code == 200
     assert json_response["resultCode"] == "SUCCESS"
     assert json_response["message"] == "Login successful"
-    assert "token" in json_response  # JWT 토큰이 반환되어야 함
+    assert "accessToken" in json_response  # JWT 액세스 토큰이 반환되어야 함
+    assert "refreshToken" in json_response  # 리프레시 토큰도 포함
 
 
-def test_login_invalid_user(client):
+def test_user_login_invalid_user(client):
     """
     (Fail) 존재하지 않는 사용자 로그인 시 실패
 
@@ -49,11 +51,10 @@ def test_login_invalid_user(client):
 
     assert response.status_code == 401
     assert json_response["detail"]["resultCode"] == "FAILURE"
-    assert any(error["field"] == "userId" and error["message"] == "User ID does not exist"
-               for error in json_response["detail"]["errors"])
+    assert {"field": "userId", "message": "User ID does not exist"} in json_response["detail"]["errors"]
 
 
-def test_login_wrong_password(client):
+def test_user_login_wrong_password(client):
     """
     (Fail) 올바른 userId지만 잘못된 비밀번호 입력 시 실패
 
@@ -81,11 +82,10 @@ def test_login_wrong_password(client):
 
     assert response.status_code == 401
     assert json_response["detail"]["resultCode"] == "FAILURE"
-    assert any(error["field"] == "userPassword" and error["message"] == "Incorrect password"
-               for error in json_response["detail"]["errors"])
+    assert {"field": "userPassword", "message": "Incorrect password"} in json_response["detail"]["errors"]
 
 
-def test_login_empty_fields(client):
+def test_user_login_empty_fields(client):
     """
     (Fail) userId 또는 userPassword가 비어있을 때 로그인 실패
 
@@ -94,13 +94,14 @@ def test_login_empty_fields(client):
     Then: 응답 상태 코드 422와 FastAPI의 유효성 검사 오류가 발생해야 한다.
     """
     response = client.post("/user/login", json={
-        "userId": "", # 빈 값
+        "userId": "",  # 빈 값
         "userPassword": "password123"
     })
 
     assert response.status_code == 422  # FastAPI의 데이터 검증 오류
 
-def test_login_invalid_json_format(client):
+
+def test_user_login_invalid_json_format(client):
     """
     (Fail) 잘못된 JSON 형식으로 로그인 요청 시 실패
 

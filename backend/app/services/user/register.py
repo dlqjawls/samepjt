@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from app.schemas.user.register import UserRegisterRequest, UserRegisterResponse
 from app.dummy_data import dummy_users
 from app.utils.bcrypt import hash_password
+from datetime import datetime
 
 
 class UserRegisterService:
@@ -39,7 +40,18 @@ class UserRegisterService:
         hashed_password = hash_password(user.userPassword)
 
         # 새로운 사용자 추가
-        new_user = user.dict()
+        new_user = {
+            "userPK": len(dummy_users) + 1,  # userPK 자동 증가 (DB에서는 auto-increment)
+            "userId": user.userId,
+            "userPassword": hashed_password,
+            "userEmail": user.userEmail,
+            "userName": user.userName,
+            "userPhoneNum": user.userPhoneNum,
+            "userAddress": user.userAddress,
+            "createdAt": datetime.now().isoformat(),  # `now()` 기본값
+            "updatedAt": datetime.now().isoformat(),  # `now()` 기본값
+        }
+        
         new_user["userPassword"] = hashed_password
         dummy_users.append(new_user)
 
