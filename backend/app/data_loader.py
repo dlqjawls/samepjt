@@ -23,38 +23,34 @@ from app.models import (
 import logging
 
 def insert_dummy_data():
-    """
-    Insert dummy data into the database.
-    Uses the database session to add all predefined dummy data.
-    """
-    with get_session() as session:
-        try:
-            # Insert dummy data for each model
-            session.add_all([Admin(**data) for data in dummy_admins])
-            session.add_all([User(**data) for data in dummy_users])
-            session.add_all([Vehicle(**data) for data in dummy_vehicles])
-            session.add_all([Module(**data) for data in dummy_modules])
-            session.add_all([OptionType(**data) for data in dummy_option_types])
-            session.add_all([Option(**data) for data in dummy_options])
-            session.add_all([ModuleSet(**data) for data in dummy_module_sets])
-            session.add_all([ModuleSetOptionType(**data) for data in dummy_module_set_option_types])
-            session.add_all([ModuleMaintenance(**data) for data in dummy_module_maintenance])
-            session.add_all([OptionMaintenance(**data) for data in dummy_option_maintenance])
-            session.add_all([VehicleMaintenance(**data) for data in dummy_vehicles_maintenance])
-            session.add_all([VehicleUsageHistory(**data) for data in dummy_vehicles_usage_history])
-            session.add_all([ModuleUsageHistory(**data) for data in dummy_module_usage_history])
-            session.add_all([OptionUsageHistory(**data) for data in dummy_option_usage_history])
-            session.add_all([RentHistory(**data) for data in dummy_rent_history])
-            session.add_all([Payment(**data) for data in dummy_payments])
-            session.add_all([VideoStorage(**data) for data in dummy_video_storage])
+    session = next(get_session())  
+    try:
+        # Insert dummy data for each model
+        session.add_all([Admin(**data) for data in dummy_admins])
+        session.add_all([User(**data) for data in dummy_users])
+        session.add_all([Vehicle(**data) for data in dummy_vehicles])
+        session.add_all([Module(**data) for data in dummy_modules])
+        session.add_all([OptionType(**data) for data in dummy_option_types])
+        session.add_all([Option(**data) for data in dummy_options])
+        session.add_all([ModuleSet(**data) for data in dummy_module_sets])
+        session.add_all([ModuleSetOptionType(**data) for data in dummy_module_set_option_types])
+        session.add_all([ModuleMaintenance(**data) for data in dummy_module_maintenance])
+        session.add_all([OptionMaintenance(**data) for data in dummy_option_maintenance])
+        session.add_all([VehicleMaintenance(**data) for data in dummy_vehicles_maintenance])
+        session.add_all([VehicleUsageHistory(**data) for data in dummy_vehicles_usage_history])
+        session.add_all([ModuleUsageHistory(**data) for data in dummy_module_usage_history])
+        session.add_all([OptionUsageHistory(**data) for data in dummy_option_usage_history])
+        session.add_all([RentHistory(**data) for data in dummy_rent_history])
+        session.add_all([Payment(**data) for data in dummy_payments])
+        session.add_all([VideoStorage(**data) for data in dummy_video_storage])
 
-            # Commit the changes
-            session.commit()
-            logging.info("All dummy data inserted successfully.")
-        
-        except Exception as e:
-            session.rollback()
-            logging.error(f"Error inserting dummy data: {e}")
+        # Commit the changes
+        session.commit()
+        logging.info("All dummy data inserted successfully.")
+    
+    except Exception as e:
+        session.rollback()
+        logging.error(f"Error inserting dummy data: {e}")
 
 
             
