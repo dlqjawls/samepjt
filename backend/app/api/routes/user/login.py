@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlmodel import Session
-
-from app.core.database import get_session
+from app.core.database import Session, get_session
 from app.api.schemas.user.login import UserLoginRequest, UserLoginResponse
 from app.services.user.login import UserLoginService
 
@@ -66,4 +64,5 @@ router = APIRouter()
     },
 )
 def user_login(user_req: UserLoginRequest, session: Session = Depends(get_session)):
+    """ 사용자 로그인 API """
     return UserLoginService.login_user(session, user_req)

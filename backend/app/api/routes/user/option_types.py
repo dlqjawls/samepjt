@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
 from typing import Optional
 from app.services.user.option_types import OptionTypeService
 from app.api.schemas.user.option_types import OptionTypesResponse
+from app.core.database import Session, get_session
 
 router = APIRouter()
 
@@ -43,10 +44,10 @@ router = APIRouter()
         }
     }
 )
-
 async def option_types(
-    page: int = Query(1, description="페이지 번호 (최소 1)", gt=0),
-    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0),
-    option_type_id: Optional[int] = Query(None, description="옵션 타입 ID로 검색 (선택)")
+  page: int = Query(1, description="페이지 번호 (최소 1)", gt=0),
+  page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0),
+  option_type_id: Optional[int] = Query(None, description="옵션 타입 ID로 검색 (선택)"),
+  session: Session = Depends(get_session)
 ):
-    return OptionTypeService.get_option_types(page, page_size, option_type_id)
+  return OptionTypeService.get_option_types(session, page, page_size, option_type_id)

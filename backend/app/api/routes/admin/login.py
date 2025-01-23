@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlmodel import Session
-
-from app.core.database import get_session
+from app.core.database import Session, get_session
 from app.api.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
 from app.services.admin.login import AdminLoginService
 

@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
 from typing import Optional
 from app.services.user.module_sets import ModuleSetService
 from app.api.schemas.user.module_sets import ModuleSetsResponse
-
+from app.core.database import Session, get_session
 
 router = APIRouter()
-
 
 @router.get(
     "/module-sets",
@@ -57,6 +56,8 @@ router = APIRouter()
 )
 async def get_module_sets(
     page: int = Query(1, description="페이지 번호 (최소 1)", gt=0), 
-    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0) 
+    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0),
+    session: Session = Depends(get_session)
 ):
-    return ModuleSetService.get_module_sets(page, page_size)
+    """ 모듈 세트 목록 조회 API """
+    return ModuleSetService.get_module_sets(session, page, page_size)
