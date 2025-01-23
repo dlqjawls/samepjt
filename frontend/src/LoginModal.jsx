@@ -21,6 +21,8 @@ const LoginModal = ({ onClose }) => {
   const navigate= useNavigate();
   const resist = ()=>{
     navigate("/RegistrationForm")
+    onClose()
+    
   };
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -32,7 +34,7 @@ const LoginModal = ({ onClose }) => {
       alert("로그인 성공!")
       console.log("로그인 성공:", response.data)
       console.log(response.data.token)
-      const token = response.data.token
+      const token = response.data.accessToken
       localStorage.setItem("token",token)
       onClose()
     } catch (err) {

@@ -11,7 +11,7 @@ const LoginButton = () => {
   useEffect(() => {
     const token = localStorage.getItem("token")
     setIsLoggedIn(!!token)
-  }, [])
+  })
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
