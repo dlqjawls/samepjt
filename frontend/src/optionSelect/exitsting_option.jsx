@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./exitsting_option.css";
 
-const CustomOptionListPage = () => {
+const ExistOptionsPage = () => {
   const location = useLocation();
   const selectedOptions = location.state?.selectedModule || [];
   const navigate = useNavigate();
@@ -11,18 +11,47 @@ const CustomOptionListPage = () => {
     navigate("/ModuleSetList");
   };
   const [options, setOptions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(30);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedOption, setSelectedOption] = useState(null);
+
+  const selectedOptionIds = selectedOptions.map((option) => option.optionTypeId);
 
   const fetchOptions = async () => {
     setLoading(true);
     setError("");
     try {
       const response = await axios.get(
-        "https://backend-wandering-river-6835.fly.dev/user/options"
+        "https://backend-wandering-river-6835.fly.dev/user/option-types",
+        {
+          params: {
+            page: currentPage,
+            page_size: pageSize,
+          },
+        }
       );
-      setOptions(response.data.data.options);
+
+      const { optionTypes, pagination } = response.data.data;
+
+      const filteredOptions = optionTypes.filter((option) =>
+        selectedOptionIds.includes(option.optionTypeId)
+      );
+
+      const optionsWithQuantity = filteredOptions.map((option) => {
+        const selectedOption = selectedOptions.find(
+          (selected) => selected.optionTypeId === option.optionTypeId
+        );
+        console.log(option)
+        return {
+          ...option,
+          selectedQuantity: selectedOption ? selectedOption.quantity : 0,
+        };
+      });
+
+      setOptions(optionsWithQuantity);
+      setTotalPages(pagination.totalPages);
     } catch (err) {
       setError("옵션 목록을 가져오는 중 오류가 발생했습니다.");
       console.error(err);
@@ -33,74 +62,55 @@ const CustomOptionListPage = () => {
 
   useEffect(() => {
     fetchOptions();
-  }, []);
-
-  const closeModal = () => setSelectedOption(null);
+  }, [currentPage, pageSize]);
 
   return (
     <div className="custom-container">
-      <h1 className="custom-title">기본 제공 모듈</h1>
+      <h1 className="custom-title">선택된 옵션 목록</h1>
 
       {loading ? (
-        <div className="custom-loading">로딩 중...</div>
+        <div className="loading">로딩 중...</div>
       ) : error ? (
-        <div className="custom-error">{error}</div>
+        <div className="error">{error}</div>
       ) : (
         <div className="custom-grid">
           {options.map((option) => (
-            <div key={option.optionId} className="custom-row">
+            <div key={option.optionTypeId} className="custom-row">
               <div className="custom-info">
                 <img
                   src={option.imgUrls[0]}
-                  alt={option.optionName}
+                  alt={option.optionTypeName}
                   className="custom-image"
                 />
                 <div className="custom-details">
-                  <h3>{option.optionName}</h3>
-                  <p>{option.optionCost}원</p>
+                  <h3>{option.optionTypeName}</h3>
+                  <p>{option.description}</p>
+                  <p>크기: {option.optionTypeSize}</p>
                 </div>
               </div>
               <div className="custom-actions">
-                <button
-                  className="custom-info-button"
-                  onClick={() => setSelectedOption(option)}
-                >
-                  i
-                </button>
-                <span className="custom-status">배치완료</span>
+                <span className="custom-status">
+                  수량: {option.selectedQuantity}
+                </span>
+                <span className="custom-status">
+                  가격: {option.optionTypeCost}원
+                </span>
+                <span className="custom-status">
+                  재고: {option.stockQuantity}
+                </span>
               </div>
             </div>
           ))}
         </div>
       )}
-
-      <button onClick={goToPreviousPage} className="custom-next-button">
-      &lt; 이전 
+      <button
+        onClick={goToPreviousPage}
+        className="custom-next-button"
+      >
+        이전 페이지로 돌아가기
       </button>
-      <button className="custom-next-button">다음 &gt;</button>
-
-      {selectedOption && (
-        <div className="custom-modal-overlay">
-          <div className="custom-modal-content">
-            <div className="custom-modal-header">
-              <h2>{selectedOption.optionName}</h2>
-              <button className="custom-close-button" onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <div className="custom-modal-body">
-              <img
-                src={selectedOption.imgUrls[0]}
-                alt={selectedOption.optionName}
-                className="custom-modal-image"
-              />
-              <p>{selectedOption.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default CustomOptionListPage;
+export default ExistOptionsPage;

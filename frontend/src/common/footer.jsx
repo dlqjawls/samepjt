@@ -1,4 +1,4 @@
-import "./Footer.css"
+import "./Footer.css";
 
 const Footer = () => {
   return (
@@ -26,11 +26,13 @@ const Footer = () => {
             </a>
           </div>
           <div className="customer-center">고객센터: 000-000-0000</div>
-          <div className="copyright">COPYRIGHT © MODUCAR. ALL RIGHTS RESERVED.</div>
+          <div className="copyright">
+            COPYRIGHT © MODUCAR. ALL RIGHTS RESERVED.
+          </div>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;
