@@ -30,7 +30,7 @@ const moduleRecommendChatbotModal = () => {
         <button className="plus-button">+</button>
         <input type="text" placeholder="메시지를 입력해 주세요" />
         <button className="send-button">
-          <img className="airplane-png" src="src\assets\airplane-icon.png" alt="" />
+            alt=""
         </button>
       </div>
     </div>
