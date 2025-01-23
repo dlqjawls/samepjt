@@ -3,15 +3,11 @@ from app.models.admin import Admin
 from app.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
 from app.core.database import get_session
 from app.utils.bcrypt import verify_password
-from app.utils.jwt import create_access_token, create_refresh_token
+from app.utils.jwt import create_token
 from sqlmodel import select
 
 class AdminLoginService:
     """ 관리자 로그인 서비스 클래스 """
-
-    # 토큰 저장을 위한 딕셔너리
-    # TODO: Redis 저장 방식으로 변경
-    token_store: dict[int, dict[str, str]] = {}
 
     @staticmethod
     def login_admin(admin: AdminLoginRequest) -> AdminLoginResponse:
@@ -42,15 +38,8 @@ class AdminLoginService:
                     }
                 )
 
-            # JWT 토큰 생성
-            access_token = create_access_token(matched_user.adminPK, role=str(matched_user.role))
-            refresh_token = create_refresh_token(matched_user.adminPK)
-
-            # 토큰 저장
-            AdminLoginService.token_store[matched_user.adminPK] = {
-                "access_token": access_token,
-                "refresh_token": refresh_token
-            }
+            # JWT 토큰 생성 및 저장
+            access_token, refresh_token = create_token(matched_user.adminPK, role=str(matched_user.role))
 
             return AdminLoginResponse(
                 resultCode="SUCCESS",
