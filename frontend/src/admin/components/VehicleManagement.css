@@ -1,0 +1,103 @@
+/* 테이블 전체 컨테이너 */
+.table-container {
+  width: 100%;
+  margin: 20px 0;
+  /* padding: 20px; */
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* 헤더와 버튼 */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.table-header h1 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.add-button {
+  background-color: #6a5bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  background-color: #5746cc;
+}
+
+/* 테이블 */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.custom-table th {
+  background-color: #eaeaea;
+  font-weight: bold;
+}
+
+.detail-button {
+  background-color: #d6d8f3;
+  color: #4f4db6;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.detail-button:hover {
+  background-color: #b0b3f0;
+}
+
+/* 모달 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.close-button {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: #0056b3;
+}

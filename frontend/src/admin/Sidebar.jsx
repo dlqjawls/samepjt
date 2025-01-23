@@ -1,53 +1,64 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FaChartPie, FaCar, FaCogs, FaTools } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
+import { FaChartPie, FaCar, FaCogs, FaTools, FaPlusSquare } from "react-icons/fa";
+import { MdEventNote } from "react-icons/md";
+import { IoSettingsSharp } from "react-icons/io5";
 import "./Sidebar.css";
-import "../assets/moducar_logo.svg";
+import moducarLogo from "../assets/moducar_logo.svg"
 
 function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <img src="" alt="" />
+        <img src={moducarLogo} alt="" />
       </div>
 
       <nav className="sidebar-menu">
         <ul>
           <li>
-            <Link to="/">
+            <NavLink to="/admin/index">
               <FaChartPie />
               대시보드
-            </Link>
+            </NavLink>
+
           </li>
           <li>
-            <Link to="/car-management">
+            <NavLink to="/admin/vehicle-management">
               <FaCar />
               차량 관리
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/module-management">
+            <NavLink to="/admin/module-management">
               <FaCogs />
               모듈 관리
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/option-management">
-              <FaTools />
+          <NavLink to="/admin/option-management">
+            <FaTools />
               옵션 관리
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/rental-records">대여 기록</Link>
+            <NavLink to="/admin/rental-records">
+              <FaPlusSquare />
+              대여 기록
+            </NavLink>
           </li>
           <li>
-            <Link to="/maintenance-records">정비 기록</Link>
+            <NavLink to="/admin/maintenance-records">
+              <MdEventNote />
+              정비 기록
+            </NavLink>
           </li>
         </ul>
       </nav>
 
       <div className="sidebar-footer">
-        <Link to="/settings">설정</Link>
+      <NavLink to="/admin/setting">
+        <IoSettingsSharp />
+        설정</NavLink>
       </div>
     </aside>
   );

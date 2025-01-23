@@ -1,4 +1,4 @@
-import "./ModuleManagements.css"
+import "./ModuleManagement.css"
 
 const ModuleManagements = () => {
     return (
