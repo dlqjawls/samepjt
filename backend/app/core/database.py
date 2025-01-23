@@ -85,21 +85,66 @@ def initialize_database():
     else:
         logging.info("Database already exists. Skipping creation and dummy data insertion.")
 
-
 def get_all_data():
     with get_session() as session:
-        admins = session.exec(select(Admin)).all()
-        users = session.exec(select(User)).all()
-        vehicles = session.exec(select(Vehicle)).all()
-        modules = session.exec(select(Module)).all()
-        options = session.exec(select(Option)).all()
-        module_sets = session.exec(select(ModuleSet)).all()
-        
-        return {
-            "admins": admins,
-            "users": users,
-            "vehicles": vehicles,
-            "modules": modules,
-            "options": options,
-            "module_sets": module_sets
+        data = {
+            "admins": session.exec(select(Admin)).all(),
+            "users": session.exec(select(User)).all(),
+            "vehicles": session.exec(select(Vehicle)).all(),
+            "modules": session.exec(select(Module)).all(),
+            "options": session.exec(select(Option)).all(),
+            "option_types": session.exec(select(OptionType)).all(),
+            "module_sets": session.exec(select(ModuleSet)).all(),
+            "module_set_option_types": session.exec(select(ModuleSetOptionType)).all(),
+            "module_maintenance": session.exec(select(ModuleMaintenance)).all(),
+            "option_maintenance": session.exec(select(OptionMaintenance)).all(),
+            "vehicle_maintenance": session.exec(select(VehicleMaintenance)).all(),
+            "vehicle_usage_history": session.exec(select(VehicleUsageHistory)).all(),
+            "module_usage_history": session.exec(select(ModuleUsageHistory)).all(),
+            "option_usage_history": session.exec(select(OptionUsageHistory)).all(),
+            "rent_history": session.exec(select(RentHistory)).all(),
+            "payments": session.exec(select(Payment)).all(),
+            "video_storage": session.exec(select(VideoStorage)).all(),
         }
+    return data
+
+def get_table_data(table: str):
+    with get_session() as session:
+        if table == "admin":
+            data = session.exec(select(Admin)).all()
+        elif table == "user":
+            data = session.exec(select(User)).all()
+        elif table == "vehicle":
+            data = session.exec(select(Vehicle)).all()
+        elif table == "module":
+            data = session.exec(select(Module)).all()
+        elif table == "option":
+            data = session.exec(select(Option)).all()
+        elif table == "option_type":
+            data = session.exec(select(OptionType)).all()
+        elif table == "module_set":
+            data = session.exec(select(ModuleSet)).all()
+        elif table == "module_set_option_type":
+            data = session.exec(select(ModuleSetOptionType)).all()
+        elif table == "module_maintenance":
+            data = session.exec(select(ModuleMaintenance)).all()
+        elif table == "option_maintenance":
+            data = session.exec(select(OptionMaintenance)).all()
+        elif table == "vehicle_maintenance":
+            data = session.exec(select(VehicleMaintenance)).all()
+        elif table == "vehicle_usage_history":
+            data = session.exec(select(VehicleUsageHistory)).all()
+        elif table == "module_usage_history":
+            data = session.exec(select(ModuleUsageHistory)).all()
+        elif table == "option_usage_history":
+            data = session.exec(select(OptionUsageHistory)).all()
+        elif table == "rent_history":
+            data = session.exec(select(RentHistory)).all()
+        elif table == "payment":
+            data = session.exec(select(Payment)).all()
+        elif table == "video_storage":
+            data = session.exec(select(VideoStorage)).all()
+        else:
+            data = {"message": "Invalid table name. Please provide a valid table name."}
+        
+        return data
