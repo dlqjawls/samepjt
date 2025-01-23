@@ -5,10 +5,15 @@ import "./exitsting_option.css";
 
 const ExistOptionsPage = () => {
   const location = useLocation();
-  const selectedOptions = location.state?.selectedModule || [];
+  const selectedOptions = location.state?.selectedModule.moduleSetOptionTypes || [];
+  
+  const userdata=location.state;
   const navigate = useNavigate();
   const goToPreviousPage = () => {
     navigate("/ModuleSetList");
+  };
+  const goToNextPage = () => {
+    navigate("/option_select",{ state: userdata });
   };
   const [options, setOptions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -109,6 +114,14 @@ const ExistOptionsPage = () => {
       >
         이전 페이지로 돌아가기
       </button>
+      <button
+        onClick={goToNextPage}        
+        className="custom-next-button">
+        다음 페이지로 이동하기
+      </button>
+
+
+      
     </div>
   );
 };

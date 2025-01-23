@@ -17,6 +17,7 @@ import ModuleManagement from "./admin/components/ModuleManagement";
 import OptionManagement from "./admin/components/OptionManagement";
 import RentalRecords from "./admin/components/RentalRecords";
 import MaintenanceRecords from "./admin/components/MaintenanceRecords";
+import OptionSelect from "./optionSelect/optionSelect"
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
           <Route path="ModuleSetList" element={<ModuleSetList />} />
           <Route path="optionlist" element={<OptionsPage />}></Route>
           <Route path="exist_option" element={<ExistOptionsPage />}></Route>
+          <Route path="option_select" element={<OptionSelect />}></Route>
+
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminLayout />}>
