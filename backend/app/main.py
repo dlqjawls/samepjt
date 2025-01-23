@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from app.core.middleware import setup_cors_middleware
-from app.routes import router
 from app.core.database import initialize_database
+from app.api.routes import router
 from app.data_loader import get_table_data, insert_dummy_data, get_all_data
 
 app = FastAPI(title="ModuCar API")

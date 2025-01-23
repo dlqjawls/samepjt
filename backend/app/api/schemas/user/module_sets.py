@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from app.schemas.pagination import Pagination
+from app.api.schemas.pagination import Pagination
 
 
 class moduleSetOptionType(BaseModel):

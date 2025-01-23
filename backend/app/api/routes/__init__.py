@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.routes.user import router as user_router
-from app.routes.admin import router as admin_router
+from app.api.routes.user import router as user_router
+from app.api.routes.admin import router as admin_router
 
 # 메인 라우터
 router = APIRouter()

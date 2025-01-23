@@ -1,5 +1,5 @@
 from typing import List, TypeVar
-from app.schemas.pagination import Pagination, PaginatedResponse
+from app.api.schemas.pagination import Pagination, PaginatedResponse
 
 T = TypeVar("T")
 

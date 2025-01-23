@@ -1,5 +1,8 @@
-from fastapi import APIRouter
-from app.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
+
+from app.core.database import get_session
+from app.api.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
 from app.services.admin.login import AdminLoginService
 
 router = APIRouter()
@@ -62,5 +65,5 @@ router = APIRouter()
         },
     },
 )
-def login_admin(admin: AdminLoginRequest):
-    return AdminLoginService.login_admin(admin)
+def admin_login(admin_req: AdminLoginRequest, session: Session = Depends(get_session)):
+    return AdminLoginService.login_admin(session, admin_req)

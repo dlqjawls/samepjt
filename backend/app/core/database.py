@@ -1,10 +1,10 @@
-from sqlmodel import SQLModel, create_engine, Session
 import os
 import logging
+from sqlmodel import SQLModel, create_engine, Session
 
-# Database configuration
 DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(DATABASE_URL)
+
+engine = create_engine(DATABASE_URL, echo=False)
 
 def get_session():
     return Session(engine)

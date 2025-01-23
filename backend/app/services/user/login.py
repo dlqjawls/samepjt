@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from app.models.user import User
-from app.schemas.user.login import UserLoginRequest, UserLoginResponse
+from app.api.schemas.user.login import UserLoginRequest, UserLoginResponse
 from app.core.database import get_session
 from app.utils.bcrypt import verify_password
 from app.utils.jwt import create_token

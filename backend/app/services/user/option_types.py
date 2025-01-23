@@ -1,5 +1,5 @@
 from typing import Optional
-from app.schemas.user.option_types import OptionTypesResponse, OptionTypesData, OptionType
+from app.api.schemas.user.option_types import OptionTypesResponse, OptionTypesData, OptionType
 from app.core.database import get_session
 from app.models.option import Option as OptionModel
 from app.models.option_type import OptionType as OptionTypeModel

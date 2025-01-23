@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.schemas.user.login import UserLoginRequest, UserLoginResponse
+from app.api.schemas.user.login import UserLoginRequest, UserLoginResponse
 from app.services.user.login import UserLoginService
 
 router = APIRouter()

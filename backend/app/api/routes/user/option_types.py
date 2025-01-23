@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query
 from typing import Optional
 from app.services.user.option_types import OptionTypeService
-from app.schemas.user.option_types import OptionTypesResponse
+from app.api.schemas.user.option_types import OptionTypesResponse
 
 router = APIRouter()
 

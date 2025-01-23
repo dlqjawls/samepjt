@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.routes.user import login, module_sets, option_types, register
+from app.api.routes.user import login, module_sets, option_types, register
 
 # 사용자 라우터 모음
 router = APIRouter(prefix="/user", tags=["User"])

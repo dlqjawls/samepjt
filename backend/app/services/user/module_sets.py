@@ -1,4 +1,4 @@
-from app.schemas.user.module_sets import ModuleSetsResponse, ModuleSetData, ModuleSet, moduleSetOptionType
+from app.api.schemas.user.module_sets import ModuleSetsResponse, ModuleSetData, ModuleSet, moduleSetOptionType
 from app.core.database import get_session
 from app.models.module_set import ModuleSet as ModuleSetModel
 from app.models.module_set_option_type import ModuleSetOptionType as ModuleSetOptionTypeModel

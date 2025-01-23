@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from app.models.user import User
-from app.schemas.user.register import UserRegisterRequest, UserRegisterResponse
+from app.api.schemas.user.register import UserRegisterRequest, UserRegisterResponse
 from app.core.database import get_session
 from app.utils.bcrypt import hash_password
 from datetime import datetime

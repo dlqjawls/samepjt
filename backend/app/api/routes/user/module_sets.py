@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query
 from typing import Optional
 from app.services.user.module_sets import ModuleSetService
-from app.schemas.user.module_sets import ModuleSetsResponse
+from app.api.schemas.user.module_sets import ModuleSetsResponse
 
 
 router = APIRouter()
