@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
+
+from app.core.database import get_session
 from app.api.schemas.user.login import UserLoginRequest, UserLoginResponse
 from app.services.user.login import UserLoginService
 
@@ -62,6 +65,5 @@ router = APIRouter()
         },
     },
 )
-def login_user(user: UserLoginRequest):
-    """사용자 로그인 요청을 처리하는 엔드포인트"""
-    return UserLoginService.login_user(user)
+def user_login(user_req: UserLoginRequest, session: Session = Depends(get_session)):
+    return UserLoginService.login_user(session, user_req)

@@ -1,5 +1,3 @@
-# app/services/admin_login_service.py
-
 from fastapi import HTTPException
 from sqlmodel import Session
 from app.crud.admin import get_admin_by_admin_id
@@ -33,7 +31,7 @@ class AdminLoginService:
                 }
             )
 
-        # 3. JWT 토큰 생성
+        # JWT 토큰 생성
         access_token, refresh_token = create_token(
             matched_admin.adminPK,
             role=str(matched_admin.role)

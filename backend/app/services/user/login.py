@@ -1,49 +1,46 @@
 from fastapi import HTTPException
-from app.models.user import User
+from sqlmodel import Session
+from app.crud.user import get_user_by_id
 from app.api.schemas.user.login import UserLoginRequest, UserLoginResponse
-from app.core.database import get_session
 from app.utils.bcrypt import verify_password
 from app.utils.jwt import create_token
-from sqlmodel import select
 
 class UserLoginService:
-    """ 사용자 로그인 서비스 클래스 """
 
     @staticmethod
-    def login_user(user: UserLoginRequest) -> UserLoginResponse:
-        """ 사용자 로그인을 처리합니다 """
-        with get_session() as session:
-            errors = []
+    def login_user(session: Session, user_request: UserLoginRequest) -> UserLoginResponse:
 
-            # 사용자 ID 조회
-            statement = select(User).where(User.userId == user.userId)
-            matched_user = session.exec(statement).first()
+        errors = []
+        # userId로 DB조회 (CRUD 호출)
+        matched_user = get_user_by_id(session, user_request.userId)
 
-            if not matched_user:
-                errors.append({"field": "userId", "message": "User ID does not exist"})
-
-            # 비밀번호 검증
-            elif not verify_password(user.userPassword, matched_user.userPassword):
+        if not matched_user:
+            errors.append({"field": "userId", "message": "User ID does not exist"})
+        else:
+            # 비밀번호 검증 (bcrypt)
+            if not verify_password(user_request.userPassword, matched_user.userPassword):
                 errors.append({"field": "userPassword", "message": "Incorrect password"})
 
-            # 인증 실패 시 예외 발생
-            if errors:
-                raise HTTPException(
-                    status_code=401,
-                    detail={
-                        "resultCode": "FAILURE",
-                        "message": "Login failed",
-                        "errors": errors
-                    }
-                )
-
-            # JWT 토큰 생성 및 저장
-            access_token, refresh_token = create_token(matched_user.userPK, role="user")
-
-            return UserLoginResponse(
-                resultCode="SUCCESS",
-                message="Login successful",
-                accessToken=access_token,
-                refreshToken=refresh_token,
-                errors=[]
+        if errors:
+            raise HTTPException(
+                status_code=401,
+                detail={
+                    "resultCode": "FAILURE",
+                    "message": "Login failed",
+                    "errors": errors
+                }
             )
+
+        # JWT 토큰 생성
+        access_token, refresh_token = create_token(
+            matched_user.userPK,
+            role="user"
+        )
+
+        return UserLoginResponse(
+            resultCode="SUCCESS",
+            message="Login successful",
+            accessToken=access_token,
+            refreshToken=refresh_token,
+            errors=[]
+        )
