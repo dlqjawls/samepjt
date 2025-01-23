@@ -1,3 +1,4 @@
+import json
 from faker import Faker
 from datetime import datetime
 import random
@@ -51,7 +52,6 @@ module_set_data = [
     {"moduleSetName": "영화관 모듈", "defaultOptionTypes": ["대형모니터", "리클라이닝 의자", "테이블", "냉난방기", "배터리"], "displayFeatures": ["실내온도", "조명세기", "배터리"]},
 ]
 
-
 # 더미 사용자 데이터 생성
 dummy_users = [
     {
@@ -93,10 +93,10 @@ dummy_vehicles = [
         "vehicleId": 0,
         "vin": fake.uuid4(),
         "vehicleNumber": f"PBV-{random.randint(1000, 9999)}",
-        "currentLocation": {
+        "currentLocation": json.dumps({
             "x": round(random.uniform(35.0, 38.0), 6),  # 한국 위도 범위
             "y": round(random.uniform(126.0, 129.0), 6)  # 한국 경도 범위
-        },
+        }),
         "status": "inactive",
         "mileage": random.randint(1000, 5000),
         "lastMaintenanceAt": base_date.isoformat(),
@@ -114,7 +114,7 @@ dummy_vehicles_maintenance = [
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
         "cost": random.randint(100, 500),
-        "status": random.choice(["pending", "completed", "in-progress"]),
+        "status": random.choice(["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
         "completedAt": datetime.now().isoformat(),
         "notes": fake.sentence(),
         "createdAt": datetime.now().isoformat(),
@@ -131,10 +131,10 @@ dummy_modules = [
         "moduleType": "default",
         "moduleSize": f"{random.randint(10, 50)}x{random.randint(10, 50)}",
         "moduleCost": random.randint(1000, 5000),
-        "status": random.choice(["active", "maintenance", "inactive"]),
+        "status": random.choice(["ACTIVE", "INACTIVE", "MAINTENANCE"]),
         "lastMaintenanceAt" : datetime.now().isoformat(),
         "nextMaintenanceAt" : datetime.now().isoformat(),
-        "currentLocation" : {"x": 0, "y": 0},
+        "currentLocation" : json.dumps({"x": 0, "y": 0}),
         "createdAt": datetime.now().isoformat(),
         "updatedAt": datetime.now().isoformat(),
     }
@@ -161,7 +161,7 @@ dummy_options = [
     {
         "optionId": i,
         "optionType": dummy_option_types[i]["optionTypeId"],
-        "status": random.choice(["available", "unavailable"]),
+        "status": random.choice(["ACTIVE", "INACTIVE", "MAINTENANCE"]),
         "createdAt": base_date.isoformat(),
         "updatedAt": base_date.isoformat(),
     }
@@ -206,7 +206,7 @@ dummy_module_maintenance = [
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
         "cost": random.randint(100, 500), 
-        "MaintenanceStatus" : random.choice(["pending", "completed", "in-progress"]),
+        "status" : random.choice(["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
         "completedAt ": datetime.now().isoformat(),
         "notes": fake.sentence(),
         "createdAt": datetime.now().isoformat(),
@@ -223,7 +223,7 @@ dummy_option_maintenance = [
         "issue": fake.sentence(),
         "maintenanceDate": datetime.now().isoformat(),
         "cost": random.randint(100, 500),
-        "MaintenanceStatus" : random.choice(["pending", "completed", "in-progress"]),
+        "status" : random.choice(["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
         "completedAt ": datetime.now().isoformat(),
         "notes": fake.sentence(),
         "createdAt": datetime.now().isoformat(),
@@ -243,22 +243,22 @@ for i in range(1):
     dummy_rent_history.append({
         "rentId": i,
         "userPK": random.choice(dummy_users)["userPK"],
-        "departureLocation": {
+        "departureLocation": json.dumps({
             "x": round(random.uniform(35.0, 38.0), 6),
             "y": round(random.uniform(126.0, 129.0), 6)
-        },
-        "arrivalLocation": {
+        }),
+        "arrivalLocation": json.dumps({
             "x": round(random.uniform(35.0, 38.0), 6),
             "y": round(random.uniform(126.0, 129.0), 6)
-        },
-        "rentStatus": random.choice(["reserved", "in-progress", "completed", "canceled"]),
+        }),
+        "rentStatus": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
         "startTime": start_time.isoformat(),
         "endTime": end_time.isoformat(),
         "baseCost": base_cost,
         "additionalCost": additional_cost,
         "totalCost": base_cost + additional_cost,
         "totalDistance": random.randint(10, 100),
-        "statusUpdateAt": base_date.isoformat(),
+        "statusUpdatedAt": base_date.isoformat(),
         "createdAt": base_date.isoformat(),
     })
 
@@ -294,7 +294,7 @@ dummy_vehicles_usage_history = [
         "endLocation": fake.address(),
         "startTime": datetime.now().isoformat(),
         "endTime": datetime.now().isoformat(),
-        "status": random.choice(["in-use", "completed"]),
+        "status": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
         "mileage": random.randint(1000, 5000),
     }
     for i in range(1)
@@ -307,7 +307,7 @@ dummy_module_usage_history = [
         "rentId": random.choice(dummy_rent_history)["rentId"],
         "startTime": datetime.now().isoformat(),
         "endTime": datetime.now().isoformat(),
-        "status": random.choice(["in-use", "completed"]),
+        "status": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
     }
     for i in range(1)
 ]
@@ -319,7 +319,7 @@ dummy_option_usage_history = [
         "rentId": random.choice(dummy_rent_history)["rentId"],
         "startTime": datetime.now().isoformat(),
         "endTime": datetime.now().isoformat(),
-        "status": random.choice(["in-use", "completed"]),
+        "status": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
         "createdAt": datetime.now().isoformat(),
     }
     for i in range(1)
@@ -329,7 +329,7 @@ dummy_video_storage = [
     {
         "videoId": i,
         "rentId": random.choice(dummy_rent_history)["rentId"],
-        "videoType": random.choice(["automonous_driving", "module_usage"]),
+        "videoType": random.choice(["MODULE_INSTALLATION", "AUTONOMOUS_DRIVING"]),
         "videoUrl": fake.url(),
         "duration": random.randint(1, 100),
         "size": random.randint(1, 100),
