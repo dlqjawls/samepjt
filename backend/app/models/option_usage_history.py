@@ -9,7 +9,6 @@ class OptionUsageHistory(SQLModel, table=True):
     optionUsageId: Optional[int] = Field(default=None, primary_key=True)
     optionId: int
     rentId: int
-    quantity: int
     startTime: datetime
     endTime: Optional[datetime] = None
     status: RentStatus

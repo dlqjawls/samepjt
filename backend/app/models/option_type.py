@@ -9,7 +9,7 @@ class OptionType(SQLModel, table=True):
     optionTypeSize: str
     optionTypeCost: float
     description: str = None
-    optionTypeimages: str
-    optionTypefeatures: str
+    optionTypeImages: str
+    optionTypeFeatures: str
     createdAt: datetime = Field(default=datetime.now())
     updatedAt: datetime = Field(default=datetime.now())

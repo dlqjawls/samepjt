@@ -14,6 +14,7 @@ class RentHistory(SQLModel, table=True):
     endTime: Optional[datetime] = None
     baseCost: float
     additionalCost: float = Field(default=0)
+    totalCost: float = Field(default=0)
     totalDistance: float = Field(default=0)
     statusUpdatedAt: datetime
     createdAt: datetime = Field(default=datetime.now())

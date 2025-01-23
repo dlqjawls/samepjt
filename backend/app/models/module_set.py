@@ -7,8 +7,8 @@ class ModuleSet(SQLModel, table=True):
     moduleSetId: Optional[int] = Field(default=None, primary_key=True)
     moduleSetName: str
     description: str = None
-    module_sets_images: str
-    module_sets_features: str
+    moduleSetImages: str
+    moduleSetFeatures: str
     basePrice: float
     createdAt: datetime = Field(default=datetime.now())
     updatedAt: datetime = Field(default=datetime.now())
