@@ -43,6 +43,7 @@ function ModuleSetList() {
       if (response.data.resultCode === "SUCCESS") {
         setModuleSets(response.data.data.moduleSets)
         setPagination(response.data.data.pagination)
+        console.log(response)
       } else {
         setError(response.data.message)
         setModuleSets([])
@@ -81,7 +82,7 @@ function ModuleSetList() {
 
   const handleNextStep = (moduleSet) => {
     // console.log(selectedModule.moduleSetOptionTypes)
-    navigate("/exist_option", { state: { selectedModule: moduleSet.moduleSetOptionTypes } })
+    navigate("/exist_option", { state: { selectedModule: moduleSet } })
     
   }
 

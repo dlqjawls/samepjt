@@ -3,6 +3,7 @@
   width: 100vw; /* 뷰포트 너비 전체 */
   height: 100vh; /* 뷰포트 높이 전체 */
   overflow: hidden; /* 이미지를 넘어서지 않도록 처리 */
+  cursor: pointer;
 }
 
 /* 이미지가 부모를 가득 채움 */
@@ -13,4 +14,62 @@
   width: 100%; /* 가로를 부모에 맞춤 */
   height: 100%; /* 세로를 부모에 맞춤 */
   object-fit: cover; /* 이미지의 비율을 유지하며 화면을 꽉 채움 */
+}
+
+.headline-content {
+  position: absolute;
+  bottom: 30px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  
+  max-width: 80%;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  transform: translateX(50px)
+}
+
+/* Hover 시 효과 */
+.image-container:hover .headline-content {
+  opacity: 1;
+  transform:  translateX(50px); /* 부드럽게 올라오는 애니메이션 */
+  animation: slide-in 0.5s ease-out forwards;
+}
+
+/* 텍스트가 오른쪽에서 왼쪽으로 애니메이션 */
+.image-container .headline-content h2,
+.image-container .headline-content h3,
+.image-container .headline-content p {
+  color: white;
+  opacity: 0;
+  transform: translateX(50px); /* 오른쪽에서 시작 */
+  animation: slide-in 0.5s ease-out forwards;
+}
+
+.image-container:hover .headline-content h2 {
+  animation-delay: 0.4s; /* 첫 번째 줄 딜레이 */
+}
+
+.image-container:hover .headline-content h3 {
+  animation-delay: 0.6s; /* 두 번째 줄 딜레이 */
+}
+
+.image-container:hover .headline-content p {
+  animation-delay: 0.8s; /* 세 번째 줄 딜레이 */
+}
+
+/* 텍스트가 오른쪽에서 왼쪽으로 이동 */
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(50px); /* 오른쪽에서 시작 */
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0); /* 원래 위치로 이동 */
+  }
 }

@@ -39,7 +39,7 @@
   padding: 15px;
 }
 
-.module-card-content h3 {
+.module-card-content h3,h4 {
   margin: 0 0 10px 0;
   font-size: 1.2rem;
 }
@@ -171,6 +171,7 @@
   list-style-type: disc;
   padding-left: 20px;
   margin: 0;
+  font-size: 1rem;
 }
 
 .total-cost {
