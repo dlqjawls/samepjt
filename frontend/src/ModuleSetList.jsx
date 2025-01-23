@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import "./ModuleSetList.css"
 import { useNavigate } from "react-router-dom"
+
 function ModuleSetList() {
-  // 상태 관리
   const [moduleSets, setModuleSets] = useState([])
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -14,17 +14,15 @@ function ModuleSetList() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // 모달 관련 상태
   const [selectedModule, setSelectedModule] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  // 페이지 상태
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  // API 엔드포인트
   const API_URL = `https://backend-wandering-river-6835.fly.dev/user/module-sets`
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchModuleSets(currentPage, pageSize)
@@ -38,7 +36,7 @@ function ModuleSetList() {
       const response = await axios.get(API_URL, {
         params: {
           page: page,
-          pageSize: size,
+          page_size: size, // API 문서에 따라 쿼리 파라미터 수정
         },
       })
 
@@ -80,15 +78,15 @@ function ModuleSetList() {
     setPageSize(Number(e.target.value))
     setCurrentPage(1)
   }
-  const navigator = useNavigate()
+
   const handleNextStep = (moduleSet) => {
-    // 여기에 다음 단계로 이동하는 로직을 구현하세요
-    console.log(selectedModule.suppliedOptions)
-    navigator("/exist_option", { state: { selectedModule: selectedModule.suppliedOptions } })
-    // setShowModal(false);
+    // console.log(selectedModule.moduleSetOptionTypes)
+    navigate("/exist_option", { state: { selectedModule: moduleSet.moduleSetOptionTypes } })
+    
   }
+
   const prepage = () => {
-    navigator("/")
+    navigate("/")
   }
 
   return (
@@ -118,7 +116,7 @@ function ModuleSetList() {
                 <div className="module-card-content">
                   <h3>{moduleSet.moduleSetName}</h3>
                   <p>{moduleSet.description}</p>
-                  <p className="price">총 비용: ${moduleSet.totalCost}</p>
+                  <p className="price">총 비용: ${moduleSet.basePrice}</p>
                 </div>
               </div>
             ))}
@@ -167,16 +165,16 @@ function ModuleSetList() {
                 <div className="options">
                   <h4>포함된 옵션</h4>
                   <ul>
-                    {selectedModule.suppliedOptions.map((option) => (
-                      <li key={option.optionId}>
-                        {option.optionName} (수량: {option.quantity})
+                    {selectedModule.moduleSetOptionTypes.map((option) => ( // 옵션 키 수정
+                      <li key={option.optionTypeId}>
+                        {option.optionTypeName} (수량: {option.quantity})
                       </li>
                     ))}
                   </ul>
                 </div>
 
                 <div className="total-cost">
-                  <p>총 비용: ${selectedModule.totalCost}</p>
+                  <p>총 비용: ${selectedModule.basePrice}</p>
                 </div>
               </div>
             </div>
