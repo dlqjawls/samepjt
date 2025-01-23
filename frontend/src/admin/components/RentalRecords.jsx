@@ -1,4 +1,4 @@
-import "./RentalRecord.css"
+import "./RentalRecords.css"
 
 const RentalRecord = () => {
     return (
