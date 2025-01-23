@@ -12,6 +12,11 @@ import MainDashboard from "./admin/MainDashboard"
 import OptionsPage from "./optionSelect/option_list"
 import ExistOptionsPage from "./optionSelect/exitsting_option"
 import Navbar from "./common/navigationBar"
+import VehicleManagement from "./admin/components/VehicleManagement";
+import ModuleManagement from "./admin/components/ModuleManagement";
+import OptionManagement from "./admin/components/OptionManagement";
+import RentalRecords from "./admin/components/RentalRecords";
+import MaintenanceRecords from "./admin/components/MaintenanceRecords";
 
 function App() {
   return (
@@ -29,6 +34,11 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="index" element={<MainDashboard />} />
+          <Route path="vehicle-management" element={<VehicleManagement />} />
+          <Route path="module-management" element={<ModuleManagement />} />
+          <Route path="option-management" element={<OptionManagement />} />
+          <Route path="rental-records" element={<RentalRecords />} />
+          <Route path="maintenance-records" element={<MaintenanceRecords />} />
         </Route>
       </Routes>
     </Router>

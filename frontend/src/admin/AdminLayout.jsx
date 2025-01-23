@@ -4,18 +4,17 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import "./AdminLayout.css";
 
-const DashboardLayout = () => {
+function DashboardLayout() {
   return (
-    <div className="admin-layout">
+    <div className="dashboard-layout">
       <Sidebar />
       <div className="main-area">
         <Header />
-        <div className="content-area">
-          <Outlet />
-        </div>
+        <Outlet />
       </div>
     </div>
   );
 }
+
 
 export default DashboardLayout;

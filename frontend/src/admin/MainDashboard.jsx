@@ -1,5 +1,5 @@
 import React from "react";
-// import DashboardCard from "../components/DashboardCard";
+import DashboardCard from "./DashboardCard"
 // import SalesChart from "../components/SalesChart";
 // import GoalProgress from "../components/GoalProgress";
 
@@ -8,10 +8,10 @@ function MainDashboard() {
     <div>
       <h1>대시보드</h1>
       <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-        {/* <DashboardCard title="오늘 대여된 차량" value="64" />
+        <DashboardCard title="오늘 대여된 차량" value="64" />
         <DashboardCard title="대여 중인 차량" value="32" />
         <DashboardCard title="오늘 반납될 차량" value="16" />
-        <DashboardCard title="오늘 반납된 차량" value="8" /> */}
+        <DashboardCard title="오늘 반납된 차량" value="8" />
       </div>
 
       <div style={{ display: "flex", gap: "1rem" }}>

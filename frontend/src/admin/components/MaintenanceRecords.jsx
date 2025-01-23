@@ -1,4 +1,4 @@
-import "./MaintenanceRecord.css"
+import "./MaintenanceRecords.css"
 
 const MaintenanceRecord = () => {
     return (

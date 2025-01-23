@@ -1,15 +1,35 @@
 .sidebar {
-    color:  rgb(red, green, blue);
+  width: 240px;
+  height: 100vh;
+  background-color: #f8f9fa;
+  /* padding: 20px; */
 }
 
-.sidebar-logo {
-    max-width: 100px;
+.sidebar-logo img {
+  /* font-size: 24px; */
+  /* font-weight: bold;
+  margin-bottom: 20px; */
+  width: 100%;
 }
 
-.sidebar-menu {
-    text-align: center;
+ul {
+  list-style: none;
+  padding: 0;
+  font-size: 1.5rem; 
 }
 
-.sidebar-footer {
-    color: darkcyan;
+li {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+}
+
+a.active {
+  font-weight: bold;
+  color: #007bff;
 }
