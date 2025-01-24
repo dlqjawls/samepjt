@@ -5,11 +5,7 @@ from app.core.database import get_session
 from app.dummy_data import (
     dummy_admins, dummy_users, dummy_vehicles, dummy_modules,
     dummy_option_types, dummy_options, dummy_module_sets,
-    dummy_module_set_option_types, dummy_module_maintenance,
-    dummy_option_maintenance, dummy_vehicles_maintenance,
-    dummy_vehicles_usage_history, dummy_module_usage_history,
-    dummy_option_usage_history, dummy_rent_history,
-    dummy_payments, dummy_video_storage
+    dummy_module_set_option_types
 )
 
 from app.models import (
@@ -34,15 +30,15 @@ def insert_dummy_data():
         session.add_all([Option(**data) for data in dummy_options])
         session.add_all([ModuleSet(**data) for data in dummy_module_sets])
         session.add_all([ModuleSetOptionType(**data) for data in dummy_module_set_option_types])
-        session.add_all([ModuleMaintenance(**data) for data in dummy_module_maintenance])
-        session.add_all([OptionMaintenance(**data) for data in dummy_option_maintenance])
-        session.add_all([VehicleMaintenance(**data) for data in dummy_vehicles_maintenance])
-        session.add_all([VehicleUsageHistory(**data) for data in dummy_vehicles_usage_history])
-        session.add_all([ModuleUsageHistory(**data) for data in dummy_module_usage_history])
-        session.add_all([OptionUsageHistory(**data) for data in dummy_option_usage_history])
-        session.add_all([RentHistory(**data) for data in dummy_rent_history])
-        session.add_all([Payment(**data) for data in dummy_payments])
-        session.add_all([VideoStorage(**data) for data in dummy_video_storage])
+        # session.add_all([ModuleMaintenance(**data) for data in dummy_module_maintenance])
+        # session.add_all([OptionMaintenance(**data) for data in dummy_option_maintenance])
+        # session.add_all([VehicleMaintenance(**data) for data in dummy_vehicles_maintenance])
+        # session.add_all([VehicleUsageHistory(**data) for data in dummy_vehicles_usage_history])
+        # session.add_all([ModuleUsageHistory(**data) for data in dummy_module_usage_history])
+        # session.add_all([OptionUsageHistory(**data) for data in dummy_option_usage_history])
+        # session.add_all([RentHistory(**data) for data in dummy_rent_history])
+        # session.add_all([Payment(**data) for data in dummy_payments])
+        # session.add_all([VideoStorage(**data) for data in dummy_video_storage])
 
         # Commit the changes
         session.commit()

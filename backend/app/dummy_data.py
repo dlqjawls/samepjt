@@ -90,37 +90,21 @@ dummy_admins = [
 base_date = datetime.now()
 dummy_vehicles = [
     {
-        "vehicleId": 0,
+        "vehicleId": i,
         "vin": fake.uuid4(),
-        "vehicleNumber": f"PBV-{random.randint(1000, 9999)}",
+        "vehicleNumber": f"PBV-{i}",
         "currentLocation": json.dumps({
-            "x": round(random.uniform(35.0, 38.0), 6),  # 한국 위도 범위
-            "y": round(random.uniform(126.0, 129.0), 6)  # 한국 경도 범위
+            "x": i,  # 한국 위도 범위
+            "y": i  # 한국 경도 범위
         }),
-        "status": "inactive",
+        "status": "INACTIVE",
         "mileage": random.randint(1000, 5000),
         "lastMaintenanceAt": base_date.isoformat(),
         "nextMaintenanceAt": (base_date + timedelta(days=90)).isoformat(),  # 90일 후 정비
         "createdAt": base_date.isoformat(),
         "updatedAt": base_date.isoformat(),
     }
-]
-
-dummy_vehicles_maintenance = [
-    {
-        "maintenanceId": i,
-        "adminPK": random.choice(dummy_admins)["adminPK"], 
-        "vehicleId": random.choice(dummy_vehicles)["vehicleId"],
-        "issue": fake.sentence(),
-        "maintenanceDate": datetime.now().isoformat(),
-        "cost": random.randint(100, 500),
-        "status": random.choice(["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
-        "completedAt": datetime.now().isoformat(),
-        "notes": fake.sentence(),
-        "createdAt": datetime.now().isoformat(),
-        "updatedAt": datetime.now().isoformat(),
-    }
-    for i in range(1)
+    for i in range(3)
 ]
 
 # 더미 모듈 데이터 생성
@@ -131,7 +115,7 @@ dummy_modules = [
         "moduleType": "default",
         "moduleSize": f"{random.randint(10, 50)}x{random.randint(10, 50)}",
         "moduleCost": random.randint(1000, 5000),
-        "status": random.choice(["ACTIVE", "INACTIVE", "MAINTENANCE"]),
+        "status": "INACTIVE",
         "lastMaintenanceAt" : datetime.now().isoformat(),
         "nextMaintenanceAt" : datetime.now().isoformat(),
         "currentLocation" : json.dumps({"x": 0, "y": 0}),
@@ -157,16 +141,20 @@ dummy_option_types = [
     for i, option in enumerate(option_type_data)
 ]
 
-dummy_options = [
-    {
-        "optionId": i,
-        "optionType": dummy_option_types[i]["optionTypeId"],
-        "status": random.choice(["ACTIVE", "INACTIVE", "MAINTENANCE"]),
-        "createdAt": base_date.isoformat(),
-        "updatedAt": base_date.isoformat(),
-    }
-    for i, option in enumerate(option_type_data)
-]
+# 더미 옵션 데이터 생성
+dummy_options = []
+option_count = 3  # 각 옵션 타입당 생성할 옵션 개수
+
+for option_type in dummy_option_types:
+    for _ in range(option_count):
+        option = {
+            "optionId": len(dummy_options),  # 자동 증가하는 ID
+            "optionType": option_type["optionTypeId"],
+            "status": "INACTIVE",
+            "createdAt": base_date.isoformat(),
+            "updatedAt": base_date.isoformat(),
+        }
+        dummy_options.append(option)
 
 # dummy_module_sets 생성 부분 수정
 dummy_module_sets = []
@@ -212,144 +200,3 @@ for module_set in module_set_data:
                 "optionTypeId": option_type_id,
                 "quantity": 1,
             })
-
-dummy_module_maintenance = [
-    {
-        "maintenanceId": i,
-        "adminPK": random.choice(dummy_admins)["adminPK"],
-        "moduleId": random.choice(dummy_modules)["moduleId"],
-        "issue": fake.sentence(),
-        "maintenanceDate": datetime.now().isoformat(),
-        "cost": random.randint(100, 500), 
-        "status" : random.choice(["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
-        "completedAt ": datetime.now().isoformat(),
-        "notes": fake.sentence(),
-        "createdAt": datetime.now().isoformat(),
-        "updatedAt": datetime.now().isoformat(),
-    }
-    for i in range(1)
-]
-
-dummy_option_maintenance = [
-    {
-        "maintenanceId": i,
-        "adminPK": random.choice(dummy_admins)["adminPK"],
-        "optionId": random.choice(dummy_options)["optionId"],
-        "issue": fake.sentence(),
-        "maintenanceDate": datetime.now().isoformat(),
-        "cost": random.randint(100, 500),
-        "status" : random.choice(["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
-        "completedAt ": datetime.now().isoformat(),
-        "notes": fake.sentence(),
-        "createdAt": datetime.now().isoformat(),
-        "updatedAt": datetime.now().isoformat(),
-    }
-    for i in range(1)
-]
-
-# 더미 대여 기록 생성
-dummy_rent_history = []
-for i in range(1):
-    start_time = base_date + timedelta(days=random.randint(1, 30))
-    end_time = start_time + timedelta(hours=random.randint(1, 48))
-    base_cost = random.randint(100, 500)
-    additional_cost = random.randint(100, 500)
-    
-    dummy_rent_history.append({
-        "rentId": i,
-        "userPK": random.choice(dummy_users)["userPK"],
-        "departureLocation": json.dumps({
-            "x": round(random.uniform(35.0, 38.0), 6),
-            "y": round(random.uniform(126.0, 129.0), 6)
-        }),
-        "arrivalLocation": json.dumps({
-            "x": round(random.uniform(35.0, 38.0), 6),
-            "y": round(random.uniform(126.0, 129.0), 6)
-        }),
-        "rentStatus": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
-        "startTime": start_time.isoformat(),
-        "endTime": end_time.isoformat(),
-        "baseCost": base_cost,
-        "additionalCost": additional_cost,
-        "totalCost": base_cost + additional_cost,
-        "totalDistance": random.randint(10, 100),
-        "statusUpdatedAt": base_date.isoformat(),
-        "createdAt": base_date.isoformat(),
-    })
-
-dummy_payments = []
-for i, rent in enumerate(dummy_rent_history):
-    payment_date = datetime.fromisoformat(str(rent["startTime"]))
-    refund_date = None
-    refund_amount = 0
-    
-    if rent["rentStatus"] == "canceled":
-        refund_date = payment_date + timedelta(days=1)
-        refund_amount = int(rent["totalCost"])
-    
-    dummy_payments.append({
-        "paymentId": i,
-        "rentId": rent["rentId"],
-        "amount": rent["totalCost"],
-        "status": "paid" if rent["rentStatus"] != "canceled" else "refunded",
-        "paymentMethod": random.choice(["credit_card", "cash"]),
-        "paymentDate": payment_date.isoformat(),
-        "refundAmount": refund_amount,
-        "refundDate": refund_date.isoformat() if refund_date else None,
-        "createdAt": base_date.isoformat(),
-        "updatedAt": base_date.isoformat(),
-    })
-
-dummy_vehicles_usage_history = [
-    {
-        "vehicleUsageId": i,
-        "vehicleId": random.choice(dummy_vehicles)["vehicleId"],
-        "rentId": random.choice(dummy_rent_history)["rentId"],
-        "startLocation": fake.address(),
-        "endLocation": fake.address(),
-        "startTime": datetime.now().isoformat(),
-        "endTime": datetime.now().isoformat(),
-        "status": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
-        "mileage": random.randint(1000, 5000),
-    }
-    for i in range(1)
-]
-
-dummy_module_usage_history = [
-    {
-        "moduleUsageId": i,
-        "moduleId": random.choice(dummy_modules)["moduleId"],
-        "rentId": random.choice(dummy_rent_history)["rentId"],
-        "startTime": datetime.now().isoformat(),
-        "endTime": datetime.now().isoformat(),
-        "status": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
-    }
-    for i in range(1)
-]
-
-dummy_option_usage_history = [
-    {
-        "optionUsageId": i,
-        "optionId": random.choice(dummy_options)["optionId"],
-        "rentId": random.choice(dummy_rent_history)["rentId"],
-        "startTime": datetime.now().isoformat(),
-        "endTime": datetime.now().isoformat(),
-        "status": random.choice(["RESERVED", "IN_PROGRESS", "COMPLETED", "CANCELED"]),
-        "createdAt": datetime.now().isoformat(),
-    }
-    for i in range(1)
-]
-
-dummy_video_storage = [
-    {
-        "videoId": i,
-        "rentId": random.choice(dummy_rent_history)["rentId"],
-        "videoType": random.choice(["MODULE_INSTALLATION", "AUTONOMOUS_DRIVING"]),
-        "videoUrl": fake.url(),
-        "duration": random.randint(1, 100),
-        "size": random.randint(1, 100),
-        "recordedAt": datetime.now().isoformat(),
-        "createdAt": datetime.now().isoformat(),
-    }
-    for i in range(1)
-]
