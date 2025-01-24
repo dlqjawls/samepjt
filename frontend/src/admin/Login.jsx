@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import moducar_logo from "../assets/moducar_logo.svg";
 
@@ -10,6 +11,8 @@ const AdminLogin = ({ onClose = () => {} }) => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,8 +32,12 @@ const AdminLogin = ({ onClose = () => {} }) => {
         "https://backend-wandering-river-6835.fly.dev/admin/login",
         formData
       );
-      console.log("로그인 성공:", response.data);
-      onClose();
+      alert("관리자 로그인 성공!")
+      console.log("관리자 로그인 성공:", response.data)
+      console.log(response.data.token)
+      const token = response.data.accessToken
+      localStorage.setItem("adminToken",token)
+      navigate("/admin/index");
     } catch (err) {
       setError(err.response?.data?.message || "로그인 중 오류가 발생했습니다. 다시 시도해 주세요.");
     } finally {

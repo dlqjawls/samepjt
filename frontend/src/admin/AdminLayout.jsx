@@ -10,11 +10,12 @@ function DashboardLayout() {
       <Sidebar />
       <div className="main-area">
         <Header />
-        <Outlet />
+        <div className="content-area">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
 }
-
 
 export default DashboardLayout;

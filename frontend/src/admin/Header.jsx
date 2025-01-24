@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaBell, FaEnvelope } from "react-icons/fa";
 import "./Header.css";
+import accountCircle from "../assets/account_circle.svg"
 
 function Header() {
+  const navigate = useNavigate();
+
+  const logout = () => {
+    localStorage.removeItem("adminToken");
+  }
+
+  const handleLogout = () => {
+    logout();
+    navigate("/admin/login")
+  }
+
+
   return (
     <header className="header">
       {/* 검색창 */}
@@ -15,13 +29,14 @@ function Header() {
         <FaBell className="icon" />
         <FaEnvelope className="icon" />
         <div className="profile">
-          <span className="profile-name">Admin</span>
           <img 
-            src="/images/profile.png"
+            src={accountCircle}
             alt="admin-profile"
             className="profile-image"
           />
+          <span className="profile-name">Admin</span>
         </div>
+        <button className="admin-logout-button" onClick={handleLogout}>로그아웃</button>
       </div>
     </header>
   );
