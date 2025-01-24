@@ -1,35 +1,96 @@
+/* Sidebar.css */
+
 .sidebar {
   width: 240px;
   height: 100vh;
   background-color: #f8f9fa;
   /* padding: 20px; */
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
 }
 
 .sidebar-logo img {
-  /* font-size: 24px; */
-  /* font-weight: bold;
-  margin-bottom: 20px; */
-  width: 100%;
+  width: 80%;
+  padding: 30px 20px;
 }
 
-ul {
+.sidebar-menu ul {
   list-style: none;
   padding: 0;
-  font-size: 1.5rem; 
+  font-size: 1.2rem; /* 텍스트 크기 조정 */
 }
 
-li {
+.sidebar-menu li {
+  flex: initial;
+}
+
+.nav-link {
+  display: flex; /* 아이콘과 텍스트를 한 줄로 배치 */
+  align-items: center; /* 아이콘과 텍스트의 수직 정렬 */
+  text-decoration: none; /* 링크 밑줄 제거 */
+  color: #333; /* 텍스트 색상 */
+  font-size: 20px; /* 텍스트 크기 */
+  font-weight: 700;
+  padding: 30px 50px; /* 간격 */
+  transition: background-color 0.3s ease, color 0.3s ease; /* 마우스 호버 시 애니메이션 */
+  width: 100%; /* 버튼 전체 너비 */
+  box-sizing: border-box;
+}
+
+.nav-link:hover {
+  background-color: #e2e6ea; /* 호버 시 배경색 변경 */
+  color: #65BBE6; /* 호버 시 텍스트 색상 변경 */
+}
+
+.nav-link.active {
+  background-color: #65BBE6; /* 활성화된 항목의 배경색 */
+  color: #fff; /* 활성화된 항목의 텍스트 색상 */
+}
+
+.nav-link.active .nav-icon {
+  color: #fff; /* 활성화된 아이콘 색상 */
+}
+
+.nav-icon {
+  margin-right: 12px; /* 아이콘과 텍스트 간격 */
+  font-size: 18px; /* 아이콘 크기 */
+  transition: color 0.3s ease;
+}
+
+.sidebar-footer {
+  padding: 20px 0;
+}
+
+.settings-button {
   display: flex;
-  justify-content: center;
-  padding: 10px;
-}
-
-a {
+  align-items: center;
   text-decoration: none;
   color: #333;
+  font-size: 16px;
+  padding: 10px 20px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-a.active {
-  font-weight: bold;
-  color: #007bff;
+.settings-button:hover {
+  background-color: #e2e6ea;
+  color: #65BBE6;
+}
+
+.settings-button .nav-icon {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.settings-button.active {
+  background-color: #28a745; /* 설정 버튼의 활성화된 배경색 (예시) */
+  color: #fff;
+}
+
+.settings-button.active .nav-icon {
+  color: #fff;
 }

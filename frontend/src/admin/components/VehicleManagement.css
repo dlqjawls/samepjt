@@ -1,27 +1,30 @@
-/* 테이블 전체 컨테이너 */
-.table-container {
+/* src/components/VehicleManagement.css */
+
+/* 컨테이너 */
+.vehicle-container {
   width: 100%;
   margin: 20px 0;
-  /* padding: 20px; */
-  background-color: #f8f9fa;
+  background-color: #fff;
   border-radius: 8px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* 헤더와 버튼 */
-.table-header {
+/* 헤더 */
+.vehicle-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.table-header h1 {
-  font-size: 20px;
+.vehicle-header h1 {
+  font-size: 24px;
   font-weight: bold;
 }
 
-.add-button {
-  background-color: #6a5bff;
+.vehicle-header .add-button {
+  background-color: #28a745;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -30,74 +33,137 @@
   cursor: pointer;
 }
 
-.add-button:hover {
-  background-color: #5746cc;
+.vehicle-header .add-button:hover {
+  background-color: #218838;
 }
 
 /* 테이블 */
-.custom-table {
+.vehicle-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
+  background-color: #f9f9f9;
 }
 
-.custom-table th,
-.custom-table td {
+.vehicle-table th,
+.vehicle-table td {
   padding: 12px;
   text-align: center;
   border: 1px solid #ddd;
 }
 
-.custom-table th {
+.vehicle-table th {
   background-color: #eaeaea;
   font-weight: bold;
 }
 
+.vehicle-table td {
+  vertical-align: middle;
+}
+
 .detail-button {
-  background-color: #d6d8f3;
-  color: #4f4db6;
-  padding: 8px 12px;
+  background-color: #17a2b8;
+  color: #fff;
+  padding: 6px 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .detail-button:hover {
-  background-color: #b0b3f0;
+  background-color: #138496;
 }
 
-/* 모달 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+/* 상세 정보 내용 */
+.detail-content p {
+  margin: 10px 0;
+}
+
+.modal-actions {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  text-align: center;
-}
-
-.close-button {
+  justify-content: flex-end;
   margin-top: 20px;
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
+}
+
+.edit-button {
+  background-color: #ffc107;
+  color: #212529;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.edit-button:hover {
+  background-color: #e0a800;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: #fff;
+  padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.close-button:hover {
-  background-color: #0056b3;
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+/* 수정 폼 */
+.edit-form label,
+.add-form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.add-form input,
+.add-form select,
+.add-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+.edit-form textarea,
+.add-form textarea {
+  resize: vertical;
+  height: 80px;
+}
+
+/* 삭제 확인 내용 */
+.delete-content p {
+  margin: 20px 0;
+}
+
+.confirm-delete-button {
+  background-color: #dc3545;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.confirm-delete-button:hover {
+  background-color: #c82333;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
 }

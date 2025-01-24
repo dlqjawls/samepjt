@@ -1,69 +1,127 @@
+// src/components/VehicleManagement.jsx
 import React, { useState } from "react";
+import Modal from "./Modal";
 import "./VehicleManagement.css";
 
 function VehicleManagement() {
   const [data, setData] = useState([
     {
+      vehicleId: 1,
       vehicleNumber: "아3123",
-      chassisNumber: "1241241",
-      location: "차고지",
-      status: "대기 중",
-      mileage: "3000km",
-      lastMaintenance: "2024.12.21",
-      nextMaintenance: "2025.03.01",
+      vin: "VIN1241241",
+      currentLocation: "차고지",
+      status: "active",
+      mileage: 3000,
+      lastMaintenanceAt: "2024-12-21",
+      nextMaintenanceAt: "2025-03-01",
+      createdAt: "2024-01-01T09:00",
+      updatedAt: "2024-12-21T09:00",
     },
     {
-      vehicleNumber: "아3123",
-      chassisNumber: "1241241",
-      location: "차고지",
-      status: "대기 중",
-      mileage: "3000km",
-      lastMaintenance: "2024.12.21",
-      nextMaintenance: "2025.03.01",
+      vehicleId: 2,
+      vehicleNumber: "나3123",
+      vin: "VIN1243141",
+      currentLocation: "차고지",
+      status: "active",
+      mileage: 2000,
+      lastMaintenanceAt: "2024-01-21",
+      nextMaintenanceAt: "2025-04-01",
+      createdAt: "2024-02-01T10:00",
+      updatedAt: "2024-01-21T10:00",
     },
   ]);
 
   const [selectedRow, setSelectedRow] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     vehicleNumber: "",
-    chassisNumber: "",
-    location: "",
-    status: "",
+    vin: "",
+    currentLocation: "",
+    status: "active",
     mileage: "",
-    lastMaintenance: "",
-    nextMaintenance: "",
+    lastMaintenanceAt: "",
+    nextMaintenanceAt: "",
   });
 
+  // 상세보기 클릭 시
   const handleDetailClick = (row) => {
     setSelectedRow(row);
-    setIsModalOpen(true);
+    setIsDetailModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeDetailModal = () => {
     setSelectedRow(null);
-    setIsModalOpen(false);
+    setIsDetailModalOpen(false);
   };
 
-  const handleAddModalOpen = () => {
+  // 수정 클릭 시
+  const handleEditClick = () => {
+    setFormData({
+      vehicleNumber: selectedRow.vehicleNumber,
+      vin: selectedRow.vin,
+      currentLocation: selectedRow.currentLocation,
+      status: selectedRow.status,
+      mileage: selectedRow.mileage,
+      lastMaintenanceAt: selectedRow.lastMaintenanceAt,
+      nextMaintenanceAt: selectedRow.nextMaintenanceAt,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setFormData({
+      vehicleNumber: "",
+      vin: "",
+      currentLocation: "",
+      status: "active",
+      mileage: "",
+      lastMaintenanceAt: "",
+      nextMaintenanceAt: "",
+    });
+    setIsEditModalOpen(false);
+  };
+
+  // 삭제 클릭 시
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  // 신규 등록 클릭 시
+  const handleAddClick = () => {
+    setFormData({
+      vehicleNumber: "",
+      vin: "",
+      currentLocation: "",
+      status: "active",
+      mileage: "",
+      lastMaintenanceAt: "",
+      nextMaintenanceAt: "",
+    });
     setIsAddModalOpen(true);
   };
 
-  const handleAddModalClose = () => {
+  const closeAddModal = () => {
     setFormData({
       vehicleNumber: "",
-      chassisNumber: "",
-      location: "",
-      status: "",
+      vin: "",
+      currentLocation: "",
+      status: "active",
       mileage: "",
-      lastMaintenance: "",
-      nextMaintenance: "",
+      lastMaintenanceAt: "",
+      nextMaintenanceAt: "",
     });
     setIsAddModalOpen(false);
   };
 
+  // 폼 변경 시
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -72,42 +130,77 @@ function VehicleManagement() {
     }));
   };
 
-  const handleSaveNewVehicle = () => {
-    setData((prevData) => [...prevData, formData]);
-    handleAddModalClose();
+  // 수정 저장 시
+  const handleSaveEdit = () => {
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.vehicleId === selectedRow.vehicleId
+          ? {
+              ...item,
+              ...formData,
+              mileage: Number(formData.mileage),
+              updatedAt: new Date().toISOString(),
+            }
+          : item
+      )
+    );
+    closeEditModal();
+    closeDetailModal();
+  };
+
+  // 삭제 확인 시
+  const handleConfirmDelete = () => {
+    setData((prevData) =>
+      prevData.filter((item) => item.vehicleId !== selectedRow.vehicleId)
+    );
+    closeDeleteModal();
+    closeDetailModal();
+  };
+
+  // 신규 등록 저장 시
+  const handleSaveAdd = () => {
+    const newVehicle = {
+      vehicleId: data.length + 1,
+      ...formData,
+      mileage: Number(formData.mileage),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setData((prevData) => [...prevData, newVehicle]);
+    closeAddModal();
   };
 
   return (
-    <div className="table-container">
-      <div className="table-header">
+    <div className="vehicle-container">
+      <div className="vehicle-header">
         <h1>차량 관리</h1>
-        <button className="add-button" onClick={handleAddModalOpen}>
+        <button className="add-button" onClick={handleAddClick}>
           + 신규 등록
         </button>
       </div>
-      <table className="custom-table">
+      <table className="vehicle-table">
         <thead>
           <tr>
             <th>차량번호</th>
-            <th>차대번호</th>
+            <th>차대번호 (VIN)</th>
             <th>현재 위치</th>
-            <th>현재 상태</th>
-            <th>이동 거리</th>
+            <th>상태</th>
+            <th>이동 거리 (km)</th>
             <th>최근 정비 일자</th>
             <th>다음 정비 일자</th>
             <th>상세 보기</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
+          {data.map((row) => (
+            <tr key={row.vehicleId}>
               <td>{row.vehicleNumber}</td>
-              <td>{row.chassisNumber}</td>
-              <td>{row.location}</td>
-              <td>{row.status}</td>
+              <td>{row.vin}</td>
+              <td>{row.currentLocation}</td>
+              <td>{row.status === "active" ? "활성화" : "비활성화"}</td>
               <td>{row.mileage}</td>
-              <td>{row.lastMaintenance}</td>
-              <td>{row.nextMaintenance}</td>
+              <td>{row.lastMaintenanceAt}</td>
+              <td>{row.nextMaintenanceAt}</td>
               <td>
                 <button
                   className="detail-button"
@@ -122,105 +215,213 @@ function VehicleManagement() {
       </table>
 
       {/* 상세 정보 모달 */}
-      {isModalOpen && selectedRow && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>상세 정보</h2>
+      <Modal isOpen={isDetailModalOpen} onClose={closeDetailModal}>
+        {selectedRow && (
+          <div className="detail-content">
+            <h2>차량 상세 정보</h2>
             <p>차량번호: {selectedRow.vehicleNumber}</p>
-            <p>차대번호: {selectedRow.chassisNumber}</p>
-            <p>현재 위치: {selectedRow.location}</p>
-            <p>현재 상태: {selectedRow.status}</p>
-            <p>이동 거리: {selectedRow.mileage}</p>
-            <p>최근 정비 일자: {selectedRow.lastMaintenance}</p>
-            <p>다음 정비 일자: {selectedRow.nextMaintenance}</p>
-            <button onClick={closeModal} className="close-button">
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 신규 등록 모달 */}
-      {isAddModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>신규 차량 등록</h2>
-            <form className="add-form">
-              <label>
-                차량번호:
-                <input
-                  type="text"
-                  name="vehicleNumber"
-                  value={formData.vehicleNumber}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                차대번호:
-                <input
-                  type="text"
-                  name="chassisNumber"
-                  value={formData.chassisNumber}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                현재 위치:
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                현재 상태:
-                <input
-                  type="text"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                이동 거리:
-                <input
-                  type="text"
-                  name="mileage"
-                  value={formData.mileage}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                최근 정비 일자:
-                <input
-                  type="date"
-                  name="lastMaintenance"
-                  value={formData.lastMaintenance}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                다음 정비 일자:
-                <input
-                  type="date"
-                  name="nextMaintenance"
-                  value={formData.nextMaintenance}
-                  onChange={handleFormChange}
-                />
-              </label>
-            </form>
+            <p>차대번호 (VIN): {selectedRow.vin}</p>
+            <p>현재 위치: {selectedRow.currentLocation}</p>
+            <p>
+              상태: {selectedRow.status === "active" ? "활성화" : "비활성화"}
+            </p>
+            <p>이동 거리: {selectedRow.mileage} km</p>
+            <p>최근 정비 일자: {selectedRow.lastMaintenanceAt}</p>
+            <p>다음 정비 일자: {selectedRow.nextMaintenanceAt}</p>
             <div className="modal-actions">
-              <button onClick={handleSaveNewVehicle} className="save-button">
-                저장
+              <button onClick={handleEditClick} className="edit-button">
+                수정
               </button>
-              <button onClick={handleAddModalClose} className="cancel-button">
-                취소
+              <button onClick={handleDeleteClick} className="delete-button">
+                삭제
               </button>
             </div>
           </div>
+        )}
+      </Modal>
+
+      {/* 수정 모달 */}
+      <Modal isOpen={isEditModalOpen} onClose={closeEditModal}>
+        <div className="edit-content">
+          <h2>차량 수정</h2>
+          <form className="edit-form">
+            <label>
+              차량번호:
+              <input
+                type="text"
+                name="vehicleNumber"
+                value={formData.vehicleNumber}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              차대번호 (VIN):
+              <input
+                type="text"
+                name="vin"
+                value={formData.vin}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              현재 위치:
+              <input
+                type="text"
+                name="currentLocation"
+                value={formData.currentLocation}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              상태:
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleFormChange}
+              >
+                <option value="active">활성화</option>
+                <option value="inactive">비활성화</option>
+              </select>
+            </label>
+            <label>
+              이동 거리 (km):
+              <input
+                type="number"
+                name="mileage"
+                value={formData.mileage}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              최근 정비 일자:
+              <input
+                type="date"
+                name="lastMaintenanceAt"
+                value={formData.lastMaintenanceAt}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              다음 정비 일자:
+              <input
+                type="date"
+                name="nextMaintenanceAt"
+                value={formData.nextMaintenanceAt}
+                onChange={handleFormChange}
+              />
+            </label>
+          </form>
+          <div className="modal-actions">
+            <button onClick={handleSaveEdit} className="save-button">
+              저장
+            </button>
+            <button onClick={closeEditModal} className="cancel-button">
+              취소
+            </button>
+          </div>
         </div>
-      )}
+      </Modal>
+
+      {/* 삭제 확인 모달 */}
+      <Modal isOpen={isDeleteModalOpen} onClose={closeDeleteModal}>
+        <div className="delete-content">
+          <h2>차량 삭제 확인</h2>
+          <p>정말로 이 차량을 삭제하시겠습니까?</p>
+          <div className="modal-actions">
+            <button
+              onClick={handleConfirmDelete}
+              className="confirm-delete-button"
+            >
+              삭제
+            </button>
+            <button onClick={closeDeleteModal} className="cancel-button">
+              취소
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 신규 등록 모달 */}
+      <Modal isOpen={isAddModalOpen} onClose={closeAddModal}>
+        <div className="add-content">
+          <h2>신규 차량 등록</h2>
+          <form className="add-form">
+            <label>
+              차량번호:
+              <input
+                type="text"
+                name="vehicleNumber"
+                value={formData.vehicleNumber}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              차대번호 (VIN):
+              <input
+                type="text"
+                name="vin"
+                value={formData.vin}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              현재 위치:
+              <input
+                type="text"
+                name="currentLocation"
+                value={formData.currentLocation}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              상태:
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleFormChange}
+              >
+                <option value="active">활성화</option>
+                <option value="inactive">비활성화</option>
+              </select>
+            </label>
+            <label>
+              이동 거리 (km):
+              <input
+                type="number"
+                name="mileage"
+                value={formData.mileage}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              최근 정비 일자:
+              <input
+                type="date"
+                name="lastMaintenanceAt"
+                value={formData.lastMaintenanceAt}
+                onChange={handleFormChange}
+              />
+            </label>
+            <label>
+              다음 정비 일자:
+              <input
+                type="date"
+                name="nextMaintenanceAt"
+                value={formData.nextMaintenanceAt}
+                onChange={handleFormChange}
+              />
+            </label>
+          </form>
+          <div className="modal-actions">
+            <button onClick={handleSaveAdd} className="save-button">
+              등록
+            </button>
+            <button onClick={closeAddModal} className="cancel-button">
+              취소
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

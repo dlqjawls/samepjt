@@ -1,0 +1,162 @@
+/* src/components/ModuleManagement.css */
+
+/* 컨테이너 */
+.module-container {
+    width: 100%;
+    margin: 20px 0;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* 헤더 */
+  .module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .module-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .module-header .add-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .module-header .add-button:hover {
+    background-color: #218838;
+  }
+  
+  /* 테이블 */
+  .module-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+  }
+  
+  .module-table th,
+  .module-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  .module-table th {
+    background-color: #eaeaea;
+    font-weight: bold;
+  }
+  
+  .module-table td {
+    vertical-align: middle;
+  }
+  
+  .detail-button {
+    background-color: #17a2b8;
+    color: #fff;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .detail-button:hover {
+    background-color: #138496;
+  }
+  
+  /* 상세 정보 내용 */
+  .detail-content p {
+    margin: 10px 0;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .edit-button {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .edit-button:hover {
+    background-color: #e0a800;
+  }
+  
+  .delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .delete-button:hover {
+    background-color: #c82333;
+  }
+  
+  /* 수정 및 신규 등록 폼 */
+  .edit-form label,
+  .add-form label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .edit-form input,
+  .edit-form select,
+  .add-form input,
+  .add-form select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+  }
+  
+  /* 삭제 확인 내용 */
+  .delete-content p {
+    margin: 20px 0;
+  }
+  
+  .confirm-delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .confirm-delete-button:hover {
+    background-color: #c82333;
+  }
+  
+  .cancel-button {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .cancel-button:hover {
+    background-color: #5a6268;
+  }
+  
