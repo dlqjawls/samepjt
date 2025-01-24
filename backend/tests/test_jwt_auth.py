@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app  # FastAPI 애플리케이션 import
+from app.api.schemas.token import TokenRefreshRequest
 
 client = TestClient(app)
 
@@ -65,18 +66,20 @@ def test_admin_semi_access(admin_login):
 
 
 def test_refresh_token(admin_login):
-    """ (Success) 리프레시 토큰을 사용하여 새로운 액세스 토큰 발급 """
+    """ ✅ (수정됨) 리프레시 토큰을 사용하여 새로운 액세스 토큰 발급 """
     _, refresh_token = admin_login
-    response = client.post("/test/refresh-token", json={"refresh_token": refresh_token})
+    request = TokenRefreshRequest(refresh_token=refresh_token)
+
+    response = client.post("/auth/refresh-token", json=request.dict())
 
     assert response.status_code == 200
-    assert "accessToken" in response.json()
-
+    assert "access_token" in response.json()
+    assert "refresh_token" in response.json()
 
 def test_logout(admin_login):
     """ (Success) 로그아웃 후 리프레시 토큰 삭제 확인 """
     access_token, _ = admin_login
-    response = client.post("/test/logout", headers={"Authorization": f"Bearer {access_token}"})
+    response = client.post("/auth/logout", headers={"Authorization": f"Bearer {access_token}"})
 
     assert response.status_code == 200
     assert response.json()["message"] == "Successfully logged out"
