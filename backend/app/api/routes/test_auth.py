@@ -2,6 +2,10 @@ from fastapi import APIRouter, Depends
 from app.utils.jwt import  jwt_handler
 from app.core.database import get_session
 from sqlmodel import Session
+from pydantic import BaseModel
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
 
 router = APIRouter(prefix="/test", tags=["test"])
 
@@ -14,11 +18,12 @@ async def test_auth(
 
 @router.post("/refresh-token")
 async def refresh_token(
-    refresh_token: str,
+    request: RefreshTokenRequest,  # ✅ Pydantic 스키마 적용
     session: Session = Depends(get_session)
 ):
-    new_access_token = jwt_handler.refresh_access_token(refresh_token)
-    return {"accessToken": new_access_token}
+    """✅ 리프레시 토큰을 사용하여 새 액세스 토큰 및 새로운 리프레시 토큰 발급"""
+    new_access_token, new_refresh_token = jwt_handler.refresh_access_token(request.refresh_token)
+    return {"accessToken": new_access_token, "refreshToken": new_refresh_token}
 
 @router.post("/logout")
 async def logout(
