@@ -83,7 +83,6 @@ function ModuleSetList() {
   const handleNextStep = (moduleSet) => {
     // console.log(selectedModule.moduleSetOptionTypes)
     navigate("/exist_option", { state: { selectedModule: moduleSet } })
-    
   }
 
   const prepage = () => {
@@ -122,23 +121,6 @@ function ModuleSetList() {
               </div>
             ))}
           </div>
-
-          <div className="pagination">
-            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="pagination-button">
-              이전
-            </button>
-            <span className="page-info">
-              {pagination.currentPage} / {pagination.totalPages}
-            </span>
-            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === pagination.totalPages} className="pagination-button">
-              다음
-            </button>
-            <select value={pageSize} onChange={handlePageSizeChange} className="page-size-select">
-              <option value={5}>5개씩</option>
-              <option value={10}>10개씩</option>
-              <option value={20}>20개씩</option>
-            </select>
-          </div>
         </>
       )}
 
@@ -166,11 +148,15 @@ function ModuleSetList() {
                 <div className="options">
                   <h4>포함된 옵션</h4>
                   <ul>
-                    {selectedModule.moduleSetOptionTypes.map((option) => ( // 옵션 키 수정
-                      <li key={option.optionTypeId}>
-                        {option.optionTypeName} (수량: {option.quantity})
-                      </li>
-                    ))}
+                    {selectedModule.moduleSetOptionTypes.map(
+                      (
+                        option // 옵션 키 수정
+                      ) => (
+                        <li key={option.optionTypeId}>
+                          {option.optionTypeName} (수량: {option.quantity})
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
 
@@ -191,7 +177,9 @@ function ModuleSetList() {
           </div>
         </div>
       )}
-      <button onClick={prepage}>이전페이지로</button>
+      <button onClick={prepage} className="select-next-button">
+        이전페이지로
+      </button>
     </div>
   )
 }

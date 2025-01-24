@@ -1,137 +1,139 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './total_reciept.css';
-import axios from 'axios';
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import "./total_reciept.css"
+import axios from "axios"
+
 const Total_reciept = () => {
-    const navigate = useNavigate();
-    const body = {
-        "selectedOptionTypes": [
-          {
-            "optionTypeId": 1,
-            "quantity": 1
-          },
-          {
-            "optionTypeId": 2,
-            "quantity": 1
+  const navigate = useNavigate()
+  const [receiptDetails, setReceiptDetails] = useState({
+    options: [],
+    totalAmount: 0,
+  })
+
+  useEffect(() => {
+    const fetchOptionDetails = async () => {
+      try {
+        const savedOptionData = JSON.parse(sessionStorage.getItem("selectedOptionData") || "{}")
+
+        const response = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types")
+        const allOptions = response.data.data.optionTypes
+
+        const matchedOptions = savedOptionData.selectedOptions.map((selectedOption) => {
+          const fullOption = allOptions.find((opt) => opt.optionTypeId === selectedOption.optionTypeId)
+          return {
+            ...fullOption,
+            quantity: selectedOption.quantity,
+            totalPrice: fullOption.optionTypeCost * selectedOption.quantity,
           }
-        ],
-        "autonomousArrivalPoint": {
-          "x": 12.313,
-          "y": 32.3232
-        },
-        "autonomousDeparturePoint": {
-          "x": 11.512,
-          "y": 30.4531
-        },
-        "rentStartDate": "2025-01-15T09:00:00",
-        "rentEndDate": "2025-01-20T18:00:00"
+        })
+
+        const total = matchedOptions.reduce((sum, option) => sum + option.totalPrice, 0)
+
+        setReceiptDetails({
+          options: matchedOptions,
+          totalAmount: total,
+        })
+      } catch (error) {
+        console.error("옵션 정보 조회 중 오류:", error)
       }
-    // 세션스토리지에서 데이터 로드
-    const [receiptData] = useState(() => {
-        const savedOptionData = JSON.parse(sessionStorage.getItem('selectedOptionData') || '{}');
-        return {
-            // ...기존 데이터...
-            selectedOptions: savedOptionData.selectedOptions || []
-        };
-    });
+    }
 
-    const handlePayment = async () => {
-        try {
-            const token = sessionStorage.getItem('token');
-            if (!token) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
+    fetchOptionDetails()
+  }, [])
 
-            const rentData = {
-                selectedOptionTypes: receiptData.selectedOptions,
-                autonomousArrivalPoint: {
-                    x: 12.313, // 실제 좌표로 변경 필요
-                    y: 32.3232
-                },
-                autonomousDeparturePoint: {
-                    x: 11.512,
-                    y: 30.4531
-                },
-                "rentStartDate": "2025-01-15T09:00:00",
-  "rentEndDate": "2025-01-20T18:00:00"
-            };
-
-            const response = await axios.post(
-                'https://backend-wandering-river-6835.fly.dev/user/rent/request',
-                rentData,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                }
-            );
-
-            if (response.data.success) {
-                alert('결제가 완료되었습니다.');
-                sessionStorage.removeItem('selectedOptionData'); // 세션 데이터 삭제
-                navigate('/'); // 홈으로 이동
-            }
-        } catch (error) {
-            console.error('결제 처리 중 오류:', error);
-            alert('결제 처리 중 오류가 발생했습니다.');
+  const handlePayment = async () => {
+    if (window.confirm("결제를 진행하시겠습니까?")) {
+      try {
+        const token = sessionStorage.getItem("token")
+        if (!token) {
+          alert("로그인이 필요합니다.")
+          return
         }
-    };
-    return (
-        // <div className="receipt-container">
-        //     <h1 className="receipt-title">최종 명세서</h1>
-            
-        //     <div className="receipt-section">
-        //         <h2>차량 정보</h2>
-        //         <p>차량: {receiptData.vehicleInfo.name}</p>
-        //         <p>차량번호: {receiptData.vehicleInfo.licensePlate}</p>
-        //     </div>
 
-        //     <div className="receipt-section">
-        //         <h2>대여 정보</h2>
-        //         <p>대여 시작: {receiptData.rentalPeriod.start}</p>
-        //         <p>반납 예정: {receiptData.rentalPeriod.end}</p>
-        //         <p>픽업 위치: {receiptData.location.pickup}</p>
-        //         <p>반납 위치: {receiptData.location.return}</p>
-        //     </div>
+        const rentData = {
+          selectedOptionTypes: receiptData.selectedOptions,
+          autonomousArrivalPoint: {
+            x: 12.313,
+            y: 32.3232,
+          },
+          autonomousDeparturePoint: {
+            x: 11.512,
+            y: 30.4531,
+          },
+          rentStartDate: "2025-01-15T09:00:00",
+          rentEndDate: "2025-01-20T18:00:00",
+        }
 
-        //     <div className="receipt-section">
-        //         <h2>선택 모듈</h2>
-        //         {receiptData.selectedModules.map((module, index) => (
-        //             <div key={index} className="item-row">
-        //                 <span>{module.name}</span>
-        //                 <span>{module.price.toLocaleString()}원</span>
-        //             </div>
-        //         ))}
-        //     </div>
+        const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/rent/rent", rentData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
 
-        //     <div className="receipt-section">
-        //         <h2>선택 옵션</h2>
-        //         {receiptData.selectedOptions.map((option, index) => (
-        //             <div key={index} className="item-row">
-        //                 <span>{option.name}</span>
-        //                 <span>{option.price.toLocaleString()}원</span>
-        //             </div>
-        //         ))}
-        //     </div>
+        if (response.data.success) {
+          alert("결제가 완료되었습니다.")
+          sessionStorage.removeItem("selectedOptionData")
+          navigate("/")
+        }
+      } catch (error) {
+        console.error("결제 처리 중 오류:", error)
+        alert("결제 처리 중 오류가 발생했습니다.")
+      }
+    }
+  }
 
-        //     <div className="receipt-section total-section">
-        //         <h2>총 결제 금액</h2>
-        //         <div className="cost-breakdown">
-        //             <p>기본 대여료: {receiptData.costs.baseFee.toLocaleString()}원</p>
-        //             <p>모듈 이용료: {receiptData.costs.moduleFee.toLocaleString()}원</p>
-        //             <p>옵션 이용료: {receiptData.costs.optionFee.toLocaleString()}원</p>
-        //             <p className="total-amount">총 금액: {receiptData.costs.totalAmount.toLocaleString()}원</p>
-        //         </div>
-        //     </div>
+  const handleGoBack = () => {
+    navigate("/rentForm")
+  }
 
-            <div className="button-group">
-                <button className="payment-button" onClick={handlePayment}>
-                    결제하기
-                </button>
-            </div>
-        // </div>
-    );
+  return (
+    <div className="receipt-container">
+      <div className="receipt">
+        <h2 className="receipt-title">렌트카 옵션 영수증</h2>
+
+        <div className="receipt-header">
+          <p>주문 일자: {new Date().toLocaleDateString()}</p>
+          <p>주문 번호: {Math.random().toString(36).slice(2)}</p>
+        </div>
+
+        <div className="receipt-items">
+          <table>
+            <thead>
+              <tr>
+                <th>옵션명</th>
+                <th>수량</th>
+                <th>단가</th>
+                <th>금액</th>
+              </tr>
+            </thead>
+            <tbody>
+              {receiptDetails.options.map((option) => (
+                <tr key={option.optionTypeId}>
+                  <td>{option.optionTypeName}</td>
+                  <td>{option.quantity}</td>
+                  <td>{option.optionTypeCost.toLocaleString()}원</td>
+                  <td>{option.totalPrice.toLocaleString()}원</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="receipt-total">
+          <p>총 결제 금액: {receiptDetails.totalAmount.toLocaleString()}원</p>
+        </div>
+
+        <div className="button-group">
+          <button className="back-button" onClick={handleGoBack}>
+            이전으로
+          </button>
+          <button className="payment-button" onClick={handlePayment}>
+            결제하기
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 }
 
-export default Total_reciept;
+export default Total_reciept
