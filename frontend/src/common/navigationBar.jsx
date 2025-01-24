@@ -12,7 +12,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <button className="hide-button" onClick={goToHomePage}>
+        <button type="button" className="hide-button" onClick={goToHomePage}>
           <div className="navbar-logo">
             <img src="Vector.svg" alt="MODUCAR Logo" className="navbar-icon" />
             <span>MODUCAR</span>

@@ -67,7 +67,7 @@ h2 {
 }
 
 /* 입력 필드 스타일 */
-input {
+.input {
   width: 100%;
   padding: 12px;
   margin-top: 8px;
@@ -80,18 +80,18 @@ input {
   box-sizing: border-box; /* 패딩과 테두리 포함하여 너비가 맞도록 설정 */
 }
 
-input::placeholder {
+.input::placeholder {
   color: #999999;
 }
 
-input:focus {
+.input:focus {
   outline: 1px;
   border-color: #007bff; /* 포커스 시 파란색 테두리 */
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
 }
 
 /* 로그인 버튼 스타일 */
-button[type="submit"] {
+.submit-button {
   width: 100%;
   padding: 14px;
   background-color: #007bff;
@@ -104,29 +104,29 @@ button[type="submit"] {
   margin-top: 16px;
 }
 
-button[type="submit"]:hover {
+.submit-button:hover {
   background-color: #0056b3;
 }
 
-button[type="submit"]:disabled {
+.submit-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
 /* 회원가입 링크 스타일 */
-.text-blue-600 {
+.register-button {
   color: #007bff;
   font-size: 14px;
   text-align: center;
 }
 
-.text-blue-600:hover {
+.register-button:hover {
   text-decoration: underline;
   color: #0056b3;
 }
 
 /* 폼 레이블 */
-label {
+.label {
   font-size: 14px;
   font-weight: 500;
   color: #333333;

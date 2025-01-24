@@ -1,9 +1,11 @@
+/* 모듈 리스트 컨테이너 */
 .module-list-container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
+/* 그리드 레이아웃 */
 .module-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -11,6 +13,7 @@
   margin-bottom: 20px;
 }
 
+/* 모듈 카드 */
 .module-card {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -39,7 +42,7 @@
   padding: 15px;
 }
 
-.module-card-content h3,h4 {
+.module-card-content h3, h4 {
   margin: 0 0 10px 0;
   font-size: 1.2rem;
 }
@@ -55,6 +58,7 @@
   color: #333;
 }
 
+/* 페이지네이션 스타일 */
 .pagination {
   display: flex;
   justify-content: center;
@@ -83,7 +87,7 @@
   margin-left: 10px;
 }
 
-/* Modal styles */
+/* 모달 스타일 */
 .card-modal-overlay {
   position: fixed;
   top: 0;
@@ -104,14 +108,17 @@
   max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
+  position: relative; /* X 버튼 위치를 모달 콘텐츠 안에 고정 */
 }
 
+/* 모달 헤더 */
 .modal-header {
   padding: 20px;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative; /* X 버튼을 헤더 내에 고정 */
 }
 
 .close-button {
@@ -120,8 +127,12 @@
   font-size: 24px;
   cursor: pointer;
   padding: 0 8px;
+  position: absolute; /* X 버튼을 상단 오른쪽에 고정 */
+  top: 20px;
+  right: 20px;
 }
 
+/* 모달 본문 */
 .modal-body {
   padding: 20px;
 }
@@ -156,6 +167,7 @@
   cursor: pointer;
 }
 
+/* 모달 상세 내용 */
 .modal-details {
   display: flex;
   flex-direction: column;
@@ -179,36 +191,72 @@
   font-weight: bold;
 }
 
+/* 모달 푸터 */
 .modal-footer {
   padding: 20px;
   border-top: 1px solid #eee;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: flex;
+  gap: 20px; /* 버튼들 간 간격 조정 */
+  text-align: center;
 }
 
 .modal-footer button {
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 10px 10px; /* 버튼 크기 조정 */
+  border-radius: 6px; /* 약간 둥근 버튼 */
+  font-size: 1rem; /* 폰트 크기 */
+  font-weight: bold; /* 텍스트 강조 */
   cursor: pointer;
+  transition: all 0.3s ease; /* 호버 애니메이션 추가 */
+  
 }
 
+/* 취소 버튼 */
 .cancel-button {
-  background: white;
+  margin-top: 10px;
+  background: #f8f9fa; /* 밝은 회색 */
   border: 1px solid #ddd;
+  color: #6c757d; /* 텍스트 색상 */
+  width: 100%;
+  box-sizing: content-box;
 }
 
+.cancel-button:hover {
+  background: #e2e6ea; /* 약간 더 진한 회색 */
+  color: #343a40; /* 텍스트 강조 */
+}
+
+/* 다음 버튼 */
 .next-button {
-  background: #007bff;
+  background: #007bff; /* 파란색 */
   color: white;
-  border: none;
+  border: 1px solid #ddd;
+  box-sizing: content-box;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2); /* 약간의 그림자 */
+  width: 100%; /* 버튼의 너비를 100%로 설정 */
+  box-sizing: border-box; 
 }
 
+.next-button:hover {
+  background: #0056b3; /* 더 진한 파란색 */
+  box-shadow: 0 6px 10px rgba(0, 86, 179, 0.3); /* 그림자 강화 */
+}
+
+/* 비활성화 버튼 상태 */
+.modal-footer button:disabled {
+  background: #e9ecef; /* 흐린 회색 */
+  color: #adb5bd; /* 흐린 텍스트 */
+  cursor: not-allowed; /* 비활성화 커서 */
+  box-shadow: none; /* 그림자 제거 */
+}
+
+/* 로딩 상태 */
 .loading {
   text-align: center;
   padding: 20px;
 }
 
+/* 오류 메시지 */
 .error {
   color: red;
   text-align: center;

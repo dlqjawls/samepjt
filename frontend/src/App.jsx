@@ -18,6 +18,8 @@ import OptionManagement from "./admin/components/OptionManagement";
 import RentalRecords from "./admin/components/RentalRecords";
 import MaintenanceRecords from "./admin/components/MaintenanceRecords";
 import OptionSelect from "./optionSelect/optionSelect"
+import RentForm from "./rentForm/rentForm"
+import Total_reciept from "./finishSelect/total_reciept"
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
           <Route path="optionlist" element={<OptionsPage />}></Route>
           <Route path="exist_option" element={<ExistOptionsPage />}></Route>
           <Route path="option_select" element={<OptionSelect />}></Route>
+          <Route path="rentForm" element={<RentForm />}></Route>
+          <Route path="total_reciept" element={<Total_reciept />}></Route>
 
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
