@@ -44,7 +44,7 @@ class OptionTypeService:
                 optionTypeCost=opt_type.optionTypeCost,
                 stockQuantity=option_counts.get(opt_type.optionTypeId, 0),  # 해당 옵션 타입의 총 개수
                 description=opt_type.description,
-                optionTypeImages=opt_type.optionTypeImages,
+                imgUrls=[opt_type.optionTypeImages],
                 optionTypeFeatures=opt_type.optionTypeFeatures
             )
             for opt_type in paginated_result.items if opt_type is not None  # None 값을 체크하여 무시

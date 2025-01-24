@@ -3,7 +3,7 @@ from sqlmodel import Session
 from app.crud.admin import get_admin_by_id
 from app.api.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
 from app.utils.bcrypt import verify_password
-from app.utils.jwt import create_token
+from app.utils.jwt import jwt_handler 
 
 class AdminLoginService:
 
@@ -30,7 +30,7 @@ class AdminLoginService:
             )
 
         # JWT 토큰 생성
-        access_token, refresh_token = create_token(
+        access_token, refresh_token = jwt_handler.create_token(
             matched_admin.adminPK, 
             role=str(matched_admin.role)
         )

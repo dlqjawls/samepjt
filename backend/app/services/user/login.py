@@ -3,7 +3,7 @@ from sqlmodel import Session
 from app.crud.user import get_user_by_id
 from app.api.schemas.user.login import UserLoginRequest, UserLoginResponse
 from app.utils.bcrypt import verify_password
-from app.utils.jwt import create_token
+from app.utils.jwt import jwt_handler 
 
 class UserLoginService:
 
@@ -30,7 +30,7 @@ class UserLoginService:
             )
 
         # JWT 토큰 생성
-        access_token, refresh_token = create_token(
+        access_token, refresh_token = jwt_handler.create_token(
             matched_user.userPK, 
             role="user"
         )

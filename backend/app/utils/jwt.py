@@ -1,93 +1,152 @@
+# app/core/jwt_handler.py
 from cryptography.fernet import Fernet
 import jwt
 import datetime
-from typing import Optional
+from typing import Optional, Dict, Tuple, List
 import os
 from app.core.redis_config import redis_config
+from fastapi import Request, HTTPException, Security, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseSettings
 
-# 환경 변수에서 SECRET_KEY 및 ROLE_ENCRYPTION_KEY 로드
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "default_secret_key")  # JWT 서명용 비밀키
-ROLE_ENCRYPTION_KEY = os.getenv("ROLE_ENCRYPTION_KEY", Fernet.generate_key().decode())  # 역할 암호화 키
+class JWTSettings(BaseSettings):
+    """JWT 설정 클래스"""
+    SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "default_secret_key")
+    ROLE_ENCRYPTION_KEY: str = os.getenv("ROLE_ENCRYPTION_KEY", Fernet.generate_key().decode())
+    HASH_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_SECONDS: int = 600   # 10분
+    REFRESH_TOKEN_EXPIRE_SECONDS: int = 1200 # 20분
 
-HASH_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_SECONDS = 600   # 10분 (600초)
-REFRESH_TOKEN_EXPIRE_SECONDS = 1200 # 20분 (1200초)
 
-# 대칭키 암호화 도구 초기화
-fernet = Fernet(ROLE_ENCRYPTION_KEY.encode())
+class JWTHandler:
+    """JWT 토큰 핸들러"""
+    def __init__(self):
+        self.settings = JWTSettings()
+        self.fernet = Fernet(self.settings.ROLE_ENCRYPTION_KEY.encode())
+        self.redis_client = redis_config()
+        self.bearer_scheme = HTTPBearer()
 
-# Redis 연결
-redis_client = redis_config()
+    def encrypt_role(self, role: str) -> str:
+        """역할 정보 암호화"""
+        return self.fernet.encrypt(role.encode()).decode()
 
-def encrypt_role(role: str) -> str:
-    return fernet.encrypt(role.encode()).decode()
+    def decrypt_role(self, encrypted_role: str) -> str:
+        """암호화된 역할 정보 복호화"""
+        return self.fernet.decrypt(encrypted_role.encode()).decode()
 
-def decrypt_role(encrypted_role: str) -> str:
-    return fernet.decrypt(encrypted_role.encode()).decode()
+    def create_token(self, user_pk: int, role: str) -> Tuple[str, str]:
+        """액세스 토큰과 리프레시 토큰 생성 (리프레시 토큰 중복 저장 방지)"""
+        encrypted_role = self.encrypt_role(role)
+        
+        # 기존 리프레시 토큰 무효화 (기존 사용자 로그인 시)
+        self.delete_refresh_token(user_pk)
 
-def create_access_token(userPK: int, role: str = "user", expires_delta: Optional[int] = None) -> str:
-    now = datetime.datetime.now(datetime.timezone.utc)
-    expires = now + datetime.timedelta(seconds=expires_delta or ACCESS_TOKEN_EXPIRE_SECONDS)
+        # 새로운 리프레시 토큰 생성
+        refresh_token = self._create_refresh_token(user_pk)
+        self.save_refresh_token(user_pk, refresh_token)
 
-    encrypted_role = encrypt_role(role)
+        # 액세스 토큰 생성
+        access_token = self._create_access_token(user_pk, encrypted_role)
 
-    payload = {
-        "userPK": userPK,
-        "role": encrypted_role,
-        "iat": now,
-        "exp": expires,
-        "type": "access"
-    }
-    return jwt.encode(payload, SECRET_KEY, algorithm=HASH_ALGORITHM)
+        return access_token, refresh_token
 
-def create_refresh_token(userPK: int) -> str:
-    now = datetime.datetime.now(datetime.timezone.utc)
-    expires = now + datetime.timedelta(seconds=REFRESH_TOKEN_EXPIRE_SECONDS)
 
-    payload = {
-        "userPK": userPK,
-        "iat": now,
-        "exp": expires,
-        "type": "refresh"
-    }
-    return jwt.encode(payload, SECRET_KEY, algorithm=HASH_ALGORITHM)
+    def _create_access_token(self, user_pk: int, encrypted_role: str) -> str:
+        """액세스 토큰 생성"""
+        expires_at = datetime.datetime.utcnow() + datetime.timedelta(seconds=self.settings.ACCESS_TOKEN_EXPIRE_SECONDS)
 
-def save_refresh_token(userPK: int, role: str, refresh_token: str):
-    redis_key = f"user:{role}:{userPK}:refresh_token"
-    redis_client.setex(redis_key, refresh_token, REFRESH_TOKEN_EXPIRE_SECONDS)  
+        payload = {
+            "exp": expires_at,
+            "user_pk": user_pk,
+            "role": encrypted_role,
+            "type": "access"
+        }
+        return jwt.encode(payload, self.settings.SECRET_KEY, algorithm=self.settings.HASH_ALGORITHM)
 
-def get_refresh_token(userPK: int, role: str) -> Optional[str]:
-    redis_key = f"user:{role}:{userPK}:refresh_token"
-    return redis_client.get(redis_key)
+    def _create_refresh_token(self, user_pk: int) -> str:
+        """리프레시 토큰 생성"""
+        expires_at = datetime.datetime.utcnow() + datetime.timedelta(seconds=self.settings.REFRESH_TOKEN_EXPIRE_SECONDS)
 
-def is_valid_refresh_token(userPK: int, role: str, refresh_token: str) -> bool:
-    stored_token = get_refresh_token(userPK, role)
-    return stored_token is not None and stored_token == refresh_token
+        payload = {
+            "exp": expires_at,
+            "user_pk": user_pk,
+            "type": "refresh"
+        }
+        return jwt.encode(payload, self.settings.SECRET_KEY, algorithm=self.settings.HASH_ALGORITHM)
 
-def refresh_access_token(userPK: int, role: str, refresh_token: str) -> Optional[str]:
-    if is_valid_refresh_token(userPK, role, refresh_token):
-        return create_access_token(userPK, role)
-    return None
+    def save_refresh_token(self, user_pk: int, refresh_token: str):
+        """리프레시 토큰을 Redis에 저장"""
+        redis_key = f"user:{user_pk}:refresh_token"
+        self.redis_client.setex(key=redis_key, value=refresh_token, ttl=self.settings.REFRESH_TOKEN_EXPIRE_SECONDS)
 
-def delete_refresh_token(userPK: int, role: str):
-    redis_key = f"user:{role}:{userPK}:refresh_token"
-    redis_client.delete(redis_key)
+    def get_refresh_token(self, user_pk: int) -> Optional[str]:
+        """Redis에서 리프레시 토큰을 가져오기"""
+        redis_key = f"user:{user_pk}:refresh_token"
+        token = self.redis_client.get(redis_key)
+        return token if token else None
 
-def create_token(userPK: int, role: str = "user") -> tuple:
-    access_token = create_access_token(userPK, role)
-    refresh_token = create_refresh_token(userPK)
-    save_refresh_token(userPK, role, refresh_token)
-    return access_token, refresh_token
+    def delete_refresh_token(self, user_pk: int):
+        """리프레시 토큰 삭제 (로그아웃)"""
+        redis_key = f"user:{user_pk}:refresh_token"
+        self.redis_client.delete(redis_key)
 
-def decode_jwt_token(token: str) -> dict:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[HASH_ALGORITHM])
+    def refresh_access_token(self, refresh_token: str) -> Optional[str]:
+        """리프레시 토큰을 검증하고 새 액세스 토큰 발급"""
+        try:
+            payload = jwt.decode(refresh_token, self.settings.SECRET_KEY, algorithms=[self.settings.HASH_ALGORITHM])
+            if payload.get("type") != "refresh":
+                raise HTTPException(status_code=401, detail="Invalid token type")
 
-        if "role" in payload:
-            payload["role"] = decrypt_role(payload["role"])
+            user_pk = payload["user_pk"]
+            stored_refresh_token = self.get_refresh_token(user_pk)
 
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise ValueError("Token has expired")
-    except jwt.InvalidTokenError:
-        raise ValueError("Invalid token")
+            if stored_refresh_token != refresh_token:
+                raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+            # 새로운 액세스 토큰 생성
+            return self._create_access_token(user_pk, self.encrypt_role("user"))
+
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Refresh token has expired")
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+    async def validate_token(self, token: str, allowed_roles: Optional[List[str]] = None) -> Dict:
+        """JWT 토큰 검증 및 역할(Role) 검증"""
+        try:
+            payload = jwt.decode(token, self.settings.SECRET_KEY, algorithms=[self.settings.HASH_ALGORITHM])
+            if payload.get("type") != "access":
+                raise HTTPException(status_code=401, detail="Invalid token type")
+
+            payload["role"] = self.decrypt_role(payload["role"])
+
+            # 역할(Role) 검증 수행
+            if allowed_roles:
+                if payload["role"] not in allowed_roles:
+                    raise HTTPException(status_code=403, detail="Permission denied")
+
+            return payload
+
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token has expired")
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+    def jwt_auth_dependency(self, allowed_roles: Optional[List[str]] = None):
+        """
+        FastAPI 의존성 함수(Dependency)를 반환.
+        allowed_roles가 주어지면 해당 권한만 접근 가능하도록 검증.
+        없거나 빈 리스트라면 유효한 토큰이면 모두 접근 가능.
+        """
+        async def _validate_token(credentials: HTTPAuthorizationCredentials = Depends(self.bearer_scheme)):
+            # bearer_scheme을 통해 Authorization 헤더 내의 JWT를 가져온다.
+            token = credentials.credentials
+            # 토큰 검증 로직 호출
+            payload = await self.validate_token(token, allowed_roles if allowed_roles else None)
+            return payload
+
+        return _validate_token
+
+
+# JWT 핸들러 인스턴스 생성
+jwt_handler = JWTHandler()
