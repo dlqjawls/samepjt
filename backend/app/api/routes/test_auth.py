@@ -31,7 +31,7 @@ async def logout(
     token_data: dict = Depends(jwt_handler.jwt_auth_dependency())
 ):
     user_pk = token_data["user_pk"]
-    jwt_handler.delete_refresh_token(user_pk)
+    jwt_handler.delete_refresh_token(user_pk, token_data["role"])
     return {"message": "Successfully logged out"}
 
 @router.get("/admin-only")
