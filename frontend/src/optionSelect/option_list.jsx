@@ -14,7 +14,7 @@ const OptionsPage = () => {
     setLoading(true)
     setError("")
     try {
-      const response = await axios.get("https://backend-wandering-river-6835.fly.dev/user/options", {
+      const response = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types", {
         params: {
           page: currentPage,
           page_size: pageSize,

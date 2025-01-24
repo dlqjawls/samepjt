@@ -6,7 +6,7 @@ const OptionSelect = () => {
   const location = useLocation();
   const selectedOptions = location.state?.selectedModule.moduleSetOptionTypes || [];
   const userdata = location.state;
-
+  console.log(userdata)
   const [options, setOptions] = useState(selectedOptions);
 
   // 수량 증가
