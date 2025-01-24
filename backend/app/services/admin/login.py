@@ -3,7 +3,7 @@ from sqlmodel import Session
 from app.crud.admin import get_admin_by_id
 from app.api.schemas.admin.login import AdminLoginRequest, AdminLoginResponse
 from app.utils.bcrypt import verify_password
-from app.utils.jwt import jwt_handler 
+from app.core.jwt import jwt_handler 
 
 class AdminLoginService:
 
@@ -30,10 +30,16 @@ class AdminLoginService:
             )
 
         # JWT 토큰 생성
-        access_token, refresh_token = jwt_handler.create_token(
-            matched_admin.adminPK, 
-            role=str(matched_admin.role)
-        )
+        if matched_admin is not None and isinstance(matched_admin.adminPK, int):
+            access_token, refresh_token = jwt_handler.create_token(
+                matched_admin.adminPK, 
+                role=str(matched_admin.role)
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error: Invalid adminPK"
+            )
 
         return AdminLoginResponse(
             resultCode="SUCCESS",

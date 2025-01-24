@@ -3,7 +3,7 @@ from sqlmodel import Session
 from app.crud.user import get_user_by_id
 from app.api.schemas.user.login import UserLoginRequest, UserLoginResponse
 from app.utils.bcrypt import verify_password
-from app.utils.jwt import jwt_handler 
+from app.core.jwt import jwt_handler 
 
 class UserLoginService:
 
@@ -28,12 +28,18 @@ class UserLoginService:
                     "errors": errors
                 }
             )
-
+        
         # JWT 토큰 생성
-        access_token, refresh_token = jwt_handler.create_token(
-            matched_user.userPK, 
-            role="user"
-        )
+        if matched_user is not None and isinstance(matched_user.userPK, int):
+            access_token, refresh_token = jwt_handler.create_token(
+                matched_user.userPK, 
+                role="user"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error: Invalid userPK"
+            )
 
         return UserLoginResponse(
             resultCode="SUCCESS",

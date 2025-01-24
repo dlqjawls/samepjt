@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.utils.jwt import  jwt_handler
+from app.core.jwt import  jwt_handler
 from app.core.database import get_session
 from sqlmodel import Session
 from pydantic import BaseModel
