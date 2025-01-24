@@ -41,18 +41,42 @@ const ExistOptionsPage = () => {
   const fetchCompleteOptionData = async () => {
     setLoading(true);
     try {
-      // Fetch all option types
-      const allOptionsResponse = await axios.get(
-        "https://backend-wandering-river-6835.fly.dev/user/option-types"
+      // 첫 번째 응답으로 총 페이지 수 확인
+      const firstResponse = await axios.get(
+        "https://backend-wandering-river-6835.fly.dev/user/option-types",
+        {
+          params: {
+            page: 1,
+            page_size: 100
+          }
+        }
       );
-      console.log(allOptionsResponse.data.data)
-      const allOptionTypes = allOptionsResponse.data.data.optionTypes;
-      // Get selected option IDs from location state
+
+      const { totalPages } = firstResponse.data.data.pagination;
+      let allOptionTypes = [];
+
+      // 모든 페이지 순회하며 옵션 누적
+      for (let page = 1; page <= totalPages; page++) {
+        const response = await axios.get(
+          "https://backend-wandering-river-6835.fly.dev/user/option-types",
+          {
+            params: {
+              page: page,
+              page_size: 100
+            }
+          }
+        );
+
+        allOptionTypes = [
+          ...allOptionTypes, 
+          ...response.data.data.optionTypes
+        ];
+      }
+
+      // 선택된 옵션 데이터 처리
       const selectedOptionData = location.state?.selectedModule?.moduleSetOptionTypes || [];
       
-      // Comprehensive mapping of selected options
       const completeSelectedOptions = selectedOptionData.map(selectedItem => {
-        // Find full option details from all options
         const fullOptionDetails = allOptionTypes.find(
           option => option.optionTypeId === selectedItem.optionTypeId
         );
@@ -63,7 +87,7 @@ const ExistOptionsPage = () => {
         };
       });
 
-      // Filter unselected options
+      // 미선택 옵션 필터링
       const completeUnselectedOptions = allOptionTypes.filter(
         option => !completeSelectedOptions.some(
           selected => selected.optionTypeId === option.optionTypeId
@@ -122,14 +146,17 @@ const ExistOptionsPage = () => {
   const goToPreviousPage = () => {
     navigate("/ModuleSetList");
   };
-  console.log(location.state)
+  
   const goToNextPage = () => {
-    navigate("/option_select", { 
-      state: { 
-        ...location.state, 
-        selectedModule: { moduleSetOptionTypes: selectedOptions } 
-      } 
-    });
+    // 선택된 옵션 세션스토리지에 저장
+    const optionData = {
+      selectedOptions: selectedOptions.map(option => ({
+        optionTypeId: option.optionTypeId,
+        quantity: option.quantity
+      }))
+    };
+    sessionStorage.setItem('selectedOptionData', JSON.stringify(optionData));
+    navigate("/rentForm");
   };
 
   if (loading) return <div>로딩 중...</div>;
@@ -151,7 +178,7 @@ const ExistOptionsPage = () => {
             <div key={option.optionTypeId} className="custom-row">
               <div className="custom-info">
                 <img
-                  src={option.imgUrls}
+                  src={option.imgUrls[0]}
                   alt={option.optionTypeName}
                   className="custom-image"
                 />

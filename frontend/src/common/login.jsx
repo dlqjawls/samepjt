@@ -9,7 +9,7 @@ const LoginButton = () => {
 
   // 로그인 상태 확인
   useEffect(() => {
-    const token = localStorage.getItem("token")
+    const token = sessionStorage.getItem("token")
     setIsLoggedIn(!!token)
   })
 
@@ -17,14 +17,14 @@ const LoginButton = () => {
   const closeModal = () => setIsModalOpen(false)
 
   const handleLoginSuccess = () => {
-    localStorage.setItem("token", "sample_token") // 임시 토큰 저장
+    sessionStorage.setItem("token") // 임시 토큰 저장
     setIsLoggedIn(true)
     setIsModalOpen(false)
     alert("로그인 성공!")
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
+    sessionStorage.removeItem("token")
     setIsLoggedIn(false)
     alert("로그아웃되었습니다.")
     navigate("/") // 홈으로 리디렉션

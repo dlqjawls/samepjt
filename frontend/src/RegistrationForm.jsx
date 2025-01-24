@@ -151,7 +151,7 @@ function RegistrationForm() {
           {errors.userAddress && <span className="error">{errors.userAddress}</span>}
         </div>
         <button type="submit"  >Register</button>
-        <button onClick={home}>메인페이지로</button>
+        <button type="button" onClick={home}>메인페이지로</button>
       </form>
     </div>
   );

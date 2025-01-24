@@ -1,0 +1,111 @@
+/* 전체 레이아웃 */
+.rent-form-wrapper {
+    display: flex;
+    flex-direction: row; /* 왼쪽에 지도, 오른쪽에 폼 */
+    height: 100vh; /* 화면 전체 높이 */
+    padding: 20px;
+    gap: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* 지도 컨테이너 */
+  .map-container {
+    flex: 2; /* 지도 영역이 더 크게 보이도록 설정 */
+  }
+  
+  .map-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지 크기에 맞춰 보기 좋게 조정 */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 폼 컨테이너 */
+  .form-container {
+   
+    margin: 10PX;
+    flex: 1; /* 폼 영역 */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+
+    flex-direction: column;
+    justify-content: space-between; /* 버튼을 아래에 고정 */
+  }
+  
+  /* 제목 스타일 */
+  .form-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* 입력 폼 그룹 */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* 버튼 스타일 */
+  .reset-button {
+    padding: 10px 15px;
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .next-button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px; /* 버튼을 아래로 고정 */
+    width: 100%; /* 버튼의 너비를 100%로 설정 */
+    box-sizing: border-box; /* padding과 border 포함 */
+  }
+  
+  .next-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* 반응형 디자인 */
+  @media (max-width: 768px) {
+    .rent-form-wrapper {
+      flex-direction: column; /* 작은 화면에서는 세로 배치 */
+    }
+  
+    .map-container {
+      flex: none;
+      height: 50%;
+    }
+  
+    .form-container {
+      flex: none;
+      height: auto;
+    }
+  }
+  
