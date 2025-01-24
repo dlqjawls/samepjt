@@ -36,7 +36,7 @@ const OptionsPage = () => {
   }, [currentPage, pageSize])
 
   const handleSearch = () => {
-    setCurrentPage(1) // 검색 시 페이지 번호를 1로 초기화
+    setCurrentPage(1)
     fetchOptions()
   }
 
