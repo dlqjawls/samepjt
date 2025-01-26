@@ -1,6 +1,5 @@
 .image-container {
   position: relative;
-  width: 100vw; /* 뷰포트 너비 전체 */
   height: 100vh; /* 뷰포트 높이 전체 */
   overflow: hidden; /* 이미지를 넘어서지 않도록 처리 */
   cursor: pointer;
@@ -24,19 +23,19 @@
   padding: 20px;
   border-radius: 10px;
   color: white;
-  
+
   max-width: 80%;
   text-align: left;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   transition: transform 0.3s ease, opacity 0.3s ease;
   opacity: 0;
-  transform: translateX(50px)
+  transform: translateX(50px);
 }
 
 /* Hover 시 효과 */
 .image-container:hover .headline-content {
   opacity: 1;
-  transform:  translateX(50px); /* 부드럽게 올라오는 애니메이션 */
+  transform: translateX(50px); /* 부드럽게 올라오는 애니메이션 */
   animation: slide-in 0.5s ease-out forwards;
 }
 
