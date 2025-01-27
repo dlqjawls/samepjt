@@ -1,170 +1,272 @@
 /* src/components/MaintenanceRecords.css */
 
-/* 컨테이너 */
 .maintenance-container {
-    width: 100%;
-    margin: 20px 0;
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-sizing: border-box;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.maintenance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.maintenance-header h1 {
+  font-size: 2em;
+}
+
+.add-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.add-button:hover {
+  background-color: #45a049;
+}
+
+.filters {
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.filters input,
+.filters select {
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.filters button {
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.filters button:hover {
+  background-color: #0b7dda;
+}
+
+.maintenance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.maintenance-table th,
+.maintenance-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.maintenance-table th {
+  background-color: #f2f2f2;
+}
+
+.detail-button {
+  padding: 6px 10px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.detail-button:hover {
+  background-color: #0b7dda;
+}
+
+.edit-button {
+  padding: 6px 10px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.edit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.edit-button:hover:not(:disabled) {
+  background-color: #e68900;
+}
+
+.delete-button {
+  padding: 6px 10px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.delete-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #da190b;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 8px 16px;
+  background-color: #e7e7e7;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* 모달 내용 스타일링 */
+.detail-content,
+.edit-content,
+.delete-content,
+.add-content {
+  padding: 20px;
+}
+
+.detail-content h2,
+.edit-content h2,
+.delete-content h2,
+.add-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.detail-content p,
+.edit-content p,
+.delete-content p,
+.add-content p {
+  margin-bottom: 10px;
+}
+
+.edit-form,
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-form label,
+.add-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.add-form input,
+.add-form select,
+.add-form textarea {
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.save-button {
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.save-button:hover {
+  background-color: #45a049;
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  background-color: #e7e7e7;
+  color: black;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+.confirm-delete-button {
+  padding: 8px 16px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.confirm-delete-button:hover {
+  background-color: #da190b;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  /* 헤더 */
-  .maintenance-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .maintenance-header h1 {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .maintenance-header .add-button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  
-  .maintenance-header .add-button:hover {
-    background-color: #218838;
-  }
-  
-  /* 테이블 */
-  .maintenance-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #f9f9f9;
-  }
-  
+
   .maintenance-table th,
   .maintenance-table td {
-    padding: 12px;
-    text-align: center;
-    border: 1px solid #ddd;
-  }
-  
-  .maintenance-table th {
-    background-color: #eaeaea;
-    font-weight: bold;
-  }
-  
-  .maintenance-table td {
-    vertical-align: middle;
-  }
-  
-  .detail-button {
-    background-color: #17a2b8;
-    color: #fff;
-    padding: 6px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .detail-button:hover {
-    background-color: #138496;
-  }
-  
-  /* 상세 정보 내용 */
-  .detail-content p {
-    margin: 10px 0;
-  }
-  
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-  }
-  
-  .edit-button {
-    background-color: #ffc107;
-    color: #212529;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  .edit-button:hover {
-    background-color: #e0a800;
-  }
-  
-  .delete-button {
-    background-color: #dc3545;
-    color: #fff;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .delete-button:hover {
-    background-color: #c82333;
-  }
-  
-  /* 수정 및 신규 등록 폼 */
-  .edit-form label,
-  .add-form label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  
-  .edit-form input,
-  .edit-form select,
-  .edit-form textarea,
-  .add-form input,
-  .add-form select,
-  .add-form textarea {
-    width: 100%;
     padding: 8px;
-    margin-top: 4px;
-    box-sizing: border-box;
   }
-  
-  .edit-form textarea,
-  .add-form textarea {
-    resize: vertical;
-    height: 80px;
+
+  .detail-content h2,
+  .edit-content h2,
+  .delete-content h2,
+  .add-content h2 {
+    font-size: 1.5em;
   }
-  
-  /* 삭제 확인 내용 */
-  .delete-content p {
-    margin: 20px 0;
-  }
-  
-  .confirm-delete-button {
-    background-color: #dc3545;
-    color: #fff;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  .confirm-delete-button:hover {
-    background-color: #c82333;
-  }
-  
-  .cancel-button {
-    background-color: #6c757d;
-    color: #fff;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .cancel-button:hover {
-    background-color: #5a6268;
-  }
-  
+}
