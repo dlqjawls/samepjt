@@ -15,17 +15,33 @@ const Total_reciept = () => {
       try {
         const savedOptionData = JSON.parse(sessionStorage.getItem("selectedOptionData") || "{}")
 
-        const response = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types")
-        const allOptions = response.data.data.optionTypes
-
-        const matchedOptions = savedOptionData.selectedOptions.map((selectedOption) => {
-          const fullOption = allOptions.find((opt) => opt.optionTypeId === selectedOption.optionTypeId)
-          return {
-            ...fullOption,
-            quantity: selectedOption.quantity,
-            totalPrice: fullOption.optionTypeCost * selectedOption.quantity,
-          }
+        const response = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types", {
+          params: {
+            page: 1,
+            page_size: 30, // 최대 30개 아이템 요청
+          },
         })
+
+        const allOptions = response.data.data.optionTypes
+        console.log("전체 옵션:", allOptions)
+
+        if (!savedOptionData.selectedOptions) {
+          console.log("선택된 옵션이 없습니다.")
+          return
+        }
+
+        const matchedOptions = savedOptionData.selectedOptions
+          .map((selectedOption) => {
+            const fullOption = allOptions.find((opt) => opt.optionTypeId === selectedOption.optionTypeId)
+            if (!fullOption) return null
+
+            return {
+              ...fullOption,
+              quantity: selectedOption.quantity || 1,
+              totalPrice: fullOption.optionTypeCost * (selectedOption.quantity || 1),
+            }
+          })
+          .filter(Boolean)
 
         const total = matchedOptions.reduce((sum, option) => sum + option.totalPrice, 0)
 
@@ -35,12 +51,12 @@ const Total_reciept = () => {
         })
       } catch (error) {
         console.error("옵션 정보 조회 중 오류:", error)
+        setReceiptDetails({ options: [], totalAmount: 0 })
       }
     }
 
     fetchOptionDetails()
   }, [])
-
   const handlePayment = async () => {
     if (window.confirm("결제를 진행하시겠습니까?")) {
       try {
@@ -50,8 +66,14 @@ const Total_reciept = () => {
           return
         }
 
+        // 옵션 데이터 변환
+        const selectedOptions = receiptDetails.options.map((option) => ({
+          optionTypeId: option.optionTypeId,
+          quantity: option.quantity,
+        }))
+
         const rentData = {
-          selectedOptionTypes: receiptData.selectedOptions,
+          selectedOptionTypes: selectedOptions,
           autonomousArrivalPoint: {
             x: 12.313,
             y: 32.3232,
