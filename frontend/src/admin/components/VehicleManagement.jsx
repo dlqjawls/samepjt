@@ -1,13 +1,18 @@
 // src/components/VehicleManagement.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Modal from "./Modal";
 import "./VehicleManagement.css";
 
 function VehicleManagement() {
-  const [data, setData] = useState([
+  /**
+   * 초기 더미 데이터 설정
+   * 디버깅 용으로 사용되며, API 연동 시 제거 예정입니다.
+   */
+  const initialDummyData = [
     {
       vehicleId: 1,
-      vehicleNumber: "아3123",
+      carNumber: "아3123",
       vin: "VIN1241241",
       currentLocation: "차고지",
       status: "active",
@@ -19,7 +24,7 @@ function VehicleManagement() {
     },
     {
       vehicleId: 2,
-      vehicleNumber: "나3123",
+      carNumber: "나3123",
       vin: "VIN1243141",
       currentLocation: "차고지",
       status: "active",
@@ -29,16 +34,19 @@ function VehicleManagement() {
       createdAt: "2024-02-01T10:00",
       updatedAt: "2024-01-21T10:00",
     },
-  ]);
+  ];
 
-  const [selectedRow, setSelectedRow] = useState(null);
+  // 차량 목록 상태: 초기 더미 데이터로 설정
+  const [vehicles, setVehicles] = useState(initialDummyData);
+
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    vehicleNumber: "",
+    carNumber: "",
     vin: "",
     currentLocation: "",
     status: "active",
@@ -47,37 +55,142 @@ function VehicleManagement() {
     nextMaintenanceAt: "",
   });
 
-  // 상세보기 클릭 시
-  const handleDetailClick = (row) => {
-    setSelectedRow(row);
+  // 필터 상태
+  const [filters, setFilters] = useState({
+    status: "",
+    search: "",
+    page: 1,
+    pageSize: 10,
+  });
+
+  // 페이지네이션 상태
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    pageSize: 10,
+  });
+
+  // 로딩 및 오류 상태
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // API 베이스 URL 설정
+  const BASE_URL = "https://backend-wandering-river-6835.fly.dev"; // 실제 백엔드 API URL로 변경하세요
+
+  // 관리자 인증 토큰 (필요 시 설정)
+  const token = localStorage.getItem("adminToken"); // 토큰 저장 방식에 따라 수정
+
+  /**
+   * 차량 목록 조회 함수
+   * API 호출 시도 후 실패하면 더미 데이터를 사용합니다.
+   */
+  const fetchVehicles = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/vehicle/list`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : undefined, // 토큰이 있는 경우 헤더에 추가
+        },
+        params: {
+          status: filters.status || undefined,
+          search: filters.search || undefined,
+          page: filters.page,
+          pageSize: filters.pageSize,
+        },
+      });
+
+      if (response.data.resultCode === "SUCCESS") {
+        setVehicles(response.data.data.vehicles);
+        setPagination(response.data.data.pagination);
+      } else {
+        setError(
+          response.data.message || "차량 목록을 불러오는 데 실패했습니다."
+        );
+        /**
+         * API 호출 실패 시 더미 데이터를 사용합니다.
+         * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+         */
+        setVehicles(initialDummyData);
+      }
+    } catch (err) {
+      console.error(err);
+      // 서버에서 보낸 오류 메시지 확인
+      if (err.response && err.response.data) {
+        setError(
+          err.response.data.message ||
+            "차량 목록을 불러오는 중 오류가 발생했습니다."
+        );
+      } else {
+        setError("차량 목록을 불러오는 중 오류가 발생했습니다.");
+      }
+      /**
+       * API 호출 실패 시 더미 데이터를 사용합니다.
+       * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+       */
+      setVehicles(initialDummyData);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 컴포넌트 마운트 시 차량 목록 조회
+  useEffect(() => {
+    fetchVehicles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
+
+  // 필터 변경 핸들러
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+      page: 1, // 필터 변경 시 페이지를 1로 리셋
+    }));
+  };
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      page: newPage,
+    }));
+  };
+
+  // 차량 상세보기 클릭 시
+  const handleDetailClick = (vehicle) => {
+    setSelectedVehicle(vehicle);
     setIsDetailModalOpen(true);
   };
 
   const closeDetailModal = () => {
-    setSelectedRow(null);
+    setSelectedVehicle(null);
     setIsDetailModalOpen(false);
   };
 
-  // 수정 클릭 시
+  // 차량 수정 클릭 시
   const handleEditClick = () => {
     setFormData({
-      vehicleNumber: selectedRow.vehicleNumber,
-      vin: selectedRow.vin,
-      currentLocation: selectedRow.currentLocation,
-      status: selectedRow.status,
-      mileage: selectedRow.mileage,
-      lastMaintenanceAt: selectedRow.lastMaintenanceAt,
-      nextMaintenanceAt: selectedRow.nextMaintenanceAt,
+      carNumber: selectedVehicle.carNumber,
+      vin: selectedVehicle.vin,
+      currentLocation: selectedVehicle.currentLocation,
+      status: selectedVehicle.status,
+      mileage: selectedVehicle.mileage,
+      lastMaintenanceAt: selectedVehicle.lastMaintenanceAt,
+      nextMaintenanceAt: selectedVehicle.nextMaintenanceAt,
     });
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
     setFormData({
-      vehicleNumber: "",
+      carNumber: "",
       vin: "",
       currentLocation: "",
-      status: "active",
+      status: "inactive",
       mileage: "",
       lastMaintenanceAt: "",
       nextMaintenanceAt: "",
@@ -85,7 +198,7 @@ function VehicleManagement() {
     setIsEditModalOpen(false);
   };
 
-  // 삭제 클릭 시
+  // 차량 삭제 클릭 시
   const handleDeleteClick = () => {
     setIsDeleteModalOpen(true);
   };
@@ -97,10 +210,10 @@ function VehicleManagement() {
   // 신규 등록 클릭 시
   const handleAddClick = () => {
     setFormData({
-      vehicleNumber: "",
+      carNumber: "",
       vin: "",
       currentLocation: "",
-      status: "active",
+      status: "inactive",
       mileage: "",
       lastMaintenanceAt: "",
       nextMaintenanceAt: "",
@@ -110,10 +223,10 @@ function VehicleManagement() {
 
   const closeAddModal = () => {
     setFormData({
-      vehicleNumber: "",
+      carNumber: "",
       vin: "",
       currentLocation: "",
-      status: "active",
+      status: "inactive",
       mileage: "",
       lastMaintenanceAt: "",
       nextMaintenanceAt: "",
@@ -130,11 +243,17 @@ function VehicleManagement() {
     }));
   };
 
-  // 수정 저장 시
-  const handleSaveEdit = () => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.vehicleId === selectedRow.vehicleId
+  /**
+   * CRUD 기능 API 연동
+   * 주석 처리된 부분을 사용하여 API와 연동할 수 있습니다.
+   * 현재는 더미 데이터를 사용하도록 설정되어 있습니다.
+   */
+
+  // 수정 저장 시 (더미 데이터 사용)
+  const handleSaveEditDummy = () => {
+    setVehicles((prevVehicles) =>
+      prevVehicles.map((item) =>
+        item.vehicleId === selectedVehicle.vehicleId
           ? {
               ...item,
               ...formData,
@@ -148,26 +267,173 @@ function VehicleManagement() {
     closeDetailModal();
   };
 
-  // 삭제 확인 시
-  const handleConfirmDelete = () => {
-    setData((prevData) =>
-      prevData.filter((item) => item.vehicleId !== selectedRow.vehicleId)
+  // 수정 저장 시 (API 연동)
+  const handleSaveEdit = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const payload = {
+        carNumber: formData.carNumber,
+        status: formData.status,
+      };
+
+      const response = await axios.put(
+        `${BASE_URL}/admin/vehicle/update/${selectedVehicle.vehicleId}`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }
+      );
+
+      if (response.data.resultCode === "SUCCESS") {
+        fetchVehicles();
+        closeEditModal();
+        closeDetailModal();
+      } else {
+        setError(
+          response.data.message || "차량 정보를 수정하는 데 실패했습니다."
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.data) {
+        setError(
+          err.response.data.message ||
+            "차량 정보를 수정하는 중 오류가 발생했습니다."
+        );
+      } else {
+        setError("차량 정보를 수정하는 중 오류가 발생했습니다.");
+      }
+      /**
+       * API 연동 실패 시 더미 데이터를 사용하도록 설정합니다.
+       * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+       */
+      setVehicles(initialDummyData);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 삭제 확인 시 (더미 데이터 사용)
+  const handleConfirmDeleteDummy = () => {
+    setVehicles((prevVehicles) =>
+      prevVehicles.filter(
+        (item) => item.vehicleId !== selectedVehicle.vehicleId
+      )
     );
     closeDeleteModal();
     closeDetailModal();
   };
 
-  // 신규 등록 저장 시
-  const handleSaveAdd = () => {
+  // 삭제 확인 시 (API 연동)
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/admin/vehicle/delete/${selectedVehicle.vehicleId}`,
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }
+      );
+
+      if (response.data.resultCode === "SUCCESS") {
+        fetchVehicles();
+        closeDeleteModal();
+        closeDetailModal();
+      } else {
+        setError(response.data.message || "차량을 삭제하는 데 실패했습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.data) {
+        setError(
+          err.response.data.message || "차량을 삭제하는 중 오류가 발생했습니다."
+        );
+      } else {
+        setError("차량을 삭제하는 중 오류가 발생했습니다.");
+      }
+      /**
+       * API 연동 실패 시 더미 데이터를 사용하도록 설정합니다.
+       * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+       */
+      setVehicles(initialDummyData);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 신규 등록 저장 시 (더미 데이터 사용)
+  const handleSaveAddDummy = () => {
     const newVehicle = {
-      vehicleId: data.length + 1,
-      ...formData,
+      vehicleId: vehicles.length + 1,
+      carNumber: formData.carNumber,
+      vin: formData.vin,
+      currentLocation: formData.currentLocation,
+      status: formData.status,
       mileage: Number(formData.mileage),
+      lastMaintenanceAt: formData.lastMaintenanceAt || null,
+      nextMaintenanceAt: formData.nextMaintenanceAt || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setData((prevData) => [...prevData, newVehicle]);
+    setVehicles((prevVehicles) => [...prevVehicles, newVehicle]);
     closeAddModal();
+  };
+
+  // 신규 등록 저장 시 (API 연동)
+  const handleSaveAdd = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const payload = {
+        vin: formData.vin,
+        carNumber: formData.carNumber,
+      };
+
+      const response = await axios.post(
+        `${BASE_URL}/admin/vehicle/register`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }
+      );
+
+      if (response.data.resultCode === "SUCCESS") {
+        fetchVehicles();
+        closeAddModal();
+      } else {
+        setError(response.data.message || "차량을 등록하는 데 실패했습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.data) {
+        // 서버에서 보낸 오류 메시지 처리
+        const errorMessages = err.response.data.errors
+          ? err.response.data.errors
+              .map((error) => `${error.field}: ${error.message}`)
+              .join(", ")
+          : err.response.data.message;
+        setError(errorMessages || "차량을 등록하는 중 오류가 발생했습니다.");
+      } else {
+        setError("차량을 등록하는 중 오류가 발생했습니다.");
+      }
+      /**
+       * API 연동 실패 시 더미 데이터를 사용하도록 설정합니다.
+       * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+       */
+      setVehicles(initialDummyData);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -175,59 +441,131 @@ function VehicleManagement() {
       <div className="vehicle-header">
         <h1>차량 관리</h1>
         <button className="add-button" onClick={handleAddClick}>
-          + 신규 등록
+          + 차량 등록
         </button>
       </div>
-      <table className="vehicle-table">
-        <thead>
-          <tr>
-            <th>차량번호</th>
-            <th>차대번호 (VIN)</th>
-            <th>현재 위치</th>
-            <th>상태</th>
-            <th>이동 거리 (km)</th>
-            <th>최근 정비 일자</th>
-            <th>다음 정비 일자</th>
-            <th>상세 보기</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row) => (
-            <tr key={row.vehicleId}>
-              <td>{row.vehicleNumber}</td>
-              <td>{row.vin}</td>
-              <td>{row.currentLocation}</td>
-              <td>{row.status === "active" ? "활성화" : "비활성화"}</td>
-              <td>{row.mileage}</td>
-              <td>{row.lastMaintenanceAt}</td>
-              <td>{row.nextMaintenanceAt}</td>
-              <td>
-                <button
-                  className="detail-button"
-                  onClick={() => handleDetailClick(row)}
-                >
-                  🔍 상세보기
-                </button>
-              </td>
+
+      {/* 필터링 섹션 */}
+      <div className="filters">
+        <label>
+          상태:
+          <select
+            name="status"
+            value={filters.status}
+            onChange={handleFilterChange}
+          >
+            <option value="">전체</option>
+            <option value="active">활성화</option>
+            <option value="inactive">비활성화</option>
+            <option value="maintenance">정비 중</option>
+          </select>
+        </label>
+        <label>
+          검색:
+          <input
+            type="text"
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            placeholder="차량 번호 또는 VIN 검색"
+          />
+        </label>
+        <button onClick={() => fetchVehicles()}>검색</button>
+      </div>
+
+      {error && <p className="error">{error}</p>}
+
+      {/* 차량 목록 테이블 */}
+      {loading ? (
+        <p>로딩 중...</p>
+      ) : (
+        <table className="vehicle-table">
+          <thead>
+            <tr>
+              <th>차량번호</th>
+              <th>차대번호 (VIN)</th>
+              <th>현재 위치</th>
+              <th>현재 상태</th>
+              <th>주행 거리 (km)</th>
+              <th>최근 정비 일자</th>
+              <th>다음 정비 일자</th>
+              <th>상세 보기</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {vehicles.length > 0 ? (
+              vehicles.map((vehicle) => (
+                <tr key={vehicle.vehicleId}>
+                  <td>{vehicle.carNumber}</td>
+                  <td>{vehicle.vin}</td>
+                  <td>{vehicle.currentLocation || "미정"}</td>
+                  <td>
+                    {vehicle.status === "active"
+                      ? "활성화"
+                      : vehicle.status === "inactive"
+                      ? "비활성화"
+                      : "정비 중"}
+                  </td>
+                  <td>{vehicle.mileage || 0}</td>
+                  <td>{vehicle.lastMaintenanceAt || "없음"}</td>
+                  <td>{vehicle.nextMaintenanceAt || "없음"}</td>
+                  <td>
+                    <button
+                      className="detail-button"
+                      onClick={() => handleDetailClick(vehicle)}
+                    >
+                      🔍 상세보기
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8">조회된 차량이 없습니다.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
+
+      {/* 페이지네이션 섹션 */}
+      <div className="pagination">
+        <button
+          onClick={() => handlePageChange(pagination.currentPage - 1)}
+          disabled={pagination.currentPage === 1}
+        >
+          이전
+        </button>
+        <span>
+          {pagination.currentPage} / {pagination.totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(pagination.currentPage + 1)}
+          disabled={pagination.currentPage === pagination.totalPages}
+        >
+          다음
+        </button>
+      </div>
 
       {/* 상세 정보 모달 */}
       <Modal isOpen={isDetailModalOpen} onClose={closeDetailModal}>
-        {selectedRow && (
+        {selectedVehicle && (
           <div className="detail-content">
             <h2>차량 상세 정보</h2>
-            <p>차량번호: {selectedRow.vehicleNumber}</p>
-            <p>차대번호 (VIN): {selectedRow.vin}</p>
-            <p>현재 위치: {selectedRow.currentLocation}</p>
+            <p>차량번호: {selectedVehicle.carNumber}</p>
+            <p>차대번호 (VIN): {selectedVehicle.vin}</p>
+            <p>현재 위치: {selectedVehicle.currentLocation || "미정"}</p>
             <p>
-              상태: {selectedRow.status === "active" ? "활성화" : "비활성화"}
+              상태:{" "}
+              {selectedVehicle.status === "active"
+                ? "활성화"
+                : selectedVehicle.status === "inactive"
+                ? "비활성화"
+                : "정비 중"}
             </p>
-            <p>이동 거리: {selectedRow.mileage} km</p>
-            <p>최근 정비 일자: {selectedRow.lastMaintenanceAt}</p>
-            <p>다음 정비 일자: {selectedRow.nextMaintenanceAt}</p>
+            <p>이동 거리: {selectedVehicle.mileage || 0} km</p>
+            <p>최근 정비 일자: {selectedVehicle.lastMaintenanceAt || "없음"}</p>
+            <p>다음 정비 일자: {selectedVehicle.nextMaintenanceAt || "없음"}</p>
             <div className="modal-actions">
               <button onClick={handleEditClick} className="edit-button">
                 수정
@@ -249,8 +587,8 @@ function VehicleManagement() {
               차량번호:
               <input
                 type="text"
-                name="vehicleNumber"
-                value={formData.vehicleNumber}
+                name="carNumber"
+                value={formData.carNumber}
                 onChange={handleFormChange}
               />
             </label>
@@ -261,6 +599,7 @@ function VehicleManagement() {
                 name="vin"
                 value={formData.vin}
                 onChange={handleFormChange}
+                disabled
               />
             </label>
             <label>
@@ -281,6 +620,7 @@ function VehicleManagement() {
               >
                 <option value="active">활성화</option>
                 <option value="inactive">비활성화</option>
+                <option value="maintenance">정비 중</option>
               </select>
             </label>
             <label>
@@ -312,9 +652,20 @@ function VehicleManagement() {
             </label>
           </form>
           <div className="modal-actions">
-            <button onClick={handleSaveEdit} className="save-button">
+            {/* 더미 데이터 수정 저장 */}
+            {/* <button onClick={handleSaveEditDummy} className="save-button" disabled={loading}>
+              저장
+            </button> */}
+
+            {/* API 연동 수정 저장 */}
+            <button
+              onClick={handleSaveEdit}
+              className="save-button"
+              disabled={loading}
+            >
               저장
             </button>
+
             <button onClick={closeEditModal} className="cancel-button">
               취소
             </button>
@@ -328,12 +679,20 @@ function VehicleManagement() {
           <h2>차량 삭제 확인</h2>
           <p>정말로 이 차량을 삭제하시겠습니까?</p>
           <div className="modal-actions">
+            {/* 더미 데이터 삭제 */}
+            {/* <button onClick={handleConfirmDeleteDummy} className="confirm-delete-button" disabled={loading}>
+              삭제
+            </button> */}
+
+            {/* API 연동 삭제 */}
             <button
               onClick={handleConfirmDelete}
               className="confirm-delete-button"
+              disabled={loading}
             >
               삭제
             </button>
+
             <button onClick={closeDeleteModal} className="cancel-button">
               취소
             </button>
@@ -350,9 +709,10 @@ function VehicleManagement() {
               차량번호:
               <input
                 type="text"
-                name="vehicleNumber"
-                value={formData.vehicleNumber}
+                name="carNumber"
+                value={formData.carNumber}
                 onChange={handleFormChange}
+                required
               />
             </label>
             <label>
@@ -362,6 +722,7 @@ function VehicleManagement() {
                 name="vin"
                 value={formData.vin}
                 onChange={handleFormChange}
+                required
               />
             </label>
             <label>
@@ -382,6 +743,7 @@ function VehicleManagement() {
               >
                 <option value="active">활성화</option>
                 <option value="inactive">비활성화</option>
+                <option value="maintenance">정비 중</option>
               </select>
             </label>
             <label>
@@ -391,6 +753,7 @@ function VehicleManagement() {
                 name="mileage"
                 value={formData.mileage}
                 onChange={handleFormChange}
+                required
               />
             </label>
             <label>
@@ -413,9 +776,20 @@ function VehicleManagement() {
             </label>
           </form>
           <div className="modal-actions">
-            <button onClick={handleSaveAdd} className="save-button">
+            {/* 더미 데이터 신규 등록 저장 */}
+            {/* <button onClick={handleSaveAddDummy} className="save-button" disabled={loading}>
+              등록
+            </button> */}
+
+            {/* API 연동 신규 등록 저장 */}
+            <button
+              onClick={handleSaveAdd}
+              className="save-button"
+              disabled={loading}
+            >
               등록
             </button>
+
             <button onClick={closeAddModal} className="cancel-button">
               취소
             </button>

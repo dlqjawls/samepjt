@@ -1,3 +1,4 @@
+// admin/Sidebar.jsx
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
@@ -38,9 +39,10 @@ function Sidebar() {
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
+              aria-label="대시보드"
             >
               <FaChartPie className="nav-icon" />
-              대시보드
+              <p className="nav-text">대시보드</p>
             </NavLink>
           </li>
           <li>
@@ -49,9 +51,10 @@ function Sidebar() {
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
+              aria-label="차량 관리"
             >
               <FaCar className="nav-icon" />
-              차량 관리
+              <p className="nav-text">차량 관리</p>
             </NavLink>
           </li>
           <li>
@@ -60,9 +63,10 @@ function Sidebar() {
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
+              aria-label="모듈 관리"
             >
               <FaCogs className="nav-icon" />
-              모듈 관리
+              <p className="nav-text">모듈 관리</p>
             </NavLink>
           </li>
           <li>
@@ -71,9 +75,10 @@ function Sidebar() {
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
+              aria-label="옵션 관리"
             >
               <FaTools className="nav-icon" />
-              옵션 관리
+              <p className="nav-text">옵션 관리</p>
             </NavLink>
           </li>
           <li>
@@ -82,9 +87,10 @@ function Sidebar() {
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
+              aria-label="대여 기록"
             >
               <FaPlusSquare className="nav-icon" />
-              대여 기록
+              <p className="nav-text">대여 기록</p>
             </NavLink>
           </li>
           <li>
@@ -93,9 +99,10 @@ function Sidebar() {
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
+              aria-label="정비 기록"
             >
               <MdEventNote className="nav-icon" />
-              정비 기록
+              <p className="nav-text">정비 기록</p>
             </NavLink>
           </li>
         </ul>
@@ -105,9 +112,10 @@ function Sidebar() {
         <button
           className="nav-link settings-button"
           onClick={openSettingsModal}
+          aria-label="설정"
         >
           <IoSettingsSharp className="nav-icon" />
-          설정
+          <span className="nav-text">설정</span>
         </button>
       </div>
 

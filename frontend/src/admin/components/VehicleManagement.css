@@ -1,97 +1,130 @@
-/* src/components/VehicleManagement.css */
+/* src/admin/components/VehicleManagement.css */
 
-/* 컨테이너 */
 .vehicle-container {
-  width: 100%;
-  margin: 20px 0;
-  background-color: #fff;
-  border-radius: 8px;
   padding: 20px;
-  box-sizing: border-box;
 }
 
-/* 헤더 */
 .vehicle-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
-.vehicle-header h1 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.vehicle-header .add-button {
-  background-color: #28a745;
+.add-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
   color: white;
-  padding: 10px 15px;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
-.vehicle-header .add-button:hover {
-  background-color: #218838;
+.add-button:hover {
+  background-color: #45a049;
 }
 
-/* 테이블 */
+.filters {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+}
+
+.filters label {
+  margin-right: 20px;
+}
+
+.filters input,
+.filters select {
+  margin-left: 10px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
 .vehicle-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #f9f9f9;
 }
 
 .vehicle-table th,
 .vehicle-table td {
-  padding: 12px;
-  text-align: center;
   border: 1px solid #ddd;
+  padding: 8px;
 }
 
 .vehicle-table th {
-  background-color: #eaeaea;
-  font-weight: bold;
-}
-
-.vehicle-table td {
-  vertical-align: middle;
+  background-color: #f2f2f2;
+  text-align: left;
 }
 
 .detail-button {
-  background-color: #17a2b8;
-  color: #fff;
-  padding: 6px 10px;
+  padding: 5px 10px;
+  background-color: #2196f3;
+  color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .detail-button:hover {
-  background-color: #138496;
+  background-color: #0b7dda;
 }
 
-/* 상세 정보 내용 */
-.detail-content p {
-  margin: 10px 0;
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  margin: 0 10px;
+  background-color: #e7e7e7;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* 모달 내용 스타일링 */
+.detail-content,
+.edit-content,
+.delete-content,
+.add-content {
+  padding: 20px;
 }
 
 .modal-actions {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
+}
+
+.edit-button,
+.delete-button,
+.save-button,
+.cancel-button,
+.confirm-delete-button {
+  padding: 8px 16px;
+  margin-left: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 .edit-button {
   background-color: #ffc107;
-  color: #212529;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 10px;
+  color: white;
 }
 
 .edit-button:hover {
@@ -99,71 +132,37 @@
 }
 
 .delete-button {
-  background-color: #dc3545;
-  color: #fff;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  background-color: #f44336;
+  color: white;
 }
 
 .delete-button:hover {
-  background-color: #c82333;
+  background-color: #da190b;
 }
 
-/* 수정 폼 */
-.edit-form label,
-.add-form label {
-  display: block;
-  margin-bottom: 10px;
+.save-button {
+  background-color: #4caf50;
+  color: white;
 }
 
-.edit-form input,
-.edit-form select,
-.edit-form textarea,
-.add-form input,
-.add-form select,
-.add-form textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  box-sizing: border-box;
-}
-
-.edit-form textarea,
-.add-form textarea {
-  resize: vertical;
-  height: 80px;
-}
-
-/* 삭제 확인 내용 */
-.delete-content p {
-  margin: 20px 0;
-}
-
-.confirm-delete-button {
-  background-color: #dc3545;
-  color: #fff;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.confirm-delete-button:hover {
-  background-color: #c82333;
+.save-button:hover {
+  background-color: #45a049;
 }
 
 .cancel-button {
-  background-color: #6c757d;
-  color: #fff;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  background-color: #e7e7e7;
+  color: black;
 }
 
 .cancel-button:hover {
-  background-color: #5a6268;
+  background-color: #d5d5d5;
+}
+
+.confirm-delete-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.confirm-delete-button:hover {
+  background-color: #da190b;
 }
