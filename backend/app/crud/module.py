@@ -1,48 +1,80 @@
-from sqlmodel import select, Session
-from sqlalchemy.exc import IntegrityError
+from sqlmodel import Session, select
+from typing import List, Optional
 from app.models.module import Module
-from typing import Optional, List
-from fastapi import HTTPException
+from app.crud.base import CRUDBase
+from app.utils.exceptions import DatabaseError
 
-def get_module_by_id(session: Session, module_id: Optional[int]) -> Optional[Module]:
-    if module_id is None:
-        raise HTTPException(status_code=400, detail="Module ID cannot be None")
-    
-    statement = select(Module).where(Module.moduleId == module_id)
-    result = session.exec(statement).first()
+class ModuleCRUD(CRUDBase[Module]):
+    def __init__(self):
+        super().__init__(Module, "module_id")
+        
+    def get_modules_by_status(
+        self, 
+        session: Session, 
+        status_id: int
+    ) -> List[Module]:
+        """
+        특정 상태의 모듈 목록 조회
 
-    return result
+        Args:
+            session: DB 세션
+            status_id: 모듈 상태 ID
 
+        Returns:
+            List[Module]: 조회된 모듈 목록
 
-def get_all_modules(session: Session) -> List[Module]:
-    return list(session.exec(select(Module)).all())
+        Raises:
+            DatabaseError: 데이터베이스 조회 실패 시
+        """
+        try:
+            query = (
+                select(self.model)
+                .where(self.model.status_id == status_id)
+            )
 
-def create_module(session: Session, module_data: Module) -> Module:
-    try:
-        session.add(module_data)
-        session.commit()
-        session.refresh(module_data)
-        return module_data
-    except IntegrityError:
-        session.rollback()
-        raise HTTPException(status_code=500, detail="Database error: Could not create module")
+            return list(session.exec(query).all())
 
-def update_module(session: Session, module: Module) -> Module:
-    existing_module = get_module_by_id(session, module.moduleId)
-    
-    if not existing_module:
-        raise HTTPException(status_code=404, detail=f"Module with ID {module.moduleId} does not exist")
-    
-    session.add(module)
-    session.commit()
-    session.refresh(module)
-    return module
+        except Exception as e:
+            raise DatabaseError(
+                message="Failed to get modules by status",
+                detail={
+                    "status_id": status_id,
+                    "error": str(e)
+                }
+            )
 
-def delete_module(session: Session, module_id: int) -> None:
-    module = get_module_by_id(session, module_id)
-    
-    if not module:
-        raise HTTPException(status_code=404, detail=f"Module with ID {module_id} does not exist")
-    
-    session.delete(module)
-    session.commit()
+    def get_first_module_by_status_id(
+        self, 
+        session: Session,
+        status_id: int,
+    ) -> Module:
+        """
+        특정 상태에 해당하는 첫 번째 모듈 조회
+
+        Args:
+            session: DB 세션
+            status_id: 모듈 상태 ID
+
+        Returns:
+            Module: 조회된 모듈
+
+        Raises:
+            DatabaseError: 모듈을 찾을 수 없거나 조회 실패 시
+        """
+        query = (
+            select(self.model)
+            .where(self.model.status_id == status_id)
+        )
+
+        module = session.exec(query).first()
+        if module is None:
+            raise DatabaseError(
+                message="No available module found",
+                detail={
+                    "status_id": status_id
+                }
+            )
+            
+        return module
+
+module_crud = ModuleCRUD()

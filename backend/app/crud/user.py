@@ -1,44 +1,18 @@
-from sqlmodel import select, Session
-from sqlalchemy.exc import IntegrityError
+from sqlmodel import Session, select
 from app.models.user import User
+from app.crud.base import CRUDBase
 from typing import Optional
-from fastapi import HTTPException
 
-def get_user_by_id(session: Session, user_id: Optional[str]) -> Optional[User]:
-    if not user_id:
-        raise HTTPException(status_code=400, detail="User ID cannot be None or empty")
+class UserCRUD(CRUDBase[User]):
+    def __init__(self):
+        super().__init__(User, "user_pk")
 
-    statement = select(User).where(User.userId == user_id)
-    result = session.exec(statement).first()
-    
-    return result
+    def get_user_by_user_id(self, session: Session, id: str) -> Optional[User]:
+        statement = select(User).where(User.user_id == id)
+        return session.exec(statement).first() 
 
-def get_user_by_pk(session: Session, user_pk: Optional[int]) -> Optional[User]:
-    if user_pk is None:
-        raise HTTPException(status_code=400, detail="User PK cannot be None")
+    def get_user_by_email(self, session: Session, email: str) -> Optional[User]:
+        statement = select(User).where(User.user_email == email)
+        return session.exec(statement).first() 
 
-    statement = select(User).where(User.userPK == user_pk)
-    result = session.exec(statement).first()
-    
-    return result
-
-def get_user_by_email(session: Session, user_email: Optional[str]) -> Optional[User]:
-    if not user_email:
-        raise HTTPException(status_code=400, detail="User email cannot be None or empty")
-
-    statement = select(User).where(User.userEmail == user_email)
-    return session.exec(statement).first()
-
-def create_user(session: Session, user_data: User) -> User:
-    try:
-        existing_user = get_user_by_email(session, user_data.userEmail)
-        if existing_user:
-            raise HTTPException(status_code=400, detail=f"User with email {user_data.userEmail} already exists")
-
-        session.add(user_data)
-        session.commit()
-        session.refresh(user_data)
-        return user_data
-    except IntegrityError:
-        session.rollback()
-        raise HTTPException(status_code=500, detail="Database error: Could not create user")
+user_crud = UserCRUD()

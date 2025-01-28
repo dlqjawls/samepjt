@@ -1,47 +1,81 @@
-from sqlmodel import select, Session
-from sqlalchemy.exc import IntegrityError
+from sqlmodel import Session, select
+from typing import List, Optional
 from app.models.vehicle import Vehicle
-from typing import Optional, List
-from fastapi import HTTPException
+from app.crud.base import CRUDBase
+from app.utils.exceptions import DatabaseError
 
-def get_vehicle_by_id(session: Session, vehicle_id: Optional[int]) -> Optional[Vehicle]:
-    if vehicle_id is None:
-        raise HTTPException(status_code=400, detail="Vehicle ID cannot be None")
+class VehicleCRUD(CRUDBase[Vehicle]):
+    def __init__(self):
+        super().__init__(Vehicle, "vehicle_id")
+        
+    def get_vehicles_by_status(
+        self, 
+        session: Session, 
+        status_id: int
+    ) -> List[Vehicle]:
+        """
+        특정 상태의 차량 목록 조회
 
-    statement = select(Vehicle).where(Vehicle.vehicleId == vehicle_id)
-    result = session.exec(statement).first()
+        Args:
+            session: DB 세션
+            status_id: 차량 상태 ID
+
+        Returns:
+            List[Vehicle]: 조회된 차량 목록
+
+        Raises:
+            DatabaseError: 데이터베이스 조회 실패 시
+        """
+        try:
+            query = (
+                select(self.model)
+                .where(self.model.status_id == status_id)
+            )
+
+            return list(session.exec(query).all())
+
+        except Exception as e:
+            raise DatabaseError(
+                message="Failed to get vehicles by status",
+                detail={
+                    "status_id": status_id,
+                    "error": str(e)
+                }
+            )
+
+    def get_first_vehicle_by_status_id(
+        self, 
+        session: Session,
+        status_id: int,
+    ) -> Vehicle:
+        """
+        특정 상태에 해당하는 첫 번째 차량 조회
+
+        Args:
+            session: DB 세션
+            status_id: 차량 상태 ID
+
+        Returns:
+            Optional[Vehicle]: 조회된 차량 또는 None
+
+        Raises:
+            DatabaseError: 데이터베이스 조회 실패 시
+        """
+        query = (
+            select(self.model)
+            .where(self.model.status_id == status_id)
+        )
+
+        vehicle = session.exec(query).first()
+        if vehicle is None:
+            raise DatabaseError(
+                message="No available vehicle found",
+                detail={
+                    "status_id": status_id
+                }
+            )
+            
+        return vehicle
+        
     
-    return result 
-
-def get_all_vehicles(session: Session) -> List[Vehicle]:
-    return list(session.exec(select(Vehicle)).all())
-
-def create_vehicle(session: Session, vehicle_data: Vehicle) -> Vehicle:
-    try:
-        session.add(vehicle_data)
-        session.commit()
-        session.refresh(vehicle_data)
-        return vehicle_data
-    except IntegrityError:
-        session.rollback()
-        raise HTTPException(status_code=500, detail="Database error: Could not create vehicle")
-
-def update_vehicle(session: Session, vehicle: Vehicle) -> Vehicle:
-    existing_vehicle = get_vehicle_by_id(session, vehicle.vehicleId)
-    
-    if not existing_vehicle:
-        raise HTTPException(status_code=404, detail=f"Vehicle with ID {vehicle.vehicleId} does not exist")
-    
-    session.add(vehicle)
-    session.commit()
-    session.refresh(vehicle)
-    return vehicle
-
-def delete_vehicle(session: Session, vehicle_id: int) -> None:
-    vehicle = get_vehicle_by_id(session, vehicle_id)
-    
-    if not vehicle:
-        raise HTTPException(status_code=404, detail=f"Vehicle with ID {vehicle_id} does not exist")
-    
-    session.delete(vehicle)
-    session.commit()
+vehicle_crud = VehicleCRUD()
