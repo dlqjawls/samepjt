@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, Depends
 from typing import Optional
-from app.services.user.module_sets import ModuleSetService
-from app.api.schemas.user.module_sets import ModuleSetsResponse
+from app.services.user.module_set_service import ModuleSetService
+from app.api.schemas.user.module_set_schema import ModuleSetsResponse
 from app.core.database import Session, get_session
 
 router = APIRouter()
@@ -26,7 +26,7 @@ router = APIRouter()
                                     "moduleSetName": "캠핑카 모듈 세트",
                                     "description": "캠핑에 최적화된 모듈 세트입니다.",
                                     "basePrice": 2500.0,
-                                    "imgsUrls": ["https://example.com/module1.jpg"],
+                                    "imgUrls": ["https://example.com/module1.jpg"],
                                     "moduleSetOptionTypes": [
                                         {
                                             "optionTypeId": 101,
@@ -57,7 +57,67 @@ router = APIRouter()
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "No module sets found"
+                        "resultCode": "FAILURE",
+                        "message": "No module sets found",
+                        "error_code": "NOT_FOUND",
+                        "detail": {
+                            "page": 1,
+                            "page_size": 10
+                        }
+                    }
+                }
+            }
+        },
+        422: {
+            "description": "유효성 검사 오류",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Validation error",
+                        "error_code": "VALIDATION_ERROR",
+                        "detail": {
+                            "errors": [
+                                {
+                                    "loc": ["query", "page"],
+                                    "msg": "ensure this value is greater than 0",
+                                    "type": "value_error.number.not_gt",
+                                    "ctx": {"limit_value": 0}
+                                }
+                            ]
+                        },
+                        "data": None
+                    }
+                }
+            }
+        },
+        500: {
+            "description": "서버 오류",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "DatabaseError": {
+                            "summary": "데이터베이스 오류",
+                            "value": {
+                                "resultCode": "FAILURE",
+                                "message": "Database error occurred",
+                                "error_code": "DATABASE_ERROR",
+                                "detail": {
+                                    "error": "error message"
+                                }
+                            }
+                        },
+                        "InternalServerError": {
+                            "summary": "예기치 못한 서버 오류 발생",
+                            "value": {
+                                "resultCode": "FAILURE",
+                                "message": "Internal server error",
+                                "error_code": "INTERNAL_SERVER_ERROR",
+                                "detail": {
+                                    "error": "error message"
+                                }
+                            }
+                        }
                     }
                 }
             }

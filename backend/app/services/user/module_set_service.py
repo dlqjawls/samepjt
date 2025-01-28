@@ -1,35 +1,21 @@
 from sqlmodel import Session
-from sqlalchemy.exc import NoResultFound, IntegrityError
 from typing import List, Tuple
-from fastapi import HTTPException
 from app.models.module_set import ModuleSet
 from app.models.option_type import OptionType
 from app.models.module_set_option_types import ModuleSetOptionTypes
 from app.crud.module_set import module_set_crud
 from app.crud.module_set_option_type import module_set_option_type_crud
-from app.api.schemas.user.module_sets import (
-    ModuleSetsResponse, ModuleSetData, ModuleSet as ModuleSetSchema, ModuleSetOptionType as ModuleSetOptionTypeSchema
-)
+from app.api.schemas.user import module_set_schema
 from app.utils.handle_transaction import handle_transaction
 from app.utils.exceptions import (
-    DatabaseError, NotFoundError, ValidationError, 
-    InternalServerError
+    DatabaseError, NotFoundError, 
 )
 
 class ModuleSetServiceUtils:
     """ 🎯 ModuleSetService 관련 공통 로직을 관리하는 유틸리티 클래스 """
 
     @staticmethod
-    def validate_module_set(module_set: ModuleSet) -> None:
-        """모듈 세트 유효성 검증"""
-        if not module_set.module_set_id:
-            raise ValidationError(
-                message="ModuleSet ID cannot be None",
-                detail={"module_set": module_set.dict()}
-            )
-            
-    @staticmethod
-    def get_option_types(session: Session, module_set_id: int) -> List[ModuleSetOptionTypeSchema]:
+    def get_option_types(session: Session, module_set_id: int) -> List[module_set_schema.ModuleSetOptionType]:
         """ ✅ 특정 모듈 세트에 속한 옵션 타입 조회 및 변환 """
         option_types: List[Tuple[OptionType, ModuleSetOptionTypes]] = module_set_option_type_crud.get_option_types_by_module_set(
             session, module_set_id
@@ -48,7 +34,7 @@ class ModuleSetServiceUtils:
 
 
             module_set_option_types.append(
-                ModuleSetOptionTypeSchema(
+                module_set_schema.ModuleSetOptionType(
                     optionTypeId=option_type.option_type_id,
                     optionTypeName=option_type.option_type_name,
                     quantity=module_set_option.option_quantity or 0  # ✅ `None`일 경우 기본값 `0`
@@ -62,7 +48,7 @@ class ModuleSetService:
 
     @staticmethod
     @handle_transaction
-    def get_all_module_sets(session: Session, page: int = 1, page_size: int = 10) -> ModuleSetsResponse:
+    def get_all_module_sets(session: Session, page: int = 1, page_size: int = 10) -> module_set_schema.ModuleSetsResponse:
         """ ✅ 모든 모듈 세트 목록을 조회하고, 옵션 타입 정보를 함께 반환합니다. """
 
         # ✅ 페이지네이션 적용하여 모듈 세트 조회
@@ -75,22 +61,21 @@ class ModuleSetService:
                 detail={"page": page, "page_size": page_size}
             )
 
-        module_sets_data: List[ModuleSetSchema] = []
+        module_sets_data: List[module_set_schema.ModuleSet] = []
 
         for module_set in module_sets:
-            # 모듈 세트 유효성 검증
-            ModuleSetServiceUtils.validate_module_set(module_set)
             
             if module_set.module_set_id is None:
                 raise DatabaseError(
                     message="ModuleSet ID cannot be None",
-                    detail={"module_set": module_set.dict()}
+                    detail={"module_set": module_set.dict(exclude={"created_at", "updated_at", "deleted_at"})}
                 )
 
             module_set_option_types = ModuleSetServiceUtils.get_option_types(session, module_set.module_set_id)
 
+            # datetime 필드를 제외하고 필요한 필드만 응답 모델로 변환
             module_sets_data.append(
-                ModuleSetSchema(
+                module_set_schema.ModuleSet(
                     moduleSetId=module_set.module_set_id,
                     moduleSetName=module_set.module_set_name or "No name available",
                     description=module_set.description or "No description available",
@@ -99,9 +84,11 @@ class ModuleSetService:
                     moduleSetOptionTypes=module_set_option_types
                 )
             )
-
-        return ModuleSetsResponse(
-            resultCode="SUCCESS",
+            
+        return module_set_schema.ModuleSetsResponse.success(
             message="Module sets retrieved successfully",
-            data=ModuleSetData(moduleSets=module_sets_data, pagination=paginated_result["pagination"])
+            data=module_set_schema.ModuleSetData(
+                moduleSets=module_sets_data, 
+                pagination=paginated_result["pagination"]
+            )
         )
