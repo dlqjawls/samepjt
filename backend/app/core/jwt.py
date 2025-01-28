@@ -124,7 +124,7 @@ class JWTHandler:
             )
             
             if payload.get("type") != "refresh":
-                raise JWTError(
+                raise UnauthorizedError(
                     message="Invalid token type",
                     detail={"required": "refresh", "received": payload.get("type")}
                 )
@@ -134,7 +134,7 @@ class JWTHandler:
             stored_refresh_token = self.get_refresh_token(user_pk, role)
 
             if stored_refresh_token != refresh_token:
-                raise JWTError(
+                raise UnauthorizedError(
                     message="Invalid refresh token",
                     detail={"error": "Stored token does not match provided token"}
                 )
@@ -147,9 +147,9 @@ class JWTHandler:
             return new_access_token, new_refresh_token
 
         except jwt.ExpiredSignatureError:
-            raise JWTError(message="Refresh token has expired")
+            raise UnauthorizedError(message="Refresh token has expired")
         except jwt.InvalidTokenError as e:
-            raise JWTError(
+            raise UnauthorizedError(
                 message="Invalid refresh token",
                 detail={"error": str(e)}
             )

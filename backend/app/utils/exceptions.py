@@ -13,13 +13,15 @@ class BaseAPIException(HTTPException):
         message: str,
         detail: Optional[Dict[str, Any]] = None
     ):
+        # ResponseBase.error()를 직접 사용하여 에러 응답 생성
+        error_response = ResponseBase.error(
+            error_code=error_code,
+            message=message,
+            detail=detail
+        )
         super().__init__(
             status_code=status_code,
-            detail=ResponseBase.error(
-                error_code=error_code,
-                message=message,
-                detail=detail
-            ).dict()
+            detail=error_response.dict()
         )
 
 # 400번대 에러 (클라이언트 에러)
@@ -30,67 +32,54 @@ class BadRequestError(BaseAPIException):
 
 class UnauthorizedError(BaseAPIException):
     """401 Unauthorized"""
-    def __init__(self, message: str = "Authentication required", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(status_code=401, error_code="UNAUTHORIZED", message=message, detail=detail)
+    def __init__(self, message: str, error_code: str = "UNAUTHORIZED", detail: Optional[Dict[str, Any]] = None):
+        super().__init__(status_code=401, error_code=error_code, message=message, detail=detail)
 
 class ForbiddenError(BaseAPIException):
     """403 Forbidden"""
-    def __init__(self, message: str = "Permission denied", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(status_code=403, error_code="FORBIDDEN", message=message, detail=detail)
+    def __init__(self, message: str, error_code: str = "FORBIDDEN", detail: Optional[Dict[str, Any]] = None):
+        super().__init__(status_code=403, error_code=error_code, message=message, detail=detail)
 
 class NotFoundError(BaseAPIException):
     """404 Not Found"""
-    def __init__(self, message: str = "Resource not found", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(status_code=404, error_code="NOT_FOUND", message=message, detail=detail)
+    def __init__(self, message: str, error_code: str = "NOT_FOUND", detail: Optional[Dict[str, Any]] = None):
+        super().__init__(status_code=404, error_code=error_code, message=message, detail=detail)
 
 class ConflictError(BaseAPIException):
     """409 Conflict"""
-    def __init__(self, message: str = "Resource conflict", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(status_code=409, error_code="CONFLICT", message=message, detail=detail)
+    def __init__(self, message: str, error_code: str = "CONFLICT", detail: Optional[Dict[str, Any]] = None):
+        super().__init__(status_code=409, error_code=error_code, message=message, detail=detail)
 
 class ValidationError(BaseAPIException):
-    """422 Unprocessable Entity"""
-    def __init__(self, message: str = "Validation error", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(status_code=422, error_code="VALIDATION_ERROR", message=message, detail=detail)
+    """422 Validation Error"""
+    def __init__(self, message: str, error_code: str = "VALIDATION_ERROR", detail: Optional[Dict[str, Any]] = None):
+        super().__init__(status_code=422, error_code=error_code, message=message, detail=detail)
 
 # 500번대 에러 (서버 에러)
 class InternalServerError(BaseAPIException):
     """500 Internal Server Error"""
-    def __init__(self, message: str = "Internal server error", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(status_code=500, error_code="INTERNAL_ERROR", message=message, detail=detail)
-
-# 서비스별 커스텀 에러
-class JWTError(InternalServerError):
-    """JWT 시스템 에러 (500)"""
-    def __init__(self, message: str = "JWT system error", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(
-            message=message,
-            detail={"error_type": "JWT_SYSTEM_ERROR", **(detail or {})}
-        )
+    def __init__(self, message: str, error_code: str = "INTERNAL_SERVER_ERROR", detail: Optional[Dict[str, Any]] = None):
+        super().__init__(status_code=500, error_code=error_code, message=message, detail=detail)
 
 class DatabaseError(InternalServerError):
-    """데이터베이스 에러 (500)"""
-    def __init__(self, message: str = "Database error", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(
-            message=message,
-            detail={"error_type": "DATABASE_ERROR", **(detail or {})}
-        )
+    """데이터베이스 에러"""
+    def __init__(self, message: str, detail: Optional[Dict[str, Any]] = None):
+        super().__init__(message=message, error_code="DATABASE_ERROR", detail=detail)
 
 class RedisError(InternalServerError):
-    """Redis 에러 (500)"""
-    def __init__(self, message: str = "Redis error", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(
-            message=message,
-            detail={"error_type": "REDIS_ERROR", **(detail or {})}
-        )
+    """Redis 에러"""
+    def __init__(self, message: str, detail: Optional[Dict[str, Any]] = None):
+        super().__init__(message=message, error_code="REDIS_ERROR", detail=detail)
+
+class JWTError(InternalServerError):
+    """JWT 에러"""
+    def __init__(self, message: str, detail: Optional[Dict[str, Any]] = None):
+        super().__init__(message=message, error_code="JWT_ERROR", detail=detail)
 
 class ConfigError(InternalServerError):
-    """설정 에러 (500)"""
-    def __init__(self, message: str = "Configuration error", detail: Optional[Dict[str, Any]] = None):
-        super().__init__(
-            message=message,
-            detail={"error_type": "CONFIG_ERROR", **(detail or {})}
-        )
+    """설정 에러"""
+    def __init__(self, message: str, detail: Optional[Dict[str, Any]] = None):
+        super().__init__(message=message, error_code="CONFIG_ERROR", detail=detail)
 
 # 전역 예외 처리기
 def get_exception_handlers():

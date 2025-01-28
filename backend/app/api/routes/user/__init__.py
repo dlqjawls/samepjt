@@ -1,12 +1,10 @@
 from fastapi import APIRouter
-from app.api.routes.user import login, module_sets, option_types, register, rent
+from app.api.routes.user.module_sets import router as module_sets_router
+from app.api.routes.user.option_types import router as option_types_router
+from app.api.routes.user.rent import router as rent_router
 
-# 사용자 라우터 모음
-router = APIRouter(prefix="/user", tags=["User"])
-
-router.include_router(login.router)
-router.include_router(register.router)
-router.include_router(module_sets.router)
-router.include_router(option_types.router)
-router.include_router(rent.router)
+user_router = APIRouter(prefix="/user", tags=["User"])
+user_router.include_router(module_sets_router)
+user_router.include_router(option_types_router)
+user_router.include_router(rent_router)
 

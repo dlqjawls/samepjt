@@ -1,58 +1,116 @@
-from fastapi import HTTPException
 from sqlmodel import Session
-from app.crud.option_type import get_all_option_types, get_option_type_by_id, get_option_counts_by_type
-from app.api.schemas.user.option_types import OptionTypesResponse, OptionTypesData, OptionType
-from app.services.pagination import paginate
-from app.models.option import Option as OptionModel
-from typing import Optional
+from typing import List
+from app.models.option_type import OptionType 
+from app.crud.option_type import option_types_crud
+from app.api.schemas.user.option_types import (
+    OptionTypesResponse, OptionTypesData, OptionType as OptionTypeSchema
+)
+from app.utils.exceptions import NotFoundError, ValidationError
+from app.utils.handle_transaction import handle_transaction
 
-class OptionTypeService:
+class OptionTypeServiceUtils:
 
     @staticmethod
-    def get_option_types(
-        session: Session, 
-        page: int = 1, 
-        page_size: int = 10, 
-        option_type_id: Optional[int] = None
-    ) -> OptionTypesResponse:
-
-        # 옵션 타입별 개수 집계
-        option_counts = get_option_counts_by_type(session)
-
-        # 옵션 타입 조회
-        if option_type_id:
-            option_types = [get_option_type_by_id(session, option_type_id)]
-        else:
-            option_types = get_all_option_types(session)
-
-        if not option_types:  # 데이터가 없을 경우 빈 리스트 반환
-            return OptionTypesResponse(
-                resultCode="SUCCESS",
-                message="No option types found",
-                data=OptionTypesData(optionTypes=[], pagination={})
+    def convert_to_schema(
+        option_type: OptionType, 
+        stock_quantity: int = 0
+    ) -> OptionTypeSchema: 
+        """ ✅ OptionType 모델을 Pydantic 스키마로 변환 """
+        
+        """옵션 타입 필수 필드 검증"""
+        if not isinstance(option_type, OptionType):
+            raise ValidationError(
+                message="Invalid option type object",
+                detail={
+                    "error": "Expected OptionType instance",
+                    "received": type(option_type).__name__
+                }
             )
 
-        # 페이지네이션 적용
-        paginated_result = paginate(option_types, page, page_size)
+        if option_type.option_type_id is None:
+            raise ValidationError(
+                message="Required option type fields are missing",
+                detail={
+                    "option_type.option_type_id": {option_type.option_type_id},
+                }
+            )
+            
+        if option_type.option_type_name is None:
+            raise ValidationError(
+                message="Required option type fields are missing",
+                detail={
+                    "option_type.option_type_name": {option_type.option_type_name}
+                }
+            )
 
-        # 옵션 타입 목록 생성
+        # 옵션 ID 양수값 검증
+        if option_type.option_type_id <= 0:
+            raise ValidationError(
+                message="Option type ID must be positive",
+                detail={
+                    "field": "option_type_id",
+                    "value": option_type.option_type_id
+                }
+            )
+        
+        return OptionTypeSchema(
+            optionTypeId=option_type.option_type_id,
+            optionTypeName=option_type.option_type_name,
+            optionTypeSize=option_type.option_type_size or "N/A",
+            optionTypeCost=option_type.option_type_cost or 0.0,
+            stockQuantity=stock_quantity,
+            description=option_type.description or "",
+            imgUrls=[option_type.option_type_images] if option_type.option_type_images else []
+        )
+
+
+class OptionTypeService:
+    """ 🎯 옵션 타입 조회 서비스 """
+
+    @staticmethod
+    @handle_transaction
+    def get_all_option_types(session: Session, page: int = 1, page_size: int = 10) -> OptionTypesResponse:
+        """ ✅ 옵션 타입 목록 조회 (페이지네이션 적용) """
+        option_counts = option_types_crud.get_option_counts_by_type(session) or {}
+
+        paginated_result = option_types_crud.get_all(session, page, page_size)
+        option_types: List[OptionType] = paginated_result["items"]
+
         option_types_data = [
-            OptionType(
-                optionTypeId=opt_type.optionTypeId,
-                optionTypeName=opt_type.optionTypeName,
-                optionTypeSize=opt_type.optionTypeSize,
-                optionTypeCost=opt_type.optionTypeCost,
-                stockQuantity=option_counts.get(opt_type.optionTypeId, 0),  # 해당 옵션 타입의 총 개수
-                description=opt_type.description,
-                imgUrls=[opt_type.optionTypeImages],
-                optionTypeFeatures=opt_type.optionTypeFeatures
+            OptionTypeServiceUtils.convert_to_schema(
+                opt_type,
+                option_types_crud.get_option_counts_by_type(session).get(opt_type.option_type_id, 0)
             )
-            for opt_type in paginated_result.items if opt_type is not None  # None 값을 체크하여 무시
+            for opt_type in option_types
         ]
-
 
         return OptionTypesResponse(
             resultCode="SUCCESS",
-            message="Option types retrieved successfully",
-            data=OptionTypesData(optionTypes=option_types_data, pagination=paginated_result.pagination)
+            message="Option types retrieved successfull1y",
+            data=OptionTypesData(
+                optionTypes=option_types_data,
+                pagination=paginated_result.get("pagination", None)
+            )
+        )
+
+    @staticmethod
+    @handle_transaction
+    def get_option_type_by_id(session: Session, option_type_id: int) -> OptionTypesResponse:
+        """ ✅ 특정 옵션 타입 조회 """
+        option_type = option_types_crud.get_by_id(session, option_type_id)
+        if option_type is None:
+            raise NotFoundError(
+                message="Option type not found",    
+                detail={"option_type_id": option_type_id}
+            )
+            
+        option_type_data = OptionTypeServiceUtils.convert_to_schema(
+            option_type,
+            option_types_crud.get_option_counts_by_type(session).get(option_type.option_type_id, 0)
+        )
+
+        return OptionTypesResponse(
+            resultCode="SUCCESS",
+            message="Option type retrieved successfully",
+            data=OptionTypesData(optionTypes=[option_type_data], pagination=None)
         )

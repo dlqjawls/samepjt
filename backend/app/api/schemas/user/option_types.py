@@ -17,11 +17,11 @@ class OptionType(BaseModel):
 class OptionTypesData(BaseModel):
     """옵션 타입 목록 데이터"""
     optionTypes: List[OptionType]
-    pagination: Pagination
+    pagination: Optional[Pagination] = None 
 
 
 class OptionTypesResponse(BaseModel):
     """옵션 타입 목록 조회 응답 모델"""
     resultCode: str = Field(..., example="SUCCESS")
     message: str = Field(..., example="Option types retrieved successfully")
-    data: Optional[OptionTypesData]
+    data: Optional[OptionTypesData] = None 
