@@ -10,7 +10,7 @@ from app.api.schemas import auth_schema
 from app.utils.bcrypt import hash_password, verify_password
 from app.core.jwt import JWTPayload, jwt_handler
 from app.utils.handle_transaction import handle_transaction
-from app.utils.exceptions import ConflictError, DatabaseError, ForbiddenError, NotFoundError, UnauthorizedError
+from app.utils.exceptions import BadRequestError, DatabaseError, ForbiddenError, NotFoundError, UnauthorizedError
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class AuthService:
         새 유저 등록
         """
         if user_crud.get_user_by_user_id(session, register_req.id):
-            raise ConflictError(
+            raise BadRequestError(
                 message="User ID already exists",
                 detail={
                     "id": register_req.id
@@ -60,7 +60,7 @@ class AuthService:
             )
 
         if user_crud.get_user_by_email(session, register_req.email):
-            raise ConflictError(
+            raise BadRequestError(
                 message="Email is already exists",
                 detail={
                     "email": register_req.email
@@ -82,10 +82,8 @@ class AuthService:
         
         user_crud.create(session, new_user)
 
-        return auth_schema.RegisterResponse(
-            resultCode="SUCCESS",
-            message="User registered successfully",
-            errors=[]
+        return auth_schema.RegisterResponse.success(
+            message="User registered successfully"
         )
 
     @staticmethod
@@ -114,20 +112,23 @@ class AuthService:
 
         access_token, refresh_token = jwt_handler.create_token(matched_user.user_pk, role=role_name)
 
-        return auth_schema.LoginResponse(
-            resultCode="SUCCESS",
+        return auth_schema.LoginResponse.success(
             message="Login successful",
-            accessToken=access_token,
-            refreshToken=refresh_token,
-            errors=[]
+            data=auth_schema.TokenData(
+                access_token=access_token,
+                refresh_token=refresh_token
+            )
         )
 
     @staticmethod
     def refresh_access_token(refresh_req: auth_schema.TokenRefreshRequest) -> auth_schema.TokenRefreshResponse:
         new_access_token, new_refresh_token = jwt_handler.refresh_access_token(refresh_req.refresh_token)
-        return auth_schema.TokenRefreshResponse(
-            access_token=new_access_token,
-            refresh_token=new_refresh_token
+        return auth_schema.TokenRefreshResponse.success(
+            message="Token refreshed successfully",
+            data=auth_schema.TokenData(
+                access_token=new_access_token,
+                refresh_token=new_refresh_token
+            )
         )
 
     @staticmethod
@@ -145,4 +146,6 @@ class AuthService:
             ) 
 
         jwt_handler.delete_refresh_token(user_pk, role_name)
-        return auth_schema.LogoutResponse(message="Successfully logged out")
+        return auth_schema.LogoutResponse.success(
+            message="Successfully logged out"
+        )

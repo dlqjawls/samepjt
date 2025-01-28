@@ -34,12 +34,7 @@ def get_session() -> Generator[Session, None, None]:
     session = Session(engine)
     try:
         yield session
-    except Exception as e:
-        session.rollback()
-        raise DatabaseError(
-            message="Database session error",
-            detail={"error": str(e)}
-        )
+        
     finally:
         session.close()
 
