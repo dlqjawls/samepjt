@@ -1,6 +1,7 @@
 from typing import Optional
 import requests
 from app.core.config import settings, logger
+from app.utils.exceptions import RedisError
 
 class RedisHandler:
 
@@ -22,7 +23,7 @@ class RedisHandler:
             return True
         except requests.exceptions.RequestException as e:
             logger.error(f"🚨 Redis SET 저장 실패: {e}")
-            return False
+            raise RedisError(message=f"Redis set failed", detail={"error": str(e)})
 
     def setex(self, key: str, value: str, ttl: int = 1200) -> bool:
         try:
@@ -34,7 +35,7 @@ class RedisHandler:
             return True
         except (ValueError, requests.exceptions.RequestException) as e:
             logger.error(f"🚨 Redis SETEX 오류: {e}")
-            return False
+            raise RedisError(message=f"Redis store failed", detail={"error": str(e)})
 
     def get(self, key: str) -> Optional[str]:
         try:
@@ -51,7 +52,7 @@ class RedisHandler:
                 return None
         except requests.exceptions.RequestException as e:
             logger.error(f"🚨 Redis GET 요청 실패: {e}")
-            return None
+            raise RedisError(f"Redis get failed", detail={"error": str(e)})
 
     def delete(self, key: str) -> bool:
         try:
@@ -62,7 +63,6 @@ class RedisHandler:
             return True
         except requests.exceptions.RequestException as e:
             logger.error(f"🚨 Redis DELETE 실패: {e}")
-            return False
+            raise RedisError(f"Redis delete failed", detail={"error": str(e)})
 
-# Redis 핸들러 싱글톤 인스턴스
 redis_handler = RedisHandler()

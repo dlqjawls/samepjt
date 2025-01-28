@@ -1,38 +1,48 @@
-from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
-from app.core.middleware import setup_cors_middleware
-from app.core.database import initialize_database
-from app.api.routes import router
-from app.core.config import settings
 import logging
+import os
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-from app.data_loader import get_all_data, get_table_data, insert_dummy_data
+from fastapi.responses import RedirectResponse
+
+from app.core.config import settings
+from app.core.database import initialize_database
+from app.core.middleware import setup_middlewares
+from app.api.routes import api_router
+
+from app.utils.exceptions import  get_exception_handlers 
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="ModuCar API")
-
-setup_cors_middleware(app)
-
-app.include_router(router)
-
-@app.on_event("startup")
-async def startup():
-    """서버 시작 시 실행되는 이벤트"""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # [선택] SQLite DB 파일 삭제
+    if settings.DATABASE_URL.startswith("sqlite:///"):
+        db_path = settings.DATABASE_URL.replace("sqlite:///", "")
+        if os.path.exists(db_path):
+            logger.info(f"🗑  이전 DB 파일 삭제: {db_path}")
+            os.remove(db_path)
+    
+    # DB 초기화
     await initialize_database()
+    yield
 
-    logger.info("🔹 더미 데이터 삽입 시작...")
-    insert_dummy_data()
-    logger.info("✅ 더미 데이터 삽입 완료.")
+def create_app() -> FastAPI:
+    app = FastAPI(title="ModuCar API", lifespan=lifespan)
 
-@app.get("/", include_in_schema=False)
-async def redirect_to_docs():
-    return RedirectResponse(url="/docs")
+    # 전역 예외 처리
+    for exc, handler in get_exception_handlers().items():
+        app.add_exception_handler(exc, handler)
 
-@app.get("/db", tags=["dev"])
-async def get_db_data():
-    return get_all_data()
+    # CORS
+    setup_middlewares(app)
+    
+    # 기본 경로를 docs로 리다이렉트
+    @app.get("/", include_in_schema=False)
+    async def docs_redirect():
+        return RedirectResponse(url="/docs")
 
-@app.get("/db/{table_name}", tags=["dev"])
-async def get_specific_table_data(table_name: str):
-    return get_table_data(table_name)
+    # 라우터 등록
+    app.include_router(api_router)
+
+    return app
