@@ -1,18 +1,20 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
 
-from app.models.enum import PaymentStatus
-
-
 class Payment(SQLModel, table=True):
-    paymentId: Optional[int] = Field(default=None, primary_key=True)
-    rentId: int
-    amount: float
-    status: PaymentStatus
-    paymentMethod: str
-    paymentDate: datetime
-    refundAmount: Optional[float] = None
-    refundDate: Optional[datetime] = None
-    createdAt: datetime = Field(default=datetime.now())
-    updatedAt: datetime = Field(default=datetime.now())
+    __tablename__ = "payment"
+
+    payment_id: Optional[int] = Field(default=None, primary_key=True)
+    rent_id: int = Field(foreign_key="rent_history.rent_id", nullable=False, description="Associated Rent ID")
+    
+    cost: float = Field(nullable=False, description="Payment cost (>= 0)")
+    status_id: int = Field(foreign_key="lut_payment_status.payment_status_id", nullable=False, description="Payment status")
+    method_id: int = Field(foreign_key="lut_payment_method.payment_method_id", nullable=False, description="Payment method")
+
+    created_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+    )

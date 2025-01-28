@@ -1,24 +1,29 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List, TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Column, DateTime
+from typing import Optional
 from datetime import datetime
-from app.models.module_set_option_type import ModuleSetOptionType  # Add this import
-
-if TYPE_CHECKING:
-    from app.models.module_set import ModuleSet
 
 class OptionType(SQLModel, table=True):
-    """ 옵션 타입 모델 """
-    optionTypeId: Optional[int] = Field(default=None, primary_key=True)
-    optionTypeName: str
-    optionTypeSize: str
-    optionTypeCost: float
-    description: Optional[str] = None
-    optionTypeImages: str
-    optionTypeFeatures: str
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
-    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+    __tablename__ = "option_type"
 
-    moduleSets: List["ModuleSet"] = Relationship(
-        back_populates="optionTypes",
-        link_model=ModuleSetOptionType
+    option_type_id: Optional[int] = Field(default=None, primary_key=True)
+    option_type_name: str = Field(nullable=False, max_length=100, description="Option Type Name")
+    option_type_size: str = Field(nullable=False, max_length=50, description="Option Type Size")
+    option_type_cost: float = Field(nullable=False, description="Option Cost (>= 0)")
+
+    description: Optional[str] = Field(default=None, description="Option Description")
+    option_type_images: str = Field(nullable=False, description="Images of the Option Type")
+    option_type_features: str = Field(nullable=False, description="Features of the Option Type")
+
+    created_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+    )
+    created_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who created this record")
+
+    updated_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+    )
+    updated_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who last updated this record")
+
+    deleted_at: Optional[datetime] = Field(
+        sa_column=Column(DateTime, nullable=True), description="Soft delete timestamp"
     )

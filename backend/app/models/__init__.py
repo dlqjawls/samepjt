@@ -1,37 +1,38 @@
-from .admin import Admin
+from .lut import (
+    Role, ItemStatus, ItemType, ModuleType,
+    MaintenanceStatus, UsageStatus, RentStatus,
+    VideoType, PaymentStatus, PaymentMethod
+)
 from .user import User
 from .vehicle import Vehicle
-from .vehicle_maintenance import VehicleMaintenance
-from .vehicle_usage_history import VehicleUsageHistory
 from .module import Module
-from .module_maintenance import ModuleMaintenance
-from .module_usage_history import ModuleUsageHistory
+from .module_set import ModuleSet
 from .option import Option
 from .option_type import OptionType
-from .option_maintenance import OptionMaintenance
-from .option_usage_history import OptionUsageHistory
-from .module_set import ModuleSet
-from .module_set_option_type import ModuleSetOptionType
+from .module_set_option_types import ModuleSetOptionTypes
+from .usage_history import UsageHistory
+from .maintenance_history import MaintenanceHistory
 from .rent_history import RentHistory
-from .payment import Payment
 from .video_storage import VideoStorage
+from .payment import Payment
 
 __all__ = [
-    "Admin",
+    # Look-up Tables
+    "Role", "ItemStatus", "ItemType", "ModuleType",
+    "MaintenanceStatus", "UsageStatus", "RentStatus",
+    "VideoType", "PaymentStatus", "PaymentMethod",
+
+    # Models
     "User",
     "Vehicle",
-    "VehicleMaintenance",
-    "VehicleUsageHistory",
     "Module",
-    "ModuleMaintenance",
-    "ModuleUsageHistory",
+    "ModuleSet",
     "Option",
     "OptionType",
-    "OptionMaintenance",
-    "OptionUsageHistory",
-    "ModuleSet",
-    "ModuleSetOptionType",
+    "ModuleSetOptionTypes",
+    "MaintenanceHistory",
+    "UsageHistory",
     "RentHistory",
-    "Payment",
     "VideoStorage",
+    "Payment"
 ]

@@ -1,23 +1,29 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List, TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Column, DateTime
+from typing import Optional
 from datetime import datetime
-from app.models.module_set_option_type import ModuleSetOptionType  # Add this import
-
-if TYPE_CHECKING:
-    from app.models.option_type import OptionType
 
 class ModuleSet(SQLModel, table=True):
-    """ 모듈 세트 모델 """
-    moduleSetId: Optional[int] = Field(default=None, primary_key=True)
-    moduleSetName: str
-    description: Optional[str] = None
-    moduleSetImages: str
-    moduleSetFeatures: str
-    basePrice: float
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
-    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+    __tablename__ = "module_set"
 
-    optionTypes: List["OptionType"] = Relationship(
-        back_populates="moduleSets",
-        link_model=ModuleSetOptionType
+    module_set_id: Optional[int] = Field(default=None, primary_key=True)
+    module_set_name: str = Field(nullable=False, max_length=100, description="Module Set Name")
+
+    description: Optional[str] = Field(default=None, description="Module Set Description")
+    module_set_images: Optional[str] = Field(default=None, description="Module Set Images")
+    module_set_features: Optional[str] = Field(default=None, description="Module Set Features")
+
+    base_price: float = Field(nullable=False, description="Base price (>= 0)")
+
+    created_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+    )
+    created_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who created this record")
+
+    updated_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+    )
+    updated_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who last updated this record")
+
+    deleted_at: Optional[datetime] = Field(
+        sa_column=Column(DateTime, nullable=True)
     )
