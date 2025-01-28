@@ -6,7 +6,6 @@ import logging
 from app.main import create_app
 from app.core.database import get_session
 from app import seed
-from app.models.user import User  # User 모델 import
 
 # 로깅 설정
 logger = logging.getLogger(__name__)
@@ -28,8 +27,8 @@ def reset_test_db():
     """각 테스트 함수 실행 전에 데이터베이스 초기화"""
     # 1. 모든 테이블의 데이터 삭제
     with Session(test_engine) as session:
-        # User 테이블 초기화 (foreign key 제약조건 때문에 순서 중요)
-        session.query(User).delete()
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            session.exec(table.delete())
         session.commit()
         
         try:

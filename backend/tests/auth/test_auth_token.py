@@ -1,6 +1,5 @@
 import pytest
 import time
-import importlib
 from app.core import config as settings_module
 from dotenv import load_dotenv
 
