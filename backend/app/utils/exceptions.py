@@ -97,18 +97,34 @@ def get_exception_handlers():
 
     async def http_exception_handler(request, exc: HTTPException):
         if isinstance(exc, BaseAPIException):
-            return JSONResponse(status_code=exc.status_code, content=exc.detail)
+            # BaseAPIException은 이미 ResponseBase.error()를 사용중
+            return JSONResponse(
+                status_code=exc.status_code, 
+                content=exc.detail
+            )
             
+        # 일반 HTTPException의 경우
         return JSONResponse(
             status_code=exc.status_code,
-            content=ResponseBase(
-                resultCode="FAILURE",
+            content=ResponseBase.error(
                 error_code="HTTP_ERROR",
                 message=str(exc.detail)
             ).dict()
         )
 
+    async def global_exception_handler(request, exc: Exception):
+        """예상치 못한 예외 처리"""
+        return JSONResponse(
+            status_code=500,
+            content=ResponseBase.error(
+                error_code="INTERNAL_SERVER_ERROR",
+                message="Internal server error",
+                detail={"error": str(exc)}
+            ).dict()
+        )
+
     return {
         RequestValidationError: validation_exception_handler,
-        HTTPException: http_exception_handler
+        HTTPException: http_exception_handler,
+        Exception: global_exception_handler
     }
