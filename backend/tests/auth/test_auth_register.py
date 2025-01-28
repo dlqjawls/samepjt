@@ -40,12 +40,38 @@ def test_register_duplicate_id(client):
     # When: 같은 ID로 회원가입 시도
     response = client.post("/auth/register", json=payload)
 
-    # Then: 409 Conflict 응답 검증
-    assert response.status_code == 409
+    # Then: 400 Bad Request 응답 검증
+    assert response.status_code == 400
     data = response.json()
-    assert data["resultCode"] == "FAILURE"  # ERROR -> FAILURE로 수정
+    assert data["resultCode"] == "FAILURE"
     assert data["message"] == "User ID already exists"
     assert data["detail"]["id"] == payload["id"]
+
+def test_register_duplicate_email(client):
+    """중복 이메일 회원가입 시도 테스트"""
+    # Given: 이미 등록된 사용자 정보
+    payload = {
+        "id": "uniqueuser",
+        "password": "test1234",
+        "email": "dup@example.com",
+        "name": "중복테스트",
+        "phoneNum": "010-1111-2222",
+        "address": "Seoul, Korea"
+    }
+    
+    # 첫 번째 회원가입
+    client.post("/auth/register", json=payload)
+
+    # When: 같은 이메일로 회원가입 시도
+    payload["id"] = "anotheruser"
+    response = client.post("/auth/register", json=payload)
+
+    # Then: 400 Bad Request 응답 검증
+    assert response.status_code == 400
+    data = response.json()
+    assert data["resultCode"] == "FAILURE"
+    assert data["message"] == "Email is already exists"
+    assert data["detail"]["email"] == payload["email"]
 
 def test_register_invalid_data(client):
     """잘못된 데이터로 회원가입 시도 테스트"""

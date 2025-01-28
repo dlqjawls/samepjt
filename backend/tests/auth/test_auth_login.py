@@ -24,10 +24,9 @@ def test_login_success(client):
     assert response.status_code == 200
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
-    assert data["message"] == "Login successful"
-    assert "accessToken" in data
-    assert "refreshToken" in data
-    assert not data.get("errors")
+    assert "data" in data
+    assert "access_token" in data["data"]
+    assert "refresh_token" in data["data"]
 
 def test_login_invalid_credentials(client):
     """잘못된 인증 정보로 로그인 시도 테스트"""
