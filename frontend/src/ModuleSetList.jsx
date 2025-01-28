@@ -44,30 +44,18 @@ function ModuleSetList() {
     setCurrentImageIndex(0);
   };
 
+  const handleNextStep = (module) => {
+    // 기존 로직 유지: navigate로 state 전달
+    navigate("/exist_option", { state: { selectedModule: module } });
+  };
+
+  const prepage = () => {
+    navigate("/");
+  };
+
   return (
     <div className="module-list-layout">
-      {/* 왼쪽 슬라이딩 UI */}
-      <div className="module-sliding">
-        {selectedModule ? (
-          <div className="module-details">
-            <div className="module-details-image">
-              <img
-                src={selectedModule.imgsUrls[currentImageIndex]}
-                alt={selectedModule.moduleSetName}
-              />
-            </div>
-            <div className="module-details-content">
-              <h3>{selectedModule.moduleSetName}</h3>
-              <p>{selectedModule.description}</p>
-              <p>총 비용: ${selectedModule.basePrice}</p>
-            </div>
-          </div>
-        ) : (
-          <p>모듈을 선택하면 상세 정보가 여기에 표시됩니다.</p>
-        )}
-      </div>
-
-      {/* 오른쪽 모듈 세트 목록 */}
+      {/* 왼쪽: 모듈 세트 목록 */}
       <div className="module-list">
         <h2>모듈 세트 목록</h2>
         {loading && <div className="loading">Loading...</div>}
@@ -93,6 +81,48 @@ function ModuleSetList() {
             </div>
           ))}
       </div>
+
+
+
+{/* 오른쪽: 모듈 상세 정보 */}
+<div className="module-sliding">
+  <button onClick={prepage} className="select-next-button">
+    이전페이지로
+  </button>
+  {selectedModule ? (
+    <div className="module-details">
+      <div className="module-details-image">
+        <img
+          src={selectedModule.imgsUrls[currentImageIndex]}
+          alt={selectedModule.moduleSetName}
+        />
+      </div>
+      <div className="module-details-content">
+        <h3>{selectedModule.moduleSetName}</h3>
+        <p>{selectedModule.description}</p>
+        <h4>포함된 옵션</h4>
+        <ul>
+          {selectedModule.moduleSetOptionTypes.map((option) => (
+            <li key={option.optionTypeId}>
+              {option.optionTypeName} (수량: {option.quantity})
+            </li>
+          ))}
+        </ul>
+        <p>총 비용: ${selectedModule.basePrice}</p>
+        <button
+          onClick={() => handleNextStep(selectedModule)}
+          className="next-button"
+        >
+          다음 단계 →
+        </button>
+      </div>
+    </div>
+  ) : (
+    <p>모듈을 선택하면 상세 정보가 여기에 표시됩니다.</p>
+  )}
+</div>
+
+
     </div>
   );
 }
