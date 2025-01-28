@@ -1,9 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional, Dict, Any
-
 from app.api.schemas.common import ResponseBase
 
-# Request Models - These remain unchanged
+# Request Models
 class RegisterRequest(BaseModel):
     id: str = Field(..., min_length=3, example="newUser")
     password: str = Field(..., min_length=6, example="password123")
@@ -19,7 +17,7 @@ class LoginRequest(BaseModel):
 class TokenRefreshRequest(BaseModel):
     refresh_token: str = Field(..., example="eyJhbGciOiJIUzI1...")
 
-# Response Models - Updated to use ResponseBase
+# Response Models 
 class TokenData(BaseModel):
     access_token: str = Field(..., example="eyJhbGciOiJ...")
     refresh_token: str = Field(..., example="eyJhbGciOiJ...")
