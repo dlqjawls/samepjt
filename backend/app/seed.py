@@ -158,10 +158,10 @@ def seed_data(session: Session) -> None:
         # 📌 차량 데이터 삽입
         dummy_vehicles = [
             {
-                "vehicle_id": i,
+                "vehicle_id": i + 1,  # Changed to start from 1
                 "vin": fake.uuid4(),
-                "vehicle_number": f"PBV-{i}",
-                "current_location": json.dumps({"x": i, "y": i}),
+                "vehicle_number": f"PBV-{i+1}",  # Changed to start from 1
+                "current_location": json.dumps({"x": i+1, "y": i+1}),  # Changed to start from 1
                 "mileage": random.randint(1000, 5000),
                 "last_maintenance_at": base_date.isoformat(),
                 "next_maintenance_at": (base_date + timedelta(days=90)).isoformat(),
@@ -179,7 +179,7 @@ def seed_data(session: Session) -> None:
         # 📌 모듈 데이터 삽입
         dummy_modules = [
             {
-                "module_id": i,
+                "module_id": i + 1,  # Changed to start from 1
                 "module_nfc_tag_id": fake.uuid4(),
                 "module_type": 1,
                 "status_id": 2,
@@ -225,7 +225,7 @@ def seed_data(session: Session) -> None:
 
         dummy_option_types = [
             {
-                "option_type_id": i,
+                "option_type_id": i + 1,  # Changed to start from 1
                 "option_type_name": option["optionTypeName"],
                 "option_type_size": f"{random.randint(1, 3)}x{random.randint(1, 3)}",
                 "option_type_cost": round(random.uniform(10.0, 100.0), 2),
@@ -244,10 +244,11 @@ def seed_data(session: Session) -> None:
         # 📌 옵션 데이터 삽입
         dummy_options = []
         option_count = 3  # 각 옵션 타입당 생성할 옵션 개수
+        current_id = 1  # Initialize counter for options
         for option_type in dummy_option_types:
             for _ in range(option_count):
                 option = {
-                    "option_id": len(dummy_options),
+                    "option_id": current_id,  # Use counter instead of len(dummy_options)
                     "option_type_id": option_type["option_type_id"],
                     "status_id": 2,
                     "created_at": base_date,
@@ -256,9 +257,9 @@ def seed_data(session: Session) -> None:
                     "updated_by": 1,
                 }
                 dummy_options.append(option)
+                current_id += 1  # Increment counter
         session.add_all([Option(**option) for option in dummy_options])
 
-        # 📌 모듈 세트 데이터 삽입
         module_set_data = [
             {"moduleSetName": "기본본 모듈", "defaultOptionTypes": ["조명"]},
             {"moduleSetName": "캠핑 모듈", "defaultOptionTypes": ["침대", "테이블", "의자", "냉장고", "배터리", "수납장", "물탱크", "냉난방기", "조명"]},
@@ -283,7 +284,7 @@ def seed_data(session: Session) -> None:
                     all_features.extend(option_type["displayFeatures"])
             unique_features = list(set(all_features))
             dummy_module_sets.append({
-                "module_set_id": i,
+                "module_set_id": i + 1,  # Changed to start from 1
                 "module_set_name": module_set["moduleSetName"],
                 "description": fake.text(),
                 "module_set_images": fake.image_url(),
@@ -298,6 +299,7 @@ def seed_data(session: Session) -> None:
 
         # 📌 모듈 세트 옵션 타입 데이터 삽입
         dummy_module_set_option_types = []
+        current_id = 1  # Initialize counter for module set option types
         for module_set in module_set_data:
             module_set_id = next(ms["module_set_id"] for ms in dummy_module_sets 
                                 if ms["module_set_name"] == module_set["moduleSetName"])
@@ -309,10 +311,12 @@ def seed_data(session: Session) -> None:
                 )
                 if option_type_id is not None:
                     dummy_module_set_option_types.append({
+                        "module_set_option_type_id": current_id,  # Added ID starting from 1
                         "module_set_id": module_set_id,
                         "option_type_id": option_type_id,
                         "option_quantity": 1
                     })
+                    current_id += 1  # Increment counter
         session.add_all([ModuleSetOptionTypes(**module_set_option_type) for module_set_option_type in dummy_module_set_option_types])
 
         session.commit()
