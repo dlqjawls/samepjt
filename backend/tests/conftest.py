@@ -1,6 +1,7 @@
+from typing import Callable, Optional, Type, TypeVar
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import create_engine, SQLModel, Session
+from sqlmodel import create_engine, SQLModel, Session, select
 import logging
 
 from app.main import create_app
@@ -10,6 +11,7 @@ from app import seed
 # 로깅 설정
 logger = logging.getLogger(__name__)
 
+T = TypeVar("T")
 
 # 테스트용 DB 설정
 TEST_DATABASE_URL = "sqlite:///./tests/test.db"
@@ -40,7 +42,15 @@ def reset_test_db():
             logger.error(f"❌ Error resetting test database: {e}")
             session.rollback()
             raise
+        
 
+@pytest.fixture
+def get_first_record_id(session): 
+    def _get_first_record_id(model: Type[T], id_field: str = "id") -> Optional[int]: 
+        record = session.exec(select(model)).first()
+        return getattr(record, id_field) if record else None
+    return _get_first_record_id
+  
 @pytest.fixture
 def session():
     """각 테스트마다 독립적인 세션 제공"""
@@ -59,3 +69,6 @@ def client(session):
     
     with TestClient(app) as c:
         yield c
+        
+        
+        
