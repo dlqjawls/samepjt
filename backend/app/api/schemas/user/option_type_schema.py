@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from app.api.schemas.common import ResponseBase
 from app.api.schemas.pagination import Pagination
 
 
@@ -20,8 +21,24 @@ class OptionTypesData(BaseModel):
     pagination: Optional[Pagination] = None 
 
 
-class OptionTypesResponse(BaseModel):
-    """옵션 타입 목록 조회 응답 모델"""
-    resultCode: str = Field(..., example="SUCCESS")
-    message: str = Field(..., example="Option types retrieved successfully")
-    data: Optional[OptionTypesData] = None 
+class OptionTypesResponse(ResponseBase[List[OptionType]]):
+    """옵션 타입 목록 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Option types retrieved successfully",
+                "data": [
+                    {
+                        "optionTypeId": 1,
+                        "optionTypeName": "배터리 팩",
+                        "stockQuantity": 100
+                    },
+                    {
+                        "optionTypeId": 2,
+                        "optionTypeName": "냉장고",
+                        "stockQuantity": 50
+                    }
+                ]
+            }
+        }
