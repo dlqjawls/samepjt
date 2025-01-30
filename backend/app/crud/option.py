@@ -1,57 +1,125 @@
+from sqlalchemy import func
 from sqlmodel import Session, select
-from typing import List, Optional
+from typing import List
 from app.models.option import Option
+from sqlalchemy.exc import SQLAlchemyError
 from app.crud.base import CRUDBase
-from app.utils.exceptions import DatabaseError, NotFoundError
+from app.utils.exceptions import DatabaseError, NotFoundError, ValidationError
 
 class OptionCRUD(CRUDBase[Option]):
     def __init__(self):
         super().__init__(Option, "option_id")
         
+    def get_options_by_type(
+        self,
+        session: Session,
+        option_type_id: int
+    ) -> List[Option]:
+        """특정 옵션 타입의 모든 옵션 조회"""
+        try:
+            # 유효성 검사
+            if option_type_id <= 0:
+                raise ValidationError(
+                    message="Invalid option type ID",
+                    detail={
+                        "option_type_id": option_type_id,
+                        "error": "Option type ID must be positive"
+                    }
+                )
+
+            # 옵션 조회
+            query = (
+                select(self.model)
+                .where(
+                    self.model.option_type_id == option_type_id,
+                    self.model.deleted_at == None  # soft delete
+                )
+            )
+            
+            results = list(session.exec(query).all())
+
+            # 결과 검증
+            if not results:
+                raise NotFoundError(
+                    message="No options found for the given type",
+                    detail={
+                        "option_type_id": option_type_id
+                    }
+                )
+
+            return results
+
+        except SQLAlchemyError as e:
+            raise DatabaseError(
+                message="Failed to fetch options",
+                detail={
+                    "error": str(e),
+                    "option_type_id": option_type_id
+                }
+            )
+            
     def get_available_options_by_type(
         self,
         session: Session,
         option_type_id: int,
         required_quantity: int,
-        status_id: int = 2  # INACTIVE
+        status_id: int = 2  # INACTIVE(대기 중) 상태
     ) -> List[Option]:
-        """
-        특정 옵션 타입의 사용 가능한 옵션 목록 조회
+        try:
+            # 1. 입력값 검증
+            if option_type_id <= 0:
+                raise ValidationError(
+                    message="Invalid option type ID",
+                    detail={
+                        "option_type_id": option_type_id,
+                        "error": "Option type ID must be positive"
+                    }
+                )
 
-        Args:
-            session: DB 세션
-            option_type_id: 옵션 타입 ID
-            required_quantity: 필요한 수량
-            status_id: 옵션 상태 ID (기본값: INACTIVE)
+            if required_quantity <= 0:
+                raise ValidationError(
+                    message="Invalid quantity",
+                    detail={
+                        "required_quantity": required_quantity,
+                        "error": "Quantity must be positive"
+                    }
+                )
 
-        Returns:
-            List[Option]: 조회된 옵션 목록
-
-        Raises:
-            DatabaseError: 데이터베이스 조회 실패 시
-            NotFoundError: 필요한 수량만큼 옵션을 찾을 수 없는 경우
-        """
-        query = (
-            select(self.model)
-            .where(
-                self.model.option_type_id == option_type_id,
-                self.model.status_id == status_id
+            # 2. 사용 가능한 옵션 조회
+            query = (
+                select(self.model)
+                .where(
+                    self.model.option_type_id == option_type_id,
+                    self.model.status_id == status_id,
+                    self.model.deleted_at == None  # soft delete
+                )
+                .limit(required_quantity)
             )
-            .limit(required_quantity)
-        )
 
-        available_options = list(session.exec(query).all())
+            available_options = list(session.exec(query).all())
 
-        if len(available_options) < required_quantity:
-            raise NotFoundError(
-                message="Not enough options available",
+            # 3. 수량 검증
+            if len(available_options) < required_quantity:
+                raise NotFoundError(
+                    message="Not enough available options",
+                    detail={
+                        "option_type_id": option_type_id,
+                        "required": required_quantity,
+                        "available": len(available_options)
+                    }
+                )
+
+            return available_options
+
+        except SQLAlchemyError as e:
+            raise DatabaseError(
+                message="Failed to fetch available options",
                 detail={
+                    "error": str(e),
                     "option_type_id": option_type_id,
-                    "required": required_quantity,
-                    "available": len(available_options)
+                    "required_quantity": required_quantity
                 }
             )
 
-        return available_options
-            
+
 option_crud = OptionCRUD()

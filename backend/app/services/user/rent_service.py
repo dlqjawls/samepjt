@@ -1,11 +1,10 @@
 from datetime import datetime
-from typing import List, Optional
-from sqlmodel import Session, select
+from typing import List
+from sqlmodel import Session
 from app.models.option import Option
 from app.models.rent_history import RentHistory
-from app.models.usage_history import UsageHistory
-from app.api.schemas.user.rent import CancelRentRequest, RentRequest, RentResponse, CancelRentResponse, SelectedOptionType
-from app.utils.exceptions import NotFoundError, ValidationError, DatabaseError
+from app.api.schemas.user import rent_schema
+from app.utils.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from app.crud.rent_history import rent_history_crud
 from app.crud.vehicle import vehicle_crud
@@ -37,25 +36,22 @@ class RentService:
     @staticmethod
     def get_options_for_rent(
         session: Session,
-        selected_option_types: List[SelectedOptionType]
+        selected_option_types: List[rent_schema.SelectedOptionType]
     ) -> List[Option]:
         """렌트에 필요한 옵션 조회"""
-        selected_options = []
-    
-        for opt_type in selected_option_types:
-            # 각 옵션 타입별로 필요한 수량만큼 조회
-            options = option_crud.get_available_options_by_type(
+        return [
+            option
+            for opt_type in selected_option_types
+            for option in option_crud.get_available_options_by_type(
                 session=session,
-                option_type_id=opt_type.optionTypeId,
+                option_type_id=opt_type.optionTypeId,  
                 required_quantity=opt_type.quantity,
                 status_id=RentService.INACTIVE
             )
-            selected_options.extend(options)
-            
-        return selected_options
+        ]
 
     @staticmethod
-    def create_rent_history(rent_request: RentRequest, user_pk: int, options_count: int) -> RentHistory:
+    def create_rent_history(rent_request: rent_schema.RentRequest, user_pk: int, options_count: int) -> RentHistory:
         """렌트 기록 생성"""
         return RentHistory(
             user_pk=user_pk,
@@ -69,73 +65,36 @@ class RentService:
         )
 
     @staticmethod
-    def create_usage_entries(
-        rent_id: int,
-        vehicle_id: int,
-        module_id: int,
-        selected_options: List[int]
-    ) -> List[UsageHistory]:
-        """사용 기록 엔트리 생성"""
-        return [
-            # 차량 사용 기록
-            UsageHistory(
-                rent_id=rent_id,
-                item_id=vehicle_id,
-                item_type_id=RentService.VEHICLE,
-                status_id=RentService.IN_USE
-            ),
-            # 모듈 사용 기록
-            UsageHistory(
-                rent_id=rent_id,
-                item_id=module_id,
-                item_type_id=RentService.MODULE,
-                status_id=RentService.IN_USE
-            ),
-            # 옵션 사용 기록
-            *[
-                UsageHistory(
-                    rent_id=rent_id,
-                    item_id=option_id,
-                    item_type_id=RentService.OPTION,
-                    status_id=RentService.IN_USE
-                )
-                for option_id in selected_options
-            ]
-        ]
-
-    @staticmethod
     @handle_transaction
     def create_rent(
         session: Session, 
-        rent_request: RentRequest, 
+        rent_request: rent_schema.RentRequest, 
         user_pk: int
-    ) -> RentResponse:
+    ) -> rent_schema.RentResponse:
         """렌트 생성"""
-
-        # 2. 사용 가능한 차량/모듈 조회
-        vehicle = vehicle_crud.get_first_vehicle_by_status_id(
-            session, 
-            status_id=RentService.INACTIVE
-        )
         
-        module = module_crud.get_first_module_by_status_id(
-            session, 
-            status_id=RentService.INACTIVE
-        )
+        # 1. 차량 상태 검증
+        vehicle = vehicle_crud.get_first_available_vehicle(session)
 
-        # 3. 선택된 옵션 조회
-        selected_options = RentService.get_options_for_rent(
-            session, 
-            rent_request.selectedOptionTypes
-        )
+        # 2. 모듈 상태 검증 
+        module = module_crud.get_first_available_module(session)
+
+        # 3. 옵션 검증
+        selected_options = []
+        for opt_type in rent_request.selectedOptionTypes:
+            options = option_crud.get_available_options_by_type(
+                session=session,
+                option_type_id=opt_type.optionTypeId,
+                required_quantity=opt_type.quantity
+            )
+            selected_options.extend(options)
+
 
         # 4. 렌트 기록 생성
-        rent_history = RentService.create_rent_history(
-            rent_request, 
-            user_pk, 
-            len(selected_options)
+        rent_history = rent_history_crud.create(
+            session,
+            RentService.create_rent_history(rent_request, user_pk, len(selected_options))
         )
-        rent_history = rent_history_crud.create(session, rent_history)
         session.refresh(rent_history)
 
         # 5. 사용 상태 업데이트
@@ -157,71 +116,73 @@ class RentService:
             )
 
         # 6. 사용 기록 생성
-        usage_entries = RentService.create_usage_entries(
-            rent_history.rent_id,
-            vehicle.vehicle_id,
-            module.module_id,
-            [opt.option_id for opt in selected_options]
-        )
-        for entry in usage_entries:
-            session.add(entry)
-
-        return RentResponse(
+        usage_entries = usage_history_crud.create_usage_entries(
+            session=session,
             rent_id=rent_history.rent_id,
-            vehicle_number=vehicle.vehicle_number
+            vehicle_id=vehicle.vehicle_id,
+            module_id=module.module_id,
+            option_ids=[opt.option_id for opt in selected_options]
+        )
+
+        return rent_schema.RentResponse(
+          data=rent_schema.RentResponseData(
+                rent_id=rent_history.rent_id,
+                vehicle_number=vehicle.vehicle_number
+            )
         )
 
     @staticmethod
     @handle_transaction
     def cancel_rent(
         session: Session, 
-        cancel_rent_req: CancelRentRequest, 
+        rent_id: int, 
         user_pk: int
-    ) -> CancelRentResponse:
+    ) -> rent_schema.CancelRentResponse:
         """렌트 취소 처리"""
-
+        print( "렌트 취소 처리")
         # 1. 렌트 기록 조회 및 검증
         rent_history = rent_history_crud.get_by_id(
             session, 
-            cancel_rent_req.rent_id
+            rent_id
         )
-        
         if not rent_history:
             raise NotFoundError(
                 message="Rent history not found",
                 detail={
-                    "rent_id": cancel_rent_req.rent_id
+                    "rent_id": rent_id
                 }
             )
-
-        # 2. 렌트 상태 검증
-        if rent_history.status_id in [RentService.CANCELED, RentService.COMPLETED]:
-            raise ValidationError(
-                message="Rent already canceled or completed",
-                detail={
-                    "rent_id": cancel_rent_req.rent_id,
-                    "current_status": rent_history.status_id
-                }
-            )
-
-        # 3. 사용자 권한 검증
+        print( "렌트 기록 조회 및 검증")
+        # 2. 사용자 권한 검증
         if rent_history.user_pk != user_pk:
-            raise ValidationError(
+            raise ForbiddenError(
                 message="Unauthorized rent access",
                 detail={
-                    "rent_id": cancel_rent_req.rent_id,
+                    "rent_id": rent_id,
                     "request_user": user_pk,
                     "rent_user": rent_history.user_pk
                 }
             )
+        print( "사용자 권한 검증")
+        # 3. 렌트 상태 검증
+        if rent_history.status_id in [RentService.CANCELED, RentService.COMPLETED]:
+            raise ConflictError(
+                message="Rent already canceled or completed",
+                detail={
+                    "rent_id": rent_id,
+                    "current_status": rent_history.status_id
+                }
+            )
 
-        # 2. 사용 기록 조회
+     
+        print( "렌트 상태 검증")
+        # 4. 사용 기록 조회
         usage_entries = usage_history_crud.get_usage_entries(
             session,
-            cancel_rent_req.rent_id
+            rent_id
         )
-
-        # 3. 아이템 ID 분류
+        print( "사용 기록 조회")
+        # 5. 아이템 ID 분류
         vehicle_id = next(
             (u.item_id for u in usage_entries if u.item_type_id == RentService.VEHICLE),
             None
@@ -234,24 +195,26 @@ class RentService:
             u.item_id for u in usage_entries 
             if u.item_type_id == RentService.OPTION
         ]
-
-        # 4. 사용 기록 및 아이템 상태 업데이트
+        print( "아이템 ID 분류")
+        # 6. 사용 기록 및 아이템 상태 업데이트
         usage_history_crud.cancel_usage_entries(
             session,
-            cancel_rent_req.rent_id,
+            rent_id,
             vehicle_id,
             module_id,
             option_ids
         )
-        
-        # 5. 렌트 상태 업데이트
+        print( "사용 기록 및 아이템 상태 업데이트")
+        # 7. 렌트 상태 업데이트
         rent_history_crud.update(
-            session,
-            cancel_rent_req.rent_id,
-            {"status_id": RentService.CANCELED}
+            session=session,
+            id=rent_id,
+            obj_in={"status_id": RentService.CANCELED}
         )
-        
-        return CancelRentResponse(
-            rent_id=cancel_rent_req.rent_id,
-            message="Rent successfully canceled"
+        print( "렌트 상태 업데이트")
+        return rent_schema.CancelRentResponse(
+            message="Rent canceled successfully",
+            data=rent_schema.CancelRentResponseData(
+                rent_id=rent_id
+            )
         )

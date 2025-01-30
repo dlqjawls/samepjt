@@ -1,6 +1,6 @@
 from typing import Dict, Optional, TypeVar, Type, Generic, List, Any
 from sqlmodel import SQLModel, Session, select, func
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
 
 from app.utils.exceptions import DatabaseError, NotFoundError
@@ -131,32 +131,69 @@ class CRUDBase(Generic[T]):
                 detail={"origin": str(e)}
             )
 
-    def paginate(self, session: Session, page: int = 1, page_size: int = 10) -> Dict[str, Any]:
-        """
-        페이징 처리
-        """
-        if page < 1:
-            page = 1
-        if page_size < 1:
-            page_size = 10
-
-        total_count = session.exec(
-            select(func.count()).select_from(self.model)
-        ).one()
-
-        items = session.exec(
-            select(self.model)
-            .offset((page - 1) * page_size)
-            .limit(page_size)
-        ).all()
-
-        return {
-            "total": total_count,
-            "items": items,
-            "pagination": {
-                "totalItems": total_count,
-                "totalPages": (total_count + page_size - 1) // page_size,
-                "currentPage": page,
-                "pageSize": page_size
+    def paginate(
+        self, 
+        session: Session, 
+        page: int = 1, 
+        page_size: int = 10,
+        query = None
+    ) -> Dict[str, Any]:
+        """페이징 처리
+        
+        Args:
+            session: DB 세션
+            page: 페이지 번호 (기본값: 1)
+            page_size: 페이지 크기 (기본값: 10)
+            query: 커스텀 쿼리 (기본값: None)
+            
+        Returns:
+            Dict[str, Any]: {
+                "items": List[T],
+                "pagination": {
+                    "totalItems": int,
+                    "totalPages": int,
+                    "currentPage": int,
+                    "pageSize": int
+                }
             }
-        }
+        """
+        try:
+            # 페이지 값 검증
+            if page < 1:
+                page = 1
+            if page_size < 1:
+                page_size = 10
+
+            # 기본 쿼리 설정
+            base_query = query if query else select(self.model)
+            
+            # 전체 개수 쿼리
+            count_query = select(func.count()).select_from(base_query.subquery())
+            total_count = session.exec(count_query).one()
+
+            # 페이징 적용된 결과 쿼리
+            results = session.exec(
+                base_query
+                .offset((page - 1) * page_size)
+                .limit(page_size)
+            ).all()
+
+            return {
+                "items": results,
+                "pagination": {
+                    "totalItems": total_count,
+                    "totalPages": (total_count + page_size - 1) // page_size,
+                    "currentPage": page,
+                    "pageSize": page_size
+                }
+            }
+
+        except SQLAlchemyError as e:
+            raise DatabaseError(
+                message="Failed to execute pagination query",
+                detail={
+                    "error": str(e),
+                    "page": page,
+                    "page_size": page_size
+                }
+            )
