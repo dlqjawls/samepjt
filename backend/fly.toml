@@ -14,7 +14,10 @@ primary_region = 'nrt'
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ['app']
+  processes = ["app"]
+
+[processes]
+  app = "python -m uvicorn app.main:create_app --host 0.0.0.0 --port 80"
 
 [[vm]]
   memory = '512mb'
