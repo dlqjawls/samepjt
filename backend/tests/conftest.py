@@ -27,14 +27,13 @@ def create_test_db():
 @pytest.fixture(autouse=True)
 def reset_test_db():
     """각 테스트 함수 실행 전에 데이터베이스 초기화"""
-    # 1. 모든 테이블의 데이터 삭제
     with Session(test_engine) as session:
-        for table in reversed(SQLModel.metadata.sorted_tables):
-            session.exec(table.delete())
-        session.commit()
-        
         try:
-            # 2. seed 데이터 재삽입
+            # 1. Drop and recreate all tables
+            SQLModel.metadata.drop_all(test_engine)
+            SQLModel.metadata.create_all(test_engine)
+            
+            # 2. Insert seed data
             seed.seed_data(session)
             session.commit()
             logger.info("✅ Test database reset successful")
@@ -42,7 +41,12 @@ def reset_test_db():
             logger.error(f"❌ Error resetting test database: {e}")
             session.rollback()
             raise
-        
+
+@pytest.fixture
+def mocker(request):
+    """pytest-mock fixture"""
+    from pytest_mock import MockerFixture
+    return MockerFixture(request)
 
 @pytest.fixture
 def get_first_record_id(session): 
