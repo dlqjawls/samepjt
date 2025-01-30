@@ -155,6 +155,11 @@ class JWTHandler:
             )
 
     async def validate_token(self, token: str, allowed_roles: Optional[List[str]] = None) -> JWTPayload:
+        if not token:
+          raise UnauthorizedError(
+              message="Token is required",
+              detail={"error": "No token provided"}
+          )
         try:
             decoded_payload = jwt.decode(
                 token,
@@ -212,23 +217,31 @@ class JWTHandler:
                 detail={"error": str(e)}
             )
         except Exception as e:
-            if isinstance(e, (UnauthorizedError, ForbiddenError)):
-                raise e
-            raise JWTError(
-            message="Token validation failed",
-            detail={"error": str(e)}
-        )
+            raise e
 
     def jwt_auth_dependency(self, allowed_roles: Optional[List[str]] = None):
         """FastAPI 의존성 함수: JWT 인증 및 역할 검증"""
-        async def _validate_token(
-            credentials: HTTPAuthorizationCredentials = Depends(self.bearer_scheme)
-        ) -> JWTPayload:
+        bearer = HTTPBearer(auto_error=False)  # auto_error를 False로 설정
+
+        async def dependency(auth: Optional[HTTPAuthorizationCredentials] = Depends(bearer)):
+            if not auth:
+                raise UnauthorizedError(
+                    message="Authentication required",
+                    detail={
+                        "error": "Authorization header is missing"
+                    }
+                )
+                
             try:
-                token = credentials.credentials
-                return await self.validate_token(token, allowed_roles)
+                return await self.validate_token(auth.credentials, allowed_roles)
             except Exception as e:
-                raise e
-        return _validate_token
+                if isinstance(e, (UnauthorizedError, ForbiddenError)):
+                    raise e
+                raise UnauthorizedError(
+                    message="Invalid token",
+                    detail={"error": str(e)}
+                )
+
+        return dependency
 
 jwt_handler = JWTHandler()
