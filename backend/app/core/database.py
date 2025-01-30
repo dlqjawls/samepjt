@@ -1,150 +1,109 @@
-# app/core/database.py
-import os
-from sqlmodel import SQLModel, create_engine, Session, select
-from app.dummy_data import (
-    dummy_admins,
-    dummy_users,
-    dummy_vehicles,
-    dummy_modules,
-    dummy_option_types,
-    dummy_options,
-    dummy_module_sets,
-    dummy_module_set_option_types,
-    dummy_module_maintenance,
-    dummy_option_maintenance,
-    dummy_vehicles_maintenance,
-    dummy_vehicles_usage_history,
-    dummy_module_usage_history,
-    dummy_option_usage_history,
-    dummy_rent_history,
-    dummy_payments,
-    dummy_video_storage,
-)
-from app.models.admin import Admin
-from app.models.user import User
-from app.models.vehicle import Vehicle
-from app.models.vehicle_maintenance import VehicleMaintenance
-from app.models.vehicle_usage_history import VehicleUsageHistory
-from app.models.module import Module
-from app.models.module_maintenance import ModuleMaintenance
-from app.models.module_usage_history import ModuleUsageHistory
-from app.models.option import Option
-from app.models.option_maintenance import OptionMaintenance
-from app.models.option_usage_history import OptionUsageHistory
-from app.models.option_type import OptionType
-from app.models.module_set import ModuleSet
-from app.models.module_set_option_type import ModuleSetOptionType
-from app.models.rent_history import RentHistory
-from app.models.payment import Payment
-from app.models.video_storage import VideoStorage
+from sqlmodel import create_engine, SQLModel, Session, select
+from app.core.config import settings
+from app.utils.exceptions import DatabaseError
 import logging
+from typing import Any, Dict, Generator
+from datetime import datetime
+import time
 
-DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(DATABASE_URL)
+logger = logging.getLogger(__name__)
 
-def get_session():
-    return Session(engine)
+def create_db_engine():
+    """데이터베이스 엔진 생성"""
+    try:
+        engine = create_engine(
+            settings.DATABASE_URL,
+            # echo=settings.DEBUG,
+            connect_args={"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
+        )
+        logger.info("✅ 데이터베이스 엔진 생성 완료")
+        return engine
+    except Exception as e:
+        raise DatabaseError(
+            message="Failed to create database engine",
+            detail={
+                "error": str(e),
+                "database_url": settings.DATABASE_URL
+            }
+        )
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+engine = create_db_engine()
 
-def insert_dummy_data():
-    with get_session() as session:
-        try:
-            # 더미 데이터를 SQLAlchemy 모델 인스턴스로 변환하여 추가
-            session.add_all([Admin(**admin) for admin in dummy_admins])
-            session.add_all([User(**user) for user in dummy_users])
-            session.add_all([Vehicle(**vehicle) for vehicle in dummy_vehicles])
-            session.add_all([Module(**module) for module in dummy_modules])
-            session.add_all([OptionType(**option_type) for option_type in dummy_option_types])
-            session.add_all([Option(**option) for option in dummy_options])
-            session.add_all([ModuleSet(**module_set) for module_set in dummy_module_sets])
-            session.add_all([ModuleSetOptionType(**module_set_option_type) for module_set_option_type in dummy_module_set_option_types])
-            session.add_all([ModuleMaintenance(**module_maintenance) for module_maintenance in dummy_module_maintenance])
-            session.add_all([OptionMaintenance(**option_maintenance) for option_maintenance in dummy_option_maintenance])
-            session.add_all([VehicleMaintenance(**vehicle_maintenance) for vehicle_maintenance in dummy_vehicles_maintenance])
-            session.add_all([VehicleUsageHistory(**vehicle_usage_history) for vehicle_usage_history in dummy_vehicles_usage_history])
-            session.add_all([ModuleUsageHistory(**module_usage_history) for module_usage_history in dummy_module_usage_history])
-            session.add_all([OptionUsageHistory(**option_usage_history) for option_usage_history in dummy_option_usage_history])
-            session.add_all([RentHistory(**rent_history) for rent_history in dummy_rent_history])
-            session.add_all([Payment(**payment) for payment in dummy_payments])
-            session.add_all([VideoStorage(**video_storage) for video_storage in dummy_video_storage])
-
-            session.commit()
-            logging.info("Dummy data inserted successfully.")
-        except Exception as e:
-            session.rollback()
-            logging.error(f"Error inserting dummy data: {e}")
-        finally:
-            session.close()
-
-def initialize_database():
-    if not os.path.exists("./test.db"):
-        create_db_and_tables()
-        insert_dummy_data()
-    else:
-        logging.info("Database already exists. Skipping creation and dummy data insertion.")
-
-def get_all_data():
-    with get_session() as session:
-        data = {
-            "admins": session.exec(select(Admin)).all(),
-            "users": session.exec(select(User)).all(),
-            "vehicles": session.exec(select(Vehicle)).all(),
-            "modules": session.exec(select(Module)).all(),
-            "options": session.exec(select(Option)).all(),
-            "option_types": session.exec(select(OptionType)).all(),
-            "module_sets": session.exec(select(ModuleSet)).all(),
-            "module_set_option_types": session.exec(select(ModuleSetOptionType)).all(),
-            "module_maintenance": session.exec(select(ModuleMaintenance)).all(),
-            "option_maintenance": session.exec(select(OptionMaintenance)).all(),
-            "vehicle_maintenance": session.exec(select(VehicleMaintenance)).all(),
-            "vehicle_usage_history": session.exec(select(VehicleUsageHistory)).all(),
-            "module_usage_history": session.exec(select(ModuleUsageHistory)).all(),
-            "option_usage_history": session.exec(select(OptionUsageHistory)).all(),
-            "rent_history": session.exec(select(RentHistory)).all(),
-            "payments": session.exec(select(Payment)).all(),
-            "video_storage": session.exec(select(VideoStorage)).all(),
-        }
-    return data
-
-def get_table_data(table: str):
-    with get_session() as session:
-        if table == "admin":
-            data = session.exec(select(Admin)).all()
-        elif table == "user":
-            data = session.exec(select(User)).all()
-        elif table == "vehicle":
-            data = session.exec(select(Vehicle)).all()
-        elif table == "module":
-            data = session.exec(select(Module)).all()
-        elif table == "option":
-            data = session.exec(select(Option)).all()
-        elif table == "option_type":
-            data = session.exec(select(OptionType)).all()
-        elif table == "module_set":
-            data = session.exec(select(ModuleSet)).all()
-        elif table == "module_set_option_type":
-            data = session.exec(select(ModuleSetOptionType)).all()
-        elif table == "module_maintenance":
-            data = session.exec(select(ModuleMaintenance)).all()
-        elif table == "option_maintenance":
-            data = session.exec(select(OptionMaintenance)).all()
-        elif table == "vehicle_maintenance":
-            data = session.exec(select(VehicleMaintenance)).all()
-        elif table == "vehicle_usage_history":
-            data = session.exec(select(VehicleUsageHistory)).all()
-        elif table == "module_usage_history":
-            data = session.exec(select(ModuleUsageHistory)).all()
-        elif table == "option_usage_history":
-            data = session.exec(select(OptionUsageHistory)).all()
-        elif table == "rent_history":
-            data = session.exec(select(RentHistory)).all()
-        elif table == "payment":
-            data = session.exec(select(Payment)).all()
-        elif table == "video_storage":
-            data = session.exec(select(VideoStorage)).all()
-        else:
-            data = {"message": "Invalid table name. Please provide a valid table name."}
+def get_session() -> Generator[Session, None, None]:
+    """데이터베이스 세션 제공"""
+    session = Session(engine)
+    try:
+        yield session
         
-        return data
+    finally:
+        session.close()
+
+async def initialize_database() -> None:
+    """데이터베이스 초기화 및 시드 데이터 삽입"""
+    try:
+        logger.info("🔹 데이터베이스 스키마 생성 중...")
+        SQLModel.metadata.create_all(engine)
+        logger.info("✅ 데이터베이스 스키마 생성 완료")
+            
+        logger.info("🔹 초기 데이터 삽입 중...")
+        with Session(engine) as session:
+            try:
+                from app import seed
+                seed.seed_data(session)
+                session.commit()
+                logger.info("✅ 초기 데이터 삽입 완료")
+            except Exception as e:
+                session.rollback()
+                raise DatabaseError(
+                    message="Failed to insert seed data",
+                    detail={"error": str(e)}
+                )
+                
+    except Exception as e:
+        if isinstance(e, DatabaseError):
+            raise e
+        raise DatabaseError(
+            message="Database initialization failed",
+            detail={
+                "error": str(e),
+                "database_url": settings.DATABASE_URL
+            }
+        )
+
+def verify_database_connection(max_retries: int = 3, retry_delay: int = 1) -> Dict[str, Any]:
+    start_time = datetime.now()
+    
+    for attempt in range(max_retries):
+        try:
+            with Session(engine) as session:
+                query_start = time.time()
+                session.exec(select(1)).first()
+                response_time = (time.time() - query_start) * 1000
+
+                return {
+                    "status": True,
+                    "message": "데이터베이스 연결 성공",
+                    "response_time_ms": round(response_time, 2),
+                    "checked_at": datetime.now().isoformat(),
+                    "engine_info": {
+                        "url": str(engine.url),
+                        "pool_size": engine.pool.size(),
+                        "pool_overflow": engine.pool.overflow()
+                    },
+                    "attempts": attempt + 1
+                }
+
+        except Exception as e:
+            logger.error(f"🚨 데이터베이스 연결 실패 (시도 {attempt + 1}/{max_retries}): {str(e)}")
+            if attempt < max_retries - 1:
+                time.sleep(retry_delay)
+                continue
+    
+    # 모든 시도 실패 시 반환되는 기본값
+    return {
+        "status": False,
+        "message": "모든 연결 시도 실패",
+        "checked_at": datetime.now().isoformat(),
+        "attempts": max_retries,
+        "total_time_ms": round((datetime.now() - start_time).total_seconds() * 1000, 2)
+    }

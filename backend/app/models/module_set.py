@@ -1,14 +1,29 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
 
-
 class ModuleSet(SQLModel, table=True):
-    moduleSetId: Optional[int] = Field(default=None, primary_key=True)
-    moduleSetName: str
-    description: str = None
-    moduleSetImages: str
-    moduleSetFeatures: str
-    basePrice: float
-    createdAt: datetime = Field(default=datetime.now())
-    updatedAt: datetime = Field(default=datetime.now())
+    __tablename__ = "module_set"
+
+    module_set_id: Optional[int] = Field(default=None, primary_key=True)
+    module_set_name: str = Field(nullable=False, max_length=100, description="Module Set Name")
+
+    description: Optional[str] = Field(default=None, description="Module Set Description")
+    module_set_images: Optional[str] = Field(default=None, description="Module Set Images")
+    module_set_features: Optional[str] = Field(default=None, description="Module Set Features")
+
+    base_price: float = Field(nullable=False, description="Base price (>= 0)")
+
+    created_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+    )
+    created_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who created this record")
+
+    updated_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+    )
+    updated_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who last updated this record")
+
+    deleted_at: Optional[datetime] = Field(
+        sa_column=Column(DateTime, nullable=True)
+    )

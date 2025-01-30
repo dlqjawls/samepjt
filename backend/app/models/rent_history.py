@@ -1,20 +1,24 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
 
-from app.models.enum import RentStatus
-
 class RentHistory(SQLModel, table=True):
-    rentId: Optional[int] = Field(default=None, primary_key=True)
-    userPK: int
-    departureLocation: str
-    arrivalLocation: str
-    rentStatus: RentStatus = Field(default="IN_PROGRESS")
-    startTime: datetime
-    endTime: Optional[datetime] = None
-    baseCost: float
-    additionalCost: float = Field(default=0)
-    totalCost: float = Field(default=0)
-    totalDistance: float = Field(default=0)
-    statusUpdatedAt: datetime
-    createdAt: datetime = Field(default=datetime.now())
+    __tablename__ = "rent_history"
+
+    rent_id: Optional[int] = Field(default=None, primary_key=True)
+    user_pk: int = Field(foreign_key="user.user_pk", nullable=False, description="User who rented the item")
+    
+    departure_location: str = Field(nullable=False, max_length=255, description="Departure location")
+    arrival_location: str = Field(nullable=False, max_length=255, description="Arrival location")
+    
+    cost: float = Field(nullable=False, description="Total rental cost (>= 0)")
+    mileage: float = Field(default=0, nullable=False, description="Total mileage during rental")
+    
+    status_id: int = Field(foreign_key="lut_rent_status.rent_status_id", nullable=False, description="Rental status")
+
+    created_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+    )
