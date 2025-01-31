@@ -31,11 +31,11 @@ const LoginModal = ({ onClose }) => {
 
     try {
       const response = await axios.post("https://backend-wandering-river-6835.fly.dev/auth/login", formData)
-      .finally((response) => { console.log(response); return response; })
+      // .finally((response) => { console.log(response); return response; })
       alert("로그인 성공!")
       console.log("로그인 성공:", response.data)
-      console.log(response.data.token)
-      const token = response.data.accessToken
+      console.log(response.data.data.access_token)
+      const token = response.data.data.access_token
       sessionStorage.setItem("token", token)
       onClose()
     } catch (err) {
