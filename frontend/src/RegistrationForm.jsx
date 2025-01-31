@@ -1,51 +1,58 @@
-// src/components/RegistrationForm.jsx
-import React, { useState } from 'react';
-import axios from 'axios';
-import './RegistrationForm.css';
-import { useNavigate } from 'react-router-dom';
-function RegistrationForm() {
-  // 폼 필드 상태 관리
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./RegistrationForm.css";
+const RegistrationForm = () => {
   const [formData, setFormData] = useState({
-    userId: '',
-    userPassword: '',
-    userEmail: '',
-    userName: '',
-    userPhoneNum: '',
-    userAddress: '',
+    id: "",
+    password: "",
+    email: "",
+    name: "",
+    phoneNum: "",
+    address: "",
   });
 
-  // 에러 상태 관리
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
-  // 입력 변화 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  // 홈 네비게이터 
-  const navigate = useNavigate() ;
-  const home = ()=>{
-    navigate("/")
-  }
 
-  
-  // 폼 제출 핸들러
+  const home = () => {
+    navigate("/");
+  };
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePhoneNum = (phoneNum) => {
+    return /^\d{3}-\d{3,4}-\d{4}$/.test(phoneNum);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
     setApiError(null);
-    setSuccessMessage('');
+    setSuccessMessage("");
 
-    // 클라이언트 측 유효성 검사 (간단히 예시)
+    // 클라이언트 측 유효성 검사
     const newErrors = {};
-    if (!formData.userId) newErrors.userId = 'User ID is required';
-    if (!formData.userPassword) newErrors.userPassword = 'Password is required';
-    if (!formData.userEmail) newErrors.userEmail = 'Email is required';
-    if (!formData.userName) newErrors.userName = 'Name is required';
-    if (!formData.userPhoneNum) newErrors.userPhoneNum = 'Phone number is required';
-    if (!formData.userAddress) newErrors.userAddress = 'Address is required';
+    if (!formData.id) newErrors.id = "아이디를 입력해주세요";
+    if (!formData.password) newErrors.password = "비밀번호를 입력해주세요";
+    if (!formData.email) newErrors.email = "이메일을 입력해주세요";
+    else if (!validateEmail(formData.email))
+      newErrors.email = "올바른 이메일 형식이 아닙니다";
+    if (!formData.name) newErrors.name = "이름을 입력해주세요";
+    if (!formData.phoneNum) newErrors.phoneNum = "전화번호를 입력해주세요";
+    else if (!validatePhoneNum(formData.phoneNum))
+      newErrors.phoneNum =
+        "전화번호 형식이 올바르지 않습니다 (예: 010-1234-5678)";
+    if (!formData.address) newErrors.address = "주소를 입력해주세요";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -53,108 +60,170 @@ function RegistrationForm() {
     }
 
     try {
-      // API 요청
-      const response = await axios.post('https://backend-wandering-river-6835.fly.dev/user/register', formData);
+      const response = await axios.post(
+        "https://backend-wandering-river-6835.fly.dev/auth/register",
+        formData
+      );
 
-      if (response.data.resultCode === 'SUCCESS') {
-        setSuccessMessage(response.data.message);
-        setFormData({
-          userId: '',
-          userPassword: '',
-          userEmail: '',
-          userName: '',
-          userPhoneNum: '',
-          userAddress: '',
-        });
-        alert("회원가입 성공")
-        navigate("/")
-      } else {
-        setApiError(response.data.message);
-        if (response.data.errors) {
-          const apiErrors = {};
-          response.data.errors.forEach((error) => {
-            apiErrors[error.field] = error.message;
-          });
-          setErrors(apiErrors);
-        }
+      if (response.data.resultCode === "SUCCESS") {
+        setSuccessMessage("회원가입이 완료되었습니다.");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       }
     } catch (error) {
-      setApiError('An unexpected error occurred. Please try again later.');
-      console.error(error);
+      if (error.response) {
+        const { status, data } = error.response;
+        switch (status) {
+          case 400:
+            setApiError(data.message || "이미 존재하는 아이디입니다.");
+            break;
+          case 422:
+            setApiError("입력하신 정보를 다시 확인해주세요.");
+            break;
+          case 500:
+            setApiError("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            break;
+          default:
+            setApiError("회원가입 중 오류가 발생했습니다.");
+        }
+      } else {
+        setApiError("네트워크 연결을 확인해주세요.");
+      }
     }
   };
 
   return (
-    <div className="registration-form">
-      <h2>User Registration</h2>
-      {successMessage && <div className="success-message">{successMessage}</div>}
-      {apiError && <div className="error-message">{apiError}</div>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>User ID:</label>
-          <input
-            type="text"
-            name="userId"
-            value={formData.userId}
-            onChange={handleChange}
-          />
-          {errors.userId && <span className="error">{errors.userId}</span>}
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="userPassword"
-            value={formData.userPassword}
-            onChange={handleChange}
-          />
-          {errors.userPassword && <span className="error">{errors.userPassword}</span>}
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="userEmail"
-            value={formData.userEmail}
-            onChange={handleChange}
-          />
-          {errors.userEmail && <span className="error">{errors.userEmail}</span>}
-        </div>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="userName"
-            value={formData.userName}
-            onChange={handleChange}
-          />
-          {errors.userName && <span className="error">{errors.userName}</span>}
-        </div>
-        <div>
-          <label>Phone Number:</label>
-          <input
-            type="text"
-            name="userPhoneNum"
-            value={formData.userPhoneNum}
-            onChange={handleChange}
-          />
-          {errors.userPhoneNum && <span className="error">{errors.userPhoneNum}</span>}
-        </div>
-        <div>
-          <label>Address:</label>
-          <input
-            type="text"
-            name="userAddress"
-            value={formData.userAddress}
-            onChange={handleChange}
-          />
-          {errors.userAddress && <span className="error">{errors.userAddress}</span>}
-        </div>
-        <button type="submit"  >Register</button>
-        <button type="button" onClick={home}>메인페이지로</button>
-      </form>
+    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+        <h2 className="mb-6 text-center text-2xl font-bold">회원가입</h2>
+        {successMessage && (
+          <div className="mb-4 rounded bg-green-100 p-3 text-green-700">
+            {successMessage}
+          </div>
+        )}
+        {apiError && (
+          <div className="mb-4 rounded bg-red-100 p-3 text-red-700">
+            {apiError}
+          </div>
+        )}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="mb-2 block">아이디</label>
+            <input
+              type="text"
+              name="id"
+              value={formData.id}
+              onChange={handleChange}
+              className={`w-full rounded border p-2 ${
+                errors.id ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.id && (
+              <p className="mt-1 text-sm text-red-500">{errors.id}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-2 block">비밀번호</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`w-full rounded border p-2 ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-2 block">이메일</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full rounded border p-2 ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-2 block">이름</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className={`w-full rounded border p-2 ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-2 block">전화번호</label>
+            <input
+              type="tel"
+              name="phoneNum"
+              value={formData.phoneNum}
+              onChange={handleChange}
+              placeholder="010-0000-0000"
+              className={`w-full rounded border p-2 ${
+                errors.phoneNum ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.phoneNum && (
+              <p className="mt-1 text-sm text-red-500">{errors.phoneNum}</p>
+            )}
+          </div>
+
+          <div className="mb-6">
+            <label className="mb-2 block">주소</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className={`w-full rounded border p-2 ${
+                errors.address ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.address && (
+              <p className="mt-1 text-sm text-red-500">{errors.address}</p>
+            )}
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            >
+              회원가입
+            </button>
+            <button
+              type="button"
+              onClick={home}
+              className="w-full rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+            >
+              취소
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
-}
+};
 
 export default RegistrationForm;

@@ -71,7 +71,7 @@ const Total_reciept = () => {
           optionTypeId: option.optionTypeId,
           quantity: option.quantity,
         }))
-
+        console.log("선택된 옵션:", selectedOptions)
         const rentData = {
           selectedOptionTypes: selectedOptions,
           autonomousArrivalPoint: {
@@ -85,12 +85,13 @@ const Total_reciept = () => {
           rentStartDate: "2025-01-15T09:00:00",
           rentEndDate: "2025-01-20T18:00:00",
         }
-
-        const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/rent/rent", rentData, {
+        console.log("렌트 데이터:", rentData)
+        const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/rent", rentData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
+        console.log(rentData)
 
         if (response.data.success) {
           alert("결제가 완료되었습니다.")
