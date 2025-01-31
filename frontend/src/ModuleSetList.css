@@ -7,13 +7,13 @@
 
 /* 왼쪽 : 모듈 세트 목록 */
 .module-list {
-  flex: 1; /* 너비 비율을 1로 설정해 상대적으로 작게 만듦 */
-  max-width: 35%; /* 너비가 35%를 초과하지 않도록 제한 */
-  max-height: 80vh; /* 세로 높이를 화면 높이의 80%로 제한 */
-  overflow-y: auto; /* 내용이 넘칠 경우 수직 스크롤 활성화 */
+  flex: 1.5; /* 너비 비율을 1*/
+  max-width: 35%; /* 너비 35% 제한 */
+  max-height: 80vh; /* 세로 80% 제한 */
+  overflow-y: auto; /* 수직 스크롤 */
   padding-right: 10px; /* 스크롤바와 내용 사이에 10px 여백 추가 */
-  scrollbar-width: thin; /* 스크롤바를 얇게 설정 (Firefox 전용) */
-  scrollbar-color: #888 #f0f0f0; /* 스크롤바 색상 지정 (Firefox 전용) */
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f0f0f0; 
 }
 
 .module-list::-webkit-scrollbar {
@@ -70,13 +70,13 @@
   color: #666; /* 텍스트 색상을 연한 회색으로 설정 */
 }
 
-/* 오른쪽: 모듈 크게보기 UI */
+/* 오른쪽: 선택된 모듈 UI */
 .module-sliding {
-  flex: 2; /* 너비 비율을 2로 설정해 상대적으로 더 넓게 만듦 */
-  max-width: 60%; /* 너비가 60%를 초과하지 않도록 제한 */
-  border: 1px solid #ddd; /* 외곽선을 연한 회색으로 설정 */
-  border-radius: 8px; /* 모서리를 둥글게 설정 */
-  padding: 20px; /* 내부 여백을 20px로 설정 */
+  flex: 2; 
+  max-width: 60%; /* 너비 60% 제한 */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
   background-color: #f9f9f9; /* 배경색을 연한 회색으로 설정 */
   overflow-y: auto; /* 내용이 넘칠 경우 수직 스크롤 활성화 */
   position: relative; /* 버튼 배치를 위해 position을 relative로 설정 */
@@ -97,7 +97,7 @@
 
 .module-details-content {
   margin-top: 20px; /* 상단 여백을 20px 추가 */
-  text-align: center; /* 텍스트를 가운데 정렬 */
+  /* text-align: center; 텍스트를 가운데 정렬 */
 }
 
 .module-details-content h3 {
