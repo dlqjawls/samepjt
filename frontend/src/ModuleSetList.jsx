@@ -26,6 +26,7 @@ function ModuleSetList() {
 
       if (response.data.resultCode === "SUCCESS") {
         setModuleSets(response.data.data.moduleSets);
+        console.log(response)
       } else {
         setError(response.data.message);
         setModuleSets([]);
@@ -70,7 +71,7 @@ function ModuleSetList() {
             >
               <div className="module-card-image">
                 <img
-                  src={moduleSet.imgsUrls[0]}
+                  src={moduleSet.imgUrls[0]}
                   alt={moduleSet.moduleSetName}
                 />
               </div>
@@ -93,7 +94,7 @@ function ModuleSetList() {
     <div className="module-details">
       <div className="module-details-image">
         <img
-          src={selectedModule.imgsUrls[currentImageIndex]}
+          src={selectedModule.imgUrls[currentImageIndex]}
           alt={selectedModule.moduleSetName}
         />
       </div>

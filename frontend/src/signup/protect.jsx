@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
-    const token = localStorage.getItem("token"); // 토큰 가져오기
+    const token = sessionStorage.getItem("token"); // 토큰 가져오기
 
     if (!token) {
         alert("로그인이 필요합니다!");

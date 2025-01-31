@@ -5,8 +5,8 @@ import "./LoginModal.css"
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
-    userId: "",
-    userPassword: "",
+    id: "",
+    password: "",
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -30,7 +30,7 @@ const LoginModal = ({ onClose }) => {
     setError("")
 
     try {
-      const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/login", formData)
+      const response = await axios.post("https://backend-wandering-river-6835.fly.dev/auth/login", formData)
       .finally((response) => { console.log(response); return response; })
       alert("로그인 성공!")
       console.log("로그인 성공:", response.data)
@@ -59,13 +59,13 @@ const LoginModal = ({ onClose }) => {
 
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="userId" className="label">아이디</label>
+            <label htmlFor="id" className="label">아이디</label>
             <input
-              id="userId"
-              name="userId"
+              id="id"
+              name="id"
               type="text"
               placeholder="아이디를 입력하세요"
-              value={formData.userId}
+              value={formData.id}
               onChange={handleChange}
               required
               disabled={isLoading}
@@ -76,11 +76,11 @@ const LoginModal = ({ onClose }) => {
           <div>
             <label htmlFor="userPassword" className="label">비밀번호</label>
             <input
-              id="userPassword"
-              name="userPassword"
+              id="password"
+              name="password"
               type="password"
               placeholder="비밀번호를 입력하세요"
-              value={formData.userPassword}
+              value={formData.password}
               onChange={handleChange}
               required
               disabled={isLoading}
