@@ -143,26 +143,6 @@ async def register(request: auth_schema.RegisterRequest, session: Session = Depe
                 }
             }
         },
-        404: {
-            "description": "역할 없음",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "RoleNotFound": {
-                            "summary": "역할을 찾을 수 없음",
-                            "value": {
-                                "resultCode": "FAILURE",
-                                "message": "Role not found",
-                                "error_code": "NOT_FOUND",
-                                "detail": {
-                                    "role_id": "role_id"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         500: {
             "description": "서버 오류",
             "content": {
@@ -259,6 +239,23 @@ async def login(request: auth_schema.LoginRequest, session: Session = Depends(ge
                         }
                     }
                 }
+            }
+        },
+        422: {
+            "resultCode": "FAILURE",
+            "message": "Validation error",
+            "error_code": "VALIDATION_ERROR",
+            "detail": {
+                "errors": [
+                    {
+                        "loc": [
+                            "body",
+                            "refresh_token"
+                        ],
+                        "msg": "field required",
+                       "type": "value_error.missing"
+                    }
+                ]
             }
         },
         500: {
