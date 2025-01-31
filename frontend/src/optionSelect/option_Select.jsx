@@ -50,9 +50,10 @@ const ExistOptionsPage = () => {
       const firstResponse = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types", {
         params: {
           page: 1,
-          page_size: 100,
+          page_size: 10,
         },
       })
+      console.log(firstResponse)
 
       const { totalPages } = firstResponse.data.data.pagination
       let allOptionTypes = []
@@ -61,7 +62,7 @@ const ExistOptionsPage = () => {
         const response = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types", {
           params: {
             page: page,
-            page_size: 100,
+            page_size: 10,
           },
         })
 
