@@ -1,4 +1,5 @@
 // src/components/ModuleManagement.jsx
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "./Modal";
@@ -127,11 +128,11 @@ function ModuleManagement() {
   const token = localStorage.getItem("adminToken"); // 토큰 저장 방식에 따라 수정
 
   // API 베이스 URL 설정
-  const BASE_URL = "https://backend-wandering-river-6835.fly.dev"; // 실제 백엔드 API URL로 변경하세요
+  const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
   /**
    * 모듈 세트 목록 조회 함수
-   * API 호출 시도 후 실패하면 더미 데이터를 사용합니다.
+   * API 호출 시도 후 실패하면 더미 데이터를 사용
    */
   const fetchModuleSets = async () => {
     setLoading(true);
@@ -156,7 +157,7 @@ function ModuleManagement() {
         setError(
           response.data.message || "모듈 세트 목록을 불러오는 데 실패했습니다."
         );
-        // API 호출 실패 시 더미 데이터를 사용합니다.
+        // API 호출 실패 시 더미 데이터를 사용
         setModuleSets(initialDummyModuleSets);
       }
     } catch (err) {
@@ -169,7 +170,7 @@ function ModuleManagement() {
       } else {
         setError("모듈 세트 목록을 불러오는 중 오류가 발생했습니다.");
       }
-      // API 호출 실패 시 더미 데이터를 사용합니다.
+      // API 호출 실패 시 더미 데이터를 사용
       setModuleSets(initialDummyModuleSets);
     } finally {
       setLoading(false);
@@ -178,7 +179,7 @@ function ModuleManagement() {
 
   /**
    * 모듈 목록 조회 함수
-   * API 호출 시도 후 실패하면 더미 데이터를 사용합니다.
+   * API 호출 시도 후 실패하면 더미 데이터를 사용
    */
   const fetchModules = async () => {
     setLoading(true);
@@ -204,7 +205,7 @@ function ModuleManagement() {
         setError(
           response.data.message || "모듈 목록을 불러오는 데 실패했습니다."
         );
-        // API 호출 실패 시 더미 데이터를 사용합니다.
+        // API 호출 실패 시 더미 데이터를 사용
         setModules(initialDummyModules);
       }
     } catch (err) {
@@ -217,7 +218,7 @@ function ModuleManagement() {
       } else {
         setError("모듈 목록을 불러오는 중 오류가 발생했습니다.");
       }
-      // API 호출 실패 시 더미 데이터를 사용합니다.
+      // API 호출 실패 시 더미 데이터를 사용
       setModules(initialDummyModules);
     } finally {
       setLoading(false);
@@ -413,7 +414,7 @@ function ModuleManagement() {
 
   /**
    * CRUD 기능 API 연동
-   * 현재는 더미 데이터를 사용 중이며, API 연동 시 해당 부분을 활성화하면 됩니다.
+   * 현재는 더미 데이터를 사용 중이며, API 연동 시 해당 부분을 활성화
    */
 
   // 모듈 세트 수정 저장 시 (더미 데이터 사용)
@@ -1382,42 +1383,42 @@ function ModuleManagement() {
               {modalType === "deleteModuleSet" ? (
                 <>
                   {/* 더미 데이터 삭제 */}
-                  {/* <button
+                  <button
                     onClick={handleConfirmModuleSetDeleteDummy}
                     className="confirm-delete-button"
                     disabled={loading}
                   >
                     삭제
-                  </button> */}
+                  </button>
 
                   {/* API 연동 삭제 */}
-                  <button
+                  {/* <button
                     onClick={handleConfirmModuleSetDelete}
                     className="confirm-delete-button"
                     disabled={loading}
                   >
                     삭제
-                  </button>
+                  </button> */}
                 </>
               ) : (
                 <>
                   {/* 더미 데이터 삭제 */}
-                  {/* <button
+                  <button
                     onClick={handleConfirmModuleDeleteDummy}
                     className="confirm-delete-button"
                     disabled={loading}
                   >
                     삭제
-                  </button> */}
+                  </button>
 
                   {/* API 연동 삭제 */}
-                  <button
+                  {/* <button
                     onClick={handleConfirmModuleDelete}
                     className="confirm-delete-button"
                     disabled={loading}
                   >
                     삭제
-                  </button>
+                  </button> */}
                 </>
               )}
               <button onClick={closeModal} className="cancel-button">
@@ -1585,42 +1586,42 @@ function ModuleManagement() {
               {modalType === "addModuleSet" ? (
                 <>
                   {/* 더미 데이터 신규 등록 저장 */}
-                  {/* <button
+                  <button
                     onClick={handleSaveModuleSetAddDummy}
                     className="save-button"
                     disabled={loading}
                   >
                     등록
-                  </button> */}
+                  </button>
 
                   {/* API 연동 신규 등록 저장 */}
-                  <button
+                  {/* <button
                     onClick={handleSaveModuleSetAdd}
                     className="save-button"
                     disabled={loading}
                   >
                     등록
-                  </button>
+                  </button> */}
                 </>
               ) : (
                 <>
                   {/* 더미 데이터 신규 등록 저장 */}
-                  {/* <button
+                  <button
                     onClick={handleSaveModuleAddDummy}
                     className="save-button"
                     disabled={loading}
                   >
                     등록
-                  </button> */}
+                  </button>
 
                   {/* API 연동 신규 등록 저장 */}
-                  <button
+                  {/* <button
                     onClick={handleSaveModuleAdd}
                     className="save-button"
                     disabled={loading}
                   >
                     등록
-                  </button>
+                  </button> */}
                 </>
               )}
               <button onClick={closeModal} className="cancel-button">
