@@ -218,3 +218,77 @@ class RentService:
                 rent_id=rent_id
             )
         )
+        
+    @staticmethod
+    @handle_transaction
+    def get_rent_car_status(
+        session: Session, 
+        rent_id: int, 
+        user_pk: int
+    ) -> rent_schema.RentStatusResponse:
+        """렌트 차량 상태 조회"""
+        # 1. 렌트 기록 조회 및 검증
+        rent_history = rent_history_crud.get_by_id(
+            session, 
+            rent_id
+        )
+        if not rent_history:
+            raise NotFoundError(
+                message="Rent history not found",
+                detail={
+                    "rent_id": rent_id
+                }
+            )
+
+        # 2. 사용자 권한 검증
+        if rent_history.user_pk != user_pk:
+            raise ForbiddenError(
+                message="Unauthorized rent access",
+                detail={
+                    "rent_id": rent_id,
+                    "request_user": user_pk,
+                    "rent_user": rent_history.user_pk
+                }
+            )
+
+        # 3. 사용 기록 조회
+        usage_entries = usage_history_crud.get_usage_entries(
+            session,
+            rent_id
+        )
+
+        # 4. 아이템 ID 분류
+        vehicle_id = next(
+            (u.item_id for u in usage_entries if u.item_type_id == RentService.VEHICLE),
+            None
+        )
+        module_id = next(
+            (u.item_id for u in usage_entries if u.item_type_id == RentService.MODULE),
+            None
+        )
+        option_ids = [
+            u.item_id for u in usage_entries 
+            if u.item_type_id == RentService.OPTION
+        ]
+
+        # 5. 차량 상태 조회
+        vehicle_status = vehicle_crud.get_vehicle_status(session, vehicle_id)
+        module_status = module_crud.get_module_status(session, module_id)
+        option_statuses = option_crud.get_option_statuses(session, option_ids)
+
+        return rent_schema.RentStatusResponse(
+            data=rent_schema.RentStatusResponseData(
+                isArrive=False,
+                location=rent_schema.Coordinate(x=0.0, y=0.0),
+                destination=rent_schema.Coordinate(x=0.0, y=0.0),
+                ETA=datetime.now(),
+                distanceTravelled=0.0,
+                plannedPath=[],
+                SLAMMapData="",
+                status=rent_schema.VehicleModuleStatus(
+                    vehicle=vehicle_status,
+                    module=module_status,
+                    options=option_statuses
+                )
+            )
+        )   

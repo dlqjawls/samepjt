@@ -84,7 +84,10 @@ class OptionTypeService:
         return option_type_schema.OptionTypesResponse(
             resultCode="SUCCESS",
             message="Option types retrieved successfully",
-            data=option_types_data
+            data=option_type_schema.OptionTypesData(
+                optionTypes=option_types_data,
+                pagination=paginated_result["pagination"]
+            )
         )
 
     @staticmethod
@@ -112,5 +115,7 @@ class OptionTypeService:
         return option_type_schema.OptionTypesResponse(
             resultCode="SUCCESS",
             message="Option type retrieved successfully",
-            data=[option_type_data]
+            data=option_type_schema.OptionTypesData(
+                optionTypes=[option_type_data],
+            )
         )
