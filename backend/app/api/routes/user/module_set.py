@@ -52,22 +52,6 @@ router = APIRouter()
                 }
             }
         },
-        404: {
-            "description": "❌ 모듈 세트 없음",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resultCode": "FAILURE",
-                        "message": "No module sets found",
-                        "error_code": "NOT_FOUND",
-                        "detail": {
-                            "page": 1,
-                            "page_size": 10
-                        }
-                    }
-                }
-            }
-        },
         422: {
             "description": "유효성 검사 오류",
             "content": {

@@ -121,8 +121,20 @@ async def rent_vehicle(
 
 @router.delete(
     "/rent/{rent_id}",
-    summary="🚗 렌트 취소 (소프트 딜리트)",
-    description="렌트 요청을 **취소**합니다. (`status_id=3`로 변경)",  
+    summary="🚗 렌트 취소",
+    description="""
+    사용자가 **진행 중인 렌트 요청을 취소**하는 API입니다.
+    
+    **취소 절차:**
+    1. 렌트 상태를 `CANCELED`(취소됨)으로 변경
+    2. 관련 차량/모듈/옵션 상태를 `INACTIVE`로 변경
+    3. 사용 기록 상태 업데이트
+    
+    **주의사항:**
+    - 취소된 렌트는 다시 활성화할 수 없습니다
+    - 본인의 렌트만 취소할 수 있습니다
+    - 이미 취소되었거나 완료된 렌트는 취소할 수 없습니다
+    """,
     response_model=rent_schema.CancelRentResponse,
     responses={
         200: {
@@ -140,12 +152,12 @@ async def rent_vehicle(
             }
         },
         401: {
-            "description": "인증 실패",
+            "description": "❌ 인증 실패",
             "content": {
                 "application/json": {
                     "examples": {
                         "ExpiredToken": {
-                            "summary": "만료된 토큰",
+                            "summary": "토큰 만료",
                             "value": {
                                 "resultCode": "FAILURE",
                                 "message": "Token has expired",
@@ -154,36 +166,13 @@ async def rent_vehicle(
                                     "error": "Token expiration time has passed"
                                 }
                             }
-                        },
-                        "InvalidToken": {
-                            "summary": "유효하지 않은 토큰",
-                            "value": {
-                                "resultCode": "FAILURE",
-                                "message": "Token is malformed",
-                                "error_code": "UNAUTHORIZED",
-                                "detail": {
-                                    "error": "Invalid token format"
-                                }
-                            }
-                        },
-                        "InvalidType": {
-                            "summary": "잘못된 토큰 타입",
-                            "value": {
-                                "resultCode": "FAILURE",
-                                "message": "Invalid token type",
-                                "error_code": "UNAUTHORIZED",
-                                "detail": {
-                                    "required": "access",
-                                    "received": "refresh"
-                                }
-                            }
                         }
                     }
                 }
             }
         },
         403: {
-            "description": "권한 없음",
+            "description": "🚫 권한 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -191,15 +180,16 @@ async def rent_vehicle(
                         "message": "Permission denied",
                         "error_code": "FORBIDDEN",
                         "detail": {
-                            "user_role": "user",
-                            "allowed_roles": ["admin"]
+                            "rent_id": 123,
+                            "request_user": 456,
+                            "rent_user": 789
                         }
                     }
                 }
             }
         },
         404: {
-            "description": "❌ 렌트 기록을 찾을 수 없음",
+            "description": "❓ 렌트 기록 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -213,29 +203,43 @@ async def rent_vehicle(
                 }
             }
         },
-        422: {
-            "description": "유효성 검사 오류",
+        409: {
+            "description": "⚠️ 상태 충돌",
             "content": {
                 "application/json": {
-                    "examples": {
-                        "AlreadyCanceledOrCompleted": {
-                            "summary": "이미 취소되었거나 완료된 렌트",
-                            "value": {
-                                "resultCode": "FAILURE",
-                                "message": "Rent already canceled or completed",
-                                "error_code": "VALIDATION_ERROR",
-                                "detail": {
-                                    "rent_id": 123,
-                                    "current_status": 3
-                                }
-                            }
-                        },
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Rent already canceled or completed",
+                        "error_code": "CONFLICT",
+                        "detail": {
+                            "rent_id": 123,
+                            "current_status": 3
+                        }
+                    }
+                }
+            }
+        },
+        422: {
+            "description": "❌ 유효성 검사 실패",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Validation error",
+                        "error_code": "VALIDATION_ERROR",
+                        "detail": {
+                            "errors": [{
+                                "loc": ["path", "rent_id"],
+                                "msg": "rent_id must be a positive integer",
+                                "type": "value_error"
+                            }]
+                        }
                     }
                 }
             }
         },
         500: {
-            "description": "서버 오류",
+            "description": "⚠️ 서버 오류",
             "content": {
                 "application/json": {
                     "example": {

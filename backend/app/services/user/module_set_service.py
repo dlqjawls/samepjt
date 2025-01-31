@@ -8,7 +8,7 @@ from app.crud.module_set_option_type import module_set_option_type_crud
 from app.api.schemas.user import module_set_schema
 from app.utils.handle_transaction import handle_transaction
 from app.utils.exceptions import (
-    DatabaseError, NotFoundError, 
+    DatabaseError, 
 )
 
 class ModuleSetServiceUtils:
@@ -54,12 +54,6 @@ class ModuleSetService:
         # ✅ 페이지네이션 적용하여 모듈 세트 조회
         paginated_result = module_set_crud.get_all(session, page, page_size)
         module_sets: List[ModuleSet] = paginated_result["items"]
-
-        if not module_sets:
-            raise NotFoundError(
-                message="No module sets found",
-                detail={"page": page, "page_size": page_size}
-            )
 
         module_sets_data: List[module_set_schema.ModuleSet] = []
 
