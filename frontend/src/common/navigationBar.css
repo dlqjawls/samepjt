@@ -25,6 +25,15 @@
   gap: 10px;
 }
 
+@font-face {
+  font-family: "EnglishFont";
+  src: url("../assets/font/Cafe24Decobox/Cafe24Decobox.ttf") format("opentype");
+}
+
+.navbar-logo span {
+  font-family: "EnglishFont";
+}
+
 .navbar-icon {
   width: 30px;
   height: 30px;

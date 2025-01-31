@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "LINESedKR";
+  font-weight: normal;
+  src: url("./assets/font/LINESeed/3Bold.otf") format("truetype");
+}
+
 body,
 html {
   margin: 0;
@@ -5,6 +11,7 @@ html {
   height: 100%;
   display: flex;
   flex-direction: column;
+  font-family: "LINESedKR";
 }
 
 .layout {
@@ -18,6 +25,7 @@ html {
 }
 
 footer {
+  font-family: "LINESedKR";
   background-color: #222;
   color: #fff;
   text-align: center;
