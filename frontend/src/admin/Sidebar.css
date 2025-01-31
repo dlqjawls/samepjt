@@ -10,6 +10,11 @@
   border-right: 1px solid #e0e0e0;
 }
 
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto; /* 메뉴가 많을 경우 스크롤 가능하게 함 */
+}
+
 .sidebar-logo img {
   width: 80%;
   padding: 30px 20px;
@@ -60,7 +65,7 @@
 }
 
 .sidebar-footer {
-  padding: 20px 0;
+  /* margin: 50px 0px 0px 0px; */
 }
 
 .settings-button {
@@ -69,9 +74,12 @@
   text-decoration: none;
   color: #333;
   font-size: 16px;
-  padding: 10px 20px;
+  padding: 30px 50px;
   width: 100%;
+  font-size: 20px;
+  font-weight: 700;
   background: none;
+  background-color: gray;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;

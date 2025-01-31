@@ -6,8 +6,8 @@ import moducar_logo from "../assets/moducar_logo.svg";
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
-    adminId: "",
-    adminPassword: "",
+    id: "",
+    password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,13 +29,13 @@ const AdminLogin = () => {
 
     try {
       const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/admin/login",
+        "https://backend-wandering-river-6835.fly.dev/auth/admin/login",
         formData
       );
       alert("관리자 로그인 성공!");
       console.log("관리자 로그인 성공:", response.data);
-      console.log(response.data.token);
-      const token = response.data.accessToken;
+      console.log(response.data.access_token);
+      const token = response.data.access_token;
       localStorage.setItem("adminToken", token);
       navigate("/admin/index");
     } catch (err) {
@@ -60,24 +60,24 @@ const AdminLogin = () => {
           <div>
             <label htmlFor="adminId">아이디</label>
             <input
-              id="adminId"
-              name="adminId"
+              id="id"
+              name="id"
               type="text"
               placeholder="관리자 아이디"
-              value={formData.adminId}
+              value={formData.id}
               onChange={handleChange}
               required
               disabled={isLoading}
             />
           </div>
           <div>
-            <label htmlFor="adminPassword">비밀번호</label>
+            <label htmlFor="password">비밀번호</label>
             <input
-              id="adminPassword"
-              name="adminPassword"
+              id="password"
+              name="password"
               type="password"
               placeholder="관리자 비밀번호"
-              value={formData.adminPassword}
+              value={formData.password}
               onChange={handleChange}
               required
               disabled={isLoading}

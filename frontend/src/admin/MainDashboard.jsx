@@ -1,5 +1,5 @@
 import React from "react";
-import DashboardCard from "./DashboardCard"
+import DashboardCard from "./DashboardCard";
 // import SalesChart from "../components/SalesChart";
 // import GoalProgress from "../components/GoalProgress";
 
@@ -7,6 +7,7 @@ function MainDashboard() {
   return (
     <div>
       <h1>대시보드</h1>
+      <h5>대시보드는 해당 컴포넌트를 위한 별도의 API가 필요함</h5>
       <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
         <DashboardCard title="오늘 대여된 차량" value="64" />
         <DashboardCard title="대여 중인 차량" value="32" />

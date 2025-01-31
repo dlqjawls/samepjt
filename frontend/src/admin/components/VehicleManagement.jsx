@@ -1,4 +1,5 @@
 // src/components/VehicleManagement.jsx
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "./Modal";
@@ -7,7 +8,7 @@ import "./VehicleManagement.css";
 function VehicleManagement() {
   /**
    * 초기 더미 데이터 설정
-   * 디버깅 용으로 사용되며, API 연동 시 제거 예정입니다.
+   * 디버깅 용으로 사용되며, API 연동 시 제거 예정
    */
   const initialDummyData = [
     {
@@ -76,7 +77,7 @@ function VehicleManagement() {
   const [error, setError] = useState("");
 
   // API 베이스 URL 설정
-  const BASE_URL = "https://backend-wandering-river-6835.fly.dev"; // 실제 백엔드 API URL로 변경하세요
+  const BASE_URL = "https://backend-wandering-river-6835.fly.dev"; // 실제 백엔드 API URL로 변경
 
   // 관리자 인증 토큰 (필요 시 설정)
   const token = localStorage.getItem("adminToken"); // 토큰 저장 방식에 따라 수정
@@ -110,8 +111,8 @@ function VehicleManagement() {
           response.data.message || "차량 목록을 불러오는 데 실패했습니다."
         );
         /**
-         * API 호출 실패 시 더미 데이터를 사용합니다.
-         * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+         * API 호출 실패 시 더미 데이터를 사용
+         * 추후 API가 정상적으로 동작하면 이 부분을 제거
          */
         setVehicles(initialDummyData);
       }
@@ -127,8 +128,8 @@ function VehicleManagement() {
         setError("차량 목록을 불러오는 중 오류가 발생했습니다.");
       }
       /**
-       * API 호출 실패 시 더미 데이터를 사용합니다.
-       * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+       * API 호출 실패 시 더미 데이터를 사용
+       * 추후 API가 정상적으로 동작하면 이 부분을 제거
        */
       setVehicles(initialDummyData);
     } finally {
@@ -245,8 +246,8 @@ function VehicleManagement() {
 
   /**
    * CRUD 기능 API 연동
-   * 주석 처리된 부분을 사용하여 API와 연동할 수 있습니다.
-   * 현재는 더미 데이터를 사용하도록 설정되어 있습니다.
+   * 주석 처리된 부분을 사용하여 API와 연동할 수 있음
+   * 현재는 더미 데이터를 사용하도록 설정되어 있음
    */
 
   // 수정 저장 시 (더미 데이터 사용)
@@ -308,8 +309,8 @@ function VehicleManagement() {
         setError("차량 정보를 수정하는 중 오류가 발생했습니다.");
       }
       /**
-       * API 연동 실패 시 더미 데이터를 사용하도록 설정합니다.
-       * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+       * API 연동 실패 시 더미 데이터를 사용하도록 설정
+       * 추후 API가 정상적으로 동작하면 이 부분을 제거
        */
       setVehicles(initialDummyData);
     } finally {
@@ -427,8 +428,8 @@ function VehicleManagement() {
         setError("차량을 등록하는 중 오류가 발생했습니다.");
       }
       /**
-       * API 연동 실패 시 더미 데이터를 사용하도록 설정합니다.
-       * 추후 API가 정상적으로 동작하면 이 부분을 제거하세요.
+       * API 연동 실패 시 더미 데이터를 사용하도록 설정
+       * 추후 API가 정상적으로 동작하면 이 부분을 제거
        */
       setVehicles(initialDummyData);
     } finally {
@@ -441,25 +442,24 @@ function VehicleManagement() {
       <div className="vehicle-header">
         <h1>차량 관리</h1>
         <button className="add-button" onClick={handleAddClick}>
-          + 차량 등록
+          차량 등록
         </button>
       </div>
 
       {/* 필터링 섹션 */}
       <div className="filters">
-        <label>
-          상태:
-          <select
-            name="status"
-            value={filters.status}
-            onChange={handleFilterChange}
-          >
-            <option value="">전체</option>
-            <option value="active">활성화</option>
-            <option value="inactive">비활성화</option>
-            <option value="maintenance">정비 중</option>
-          </select>
-        </label>
+        <span>상태</span>
+
+        <select
+          name="status"
+          value={filters.status}
+          onChange={handleFilterChange}
+        >
+          <option value="">전체</option>
+          <option value="active">활성화</option>
+          <option value="inactive">비활성화</option>
+          <option value="maintenance">정비 중</option>
+        </select>
         <label>
           검색:
           <input
@@ -653,18 +653,22 @@ function VehicleManagement() {
           </form>
           <div className="modal-actions">
             {/* 더미 데이터 수정 저장 */}
-            {/* <button onClick={handleSaveEditDummy} className="save-button" disabled={loading}>
-              저장
-            </button> */}
-
-            {/* API 연동 수정 저장 */}
             <button
-              onClick={handleSaveEdit}
+              onClick={handleSaveEditDummy}
               className="save-button"
               disabled={loading}
             >
               저장
             </button>
+
+            {/* API 연동 수정 저장 */}
+            {/* <button
+              onClick={handleSaveEdit}
+              className="save-button"
+              disabled={loading}
+            >
+              저장
+            </button> */}
 
             <button onClick={closeEditModal} className="cancel-button">
               취소
@@ -680,18 +684,22 @@ function VehicleManagement() {
           <p>정말로 이 차량을 삭제하시겠습니까?</p>
           <div className="modal-actions">
             {/* 더미 데이터 삭제 */}
-            {/* <button onClick={handleConfirmDeleteDummy} className="confirm-delete-button" disabled={loading}>
-              삭제
-            </button> */}
-
-            {/* API 연동 삭제 */}
             <button
-              onClick={handleConfirmDelete}
+              onClick={handleConfirmDeleteDummy}
               className="confirm-delete-button"
               disabled={loading}
             >
               삭제
             </button>
+
+            {/* API 연동 삭제 */}
+            {/* <button
+              onClick={handleConfirmDelete}
+              className="confirm-delete-button"
+              disabled={loading}
+            >
+              삭제
+            </button> */}
 
             <button onClick={closeDeleteModal} className="cancel-button">
               취소
@@ -777,18 +785,22 @@ function VehicleManagement() {
           </form>
           <div className="modal-actions">
             {/* 더미 데이터 신규 등록 저장 */}
-            {/* <button onClick={handleSaveAddDummy} className="save-button" disabled={loading}>
-              등록
-            </button> */}
-
-            {/* API 연동 신규 등록 저장 */}
             <button
-              onClick={handleSaveAdd}
+              onClick={handleSaveAddDummy}
               className="save-button"
               disabled={loading}
             >
               등록
             </button>
+
+            {/* API 연동 신규 등록 저장 */}
+            {/* <button
+              onClick={handleSaveAdd}
+              className="save-button"
+              disabled={loading}
+            >
+              등록
+            </button> */}
 
             <button onClick={closeAddModal} className="cancel-button">
               취소

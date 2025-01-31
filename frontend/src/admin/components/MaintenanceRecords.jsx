@@ -1,4 +1,5 @@
 // src/components/MaintenanceRecords.jsx
+
 import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 import "./MaintenanceRecords.css";
@@ -74,7 +75,7 @@ function MaintenanceRecords() {
   const token = localStorage.getItem("adminToken"); // 토큰 저장 방식에 따라 수정
 
   // API 베이스 URL 설정
-  const BASE_URL = "https://backend-wandering-river-6835.fly.dev"; // 실제 백엔드 API URL로 변경하세요
+  const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
   /**
    * 정비 기록 목록 조회 함수
