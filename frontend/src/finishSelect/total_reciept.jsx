@@ -92,11 +92,12 @@ const Total_reciept = () => {
           },
         })
         console.log(rentData)
-
-        if (response.data.success) {
-          alert("결제가 완료되었습니다.")
+        console.log(response)
+        if (response.data.resultCode === "SUCCESS") {
+          const { rent_id, vehicle_number } = response.data.data
+          alert(`예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`)
           sessionStorage.removeItem("selectedOptionData")
-          navigate("/")
+          // navigate("/")
         }
       } catch (error) {
         console.error("결제 처리 중 오류:", error)
