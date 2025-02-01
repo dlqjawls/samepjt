@@ -31,7 +31,6 @@ const RentForm = () => {
     setError("")
     return true
   }
-
   const handleNext = () => {
     if (validateDates()) {
       sessionStorage.setItem(
@@ -44,7 +43,17 @@ const RentForm = () => {
       navigate("/total_reciept")
     }
   }
+  const preview = () => {
+    // sessionStorage에서 기존 선택했던 옵션 데이터 가져오기
+    const selectedOptionData = JSON.parse(sessionStorage.getItem("selectedOptionData") || "{}")
 
+    // 옵션 선택 페이지로 이동하면서 기존 데이터 전달
+    navigate("/option_select", {
+      state: {
+        existingOptions: selectedOptionData.selectedOptions || [],
+      },
+    })
+  }
   const handleReset = () => {
     setRentStartDate("")
     setRentEndDate("")
@@ -85,6 +94,9 @@ const RentForm = () => {
         </div>
 
         <div className="button-group">
+          <button type="button" onClick={preview} className="reset-button">
+            이전으로
+          </button>
           <button type="button" className="reset-button" onClick={handleReset}>
             다시 입력
           </button>

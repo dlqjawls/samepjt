@@ -68,20 +68,22 @@ const ExistOptionsPage = () => {
 
         allOptionTypes = [...allOptionTypes, ...response.data.data.optionTypes]
       }
+      const existingOptions = location.state?.existingOptions || []
+      const moduleOptions = location.state?.selectedModule?.moduleSetOptionTypes || []
+      const selectedOptionData = existingOptions.length > 0 ? existingOptions : moduleOptions
 
-      const selectedOptionData = location.state?.selectedModule?.moduleSetOptionTypes || []
+      const completeSelectedOptions = selectedOptionData
+        .map((selectedItem) => {
+          const fullOptionDetails = allOptionTypes.find((option) => option.optionTypeId === selectedItem.optionTypeId)
 
-      const completeSelectedOptions = selectedOptionData.map((selectedItem) => {
-        const fullOptionDetails = allOptionTypes.find((option) => option.optionTypeId === selectedItem.optionTypeId)
-
-        return {
-          ...fullOptionDetails,
-          quantity: selectedItem.quantity || 1,
-        }
-      })
+          return {
+            ...fullOptionDetails,
+            quantity: selectedItem.quantity || 1,
+          }
+        })
+        .filter(Boolean)
 
       const completeUnselectedOptions = allOptionTypes.filter((option) => !completeSelectedOptions.some((selected) => selected.optionTypeId === option.optionTypeId))
-
       setSelectedOptions(completeSelectedOptions)
       setAllOptions(allOptionTypes)
       setUnselectedOptions(completeUnselectedOptions)
