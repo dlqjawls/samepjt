@@ -1,5 +1,5 @@
 .admin-login-overlay {
-  margin-top: 5%;
+  margin-top: 10%;
   position: fixed;
   width: 100%;
   display: flex;
@@ -53,28 +53,45 @@ h2 {
   text-align: center;
 }
 
-/* 입력 필드 스타일 */
-input {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
+.input-group {
+  position: relative;
   margin-bottom: 16px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 16px;
   border: 1px solid #cccccc;
   border-radius: 6px;
   font-size: 14px;
-  color: #000000;
+  color: #000;
   background-color: #ffffff;
-  box-sizing: border-box; /* 패딩과 테두리 포함하여 너비가 맞도록 설정 */
+  box-sizing: border-box;
 }
 
-input::placeholder {
-  color: #999999;
+.input-group input::placeholder {
+  color: transparent; /* 기본 placeholder 텍스트 숨김 */
 }
 
-input:focus {
-  outline: 1px;
-  border-color: #007bff; /* 포커스 시 파란색 테두리 */
-  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+.floating-label {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  font-size: 14px;
+  color: #999;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* 포커스 또는 값이 있을 때 라벨 이동 및 크기 축소 */
+.input-group input:focus + .floating-label,
+.input-group input:not(:placeholder-shown) + .floating-label {
+  top: -8px;
+  left: 12px;
+  font-size: 12px;
+  color: #007bff;
+  background: #fff;
+  padding: 0 4px;
 }
 
 /* 로그인 버튼 스타일 */

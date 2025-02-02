@@ -11,24 +11,41 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .modal-content {
   background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 800px; /* 넓이를 늘려 더 많은 내용을 표시할 수 있도록 조정 */
-  max-height: 80vh; /* 뷰포트 높이의 80%로 제한 */
+  width: 100%;
+  max-width: 800px;
+  max-height: 80vh;
   position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 가능 */
+  overflow-y: auto;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeInScale 0.1s ease-out;
 }
 
-.close-button {
+.modal-body {
+  padding: 24px;
+}
+
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-close-button {
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 12px;
+  right: 12px;
   background: none;
   border: none;
   font-size: 24px;
@@ -39,4 +56,19 @@
   width: 100px;
   height: auto;
   margin-bottom: 10px;
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-overlay {
+  backdrop-filter: blur(2px);
 }

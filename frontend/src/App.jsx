@@ -1,24 +1,31 @@
 // import "./App.css"
 
-import React, { useState } from "react"
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
-import Home from "./main/Home"
-import SignupPage from "./SignupPage"
-import RegistrationForm from "./RegistrationForm"
-import ModuleSetList from "./ModuleSetList"
-import AdminLogin from "./admin/Login"
-import AdminLayout from "./admin/AdminLayout"
-import MainDashboard from "./admin/MainDashboard"
-import ExistOptionsPage from "./optionSelect/option_Select"
-import Navbar from "./common/navigationBar"
-import VehicleManagement from "./admin/components/VehicleManagement"
-import ModuleManagement from "./admin/components/ModuleManagement"
-import OptionManagement from "./admin/components/OptionManagement"
-import RentalRecords from "./admin/components/RentalRecords"
-import MaintenanceRecords from "./admin/components/MaintenanceRecords"
-import RentForm from "./rentForm/rentForm"
-import Total_reciept from "./finishSelect/total_reciept"
-import UserLayout from "./user/userLayout"
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Home from "./main/Home";
+import SignupPage from "./SignupPage";
+import RegistrationForm from "./RegistrationForm";
+import ModuleSetList from "./ModuleSetList";
+import AdminLogin from "./admin/Login";
+import AdminLayout from "./admin/AdminLayout";
+import MainDashboard from "./admin/MainDashboard";
+import ExistOptionsPage from "./optionSelect/option_Select";
+import Navbar from "./common/navigationBar";
+import VehicleManagement from "./admin/components/VehicleManagement";
+import ModuleManagement from "./admin/components/ModuleManagement";
+import OptionManagement from "./admin/components/OptionManagement";
+import RentalRecords from "./admin/components/RentalRecords";
+import MaintenanceRecords from "./admin/components/MaintenanceRecords";
+import RentForm from "./rentForm/rentForm";
+import Total_reciept from "./finishSelect/total_reciept";
+import UserLayout from "./user/userLayout";
+
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -50,8 +57,20 @@ function App() {
         {/* 기타 라우트 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* ToastContainer - 앱 전역에서 생성된 토스트 알림들이 이 컨테이너에서 렌더링된다. */}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover={false}
+      />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
