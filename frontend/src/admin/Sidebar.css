@@ -15,10 +15,22 @@
   overflow-y: auto; /* 메뉴가 많을 경우 스크롤 가능하게 함 */
 }
 
-.sidebar-logo img {
-  width: 80%;
-  padding: 30px 20px;
-  transition: width 0.3s ease, padding 0.3s ease;
+.sidebar-logo {
+  padding: 50px 20px;
+  /* 기본 배경 이미지: moducarLogo */
+  background: url("../assets/moducar_logo.svg") no-repeat center;
+  background-size: 75%;
+  transition: background-image 0.3s ease, padding 0.3s ease;
+}
+
+/* 미디어 쿼리: 화면 너비가 1024px 이하인 경우 */
+@media (max-width: 1024px) {
+  .sidebar-logo {
+    padding: 30px 15px;
+    /* 배경 이미지를 blueCar로 변경 */
+    background: url("../assets/blue_car.svg") no-repeat center;
+    background-size: 40%;
+  }
 }
 
 .sidebar-menu ul {
@@ -144,22 +156,22 @@
 }
 
 /* Webkit 기반 브라우저용 스크롤바 스타일링 */
-.sidebar::-webkit-scrollbar {
+.sidebar-menu::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-.sidebar::-webkit-scrollbar-track {
+.sidebar-menu::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.sidebar::-webkit-scrollbar-thumb {
+.sidebar-menu::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 4px;
   border: 2px solid #f1f1f1;
 }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }

@@ -3,7 +3,7 @@
 import React from "react";
 import "./Modal.css";
 
-function Modal({ isOpen, onClose, children }) {
+function Modal({ isOpen, onClose, children, title }) {
   if (!isOpen) return null;
 
   return (
@@ -15,7 +15,8 @@ function Modal({ isOpen, onClose, children }) {
         <button className="modal-close-button" onClick={onClose}>
           ✕
         </button>
-        {children}
+        {title && <div className="modal-header">{title}</div>}
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   );

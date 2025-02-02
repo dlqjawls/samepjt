@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import moducar_logo from "../assets/moducar_logo.svg";
+import { toast } from "react-toastify";
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -32,17 +33,18 @@ const AdminLogin = () => {
         "https://backend-wandering-river-6835.fly.dev/auth/admin/login",
         formData
       );
-      alert("관리자 로그인 성공!");
+      toast.success("관리자 로그인 성공");
       console.log("관리자 로그인 성공:", response.data);
-      console.log(response.data.access_token);
       const token = response.data.access_token;
+      console.log(token);
       localStorage.setItem("adminToken", token);
       navigate("/admin/index");
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
-      );
+      // setError(
+      //   err.response?.data?.message ||
+      //     "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
+      // );
+      toast.error("로그인 정보가 잘못되었습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -57,40 +59,36 @@ const AdminLogin = () => {
         </h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="adminId">아이디</label>
+          <div className="input-group">
+            <label htmlFor="adminId"></label>
             <input
               id="id"
               name="id"
               type="text"
-              placeholder="관리자 아이디"
+              placeholder=""
               value={formData.id}
               onChange={handleChange}
               required
               disabled={isLoading}
             />
+            <span className="floating-label">관리자 아이디</span>
           </div>
-          <div>
-            <label htmlFor="password">비밀번호</label>
+          <div className="input-group">
+            <label htmlFor="password"></label>
             <input
               id="password"
               name="password"
               type="password"
-              placeholder="관리자 비밀번호"
+              placeholder=""
               value={formData.password}
               onChange={handleChange}
               required
               disabled={isLoading}
             />
+            <span className="floating-label">관리자 비밀번호</span>
           </div>
           <button type="submit" disabled={isLoading}>
-            {isLoading ? "로그인 중..." : "로그인"}
-          </button>
-          <button
-            type="button"
-            onClick={() => (window.location.href = "/admin")}
-          >
-            디버깅: 관리자 페이지로 이동
+            {isLoading ? "로그인" : "로그인"}
           </button>
         </form>
       </div>

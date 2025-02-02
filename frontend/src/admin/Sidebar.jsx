@@ -12,7 +12,8 @@ import { MdEventNote } from "react-icons/md";
 import { IoSettingsSharp } from "react-icons/io5";
 import "./Sidebar.css";
 import moducarLogo from "../assets/moducar_logo.svg";
-import SettingsModal from "./SettingsModal"; // SettingsModal 컴포넌트 임포트
+import blueCar from "../assets/blue_car.svg";
+import SettingsModal from "./SettingsModal";
 
 function Sidebar() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -27,9 +28,7 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">
-        <img src={moducarLogo} alt="Moducar Logo" />
-      </div>
+      <div className="sidebar-logo"></div>
 
       <nav className="sidebar-menu">
         <ul>
