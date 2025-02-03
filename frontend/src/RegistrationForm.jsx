@@ -94,129 +94,95 @@ const RegistrationForm = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-        <h2 className="mb-6 text-center text-2xl font-bold">회원가입</h2>
+    <div className="registration-container">
+      <div className="registration-form">
+        <h2 className="form-title">회원가입</h2>
         {successMessage && (
-          <div className="mb-4 rounded bg-green-100 p-3 text-green-700">
-            {successMessage}
-          </div>
+          <div className="success-message">{successMessage}</div>
         )}
         {apiError && (
-          <div className="mb-4 rounded bg-red-100 p-3 text-red-700">
-            {apiError}
-          </div>
+          <div className="error-message">{apiError}</div>
         )}
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="mb-2 block">아이디</label>
-            <input
-              type="text"
-              name="id"
-              value={formData.id}
-              onChange={handleChange}
-              className={`w-full rounded border p-2 ${
-                errors.id ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.id && (
-              <p className="mt-1 text-sm text-red-500">{errors.id}</p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="mb-2 block">비밀번호</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full rounded border p-2 ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="mb-2 block">이메일</label>
+          <div className="form-group">
+            <label>이메일</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full rounded border p-2 ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              }`}
+              className={errors.email ? "input-error" : ""}
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-            )}
+            {errors.email && <p className="error">{errors.email}</p>}
           </div>
 
-          <div className="mb-4">
-            <label className="mb-2 block">이름</label>
+          <div className="form-group">
+            <label>이름</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={`w-full rounded border p-2 ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              }`}
+              className={errors.name ? "input-error" : ""}
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name}</p>
-            )}
+            {errors.name && <p className="error">{errors.name}</p>}
           </div>
 
-          <div className="mb-4">
-            <label className="mb-2 block">전화번호</label>
+          <div className="form-group">
+            <label>전화번호</label>
             <input
               type="tel"
-              name="phoneNum"
-              value={formData.phoneNum}
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
-              placeholder="010-0000-0000"
-              className={`w-full rounded border p-2 ${
-                errors.phoneNum ? "border-red-500" : "border-gray-300"
-              }`}
+              className={errors.phone ? "input-error" : ""}
             />
-            {errors.phoneNum && (
-              <p className="mt-1 text-sm text-red-500">{errors.phoneNum}</p>
+            {errors.phone && <p className="error">{errors.phone}</p>}
+          </div>
+
+          <div className="form-group">
+            <label>비밀번호</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={errors.password ? "input-error" : ""}
+            />
+            {errors.password && <p className="error">{errors.password}</p>}
+          </div>
+
+          <div className="form-group">
+            <label>비밀번호 확인</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={errors.confirmPassword ? "input-error" : ""}
+            />
+            {errors.confirmPassword && (
+              <p className="error">{errors.confirmPassword}</p>
             )}
           </div>
 
-          <div className="mb-6">
-            <label className="mb-2 block">주소</label>
+          <div className="form-group">
+            <label>주소</label>
             <input
               type="text"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className={`w-full rounded border p-2 ${
-                errors.address ? "border-red-500" : "border-gray-300"
-              }`}
+              className={errors.address ? "input-error" : ""}
             />
-            {errors.address && (
-              <p className="mt-1 text-sm text-red-500">{errors.address}</p>
-            )}
+            {errors.address && <p className="error">{errors.address}</p>}
           </div>
 
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            >
+          <div className="button-group">
+            <button type="submit" className="rf-submit-button">
               회원가입
             </button>
-            <button
-              type="button"
-              onClick={home}
-              className="w-full rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-            >
+            <button type="button" onClick={home} className="rf-cancel-button">
               취소
             </button>
           </div>
@@ -224,6 +190,7 @@ const RegistrationForm = () => {
       </div>
     </div>
   );
+
 };
 
 export default RegistrationForm;

@@ -1,31 +1,31 @@
 /* 모달 오버레이 */
-.modal-overlay {
+.lm-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px; /* 화면 가장자리에 간격을 주어 모달이 화면에 꽉 차지 않도록 */
+  padding: 20px;
 }
 
 /* 모달 콘텐츠 */
-.modal-content {
-  background-color: #ffffff; /* 모달 배경 색 */
-  color: #000000; /* 텍스트 색 */
-  border-radius: 8px; /* 모서리 둥글게 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+.lm-content {
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   padding: 24px;
   width: 100%;
-  max-width: 450px; /* 모달 최대 너비 설정 */
+  max-width: 450px;
   position: relative;
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
+  overflow-y: auto;
   align-content: center;
 }
 
 /* 닫기 버튼 */
-.close-button {
+.lm-close-button {
   background: none;
   border: none;
   font-size: 20px;
@@ -36,12 +36,12 @@
   right: 12px;
 }
 
-.close-button:hover {
-  color: #333333; /* 호버 시 색상 변화 */
+.lm-close-button:hover {
+  color: #333333;
 }
 
 /* 제목 스타일 */
-h2 {
+.lm-title {
   font-size: 26px;
   font-weight: 600;
   text-align: center;
@@ -49,13 +49,14 @@ h2 {
   color: #333333;
 }
 
-.modal-regist {
+.lm-regist {
   align-content: center;
   text-align: center;
   justify-content: center;
 }
+
 /* 오류 메시지 */
-.error-message {
+.lm-error-message {
   background-color: #ffecec;
   color: #ff4d4d;
   border: 1px solid #ff9999;
@@ -67,7 +68,7 @@ h2 {
 }
 
 /* 입력 필드 스타일 */
-.input {
+.lm-input {
   width: 100%;
   padding: 12px;
   margin-top: 8px;
@@ -77,21 +78,21 @@ h2 {
   font-size: 14px;
   color: #000000;
   background-color: #ffffff;
-  box-sizing: border-box; /* 패딩과 테두리 포함하여 너비가 맞도록 설정 */
+  box-sizing: border-box;
 }
 
-.input::placeholder {
+.lm-input::placeholder {
   color: #999999;
 }
 
-.input:focus {
+.lm-input:focus {
   outline: 1px;
-  border-color: #007bff; /* 포커스 시 파란색 테두리 */
+  border-color: #007bff;
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
 }
 
 /* 로그인 버튼 스타일 */
-.submit-button {
+.lm-submit-button {
   width: 100%;
   padding: 14px;
   background-color: #007bff;
@@ -104,29 +105,29 @@ h2 {
   margin-top: 16px;
 }
 
-.submit-button:hover {
+.lm-submit-button:hover {
   background-color: #0056b3;
 }
 
-.submit-button:disabled {
+.lm-submit-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-/* 회원가입 링크 스타일 */
-.register-button {
+/* 회원가입 버튼 스타일 */
+.lm-register-button {
   color: #007bff;
   font-size: 14px;
   text-align: center;
 }
 
-.register-button:hover {
+.lm-register-button:hover {
   text-decoration: underline;
   color: #0056b3;
 }
 
 /* 폼 레이블 */
-.label {
+.lm-label {
   font-size: 14px;
   font-weight: 500;
   color: #333333;
