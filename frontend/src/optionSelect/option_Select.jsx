@@ -7,8 +7,8 @@ const OptionDetailsModal = ({ option, onClose }) => {
   if (!option) return null
 
   return (
-    <div className="modal-backdrop">
-      <div className="modal-content">
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>
           ×
         </button>
@@ -43,6 +43,7 @@ const ExistOptionsPage = () => {
   const [selectedOptionDetails, setSelectedOptionDetails] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [activeTab, setActiveTab] = useState("selected")
 
   const fetchCompleteOptionData = async () => {
     setLoading(true)
@@ -115,16 +116,30 @@ const ExistOptionsPage = () => {
   const updateQuantity = (optionId, change) => {
     const updatedOptions = selectedOptions.map((option) => {
       if (option.optionTypeId === optionId) {
+        const newQuantity = Math.max(0, (option.quantity || 0) + change);
         return {
           ...option,
-          quantity: Math.max(0, (option.quantity || 0) + change),
-        }
+          quantity: newQuantity,
+        };
       }
-      return option
-    })
+      return option;
+    });
+  
+    const optionToMove = updatedOptions.find(
+      (option) => option.optionTypeId === optionId && option.quantity === 0
+    );
 
-    setSelectedOptions(updatedOptions)
-  }
+    if (optionToMove) {
+      const filteredOptions = updatedOptions.filter(
+        (option) => option.optionTypeId !== optionId
+      );
+      setSelectedOptions(filteredOptions);
+      setUnselectedOptions([...unselectedOptions, {...optionToMove, quantity: 1}]);
+    } else {
+      
+      setSelectedOptions(updatedOptions);
+    }
+  };
 
   const goToPreviousPage = () => {
     navigate("/ModuleSetList")
@@ -146,63 +161,79 @@ const ExistOptionsPage = () => {
 
   return (
     <div className="custom-container">
-      {selectedOptionDetails && <OptionDetailsModal option={selectedOptionDetails} onClose={() => setSelectedOptionDetails(null)} />}
-
-      <div className="options-section">
-        <h2>선택된 옵션</h2>
-        <div className="custom-grid">
-          {selectedOptions.map((option) => (
-            <div key={option.optionTypeId} className="custom-row">
-              <div className="custom-info">
-                <img src={option.imgUrls[0]} alt={option.optionTypeName} className="custom-image" />
-                <div className="custom-details">
-                  <h3>{option.optionTypeName}</h3>
-                  <p>{option.description}</p>
-                </div>
-              </div>
-              <div className="custom-actions">
-                <button onClick={() => setSelectedOptionDetails(option)}>상세 정보</button>
-                <div className="quantity-control">
-                  <button onClick={() => updateQuantity(option.optionTypeId, -1)}>-</button>
-                  <span>{option.quantity}</span>
-                  <button onClick={() => updateQuantity(option.optionTypeId, 1)}>+</button>
-                </div>
-                <button onClick={() => removeOptionFromSelected(option)}>제거</button>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="vehicle-image">
+        <img src="./pbvcarsi.gif" alt="Vehicle" />
       </div>
 
-      <div className="options-section">
-        <h2>미선택 옵션</h2>
-        <div className="custom-grid">
-          {unselectedOptions.map((option) => (
-            <div key={option.optionTypeId} className="custom-row">
-              <div className="custom-info">
-                <img src={option.imgUrls[0]} alt={option.optionTypeName} className="custom-image" />
-                <div className="custom-details">
-                  <h3>{option.optionTypeName}</h3>
-                  <p>{option.description}</p>
-                  <p>가격: {option.optionTypeCost}원</p>
-                </div>
-              </div>
-              <div className="custom-actions">
-                <button onClick={() => setSelectedOptionDetails(option)}>상세 정보</button>
-                <button onClick={() => addOptionToSelected(option)}>추가</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <div className="option-select-container">
+        {selectedOptionDetails && <OptionDetailsModal option={selectedOptionDetails} onClose={() => setSelectedOptionDetails(null)} />}
 
-      <div className="navigation-buttons">
-        <button onClick={goToPreviousPage} className="custom-next-button">
-          이전 페이지로 돌아가기
-        </button>
-        <button onClick={goToNextPage} className="custom-next-button">
-          다음 페이지로 이동하기
-        </button>
+        <div className="tabs">
+          <div className={`tab ${activeTab === "selected" ? "active" : ""}`} onClick={() => setActiveTab("selected")}>
+            선택된 옵션
+          </div>
+          <div className={`tab ${activeTab === "unselected" ? "active" : ""}`} onClick={() => setActiveTab("unselected")}>
+            미선택 옵션
+          </div>
+        </div>
+
+        {activeTab === "selected" && (
+          <div className="options-section">
+            
+            <div className="custom-grid">
+              {selectedOptions.map((option) => (
+                <div key={option.optionTypeId} className="custom-card" onClick={() => setSelectedOptionDetails(option)}>
+                  <div className="custom-info">
+                    <img src={option.imgUrls[0]} alt={option.optionTypeName} className="custom-image" />
+                    <div className="custom-details">
+                      <h3>{option.optionTypeName}</h3>
+                      <p>{option.description}</p>
+                    </div>
+                  </div>
+                  <div className="custom-actions">
+                    <div className="quantity-control">
+                      <button onClick={(e) => { e.stopPropagation(); updateQuantity(option.optionTypeId, -1); }}>-</button>
+                      <span>{option.quantity}</span>
+                      <button onClick={(e) => { e.stopPropagation(); updateQuantity(option.optionTypeId, 1); }}>+</button>
+                    </div>
+                    <button className="custom-button" onClick={(e) => { e.stopPropagation(); removeOptionFromSelected(option); }}>제거</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "unselected" && (
+          <div className="options-section"> 
+            <div className="custom-grid">
+              {unselectedOptions.map((option) => (
+                <div key={option.optionTypeId} className="custom-card" onClick={() => setSelectedOptionDetails(option)}>
+                  <div className="custom-info">
+                    <img src={option.imgUrls[0]} alt={option.optionTypeName} className="custom-image" />
+                    <div className="custom-details">
+                      <h3>{option.optionTypeName}</h3>
+                      <p>{option.description}</p>
+                      <p>가격: {option.optionTypeCost}원</p>
+                    </div>
+                  </div>
+                  <div className="custom-actions-plus">
+                    <button className="custom-button" onClick={(e) => { e.stopPropagation(); addOptionToSelected(option); }}>추가</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="navigation-buttons">
+          <button onClick={goToPreviousPage} className="custom-next-button">
+            이전 페이지로 돌아가기
+          </button>
+          <button onClick={goToNextPage} className="custom-next-button">
+            다음 페이지로 이동하기
+          </button>
+        </div>
       </div>
     </div>
   )
