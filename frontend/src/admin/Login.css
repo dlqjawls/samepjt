@@ -95,7 +95,7 @@ h2 {
 }
 
 /* 로그인 버튼 스타일 */
-button[type="submit"] {
+.admin-login-content button[type="submit"] {
   width: 100%;
   padding: 14px;
   background-color: #239edb;
@@ -109,11 +109,11 @@ button[type="submit"] {
   margin-top: 16px;
 }
 
-button[type="submit"]:hover {
+.admin-login-content button[type="submit"]:hover {
   background-color: #007bff;
 }
 
-button[type="submit"]:disabled {
+.admin-login-content button[type="submit"]:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }

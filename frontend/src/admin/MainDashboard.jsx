@@ -1,7 +1,6 @@
 import React from "react";
 import DashboardCard from "./DashboardCard";
-// import SalesChart from "../components/SalesChart";
-// import GoalProgress from "../components/GoalProgress";
+import "./MainDashboard.css";
 
 function MainDashboard() {
   return (
