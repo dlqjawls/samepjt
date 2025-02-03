@@ -7,6 +7,106 @@ from app.core.jwt import JWTPayload, jwt_handler
 
 router = APIRouter()
 
+@router.get(
+    "/rent/{rent_id}",
+    response_model=rent_schema.RentStatusResponse,
+    summary="🚗 차량 렌트 상태 조회",
+    description="""
+    사용자가 **진행 중인 차량 렌트 상태를 조회**하는 API입니다.
+    
+    - 렌트 ID(`rent_id`)를 통해 특정 차량의 상태를 조회합니다.
+    - 현재 위치, 목적지, 이동 경로, 상태 정보를 제공합니다.
+    - 이미 취소되었거나 완료된 렌트는 조회할 수 없습니다.
+    """,
+    responses={
+        200: {
+            "description": "✅ 차량 상태 조회 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Rent status retrieved successfully",
+                        "data": {
+                            "rent_id": 123,
+                            "vehicle_number": "서울 12가 3456",
+                            "current_status": "in_progress",
+                            "current_location": { "lat": 37.5665, "lng": 126.9780 },
+                            "destination": { "lat": 37.579617, "lng": 126.977041 },
+                            "route_path": [
+                                { "lat": 37.5665, "lng": 126.9780 },
+                                { "lat": 37.5701, "lng": 126.9795 },
+                                { "lat": 37.5745, "lng": 126.9813 }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        401: {
+            "description": "❌ 인증 실패",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Authentication required",
+                        "error_code": "UNAUTHORIZED"
+                    }
+                }
+            }
+        },
+        403: {
+            "description": "🚫 권한 없음",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "You do not have permission to access this rent",
+                        "error_code": "FORBIDDEN"
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "❓ 렌트 기록 없음",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Rent not found",
+                        "error_code": "NOT_FOUND",
+                        "detail": {
+                            "rent_id": 123
+                        }
+                    }
+                }
+            }
+        },
+        409: {
+            "description": "⚠️ 상태 충돌",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Rent has already been completed or canceled",
+                        "error_code": "CONFLICT",
+                        "detail": {
+                            "rent_id": 123,
+                            "current_status": "completed"
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+async def get_rent_status(
+    rent_id: int = Path(..., description="🔍 조회할 렌트 ID (1 이상)", gt=0),
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency())
+) -> rent_schema.RentStatusResponse:
+    """차량 렌트 상태 조회 엔드포인트"""
+    return RentService.get_rent_status(session, rent_id, token_data.user_pk)
+  
 @router.post(
     "/rent",
     response_model=rent_schema.RentResponse,
@@ -263,3 +363,4 @@ async def soft_delete_rent(
 ):
     rent_result = RentService.cancel_rent(session, rent_id, token_data.user_pk)
     return rent_result
+
