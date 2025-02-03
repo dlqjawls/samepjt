@@ -1,7 +1,6 @@
 @font-face {
-  font-family: "LINESedKR";
-  font-weight: normal;
-  src: url("./assets/font/LINESeed/3Bold.otf") format("truetype");
+  font-family: "Pretendard";
+  src: url("./assets/font/Pretendard/600SemiBold.otf") format("truetype");
 }
 
 body,
@@ -11,7 +10,7 @@ html {
   height: 100%;
   display: flex;
   flex-direction: column;
-  font-family: "LINESedKR";
+  font-family: "Pretendard";
 }
 
 .layout {
@@ -25,7 +24,7 @@ html {
 }
 
 footer {
-  font-family: "LINESedKR";
+  font-family: "Pretendard";
   background-color: #222;
   color: #fff;
   text-align: center;
