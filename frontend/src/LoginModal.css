@@ -49,11 +49,7 @@
   color: #333333;
 }
 
-.lm-regist {
-  align-content: center;
-  text-align: center;
-  justify-content: center;
-}
+
 
 /* 오류 메시지 */
 .lm-error-message {
@@ -91,45 +87,66 @@
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
 }
 
-/* 로그인 버튼 스타일 */
-.lm-submit-button {
+
+.lm-submit-button, .lm-register-button {
   width: 100%;
   padding: 14px;
-  background-color: #007bff;
-  color: #ffffff;
-  border: none;
   border-radius: 6px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  box-sizing: border-box;  /* 추가: border를 포함한 크기 계산 */
+  height: 48px;  /* 추가: 명시적 높이 설정 */
+}
+
+.lm-submit-button {
+  background-color: #cccccc;  /* 비활성화 색상 */
+  color: #ffffff;
+  border: none;
   margin-top: 16px;
+  transition: background-color 0.4s ease;
+}
+.lm-submit-button.active {
+  background-color: black;  /* 활성화 색상 */
+}
+
+.lm-register-button {
+  background-color: #ffffff;
+  color: black;
+  border: 0.1px solid #cccccc;
+  margin-top: 10px;
+  transition: background-color 0.4s ease;
 }
 
 .lm-submit-button:hover {
-  background-color: #0056b3;
+  background-color: rgb(16, 15, 15);
 }
 
-.lm-submit-button:disabled {
+/* 비활성화된 버튼 호버 효과 제거 */
+.lm-submit-button:disabled:hover {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-/* 회원가입 버튼 스타일 */
-.lm-register-button {
-  color: #007bff;
-  font-size: 14px;
-  text-align: center;
+/* active 클래스가 있을 때만 호버 효과 적용 */
+.lm-submit-button.active:hover:not(:disabled) {
+  background-color: rgb(42, 37, 37);
 }
-
 .lm-register-button:hover {
-  text-decoration: underline;
-  color: #0056b3;
-}
 
+ background-color: rgb(219, 219, 219);
+}
 /* 폼 레이블 */
 .lm-label {
   font-size: 14px;
   font-weight: 500;
   color: #333333;
   margin-bottom: 8px;
+}
+
+.lm-button-container{
+  display: flex;
+  /* justify-content: space-between; */
+  /* align-items: center; */
+  flex-direction: column;
 }

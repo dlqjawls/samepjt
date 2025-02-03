@@ -40,18 +40,21 @@
 }
 
 .navbar-login .login-button {
-  background-color: #1e90ff;
+  background-color: black;
   color: white;
   border: none;
   border-radius: 20px;
   padding: 8px 20px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .navbar-login .login-button:hover {
-  background-color: #187bcd;
+  background-color: rgb(133, 133, 133);
+  
+  
 }
 
 .hide-button {
