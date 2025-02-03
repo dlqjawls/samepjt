@@ -31,7 +31,6 @@ const LoginModal = ({ onClose }) => {
 
     try {
       const response = await axios.post("https://backend-wandering-river-6835.fly.dev/auth/login", formData)
-      // .finally((response) => { console.log(response); return response; })
       alert("로그인 성공!")
       console.log("로그인 성공:", response.data)
       console.log(response.data.data.access_token)
@@ -39,7 +38,6 @@ const LoginModal = ({ onClose }) => {
       sessionStorage.setItem("token", token)
       onClose()
     } catch (err) {
-     
       setError(err.response?.data?.message || "로그인 중 오류가 발생했습니다. 다시 시도해 주세요.")
     } finally {
       setIsLoading(false)
@@ -47,19 +45,19 @@ const LoginModal = ({ onClose }) => {
   }
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button onClick={onClose} className="close-button">
+    <div className="lm-overlay">
+      <div className="lm-content">
+        <button onClick={onClose} className="lm-close-button">
           ✕
         </button>
 
-        <h2>로그인</h2>
+        <h2 className="lm-title">로그인</h2>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="lm-error-message">{"계정을 확인해 주세요"}</div>}
 
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="id" className="label">아이디</label>
+            <label htmlFor="id" className="lm-label">아이디</label>
             <input
               id="id"
               name="id"
@@ -69,12 +67,12 @@ const LoginModal = ({ onClose }) => {
               onChange={handleChange}
               required
               disabled={isLoading}
-              className="input"
+              className="lm-input"
             />
           </div>
 
           <div>
-            <label htmlFor="userPassword" className="label">비밀번호</label>
+            <label htmlFor="userPassword" className="lm-label">비밀번호</label>
             <input
               id="password"
               name="password"
@@ -84,18 +82,18 @@ const LoginModal = ({ onClose }) => {
               onChange={handleChange}
               required
               disabled={isLoading}
-              className="input"
+              className="lm-input"
             />
           </div>
 
-          <button type="submit" disabled={isLoading} className="submit-button">
+          <button type="submit" disabled={isLoading} className="lm-submit-button">
             {isLoading ? "로그인 중..." : "로그인"}
           </button>
 
-          <div className="modal-regist">
+          <div className="lm-regist">
             계정이 없으신가요?
             <div>
-              <button onClick={resist} className="register-button">회원가입</button>
+              <button onClick={resist} className="lm-register-button">회원가입</button>
             </div>
           </div>
         </form>
