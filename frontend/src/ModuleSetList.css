@@ -1,32 +1,9 @@
 /* 전체 레이아웃 */
-.module-list-layout {
-  display: flex; /* 자식 요소를 가로로 나열 */
-  gap: 20px; /* 자식 요소 간의 간격을 20px로 설정 */
-  padding: 20px; /* 레이아웃 내부에 여백 추가 */
-}
-
-/* 왼쪽 : 모듈 세트 목록 */
 .module-list {
-  flex: 1.5; /* 너비 비율을 1*/
   max-width: 35%; /* 너비 35% 제한 */
   max-height: 80vh; /* 세로 80% 제한 */
   overflow-y: auto; /* 수직 스크롤 */
   padding-right: 10px; /* 스크롤바와 내용 사이에 10px 여백 추가 */
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f0f0f0; 
-}
-
-.module-list::-webkit-scrollbar {
-  width: 8px; /* 스크롤바의 너비를 8px로 설정 (Chrome, Edge, Safari 전용) */
-}
-
-.module-list::-webkit-scrollbar-track {
-  background: #f0f0f0; /* 스크롤바 트랙 배경색 */
-}
-
-.module-list::-webkit-scrollbar-thumb {
-  background-color: #888; /* 스크롤바의 색상을 #888로 설정 */
-  border-radius: 4px; /* 스크롤바 모서리를 둥글게 설정 */
 }
 
 .module-list h2 {
@@ -61,7 +38,6 @@
 }
 
 .module-card-content h3 {
-  font-size: 1.2rem; /* 제목 글씨 크기를 1.2rem로 설정 */
   margin: 0 0 10px 0; /* 제목 하단에 10px 간격 추가 */
 }
 
@@ -70,55 +46,80 @@
   color: #666; /* 텍스트 색상을 연한 회색으로 설정 */
 }
 
-/* 오른쪽: 선택된 모듈 UI */
-.module-sliding {
-  flex: 2; 
-  max-width: 60%; /* 너비 60% 제한 */
-  border: 1px solid #ddd;
-  border-radius: 8px;
+/* 모달 오버레이 */
+.module-set-card-modal-overlay {
+  position: fixed; /* 화면 고정 */
+  top: 0;
+  left: 0;
+  width: 100vw; /* 화면 너비 100% */
+  height: 100vh; /* 화면 높이 100% */
+  background-color: rgba(0, 0, 0, 0.5); /* 배경을 반투명 검정색으로 설정 */
+  display: flex; /* 내용을 가운데 정렬 */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 다른 요소들보다 위에 표시 */
+}
+
+/* 모달 콘텐츠 */
+.module-set-card-modal-content {
+  position: relative;
+  width: 80%; /* 너비 80% */
+  max-width: 800px; /* 최대 너비 800px */
+  background-color: #fff; /* 배경색을 흰색으로 설정 */
+  border-radius: 8px; /* 모서리 둥글게 설정 */
+  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 활성화 */
+  max-height: 90vh; /* 최대 높이 90% */
+}
+
+/* 모달 헤더 */
+.module-set-modal-header {
+  display: flex;
+  justify-content: space-between;
   padding: 20px;
-  background-color: #f9f9f9; /* 배경색을 연한 회색으로 설정 */
-  overflow-y: auto; /* 내용이 넘칠 경우 수직 스크롤 활성화 */
-  position: relative; /* 버튼 배치를 위해 position을 relative로 설정 */
+  border-bottom: 1px solid #eee;
 }
 
-.module-details {
-  display: flex; /* 내용을 가로로 배치 */
-  flex-direction: column; /* 자식 요소를 세로로 배치 */
-  align-items: center; /* 자식 요소를 가운데로 정렬 */
+.module-set-modal-header h2 {
+  margin: 0;
 }
 
-.module-details-image img {
-  width: 100%; /* 이미지의 너비를 부모 요소에 맞춤 */
-  max-height: 300px; /* 이미지의 최대 높이를 300px로 제한 */
+/* 버튼 스타일 */
+.modal-close-button {
+  padding: 10px;
+  font-family: "400";
+}
+
+.modal-close-button:hover,
+.module-set-next-button:hover {
+  background-color: #0056b3;
+}
+
+/* 모달 바디 */
+.module-set-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.module-set-modal-image-container img {
+  width: 100%;
   object-fit: cover; /* 이미지 비율을 유지하며 잘리는 부분은 숨김 */
-  border-radius: 8px; /* 이미지 모서리를 둥글게 설정 */
+  border-radius: 8px;
 }
 
-.module-details-content {
-  margin-top: 20px; /* 상단 여백을 20px 추가 */
-  /* text-align: center; 텍스트를 가운데 정렬 */
+/* 모달 총 비용*/
+.modal-total-cost h4 {
+  color: rgb(197, 16, 130);
+}
+/* 모달 푸터 */
+.module-set-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+  border-top: 1px solid #eee;
 }
 
-.module-details-content h3 {
-  font-size: 1.5rem; /* 제목 글씨 크기를 1.5rem로 설정 */
-  margin-bottom: 10px; /* 제목 하단에 10px 간격 추가 */
-}
-
-.select-next-button {
-  position: absolute; /* 부모 요소의 위치를 기준으로 배치 */
-  top: 10px; /* 상단에서 10px 떨어진 위치 */
-  right: 10px; /* 우측에서 10px 떨어진 위치 */
-  background-color: #007bff; /* 버튼 배경색 (파란색) */
-  color: #fff; /* 버튼 텍스트 색상 */
-  border: none; /* 테두리 제거 */
-  border-radius: 4px; /* 모서리를 약간 둥글게 설정 */
-  padding: 8px 12px; /* 버튼 내부 여백 설정 */
-  cursor: pointer; /* 마우스 커서를 포인터로 변경 */
-  font-size: 0.9rem; /* 글씨 크기 조정 */
-  transition: background-color 0.2s ease; /* hover 효과를 부드럽게 추가 */
-}
-
-.select-next-button:hover {
-  background-color: #0056b3; /* 버튼 hover 시 어두운 파란색으로 변경 */
+.module-set-modal-footer button {
+  margin-left: 10px;
 }

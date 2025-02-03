@@ -1,7 +1,25 @@
 @font-face {
-  font-family: "LINESedKR";
-  font-weight: normal;
-  src: url("./assets/font/LINESeed/3Bold.otf") format("truetype");
+  font-family: "400";
+  src: url("./assets/font/Pretendard/400Regular.otf") format("truetype");
+}
+@font-face {
+  font-family: "500";
+  src: url("./assets/font/Pretendard/500Medium.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "600";
+  src: url("./assets/font/Pretendard/600SemiBold.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "700";
+  src: url("./assets/font/Pretendard/700Bold.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "800";
+  src: url("./assets/font/Pretendard/800ExtraBold.otf") format("truetype");
 }
 
 body,
@@ -11,7 +29,6 @@ html {
   height: 100%;
   display: flex;
   flex-direction: column;
-  font-family: "LINESedKR";
 }
 
 .layout {
@@ -25,10 +42,23 @@ html {
 }
 
 footer {
-  font-family: "LINESedKR";
   background-color: #222;
   color: #fff;
   text-align: center;
   padding: 20px;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 글꼴 설정 */
+body, button{
+  font-family: "500";
+}
+
+h1, h2 {
+  font-family: "800";
+}
+
+
+h3, h4, h5, h6 {
+  font-family: "700";
 }
