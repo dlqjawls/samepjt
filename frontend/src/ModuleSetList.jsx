@@ -97,29 +97,14 @@ function ModuleSetList() {
               </div>
             ))}
           </div>
-
-          <div className="pagination">
-            <button
-              disabled={pagination.currentPage === 1}
-              onClick={() => handlePageChange(pagination.currentPage - 1)}
-            >
-              이전
-            </button>
-            <span>
-              {pagination.currentPage} / {pagination.totalPages}
-            </span>
-            <button
-              disabled={pagination.currentPage === pagination.totalPages}
-              onClick={() => handlePageChange(pagination.currentPage + 1)}
-            >
-              다음
-            </button>
-          </div>
         </>
       )}
 
       {showModal && selectedModule && (
-        <div className="module-set-card-modal-overlay" onClick={() => setShowModal(false)}>
+        <div
+          className="module-set-card-modal-overlay"
+          onClick={() => setShowModal(false)}
+        >
           <div
             className="module-set-card-modal-content"
             onClick={(e) => e.stopPropagation()}
@@ -127,17 +112,17 @@ function ModuleSetList() {
             <div className="module-set-modal-header">
               <h2>{selectedModule.moduleSetName}</h2>
               <button
-                className="module-set-close-button"
+                className="modal-close-button "
                 onClick={() => setShowModal(false)}
               >
-                ×
+                X 닫기
               </button>
             </div>
 
             <div className="module-set-modal-body">
               <div className="module-set-modal-image-container">
                 <img
-                  src={selectedModule.imgUrls[currentImageIndex]}
+                  src={selectedModule.imgUrls[0]}
                   alt={`${selectedModule.moduleSetName} - 이미지 ${
                     currentImageIndex + 1
                   }`}
@@ -162,19 +147,16 @@ function ModuleSetList() {
                 </div>
 
                 <div className="modal-total-cost">
-                  <p>총 비용: ${selectedModule.basePrice}</p>
+                  <h4>총 비용: ${selectedModule.basePrice}</h4>
                 </div>
               </div>
             </div>
 
             <div className="module-set-modal-footer">
               <button
-                onClick={() => setShowModal(false)}
-                className="module-set-cancel-button"
+                onClick={handleNextStep}
+                className="module-set-next-button"
               >
-                닫기
-              </button>
-              <button onClick={handleNextStep} className="module-set-next-button">
                 다음 단계 →
               </button>
             </div>
