@@ -6,7 +6,6 @@ class MaintenanceHistory(SQLModel, table=True):
     __tablename__ = "maintenance_history"
 
     maintenance_id: Optional[int] = Field(default=None, primary_key=True)
-    user_pk: int = Field(foreign_key="user.user_pk", nullable=False, description="User responsible for maintenance")
 
     item_id: int = Field(nullable=False, description="ID of the maintained item")
     item_type_id: int = Field(foreign_key="lut_item_type.item_type_id", nullable=False, description="Item Type ID")
