@@ -1,4 +1,8 @@
 @font-face {
+  font-family: "400";
+  src: url("./assets/font/Pretendard/400Regular.otf") format("truetype");
+}
+@font-face {
   font-family: "500";
   src: url("./assets/font/Pretendard/500Medium.otf") format("truetype");
 }
@@ -46,7 +50,7 @@ footer {
 }
 
 /* 글꼴 설정 */
-body{
+body, button{
   font-family: "500";
 }
 
