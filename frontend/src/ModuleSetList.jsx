@@ -1,114 +1,188 @@
-import React, { useEffect, useState } from "react"
-import axios from "axios"
-import "./ModuleSetList.css"
-import { useNavigate } from "react-router-dom"
+import React, { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import "./ModuleSetList.css";
+import { useNavigate } from "react-router-dom";
 
 function ModuleSetList() {
-  const [moduleSets, setModuleSets] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [selectedModule, setSelectedModule] = useState(null)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const navigate = useNavigate()
+  const [moduleSets, setModuleSets] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    pageSize: 10,
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedModule, setSelectedModule] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const API_URL = `https://backend-wandering-river-6835.fly.dev/user/module-sets`
+  const navigate = useNavigate();
+  const API_URL = `https://backend-wandering-river-6835.fly.dev/user/module-sets`;
+
+  const fetchModuleSets = useCallback(
+    async (page, size) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get(API_URL, {
+          params: { page, page_size: size },
+        });
+
+        if (response.data.resultCode === "SUCCESS") {
+          setModuleSets(response.data.data.moduleSets);
+          setPagination(response.data.data.pagination);
+        } else {
+          setError(response.data.message);
+          setModuleSets([]);
+        }
+      } catch (err) {
+        setError("An unexpected error occurred. Please try again later.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [API_URL]
+  );
 
   useEffect(() => {
-    fetchModuleSets()
-  }, [])
+    fetchModuleSets(pagination.currentPage, pagination.pageSize);
+  }, [fetchModuleSets, pagination.currentPage, pagination.pageSize]);
 
-  const fetchModuleSets = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await axios.get(API_URL)
-
-      if (response.data.resultCode === "SUCCESS") {
-        setModuleSets(response.data.data.moduleSets)
-        console.log(response)
-      } else {
-        setError(response.data.message)
-        setModuleSets([])
-      }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again later.")
-      setModuleSets([])
-      console.error(err)
-    } finally {
-      setLoading(false)
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination((prev) => ({ ...prev, currentPage: newPage }));
     }
-  }
+  };
 
   const handleSelectModule = (module) => {
-    setSelectedModule(module)
-    setCurrentImageIndex(0)
-  }
+    setSelectedModule(module);
+    setCurrentImageIndex(0);
+    setShowModal(true);
+  };
 
-  const handleNextStep = (module) => {
-    // 기존 로직 유지: navigate로 state 전달
-    navigate("/option_select", { state: { selectedModule: module } })
-  }
-
-  const prepage = () => {
-    navigate("/")
-  }
+  const handleNextStep = () => {
+    navigate("/option_select", { state: { selectedModule } });
+  };
 
   return (
-    <div className="module-list-layout">
-      {/* 왼쪽: 모듈 세트 목록 */}
-      <div className="module-list">
-        <h2>모듈 세트 목록</h2>
-        {loading && <div className="loading">Loading...</div>}
-        {error && <div className="error">{error}</div>}
-        {!loading &&
-          !error &&
-          moduleSets.map((moduleSet) => (
-            <div key={moduleSet.moduleSetId} className="module-card" onClick={() => handleSelectModule(moduleSet)}>
-              <div className="module-card-image">
-                <img src={moduleSet.imgUrls[0]} alt={moduleSet.moduleSetName} />
-              </div>
-              <div className="module-card-content">
-                <h3>{moduleSet.moduleSetName}</h3>
-                <p>{moduleSet.description}</p>
-              </div>
-            </div>
-          ))}
-      </div>
+    <div className="module-list-container">
+      <h2>모듈 세트 목록</h2>
 
-      {/* 오른쪽: 모듈 상세 정보 */}
-      <div className="module-sliding">
-        <button onClick={prepage} className="select-next-button">
-          이전페이지로
-        </button>
-        {selectedModule ? (
-          <div className="module-details">
-            <div className="module-details-image">
-              <img src={selectedModule.imgUrls[currentImageIndex]} alt={selectedModule.moduleSetName} />
+      {loading && <div className="loading">Loading...</div>}
+      {error && <div className="error">{error}</div>}
+
+      {!loading && !error && (
+        <>
+          <div className="module-grid">
+            {moduleSets.map((moduleSet) => (
+              <div
+                key={moduleSet.moduleSetId}
+                className="module-card"
+                onClick={() => handleSelectModule(moduleSet)}
+              >
+                <div className="module-card-image">
+                  <img
+                    src={moduleSet.imgUrls[0]}
+                    alt={moduleSet.moduleSetName}
+                  />
+                </div>
+                <div className="module-card-content">
+                  <h3>{moduleSet.moduleSetName}</h3>
+                  <p>{moduleSet.description}</p>
+                  <p className="price">총 비용: ${moduleSet.basePrice}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pagination">
+            <button
+              disabled={pagination.currentPage === 1}
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+            >
+              이전
+            </button>
+            <span>
+              {pagination.currentPage} / {pagination.totalPages}
+            </span>
+            <button
+              disabled={pagination.currentPage === pagination.totalPages}
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+            >
+              다음
+            </button>
+          </div>
+        </>
+      )}
+
+      {showModal && selectedModule && (
+        <div className="card-modal-overlay" onClick={() => setShowModal(false)}>
+          <div
+            className="card-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2>{selectedModule.moduleSetName}</h2>
+              <button
+                className="close-button"
+                onClick={() => setShowModal(false)}
+              >
+                ×
+              </button>
             </div>
-            <div className="module-details-content">
-              <h3>{selectedModule.moduleSetName}</h3>
-              <p>{selectedModule.description}</p>
-              <h4>포함된 옵션</h4>
-              <ul>
-                {selectedModule.moduleSetOptionTypes.map((option) => (
-                  <li key={option.optionTypeId}>
-                    {option.optionTypeName} (수량: {option.quantity})
-                  </li>
-                ))}
-              </ul>
-              <p>총 비용: ${selectedModule.basePrice}</p>
-              <button onClick={() => handleNextStep(selectedModule)} className="next-button">
+
+            <div className="modal-body">
+              <div className="modal-image-container">
+                <img
+                  src={selectedModule.imgUrls[currentImageIndex]}
+                  alt={`${selectedModule.moduleSetName} - 이미지 ${
+                    currentImageIndex + 1
+                  }`}
+                />
+              </div>
+
+              <div className="modal-details">
+                <div className="description">
+                  <h4>상세 설명</h4>
+                  <p>{selectedModule.description}</p>
+                </div>
+
+                <div className="options">
+                  <h4>포함된 옵션</h4>
+                  <ul>
+                    {selectedModule.moduleSetOptionTypes.map((option) => (
+                      <li key={option.optionTypeId}>
+                        {option.optionTypeName} (수량: {option.quantity})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="total-cost">
+                  <p>총 비용: ${selectedModule.basePrice}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                onClick={() => setShowModal(false)}
+                className="cancel-button"
+              >
+                닫기
+              </button>
+              <button onClick={handleNextStep} className="next-button">
                 다음 단계 →
               </button>
             </div>
           </div>
-        ) : (
-          <p>모듈을 선택하면 상세 정보가 여기에 표시됩니다.</p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default ModuleSetList
+export default ModuleSetList;
