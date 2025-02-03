@@ -1,48 +1,55 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import axios from "axios"
-import "./LoginModal.css"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./LoginModal.css";
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
     id: "",
     password: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isFormFilled, setIsFormFilled] = useState(false);
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
-  }
-  const navigate = useNavigate()
+    const { name, value } = e.target;
+    const updatedFormData = { ...formData, [name]: value };
+    setFormData(updatedFormData);
+
+    // 폼 필드 검증
+    setIsFormFilled(updatedFormData.id && updatedFormData.password);
+  };
+  const navigate = useNavigate();
   const resist = () => {
-    navigate("/RegistrationForm")
-    onClose()
-  }
+    navigate("/RegistrationForm");
+    onClose();
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
-      const response = await axios.post("https://backend-wandering-river-6835.fly.dev/auth/login", formData)
-      alert("로그인 성공!")
-      console.log("로그인 성공:", response.data)
-      console.log(response.data.data.access_token)
-      const token = response.data.data.access_token
-      sessionStorage.setItem("token", token)
-      onClose()
+      const response = await axios.post(
+        "https://backend-wandering-river-6835.fly.dev/auth/login",
+        formData
+      );
+      alert("로그인 성공!");
+      console.log("로그인 성공:", response.data);
+      console.log(response.data.data.access_token);
+      const token = response.data.data.access_token;
+      sessionStorage.setItem("token", token);
+      onClose();
     } catch (err) {
-      setError(err.response?.data?.message || "로그인 중 오류가 발생했습니다. 다시 시도해 주세요.")
+      setError(
+        err.response?.data?.message ||
+          "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="lm-overlay">
@@ -53,11 +60,17 @@ const LoginModal = ({ onClose }) => {
 
         <h2 className="lm-title">로그인</h2>
 
-        {error && <div className="lm-error-message">{"계정을 확인해 주세요"}</div>}
+        {error && (
+          <div className="lm-error-message">
+            {"아이디 또는 패스워드가 일치하지 않습니다."}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="id" className="lm-label">아이디</label>
+            <label htmlFor="id" className="lm-label">
+              아이디
+            </label>
             <input
               id="id"
               name="id"
@@ -72,7 +85,9 @@ const LoginModal = ({ onClose }) => {
           </div>
 
           <div>
-            <label htmlFor="userPassword" className="lm-label">비밀번호</label>
+            <label htmlFor="userPassword" className="lm-label">
+              비밀번호
+            </label>
             <input
               id="password"
               name="password"
@@ -85,21 +100,27 @@ const LoginModal = ({ onClose }) => {
               className="lm-input"
             />
           </div>
+          <div className="lm-button-container">
+            <button
+              type="submit"
+              disabled={isLoading || !isFormFilled}
+              className={`lm-submit-button ${isFormFilled ? "active" : ""}`}
+            >
+              {isLoading ? "로그인 중..." : "로그인"}
+            </button>
 
-          <button type="submit" disabled={isLoading} className="lm-submit-button">
-            {isLoading ? "로그인 중..." : "로그인"}
-          </button>
-
-          <div className="lm-regist">
-            계정이 없으신가요?
-            <div>
-              <button onClick={resist} className="lm-register-button">회원가입</button>
-            </div>
+            <button
+              type="submit"
+              onClick={resist}
+              className="lm-register-button"
+            >
+              회원가입
+            </button>
           </div>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginModal
+export default LoginModal;
