@@ -1,32 +1,9 @@
 /* 전체 레이아웃 */
-.module-list-layout {
-  display: flex; /* 자식 요소를 가로로 나열 */
-  gap: 20px; /* 자식 요소 간의 간격을 20px로 설정 */
-  padding: 20px; /* 레이아웃 내부에 여백 추가 */
-}
-
-/* 왼쪽 : 모듈 세트 목록 */
 .module-list {
-  flex: 1.5; /* 너비 비율을 1*/
   max-width: 35%; /* 너비 35% 제한 */
   max-height: 80vh; /* 세로 80% 제한 */
   overflow-y: auto; /* 수직 스크롤 */
   padding-right: 10px; /* 스크롤바와 내용 사이에 10px 여백 추가 */
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f0f0f0; 
-}
-
-.module-list::-webkit-scrollbar {
-  width: 8px; /* 스크롤바의 너비를 8px로 설정 (Chrome, Edge, Safari 전용) */
-}
-
-.module-list::-webkit-scrollbar-track {
-  background: #f0f0f0; /* 스크롤바 트랙 배경색 */
-}
-
-.module-list::-webkit-scrollbar-thumb {
-  background-color: #888; /* 스크롤바의 색상을 #888로 설정 */
-  border-radius: 4px; /* 스크롤바 모서리를 둥글게 설정 */
 }
 
 .module-list h2 {
@@ -70,7 +47,7 @@
 }
 
 /* 모달 오버레이 */
-.card-modal-overlay {
+.module-set-card-modal-overlay {
   position: fixed; /* 화면 고정 */
   top: 0;
   left: 0;
@@ -84,7 +61,7 @@
 }
 
 /* 모달 콘텐츠 */
-.card-modal-content {
+.module-set-card-modal-content {
   position: relative;
   width: 80%; /* 너비 80% */
   max-width: 800px; /* 최대 너비 800px */
@@ -95,45 +72,45 @@
 }
 
 /* 모달 헤더 */
-.modal-header {
+.module-set-modal-header {
   display: flex;
   justify-content: space-between;
   padding: 20px;
   border-bottom: 1px solid #eee;
 }
 
-.modal-header h2 {
+.module-set-modal-header h2 {
   margin: 0;
 }
 
 /* 모달 바디 */
-.modal-body {
+.module-set-modal-body {
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.modal-image-container img {
+.module-set-modal-image-container img {
   width: 100%;
   object-fit: cover; /* 이미지 비율을 유지하며 잘리는 부분은 숨김 */
   border-radius: 8px;
 }
 
 /* 모달 푸터 */
-.modal-footer {
+.module-set-modal-footer {
   display: flex;
   justify-content: flex-end;
   padding: 20px;
   border-top: 1px solid #eee;
 }
 
-.modal-footer button {
+.module-set-modal-footer button {
   margin-left: 10px;
 }
 
 /* 버튼 스타일 */
-.close-button, .cancel-button, .next-button {
+.module-set-close-button, .module-set-cancel-button, .module-set-next-button {
   background-color: #007bff;
   color: white;
   border: none;
@@ -142,13 +119,13 @@
   cursor: pointer;
 }
 
-.close-button {
+.module-set-close-button {
   background-color: transparent;
   color: black;
   font-size: 24px;
   border: none;
 }
 
-.close-button:hover, .cancel-button:hover, .next-button:hover {
+.module-set-close-button:hover, .module-set-cancel-button:hover, .module-set-next-button:hover {
   background-color: #0056b3;
 }

@@ -119,23 +119,23 @@ function ModuleSetList() {
       )}
 
       {showModal && selectedModule && (
-        <div className="card-modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="module-set-card-modal-overlay" onClick={() => setShowModal(false)}>
           <div
-            className="card-modal-content"
+            className="module-set-card-modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-header">
+            <div className="module-set-modal-header">
               <h2>{selectedModule.moduleSetName}</h2>
               <button
-                className="close-button"
+                className="module-set-close-button"
                 onClick={() => setShowModal(false)}
               >
                 ×
               </button>
             </div>
 
-            <div className="modal-body">
-              <div className="modal-image-container">
+            <div className="module-set-modal-body">
+              <div className="module-set-modal-image-container">
                 <img
                   src={selectedModule.imgUrls[currentImageIndex]}
                   alt={`${selectedModule.moduleSetName} - 이미지 ${
@@ -145,12 +145,12 @@ function ModuleSetList() {
               </div>
 
               <div className="modal-details">
-                <div className="description">
+                <div className="modal-description">
                   <h4>상세 설명</h4>
                   <p>{selectedModule.description}</p>
                 </div>
 
-                <div className="options">
+                <div className="modal-module-options">
                   <h4>포함된 옵션</h4>
                   <ul>
                     {selectedModule.moduleSetOptionTypes.map((option) => (
@@ -161,20 +161,20 @@ function ModuleSetList() {
                   </ul>
                 </div>
 
-                <div className="total-cost">
+                <div className="modal-total-cost">
                   <p>총 비용: ${selectedModule.basePrice}</p>
                 </div>
               </div>
             </div>
 
-            <div className="modal-footer">
+            <div className="module-set-modal-footer">
               <button
                 onClick={() => setShowModal(false)}
-                className="cancel-button"
+                className="module-set-cancel-button"
               >
                 닫기
               </button>
-              <button onClick={handleNextStep} className="next-button">
+              <button onClick={handleNextStep} className="module-set-next-button">
                 다음 단계 →
               </button>
             </div>
