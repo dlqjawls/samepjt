@@ -73,7 +73,7 @@ class ModuleSetService:
                     moduleSetId=module_set.module_set_id,
                     moduleSetName=module_set.module_set_name or "No name available",
                     description=module_set.description or "No description available",
-                    basePrice=module_set.base_price or 0.0,
+                    basePrice=0.0, # TODO: 가격 계산 로직 구현
                     imgUrls=module_set.module_set_images.split(',') if module_set.module_set_images else [],
                     moduleSetOptionTypes=module_set_option_types
                 )
