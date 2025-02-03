@@ -186,7 +186,7 @@ def seed_data(session: Session) -> None:
                 updated_by=1,
                 deleted_at=None
             )
-            for i in range(3)
+            for i in range(1,3)
         ]
         session.add_all(dummy_vehicles)
 
@@ -205,7 +205,7 @@ def seed_data(session: Session) -> None:
                 updated_at=base_date,
                 updated_by=1,
                 deleted_at=None
-            ) for i in range(3)
+            ) for i in range(1,3)
         ]
         session.add_all(dummy_modules)
 
