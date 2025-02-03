@@ -33,7 +33,7 @@ function Header() {
             alt="admin-profile"
             className="profile-image"
           />
-          <span className="profile-name">관리자 이름</span>
+          <span className="profile-name">admin</span>
         </div>
         <button className="admin-logout-button" onClick={handleLogout}>
           로그아웃
