@@ -11,7 +11,7 @@ class ModuleSet(SQLModel, table=True):
     description: Optional[str] = Field(default=None, description="Module Set Description")
     module_set_images: Optional[str] = Field(default=None, description="Module Set Images")
     module_set_features: Optional[str] = Field(default=None, description="Module Set Features")
-    module_typed_id: int = Field(foreign_key="lut_module_type.module_type_id", nullable=False, description="Module Type ID")
+    module_type_id: int = Field(foreign_key="lut_module_type.module_type_id", nullable=False, description="Module Type ID")
 
     created_at: datetime = Field(
         sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
