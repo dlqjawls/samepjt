@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 from sqlmodel import Session
 from app.models.option import Option
@@ -219,3 +219,84 @@ class RentService:
             )
         )
         
+    @staticmethod
+    def get_rent_status(
+        session: Session,
+        rent_id: int,
+        user_pk: int
+    ) -> rent_schema.RentStatusResponse:
+        """렌트 상태 조회
+        
+        Args:
+            session: DB 세션
+            rent_id: 렌트 ID
+            user_pk: 사용자 PK
+            
+        Returns:
+            렌트 상태 정보
+            
+        Raises:
+            NotFoundError: 렌트 없음
+            ForbiddenError: 권한 없음
+            ConflictError: 이미 취소/완료됨
+        """
+        # 1. 렌트 기록 조회 및 검증
+        rent_history = rent_history_crud.get_by_id(session, rent_id)
+        if not rent_history:
+            raise NotFoundError(
+                message="Rent history not found",
+                detail={"rent_id": rent_id}
+            )
+
+        # 2. 사용자 권한 검증
+        if rent_history.user_pk != user_pk:
+            raise ForbiddenError(
+                message="Permission denied",
+                detail={
+                    "rent_id": rent_id,
+                    "request_user": user_pk,
+                    "rent_user": rent_history.user_pk
+                }
+            )
+
+        # 3. 렌트 상태 검증
+        if rent_history.status_id in [RentService.CANCELED, RentService.COMPLETED]:
+            raise ConflictError(
+                message="Rent already canceled or completed",
+                detail={
+                    "rent_id": rent_id,
+                    "current_status": rent_history.status_id
+                }
+            )
+
+        # 4. 더미 데이터로 상태 정보 생성
+        current_location = rent_schema.Coordinate( x=12.3123, y=32.3232)
+        dest_location = rent_schema.Coordinate (x=12.313, y=32.3232)
+        
+        return rent_schema.RentStatusResponse(
+            message="Vehicle rent status retrieved successfully",
+            data=rent_schema.RentStatusResponseData(
+                isArrive=False,
+                location=current_location,
+                destination=dest_location,
+                ETA=datetime.now() + timedelta(hours=1),
+                distanceTravelled=120.0,
+                plannedPath=[
+                    current_location,
+                    rent_schema.Coordinate(x=12.313, y=32.3232),
+                    rent_schema.Coordinate(x=12.313, y=32.3232),
+                    dest_location
+                ],
+                SLAMMapData="base64-encoded-map-data",
+                status=rent_schema.RentStatus(
+                    vehicle=rent_schema.VehicleStatus(
+                        batteryLevel=50,
+                        lightBrightness=60
+                    ),
+                    options=[
+                        rent_schema.OptionStatus(optionName="Option 1", optionStatus="ACTIVE"),
+                        rent_schema.OptionStatus(optionName="Option 2", optionStatus="ACTIVE")
+                    ]
+                )
+            )
+        )
