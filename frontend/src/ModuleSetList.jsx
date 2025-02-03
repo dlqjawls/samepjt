@@ -112,10 +112,10 @@ function ModuleSetList() {
             <div className="module-set-modal-header">
               <h2>{selectedModule.moduleSetName}</h2>
               <button
-                className="modal-close-button "
+                className="module-set-modal-close-button"
                 onClick={() => setShowModal(false)}
               >
-                X 닫기
+                창 닫기
               </button>
             </div>
 
@@ -150,16 +150,13 @@ function ModuleSetList() {
                   <h4>총 비용: ${selectedModule.basePrice}</h4>
                 </div>
               </div>
-            </div>
-
-            <div className="module-set-modal-footer">
               <button
                 onClick={handleNextStep}
-                className="module-set-next-button"
+                className="module-set-modal-next-button"
               >
                 다음 단계 →
-              </button>
-            </div>
+              </button></div>
+
           </div>
         </div>
       )}

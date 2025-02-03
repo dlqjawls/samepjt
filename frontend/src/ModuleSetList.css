@@ -83,17 +83,6 @@
   margin: 0;
 }
 
-/* 버튼 스타일 */
-.modal-close-button {
-  padding: 10px;
-  font-family: "400";
-}
-
-.modal-close-button:hover,
-.module-set-next-button:hover {
-  background-color: #0056b3;
-}
-
 /* 모달 바디 */
 .module-set-modal-body {
   padding: 20px;
@@ -110,8 +99,10 @@
 
 /* 모달 총 비용*/
 .modal-total-cost h4 {
+  text-align: right;
   color: rgb(197, 16, 130);
 }
+
 /* 모달 푸터 */
 .module-set-modal-footer {
   display: flex;
@@ -122,4 +113,30 @@
 
 .module-set-modal-footer button {
   margin-left: 10px;
+}
+
+/* 버튼 스타일 */
+.module-set-modal-close-button {
+  color: #e0e0e0;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: red;
+  border: none;
+  font-family: "500";
+}
+
+.module-set-modal-close-button:hover {
+  background-color: #d9363e;
+}
+
+.module-set-modal-next-button {
+  color: #e0e0e0;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: green;
+  border: none;
+  font-family: "600";
+}
+.module-set-modal-next-button:hover {
+  background-color: rgb(13, 95, 13);
 }
