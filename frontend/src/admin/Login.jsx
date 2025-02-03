@@ -50,10 +50,12 @@ const AdminLogin = () => {
     }
   };
 
+  const isFormValid = formData.id && formData.password;
+
   return (
     <div className="admin-login-overlay">
       <div className="admin-login-content">
-        <img src={moducar_logo} alt="" />
+        <img src={moducar_logo} alt="Moducar 로고" />
         <h2>
           <span className="highlight-text">관리자</span> 로그인
         </h2>
@@ -87,7 +89,7 @@ const AdminLogin = () => {
             />
             <span className="floating-label">관리자 비밀번호</span>
           </div>
-          <button type="submit" disabled={isLoading}>
+          <button type="submit" disabled={!isFormValid || isLoading}>
             {isLoading ? "로그인" : "로그인"}
           </button>
         </form>
