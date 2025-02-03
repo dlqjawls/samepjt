@@ -129,8 +129,8 @@ function ModuleSetList() {
                 />
               </div>
 
-              <div className="modal-details">
-                <div className="modal-description">
+              <div className="module-modal-details">
+                <div className="module-modal-description">
                   <h4>상세 설명</h4>
                   <p>{selectedModule.description}</p>
                 </div>
@@ -147,7 +147,7 @@ function ModuleSetList() {
                 </div>
 
                 <div className="modal-total-cost">
-                  <h4>총 비용: ${selectedModule.basePrice}</h4>
+                  <h4>총 비용: {selectedModule.basePrice}원</h4>
                 </div>
               </div>
               <button
