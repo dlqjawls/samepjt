@@ -300,3 +300,92 @@ class RentService:
                 )
             )
         )
+
+    @staticmethod
+    @handle_transaction
+    def complete_rent(
+        session: Session,
+        rent_id: int,
+        user_pk: int
+    ) -> rent_schema.CompleteRentResponse:
+        """렌트 완료 처리"""
+        
+        # 1. 렌트 기록 조회 및 검증
+        rent_history = rent_history_crud.get_by_id(session, rent_id)
+        if not rent_history:
+            raise NotFoundError(
+                message="Rent history not found",
+                detail={"rent_id": rent_id}
+            )
+
+        # 2. 사용자 권한 검증
+        if rent_history.user_pk != user_pk:
+            raise ForbiddenError(
+                message="Permission denied",
+                detail={
+                    "rent_id": rent_id,
+                    "request_user": user_pk,
+                    "rent_user": rent_history.user_pk
+                }
+            )
+
+        # 3. 렌트 상태 검증
+        if rent_history.status_id in [RentService.CANCELED, RentService.COMPLETED]:
+            raise ConflictError(
+                message="Rent already completed or canceled",
+                detail={
+                    "rent_id": rent_id,
+                    "current_status": rent_history.status_id
+                }
+            )
+
+        # 4. 사용 기록 조회
+        usage_entries = usage_history_crud.get_usage_entries(session, rent_id)
+
+        # 5. 아이템 ID 분류
+        vehicle_id = next(
+            (u.item_id for u in usage_entries if u.item_type_id == RentService.VEHICLE),
+            None
+        )
+        module_id = next(
+            (u.item_id for u in usage_entries if u.item_type_id == RentService.MODULE),
+            None
+        )
+        option_ids = [
+            u.item_id for u in usage_entries 
+            if u.item_type_id == RentService.OPTION
+        ]
+
+        # 6. 사용 기록 및 아이템 상태 업데이트
+        usage_history_crud.complete_usage_entries(
+            session,
+            rent_id,
+            vehicle_id,
+            module_id,
+            option_ids
+        )
+
+        # 7. 렌트 상태 업데이트 및 최종 데이터 계산
+        usage_duration = int((datetime.now() - rent_history.created_at).total_seconds() / 60)
+        total_mileage = 150.0  # TODO: 실제 주행거리 계산 로직 구현
+        estimated_payback = rent_history.cost * 0.05  # TODO: 실제 페이백 계산 로직 구현
+
+        rent_history_crud.update(
+            session=session,
+            id=rent_id,
+            obj_in={
+                "status_id": RentService.COMPLETED,
+                "mileage": total_mileage,
+                "updated_at": datetime.now()
+            }
+        )
+
+        return rent_schema.CompleteRentResponse(
+            message="Rental completed successfully",
+            data=rent_schema.CompleteRentResponseData(
+                rent_id=rent_id,
+                total_mileage=total_mileage,
+                usage_duration=usage_duration,
+                estimated_payback_amount=estimated_payback
+            )
+        )
