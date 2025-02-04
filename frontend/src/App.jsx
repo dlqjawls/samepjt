@@ -26,6 +26,7 @@ import Total_reciept from "./finishSelect/total_reciept";
 import UserLayout from "./user/userLayout";
 
 import { ToastContainer } from "react-toastify";
+import { AdminAuthProvider } from "./admin/context/AdminAuthProvider";
 
 function App() {
   return (
@@ -43,15 +44,30 @@ function App() {
         </Route>
 
         {/* 관리자 로그인 */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/login"
+          element={
+            <AdminAuthProvider>
+              <AdminLogin />
+            </AdminAuthProvider>
+          }
+        />
         {/* 관리자 페이지 */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin/*"
+          element={
+            <AdminAuthProvider>
+              <AdminLayout />
+            </AdminAuthProvider>
+          }
+        >
           <Route path="index" element={<MainDashboard />} />
           <Route path="vehicle-management" element={<VehicleManagement />} />
           <Route path="module-management" element={<ModuleManagement />} />
           <Route path="option-management" element={<OptionManagement />} />
           <Route path="rental-records" element={<RentalRecords />} />
           <Route path="maintenance-records" element={<MaintenanceRecords />} />
+          <Route path="*" element={<Navigate to="/admin/index" replace />} />
         </Route>
 
         {/* 기타 라우트 */}
