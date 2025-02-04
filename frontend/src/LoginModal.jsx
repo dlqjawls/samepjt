@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 import "./LoginModal.css";
 
 const LoginModal = ({ onClose }) => {
@@ -35,14 +37,20 @@ const LoginModal = ({ onClose }) => {
         "https://backend-wandering-river-6835.fly.dev/auth/login",
         formData
       );
-      alert("로그인 성공!");
+      toast.success("로그인 성공!");
       console.log("로그인 성공:", response.data);
       console.log(response.data.data.access_token);
       const token = response.data.data.access_token;
+      const refreshToken = response.data.data.refresh_token;
       sessionStorage.setItem("token", token);
+      sessionStorage.setItem("refreshToken", refreshToken);
       onClose();
     } catch (err) {
       setError(
+        err.response?.data?.message ||
+          "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
+      );
+      toast.error(
         err.response?.data?.message ||
           "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
       );
@@ -110,7 +118,7 @@ const LoginModal = ({ onClose }) => {
             </button>
 
             <button
-              type="submit"
+              type="button"
               onClick={resist}
               className="lm-register-button"
             >

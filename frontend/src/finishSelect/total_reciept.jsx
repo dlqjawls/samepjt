@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 import "./total_reciept.css"
 import axios from "axios"
+import { showConfirmToast } from "./ConfirmToast"
 
 const Total_reciept = () => {
   const navigate = useNavigate()
@@ -57,21 +60,52 @@ const Total_reciept = () => {
 
     fetchOptionDetails()
   }, [])
+
+  const refreshAccessToken = async () => {
+    try {
+      const refreshToken = sessionStorage.getItem("refreshToken");
+      if (!refreshToken) {
+        throw new Error("리프레시 토큰이 없습니다.");
+      }
+
+      const response = await axios.post(
+        "https://backend-wandering-river-6835.fly.dev/auth/refresh-token",
+        {
+          refresh_token: refreshToken
+        }
+      );
+
+      if (response.data.resultCode === "SUCCESS") {
+        console.log("토큰 갱신 성공:", response.data);
+        const { access_token, refresh_token } = response.data;
+        sessionStorage.setItem("token", access_token);
+        sessionStorage.setItem("refreshToken", refresh_token);
+        return access_token;
+      }
+      throw new Error("토큰 갱신 실패");
+    } catch (error) {
+      console.error("토큰 갱신 중 오류:", error);
+      toast.error("세션이 만료되었습니다. 다시 로그인해주세요.");
+      sessionStorage.clear();
+      navigate("/login");
+      throw error;
+    }
+  };
   const handlePayment = async () => {
-    if (window.confirm("결제를 진행하시겠습니까?")) {
+    const confirmPayment = await showConfirmToast();
+    if (confirmPayment) {
       try {
-        const token = sessionStorage.getItem("token")
+        let token = sessionStorage.getItem("token");
         if (!token) {
-          alert("로그인이 필요합니다.")
-          return
+          toast.error("로그인이 필요합니다.");
+          return;
         }
 
-        // 옵션 데이터 변환
         const selectedOptions = receiptDetails.options.map((option) => ({
           optionTypeId: option.optionTypeId,
           quantity: option.quantity,
-        }))
-        console.log("선택된 옵션:", selectedOptions)
+        }));
+
         const rentData = {
           selectedOptionTypes: selectedOptions,
           autonomousArrivalPoint: {
@@ -84,28 +118,61 @@ const Total_reciept = () => {
           },
           rentStartDate: "2025-01-15T09:00:00",
           rentEndDate: "2025-01-20T18:00:00",
-        }
-        console.log("렌트 데이터:", rentData)
-        const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/rent", rentData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        console.log(rentData)
-        console.log(response)
-        if (response.data.resultCode === "SUCCESS") {
-          const { rent_id, vehicle_number } = response.data.data
-          alert(`예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`)
-          sessionStorage.removeItem("selectedOptionData")
-          // navigate("/")
+        };
+
+        try {
+          const response = await axios.post(
+            "https://backend-wandering-river-6835.fly.dev/user/rent",
+            rentData,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          
+          if (response.data.resultCode === "SUCCESS") {
+            const { rent_id, vehicle_number } = response.data.data;
+            console.log("예약 완료:", response.data);
+            toast.success(
+              `예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`
+            );
+            sessionStorage.removeItem("selectedOptionData");
+            // navigate("/");
+          }
+        } catch (error) {
+          if (error.response && error.response.status === 401) {
+            // 토큰이 만료된 경우, 토큰 갱신 시도
+            token = await refreshAccessToken();
+            // 갱신된 토큰으로 다시 요청
+            const response = await axios.post(
+              "https://backend-wandering-river-6835.fly.dev/user/rent",
+              rentData,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            if (response.data.resultCode === "SUCCESS") {
+              const { rent_id, vehicle_number } = response.data.data;
+              toast.success(
+                `예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`
+              );
+              sessionStorage.removeItem("selectedOptionData");
+              // navigate("/");
+            }
+          } else {
+            throw error;
+          }
         }
       } catch (error) {
-        console.error("결제 처리 중 오류:", error)
-        alert("결제 처리 중 오류가 발생했습니다.")
+        console.error("결제 처리 중 오류:", error);
+        toast.error("차량이 모두 예약중입니다. 다른 시간대를 선택해주세요.");
       }
     }
-  }
-
+  };
   const handleGoBack = () => {
     navigate("/rentForm")
   }
