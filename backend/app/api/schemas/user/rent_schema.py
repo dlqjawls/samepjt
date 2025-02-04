@@ -127,3 +127,26 @@ class RentStatusResponse(ResponseBase[RentStatusResponseData]):
                 }
             }
         }
+
+class CompleteRentResponseData(BaseModel):
+    """렌트 완료 응답 데이터 모델"""
+    rent_id: int = Field(..., example=123)
+    total_mileage: float = Field(..., example=150.0)
+    usage_duration: int = Field(..., example=3)
+    estimated_payback_amount: float = Field(..., example=75000)
+
+class CompleteRentResponse(ResponseBase[CompleteRentResponseData]):
+    """렌트 완료 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Rental completed successfully",
+                "data": {
+                    "rent_id": 123,
+                    "total_mileage": 150.0,
+                    "usage_duration": 3,
+                    "estimated_payback_amount": 75000
+                }
+            }
+        }
