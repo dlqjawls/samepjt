@@ -32,8 +32,8 @@ class AuthServiceUtils:
     def get_user_role(session: Session, role_id: int) -> str:
         role_data = role.get_by_id(session, role_id)
         if not role_data:
-            raise NotFoundError(
-                message="Role not found",
+            raise DatabaseError(
+                message="User Role not found",
                 detail={
                     "role_id": role_id
                 }

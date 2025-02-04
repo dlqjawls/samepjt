@@ -1,13 +1,15 @@
 # app/seeder.py
 
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 import random
 import json
 import os
+from typing import List
 from faker import Faker
 from sqlmodel import Session
+import logging
 
-# 모델들 전부 import (또는 from app.models import * 로 import)
 from app.models import (
     Role, ItemStatus, ItemType, ModuleType,
     MaintenanceStatus, UsageStatus, RentStatus, VideoType,
@@ -18,6 +20,18 @@ from app.models import (
 from app.utils.bcrypt import hash_password
 
 fake = Faker()
+logging.getLogger("faker").setLevel(logging.WARNING)
+
+@dataclass
+class OptionTypeDefinition:
+    name: str
+    display_features: List[str]
+    description: str
+
+@dataclass
+class ModuleSetDefinition:
+    name: str
+    default_option_types: List[str]
 
 def seed_data(session: Session) -> None:
     """
@@ -107,220 +121,221 @@ def seed_data(session: Session) -> None:
         # 📌 사용자 데이터 삽입
         base_date = datetime.now()
         dummy_users = [
-            {
-                "user_pk": 1,
-                "user_id": "admin",
-                "user_password": hash_password("admin123"),
-                "user_email": "admin@example.com",
-                "user_name": "Administrator",
-                "user_phone_num": "010-0000-0000",
-                "user_address": "Seoul, Korea",
-                "role_id": 1,
-                "created_at": base_date,
-                "created_by": 1,
-                "updated_at": base_date,
-                "updated_by": 1,
-                "deleted_at": None
-            },
-            {
-                "user_pk": 2,
-                "user_id": "semiadmin",
-                "user_password": hash_password("semi123"),
-                "user_email": "semiadmin@example.com",
-                "user_name": "Semi Administrator",
-                "user_phone_num": "010-1111-1111",
-                "user_address": "Busan, Korea",
-                "role_id": 2,
-                "created_at": base_date,
-                "created_by": 1,
-                "updated_at": base_date,
-                "updated_by": 1,
-                "deleted_at": None
-            },
-            {
-                "user_pk": 3,
-                "user_id": "user",
-                "user_password": hash_password("user123"),
-                "user_email": "user@example.com",
-                "user_name": "Regular User",
-                "user_phone_num": "010-2222-2222",
-                "user_address": "Incheon, Korea",
-                "role_id": 3,
-                "created_at": base_date,
-                "created_by": 1,
-                "updated_at": base_date,
-                "updated_by": 1,
-                "deleted_at": None
-            }
+            User(
+                user_pk=1,
+                user_id="admin",
+                user_password=hash_password("admin123"),
+                user_email="admin@example.com",
+                user_name="Administrator",
+                user_phone_num="010-0000-0000",
+                user_address="Seoul, Korea",
+                role_id=1,
+                created_at=base_date,
+                created_by=1,
+                updated_at=base_date,
+                updated_by=1,
+                deleted_at=None
+            ),
+            User(
+                user_pk=2,
+                user_id="semiadmin", 
+                user_password=hash_password("semi123"),
+                user_email="semiadmin@example.com",
+                user_name="Semi Administrator",
+                user_phone_num="010-1111-1111",
+                user_address="Busan, Korea",
+                role_id=2,
+                created_at=base_date,
+                created_by=1,
+                updated_at=base_date,
+                updated_by=1,
+                deleted_at=None
+            ),
+            User(
+                user_pk=3,
+                user_id="user",
+                user_password=hash_password("user123"),
+                user_email="user@example.com",
+                user_name="Regular User",
+                user_phone_num="010-2222-2222",
+                user_address="Incheon, Korea",
+                role_id=3,
+                created_at=base_date,
+                created_by=1,
+                updated_at=base_date,
+                updated_by=1,
+                deleted_at=None
+            )
         ]
-        session.add_all([User(**user) for user in dummy_users])
+        session.add_all(dummy_users)
 
         # 📌 차량 데이터 삽입
         dummy_vehicles = [
-            {
-                "vehicle_id": i + 1,  # Changed to start from 1
-                "vin": fake.uuid4(),
-                "vehicle_number": f"PBV-{i+1}",  # Changed to start from 1
-                "current_location": json.dumps({"x": i+1, "y": i+1}),  # Changed to start from 1
-                "mileage": random.randint(1000, 5000),
-                "last_maintenance_at": base_date.isoformat(),
-                "next_maintenance_at": (base_date + timedelta(days=90)).isoformat(),
-                "status_id": 2,
-                "created_at": base_date,
-                "created_by": 1,
-                "updated_at": base_date,
-                "updated_by": 1,
-                "deleted_at": None
-            }
-            for i in range(3)
+            Vehicle(
+                vehicle_id=i,
+                vin=fake.uuid4(),
+                vehicle_number=f"PBV-0000{i}",
+                current_location=json.dumps({"x": 0, "y": 0}),
+                mileage=0,
+                last_maintenance_at=base_date,
+                next_maintenance_at=None,
+                status_id=2,
+                created_at=base_date,
+                created_by=1,
+                updated_at=base_date,
+                updated_by=1,
+                deleted_at=None
+            )
+            for i in range(1,3)
         ]
-        session.add_all([Vehicle(**vehicle) for vehicle in dummy_vehicles])
+        session.add_all(dummy_vehicles)
 
         # 📌 모듈 데이터 삽입
         dummy_modules = [
-            {
-                "module_id": i + 1,  # Changed to start from 1
-                "module_nfc_tag_id": fake.uuid4(),
-                "module_type": 1,
-                "status_id": 2,
-                "last_maintenance_at": base_date.isoformat(),
-                "next_maintenance_at": base_date.isoformat(),
-                "current_location": json.dumps({"x": 0, "y": 0}),
-                "created_at": base_date,
-                "created_by": 1,
-                "updated_at": base_date,
-                "updated_by": 1,
-                "deleted_at": None
-            }
-            for i in range(3)
+            Module(
+                module_id=i + 1,
+                module_nfc_tag_id=fake.uuid4(),
+                module_type=1,
+                status_id=2,
+                last_maintenance_at=base_date,
+                next_maintenance_at=base_date,
+                current_location=json.dumps({"x": 0, "y": 0}),
+                created_at=base_date,
+                created_by=1,
+                updated_at=base_date,
+                updated_by=1,
+                deleted_at=None
+            ) for i in range(1,3)
         ]
-        session.add_all([Module(**module) for module in dummy_modules])
+        session.add_all(dummy_modules)
 
         # 📌 옵션 유형 데이터 삽입
-        option_type_data = [
-            {"optionTypeName": "침대", "displayFeatures": [], "description": "푹신한 침대입니다."},
-            {"optionTypeName": "테이블", "displayFeatures": [], "description": "넓은 테이블입니다."},
-            {"optionTypeName": "의자", "displayFeatures": [], "description": "편안한 의자입니다."},
-            {"optionTypeName": "냉장고", "displayFeatures": [], "description": "음식을 보관할 수 있습니다."},
-            {"optionTypeName": "배터리", "displayFeatures": ["배터리 잔여량"], "description": "전력을 공급합니다."},
-            {"optionTypeName": "수납장", "displayFeatures": [], "description": "물건을 보관할 수 있습니다."},
-            {"optionTypeName": "물탱크", "displayFeatures": ["물탱크 잔여량", "폐수량"], "description": "물을 저장합니다."},
-            {"optionTypeName": "냉난방기", "displayFeatures": ["실내온도"], "description": "실내 온도를 조절합니다."},
-            {"optionTypeName": "조명", "displayFeatures": ["조명세기"], "description": "실내 조명을 제공합니다."},
-            {"optionTypeName": "대형모니터", "displayFeatures": [], "description": "대형 화면을 제공합니다."},
-            {"optionTypeName": "좌변기", "displayFeatures": [], "description": "좌변기 옵션입니다."},
-            {"optionTypeName": "세면대", "displayFeatures": [], "description": "세면대 옵션입니다."},
-            {"optionTypeName": "거울", "displayFeatures": [], "description": "거울 옵션입니다."},
-            {"optionTypeName": "간이계단", "displayFeatures": [], "description": "간이계단 옵션입니다."},
-            {"optionTypeName": "LPG", "displayFeatures": [], "description": "LPG 옵션입니다."},
-            {"optionTypeName": "버너", "displayFeatures": [], "description": "버너 옵션입니다."},
-            {"optionTypeName": "싱크대", "displayFeatures": [], "description": "싱크대 옵션입니다."},
-            {"optionTypeName": "튀김기", "displayFeatures": [], "description": "튀김기 옵션입니다."},
-            {"optionTypeName": "냄비", "displayFeatures": [], "description": "냄비 옵션입니다."},
-            {"optionTypeName": "전자레인지", "displayFeatures": [], "description": "전자레인지 옵션입니다."},
-            {"optionTypeName": "에어컨", "displayFeatures": ["실내온도"], "description": "에어컨 옵션입니다."},
-            {"optionTypeName": "커피 머신", "displayFeatures": ["커피머신 잔량"], "description": "커피 머신 옵션입니다."},
-            {"optionTypeName": "자판기", "displayFeatures": ["자판기 물품 재고량"], "description": "자판기 옵션입니다."}
+        option_type_definitions = [
+            OptionTypeDefinition("침대", [], "푹신한 침대입니다."),
+            OptionTypeDefinition("테이블", [], "넓은 테이블입니다."),
+            OptionTypeDefinition("의자", [], "편안한 의자입니다."),
+            OptionTypeDefinition("냉장고", [], "음식을 보관할 수 있습니다."),
+            OptionTypeDefinition("배터리", ["배터리 잔여량"], "전력을 공급합니다."),
+            OptionTypeDefinition("수납장", [], "물건을 보관할 수 있습니다."),
+            OptionTypeDefinition("물탱크", ["물탱크 잔여량", "폐수량"], "물을 저장합니다."),
+            OptionTypeDefinition("냉난방기", ["실내온도"], "실내 온도를 조절합니다."),
+            OptionTypeDefinition("조명", ["조명세기"], "실내 조명을 제공합니다."),
+            OptionTypeDefinition("대형모니터", [], "대형 화면을 제공합니다."),
+            OptionTypeDefinition("좌변기", [], "좌변기 옵션입니다."),
+            OptionTypeDefinition("세면대", [], "세면대 옵션입니다."),
+            OptionTypeDefinition("거울", [], "거울 옵션입니다."),
+            OptionTypeDefinition("간이계단", [], "간이계단 옵션입니다."),
+            OptionTypeDefinition("LPG", [], "LPG 옵션입니다."),
+            OptionTypeDefinition("버너", [], "버너 옵션입니다."),
+            OptionTypeDefinition("싱크대", [], "싱크대 옵션입니다."),
+            OptionTypeDefinition("튀김기", [], "튀김기 옵션입니다."),
+            OptionTypeDefinition("냄비", [], "냄비 옵션입니다."),
+            OptionTypeDefinition("전자레인지", [], "전자레인지 옵션입니다."),
+            OptionTypeDefinition("에어컨", ["실내온도"], "에어컨 옵션입니다."),
+            OptionTypeDefinition("커피 머신", ["커피머신 잔량"], "커피 머신 옵션입니다."),
+            OptionTypeDefinition("자판기", ["자판기 물품 재고량"], "자판기 옵션입니다."),
+            OptionTypeDefinition("스크린 골프", [], "스크린 골프 옵션입니다."),
+            OptionTypeDefinition("탁구", [], "탁구 옵션입니다."),
+            OptionTypeDefinition("보드게임", [], "보드게임 옵션입니다."),
+            OptionTypeDefinition("게임기", [], "게임기 옵션입니다."),
+            OptionTypeDefinition("리클라이닝 의자", [], "리클라이닝 의자 옵션입니다."),
+            OptionTypeDefinition("가스경보기", [], "가스경보기 옵션입니다.")
         ]
 
         dummy_option_types = [
-            {
-                "option_type_id": i + 1,  # Changed to start from 1
-                "option_type_name": option["optionTypeName"],
-                "option_type_size": f"{random.randint(1, 3)}x{random.randint(1, 3)}",
-                "option_type_cost": round(random.uniform(10.0, 100.0), 2),
-                "description": option["description"],
-                "option_type_images": fake.image_url(),
-                "option_type_features": ", ".join(option["displayFeatures"]),
-                "created_at": base_date,
-                "updated_at": base_date,
-                "created_by": 1,
-                "updated_by": 1,
-            }
-            for i, option in enumerate(option_type_data)
+            OptionType(
+                option_type_id=i + 1,
+                option_type_name=option_def.name,
+                option_type_size=f"{random.randint(1, 3)}x{random.randint(1, 3)}",
+                option_type_cost=round(random.uniform(10.0, 100.0), 2),
+                description=option_def.description,
+                option_type_images=fake.image_url(),
+                option_type_features=", ".join(option_def.display_features),
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            )
+            for i, option_def in enumerate(option_type_definitions)
         ]
-        session.add_all([OptionType(**option_type) for option_type in dummy_option_types])
+        session.add_all(dummy_option_types)
 
         # 📌 옵션 데이터 삽입
         dummy_options = []
         option_count = 3  # 각 옵션 타입당 생성할 옵션 개수
-        current_id = 1  # Initialize counter for options
+        current_id = 1
         for option_type in dummy_option_types:
             for _ in range(option_count):
-                option = {
-                    "option_id": current_id,  # Use counter instead of len(dummy_options)
-                    "option_type_id": option_type["option_type_id"],
-                    "status_id": 2,
-                    "created_at": base_date,
-                    "updated_at": base_date,
-                    "created_by": 1,
-                    "updated_by": 1,
-                }
+                option = Option(
+                    option_id=current_id,
+                    option_type_id=option_type.option_type_id,
+                    status_id=2,
+                    created_at=base_date,
+                    updated_at=base_date,
+                    created_by=1,
+                    updated_by=1
+                )
                 dummy_options.append(option)
-                current_id += 1  # Increment counter
-        session.add_all([Option(**option) for option in dummy_options])
+                current_id += 1
+        session.add_all(dummy_options)
 
-        module_set_data = [
-            {"moduleSetName": "기본본 모듈", "defaultOptionTypes": ["조명"]},
-            {"moduleSetName": "캠핑 모듈", "defaultOptionTypes": ["침대", "테이블", "의자", "냉장고", "배터리", "수납장", "물탱크", "냉난방기", "조명"]},
-            {"moduleSetName": "오피스 모듈", "defaultOptionTypes": ["테이블", "의자", "대형모니터", "배터리", "냉장고"]},
-            {"moduleSetName": "화장실 모듈", "defaultOptionTypes": ["좌변기", "세면대", "거울", "간이계단"]},
-            {"moduleSetName": "푸드트럭 모듈", "defaultOptionTypes": ["LPG", "버너", "싱크대", "튀김기", "냄비", "냉장고", "전자레인지", "의자", "에어컨", "가스경보기"]},
-            {"moduleSetName": "카페 모듈", "defaultOptionTypes": ["테이블", "의자", "커피 머신", "자판기", "냉난방기", "싱크대"]},
-            {"moduleSetName": "스포츠 모듈", "defaultOptionTypes": ["스크린 골프", "탁구", "보드게임"]},
-            {"moduleSetName": "게임 모듈", "defaultOptionTypes": ["대형모니터", "테이블", "배터리", "게임기", "냉난방기"]},
-            {"moduleSetName": "영화관 모듈", "defaultOptionTypes": ["대형모니터", "리클라이닝 의자", "테이블", "냉난방기", "배터리"]},
+        # 📌 모듈 세트 정의
+        module_set_definitions = [
+            ModuleSetDefinition("기본 모듈", ["조명"]),
+            ModuleSetDefinition("캠핑 모듈", ["침대", "테이블", "의자", "냉장고", "배터리", "수납장", "물탱크", "냉난방기", "조명"]),
+            ModuleSetDefinition("오피스 모듈", ["테이블", "의자", "대형모니터", "배터리", "냉장고"]),
+            ModuleSetDefinition("화장실 모듈", ["좌변기", "세면대", "거울", "간이계단"]),
+            ModuleSetDefinition("푸드트럭 모듈", ["LPG", "버너", "싱크대", "튀김기", "냄비", "냉장고", "전자레인지", "의자", "에어컨", "가스경보기"]),
+            ModuleSetDefinition("카페 모듈", ["테이블", "의자", "커피 머신", "자판기", "냉난방기", "싱크대"]),
+            ModuleSetDefinition("스포츠 모듈", ["스크린 골프", "탁구", "보드게임"]),
+            ModuleSetDefinition("게임 모듈", ["대형모니터", "테이블", "배터리", "게임기", "냉난방기"]),
+            ModuleSetDefinition("영화관 모듈", ["대형모니터", "리클라이닝 의자", "테이블", "냉난방기", "배터리"])
         ]
 
-        dummy_module_sets = []
-        for i, module_set in enumerate(module_set_data):
-            all_features = []
-            for option_name in module_set["defaultOptionTypes"]:
-                option_type = next(
-                    (opt for opt in option_type_data if opt["optionTypeName"] == option_name),
-                    None
-                )
-                if option_type and option_type["displayFeatures"]:
-                    all_features.extend(option_type["displayFeatures"])
-            unique_features = list(set(all_features))
-            dummy_module_sets.append({
-                "module_set_id": i + 1,  # Changed to start from 1
-                "module_set_name": module_set["moduleSetName"],
-                "description": fake.text(),
-                "module_set_images": fake.image_url(),
-                "module_set_features": ", ".join(unique_features),
-                "base_price": random.randint(1000, 5000),
-                "created_at": base_date,
-                "updated_at": base_date,
-                "created_by": 1,
-                "updated_by": 1,
-            })
-        session.add_all([ModuleSet(**module_set) for module_set in dummy_module_sets])
+        # 📌 모듈 세트 데이터 삽입
+        dummy_module_sets = [
+            ModuleSet(
+                module_set_id=i + 1,
+                module_set_name=module_set_def.name,
+                description=fake.text(),
+                module_set_images=fake.image_url(),
+                module_set_features="",  # 옵션 타입에 기반하여 업데이트될 것임
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            )
+            for i, module_set_def in enumerate(module_set_definitions)
+        ]
+        session.add_all(dummy_module_sets)
 
         # 📌 모듈 세트 옵션 타입 데이터 삽입
         dummy_module_set_option_types = []
-        current_id = 1  # Initialize counter for module set option types
-        for module_set in module_set_data:
-            module_set_id = next(ms["module_set_id"] for ms in dummy_module_sets 
-                                if ms["module_set_name"] == module_set["moduleSetName"])
-            for option_name in module_set["defaultOptionTypes"]:
-                option_type_id = next(
-                    (opt_type["option_type_id"] for opt_type in dummy_option_types 
-                     if opt_type["option_type_name"] == option_name),
-                    None
-                )
-                if option_type_id is not None:
-                    dummy_module_set_option_types.append({
-                        "module_set_option_type_id": current_id,  # Added ID starting from 1
-                        "module_set_id": module_set_id,
-                        "option_type_id": option_type_id,
-                        "option_quantity": 1
-                    })
-                    current_id += 1  # Increment counter
-        session.add_all([ModuleSetOptionTypes(**module_set_option_type) for module_set_option_type in dummy_module_set_option_types])
+        current_id = 1
+        
+        # Dictionary to map option type names to their IDs
+        option_type_name_to_id = {opt.option_type_name: opt.option_type_id for opt in dummy_option_types}
+        
+        for i, module_set_def in enumerate(module_set_definitions):
+            module_set_id = i + 1  # module_set_id는 1부터 시작
+            for option_type_name in module_set_def.default_option_types:
+                if option_type_name in option_type_name_to_id:
+                    option_type_id = option_type_name_to_id[option_type_name]
+                    dummy_module_set_option_types.append(
+                        ModuleSetOptionTypes(
+                            module_set_option_type_id=current_id,
+                            module_set_id=module_set_id,
+                            option_type_id=option_type_id,
+                            option_quantity=1
+                        )
+                    )
+                    current_id += 1
 
+        session.add_all(dummy_module_set_option_types)
         session.commit()
         print("✅ Seed Data Inserted Successfully!")
+        
     except Exception as e:
         session.rollback()
         print(f"❌ Error inserting seed data: {e}")

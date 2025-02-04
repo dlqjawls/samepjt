@@ -21,7 +21,7 @@ class OptionTypesData(BaseModel):
     pagination: Optional[Pagination] = None 
 
 
-class OptionTypesResponse(ResponseBase[List[OptionType]]):
+class OptionTypesResponse(ResponseBase[OptionTypesData]):
     """옵션 타입 목록 응답 모델"""
     class Config:
         schema_extra = {

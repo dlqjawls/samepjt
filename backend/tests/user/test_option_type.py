@@ -9,11 +9,10 @@ def test_get_option_types(client):
     
     assert data["resultCode"] == "SUCCESS"
     assert data["message"] == "Option types retrieved successfully"
-    assert isinstance(data["data"], list)
-    # 추가: 데이터가 비어있지 않은지 확인
-    assert len(data["data"]) > 0
-    # 추가: 기본 필드 존재 확인
-    first_item = data["data"][0]
+    assert "optionTypes" in data["data"]
+    assert isinstance(data["data"]["optionTypes"], list)
+    # 기본 필드 존재 확인
+    first_item = data["data"]["optionTypes"][0]
     assert "optionTypeId" in first_item
     assert "optionTypeName" in first_item
 
@@ -29,8 +28,8 @@ def test_get_option_types_with_pagination(client, page, page_size, expected_coun
     data = response.json()
     
     assert data["resultCode"] == "SUCCESS"
-    assert isinstance(data["data"], list)
-    assert len(data["data"]) <= expected_count  # 마지막 페이지는 더 작을 수 있음
+    assert isinstance(data["data"]["optionTypes"], list)
+    assert len(data["data"]["optionTypes"]) <= expected_count  # 마지막 페이지는 더 작을 수 있음
 
 # 잘못된 입력 테스트
 @pytest.mark.parametrize("invalid_param", [
@@ -62,10 +61,11 @@ def test_get_option_type_by_id(client, get_first_record_id):
     
     assert data["resultCode"] == "SUCCESS"
     assert data["message"] == "Option type retrieved successfully"
-    assert isinstance(data["data"], list)
-    assert len(data["data"]) == 1
-    # 추가: 반환된 데이터의 ID가 요청한 ID와 일치하는지 확인
-    assert data["data"][0]["optionTypeId"] == option_type_id
+    assert "optionTypes" in data["data"]
+    assert isinstance(data["data"]["optionTypes"], list)
+    assert len(data["data"]["optionTypes"]) == 1
+    # ID 일치 확인
+    assert data["data"]["optionTypes"][0]["optionTypeId"] == option_type_id
 
 # 에러 케이스 테스트
 @pytest.mark.parametrize("invalid_id,expected_status", [

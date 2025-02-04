@@ -61,3 +61,92 @@ class CancelRentResponse(ResponseBase[CancelRentResponseData]):
                 }
             }
         }
+        
+        
+        
+class VehicleStatus(BaseModel):
+    """차량 상태 정보"""
+    batteryLevel: int = Field(..., ge=0, le=100)
+    lightBrightness: int = Field(..., ge=0, le=100)
+
+class OptionStatus(BaseModel):
+    """옵션 상태 정보"""
+    optionName: str
+    optionStatus: str
+
+class RentStatus(BaseModel):
+    """렌트 상태 정보"""
+    vehicle: VehicleStatus
+    options: List[OptionStatus]
+
+class RentStatusResponseData(BaseModel):
+    """렌트 상태 조회 응답 데이터"""
+    isArrive: bool
+    location: Coordinate 
+    destination: Coordinate
+    ETA: datetime
+    distanceTravelled: float = Field(..., ge=0)
+    plannedPath: List[Coordinate]
+    SLAMMapData: str
+    status: RentStatus
+
+class RentStatusResponse(ResponseBase[RentStatusResponseData]):
+    """렌트 상태 조회 응답"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Vehicle rent status retrieved successfully",
+                "data": {
+                    "isArrive": False,
+                    "location": {"x": 12.313, "y": 32.3232},
+                    "destination": {"x": 40.1111, "y": 100.4194},
+                    "ETA": "2025-01-13T14:30:00Z",
+                    "distanceTravelled": 120.0,
+                    "plannedPath": [
+                        {"x": 12.3200, "y": 32.3300},
+                        {"x": 15.4500, "y": 35.6000}
+                    ],
+                    "SLAMMapData": "base64-encoded-map-data",
+                    "status": {
+                        "vehicle": {
+                            "batteryLevel": 85,
+                            "lightBrightness": 80
+                        },
+                        "options": [
+                            {
+                                "optionName": "물탱크",
+                                "optionStatus": "잔여량: 50L"
+                            },
+                            {
+                                "optionName": "배터리 팩",
+                                "optionStatus": "잔여량: 80%"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+class CompleteRentResponseData(BaseModel):
+    """렌트 완료 응답 데이터 모델"""
+    rent_id: int = Field(..., example=123)
+    total_mileage: float = Field(..., example=150.0)
+    usage_duration: int = Field(..., example=3)
+    estimated_payback_amount: float = Field(..., example=75000)
+
+class CompleteRentResponse(ResponseBase[CompleteRentResponseData]):
+    """렌트 완료 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Rental completed successfully",
+                "data": {
+                    "rent_id": 123,
+                    "total_mileage": 150.0,
+                    "usage_duration": 3,
+                    "estimated_payback_amount": 75000
+                }
+            }
+        }

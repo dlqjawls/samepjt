@@ -4,12 +4,17 @@ from app.models.module import Module
 from app.models.option import Option
 from app.models.usage_history import UsageHistory
 from app.crud.base import CRUDBase
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from typing import Any, Dict, List
+from sqlalchemy.exc import SQLAlchemyError
+from typing import Any, Dict, List, Optional
 
 from app.utils.exceptions import DatabaseError, NotFoundError, ValidationError
 
 class UsageHistoryCRUD(CRUDBase[UsageHistory]):
+    # 상태 상수 정의
+    STATUS_ACTIVE = 1
+    STATUS_INACTIVE = 2
+    STATUS_COMPLETED = 2
+
     def __init__(self):
         super().__init__(UsageHistory, "usage_id")
           
@@ -222,44 +227,95 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
                 }
             )
     
+    def update_usage_entries_status(
+        self,
+        session: Session,
+        rent_id: int,
+        vehicle_id: Optional[int],
+        module_id: Optional[int],
+        option_ids: List[int],
+        status_id: int
+    ) -> None:
+        """사용 기록 및 아이템 상태 업데이트
+
+        Args:
+            session: DB 세션
+            rent_id: 렌트 ID
+            vehicle_id: 차량 ID
+            module_id: 모듈 ID
+            option_ids: 옵션 ID 목록
+            status_id: 변경할 상태 ID
+        """
+        try:
+            if vehicle_id is not None:
+                session.execute(
+                    update(Vehicle)
+                    .filter(Vehicle.vehicle_id == vehicle_id)
+                    .values(status_id=status_id)
+                )
+            if module_id is not None:
+                session.execute(
+                    update(Module)
+                    .filter(Module.module_id == module_id)
+                    .values(status_id=status_id)
+                )
+            if option_ids:
+                session.execute(
+                    update(Option)
+                    .filter(Option.option_id.in_(option_ids))
+                    .values(status_id=status_id)
+                )
+
+            session.execute(
+                update(UsageHistory)
+                .filter(UsageHistory.rent_id == rent_id)
+                .values(status_id=status_id)
+            )
+            
+        except SQLAlchemyError as e:
+            raise DatabaseError(
+                message="Failed to update usage entries status",
+                detail={
+                    "error": str(e),
+                    "rent_id": rent_id,
+                    "status_id": status_id
+                }
+            )
+
+    def complete_usage_entries(
+        self,
+        session: Session,
+        rent_id: int,
+        vehicle_id: Optional[int],
+        module_id: Optional[int],
+        option_ids: List[int]
+    ) -> None:
+        """사용 기록 완료 처리"""
+        self.update_usage_entries_status(
+            session=session,
+            rent_id=rent_id,
+            vehicle_id=vehicle_id,
+            module_id=module_id,
+            option_ids=option_ids,
+            status_id=self.STATUS_COMPLETED
+        )
+
     def cancel_usage_entries(
         self,
         session: Session,
         rent_id: int,
         vehicle_id: int,
-        module_id:int,
+        module_id: int,
         option_ids: List[int]
     ) -> None:
-        """사용 기록 및 아이템 상태 업데이트"""
-        # 사용 기록 상태 업데이트
-        session.execute(
-            update(UsageHistory)
-            .where(UsageHistory.rent_id == rent_id)
-            .values(status_id=2)  # INACTIVE
+        """사용 기록 취소 처리"""
+        self.update_usage_entries_status(
+            session=session,
+            rent_id=rent_id,
+            vehicle_id=vehicle_id,
+            module_id=module_id,
+            option_ids=option_ids,
+            status_id=self.STATUS_INACTIVE
         )
-
-        # 차량 상태 업데이트
-        if vehicle_id:
-            session.execute(
-                update(Vehicle)
-                .where(Vehicle.vehicle_id == vehicle_id)
-                .values(status_id=2)  # INACTIVE
-            )
-
-        # 모듈 상태 업데이트
-        if module_id:
-            session.execute(
-                update(Module)
-                .where(Module.module_id == module_id)
-                .values(status_id=2)  # INACTIVE
-            )
-
-        # 옵션 상태 업데이트
-        if option_ids:
-            session.execute(
-                update(Option)
-                .where(Option.option_id.in_(option_ids))
-                .values(status_id=2)  # INACTIVE
-            )
 
 usage_history_crud = UsageHistoryCRUD()
