@@ -1,13 +1,8 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
-from app.api.schemas.common import ResponseBase
-
-class Coordinate(BaseModel):
-    """SLAM 기반 좌표 정보"""
-    x: float = Field(..., example=12.313, description="x 좌표", ge=-180, le=180)
-    y: float = Field(..., example=32.3232, description="y 좌표", ge=-90, le=90)
+from app.api.schemas.common import Coordinate, ResponseBase
 
 class SelectedOptionType(BaseModel):
     """사용자가 선택한 옵션 정보"""
@@ -61,7 +56,6 @@ class CancelRentResponse(ResponseBase[CancelRentResponseData]):
                 }
             }
         }
-        
         
         
 class VehicleStatus(BaseModel):
