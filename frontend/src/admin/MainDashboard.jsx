@@ -96,10 +96,10 @@ function MainDashboard() {
 
       {/* 2. Fleet Utilization & 상태 분포 */}
       <div className="section">
-        <h2>Fleet Utilization & 상태 분포</h2>
+        <h2>상태 차트</h2>
         <div className="fleet-utilization">
           <div className="pie-chart-container">
-            <h4>Vehicles</h4>
+            <h4>차량</h4>
             <PieChart width={250} height={250}>
               <Pie
                 data={dummyData.vehiclesStatusData}
@@ -122,7 +122,7 @@ function MainDashboard() {
             </PieChart>
           </div>
           <div className="pie-chart-container">
-            <h4>Modules</h4>
+            <h4>모듈</h4>
             <PieChart width={250} height={250}>
               <Pie
                 data={dummyData.modulesStatusData}
@@ -145,7 +145,7 @@ function MainDashboard() {
             </PieChart>
           </div>
           <div className="pie-chart-container">
-            <h4>Options</h4>
+            <h4>옵션</h4>
             <PieChart width={250} height={250}>
               <Pie
                 data={dummyData.optionsStatusData}
@@ -169,10 +169,9 @@ function MainDashboard() {
           </div>
         </div>
       </div>
-
       {/* 3. Sales Statistics */}
       <div className="section">
-        <h2>Sales Statistics</h2>
+        <h2>판매 통계</h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
             data={dummyData.salesChartData}
@@ -193,40 +192,42 @@ function MainDashboard() {
         </ResponsiveContainer>
       </div>
 
-      {/* 4. Maintenance History & Cost Analysis */}
-      <div className="section">
-        <h2>Maintenance History & Cost Analysis</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            data={dummyData.maintenanceData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="cost" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <div className="section-container">
+        {/* 4. Maintenance History & Cost Analysis */}
+        <div className="section">
+          <h2>정비 비용 그래프</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={dummyData.maintenanceData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="cost" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* 5. Module & Option Popularity */}
-      <div className="section">
-        <h2>Module & Option Popularity</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            data={dummyData.moduleOptionPopularityData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
+        {/* 5. Module & Option Popularity */}
+        <div className="section">
+          <h2>모듈 및 옵션 선호도</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={dummyData.moduleOptionPopularityData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "./Modal";
 import "./VehicleManagement.css";
+import { MdSearch } from "react-icons/md";
 
 function VehicleManagement() {
   /**
@@ -115,12 +116,11 @@ function VehicleManagement() {
     } catch (err) {
       console.error(err);
       if (err.response && err.response.data) {
-        setError(
-          err.response.data.message ||
-            "차량 목록을 불러오는 중 오류가 발생했습니다."
-        );
+        setError();
+        // err.response.data.message ||
+        //   "차량 목록을 불러오는 중 오류가 발생했습니다."
       } else {
-        setError("차량 목록을 불러오는 중 오류가 발생했습니다.");
+        // setError("차량 목록을 불러오는 중 오류가 발생했습니다.");
       }
       // API 호출 실패 시 더미 데이터를 사용
       setVehicles(initialDummyData);
@@ -470,7 +470,7 @@ function VehicleManagement() {
                       className="detail-button"
                       onClick={() => handleDetailClick(vehicle)}
                     >
-                      🔍
+                      <MdSearch />
                     </button>
                   </td>
                 </tr>

@@ -4,18 +4,18 @@
   padding: 20px;
 }
 
-.module-header {
+.module-container .module-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.module-header h1 {
+.module-container .module-header h1 {
   margin-bottom: 10px;
 }
 
-.add-button {
+.module-container .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
   color: white;
@@ -25,59 +25,69 @@
   margin-left: 10px;
 }
 
-.add-button:hover {
+.module-container .add-button:hover {
   background-color: #45a049;
 }
 
-.filters {
+.module-container .filters {
   margin: 20px 0;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.filters h2 {
+.module-container .filters h2 {
   width: 100%;
   margin-bottom: 10px;
 }
 
-.filters label {
+.module-container .filters label {
   margin-right: 20px;
   display: flex;
   align-items: center;
 }
 
-.filters input,
-.filters select {
+.module-container .filters input,
+.module-container .filters select {
   margin-left: 10px;
   padding: 5px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-.module-set-table,
-.module-table {
+.module-container .module-set-table,
+.module-container .module-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-.module-set-table th,
-.module-set-table td,
-.module-table th,
-.module-table td {
+.module-container .module-set-table th,
+.module-container .module-set-table td,
+.module-container .module-table th,
+.module-container .module-table td {
   border: 1px solid #ddd;
   padding: 8px;
+  text-align: center;
 }
 
-.module-set-table th,
-.module-table th {
+.module-container .module-set-table th,
+.module-container .module-table th {
   background-color: #f2f2f2;
   text-align: left;
 }
 
-.detail-button {
-  padding: 5px 10px;
+.module-container .detail-button {
+  padding: 6px 8px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.module-container .filters button {
+  padding: 10px 20px;
   background-color: #2196f3;
   color: white;
   border: none;
@@ -85,18 +95,18 @@
   border-radius: 4px;
 }
 
-.detail-button:hover {
+.module-container .detail-button:hover {
   background-color: #0b7dda;
 }
 
-.pagination {
+.module-container .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 40px;
 }
 
-.pagination button {
+.module-container .pagination button {
   padding: 5px 10px;
   margin: 0 10px;
   background-color: #e7e7e7;
@@ -105,67 +115,67 @@
   border-radius: 4px;
 }
 
-.pagination button:disabled {
+.module-container .pagination button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.error {
+.module-container .error {
   color: red;
   margin-bottom: 10px;
 }
 
 /* 모달 내용 스타일링 */
-.detail-content,
-.edit-content,
-.delete-content,
-.add-content {
+.module-container .detail-content,
+.module-container .edit-content,
+.module-container .delete-content,
+.module-container .add-content {
   padding: 20px;
 }
 
-.detail-content h2,
-.edit-content h2,
-.delete-content h2,
-.add-content h2 {
+.module-container .detail-content h2,
+.module-container .edit-content h2,
+.module-container .delete-content h2,
+.module-container .add-content h2 {
   margin-bottom: 20px;
 }
 
-.detail-content p,
-.edit-content p,
-.delete-content p,
-.add-content p {
+.module-container .detail-content p,
+.module-container .edit-content p,
+.module-container .delete-content p,
+.module-container .add-content p {
   margin-bottom: 10px;
 }
 
-.edit-form label,
-.add-form label {
+.module-container .edit-form label,
+.module-container .add-form label {
   display: block;
   margin-bottom: 10px;
 }
 
-.edit-form input,
-.edit-form select,
-.edit-form textarea,
-.add-form input,
-.add-form select,
-.add-form textarea {
+.module-container .edit-form input,
+.module-container .edit-form select,
+.module-container .edit-form textarea,
+.module-container .add-form input,
+.module-container .add-form select,
+.module-container .add-form textarea {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
   box-sizing: border-box;
 }
 
-.modal-actions {
+.module-container .modal-actions {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
 
-.edit-button,
-.delete-button,
-.save-button,
-.cancel-button,
-.confirm-delete-button {
+.module-container .edit-button,
+.module-container .delete-button,
+.module-container .save-button,
+.module-container .cancel-button,
+.module-container .confirm-delete-button {
   padding: 8px 16px;
   margin-left: 10px;
   border: none;
@@ -173,47 +183,47 @@
   border-radius: 4px;
 }
 
-.edit-button {
+.module-container .edit-button {
   background-color: #ffc107;
   color: white;
 }
 
-.edit-button:hover {
+.module-container .edit-button:hover {
   background-color: #e0a800;
 }
 
-.delete-button {
+.module-container .delete-button {
   background-color: #f44336;
   color: white;
 }
 
-.delete-button:hover {
+.module-container .delete-button:hover {
   background-color: #da190b;
 }
 
-.save-button {
+.module-container .save-button {
   background-color: #4caf50;
   color: white;
 }
 
-.save-button:hover {
+.module-container .save-button:hover {
   background-color: #45a049;
 }
 
-.cancel-button {
+.module-container .cancel-button {
   background-color: #e7e7e7;
   color: black;
 }
 
-.cancel-button:hover {
+.module-container .cancel-button:hover {
   background-color: #d5d5d5;
 }
 
-.confirm-delete-button {
+.module-container .confirm-delete-button {
   background-color: #f44336;
   color: white;
 }
 
-.confirm-delete-button:hover {
+.module-container .confirm-delete-button:hover {
   background-color: #da190b;
 }

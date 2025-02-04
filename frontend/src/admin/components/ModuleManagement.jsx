@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "./Modal";
 import "./ModuleManagement.css";
+import { MdSearch } from "react-icons/md";
 
 function ModuleManagement() {
   /**
@@ -163,12 +164,11 @@ function ModuleManagement() {
     } catch (err) {
       console.error(err);
       if (err.response && err.response.data) {
-        setError(
-          err.response.data.message ||
-            "모듈 세트 목록을 불러오는 중 오류가 발생했습니다."
-        );
+        setError();
+        // err.response.data.message ||
+        //   "모듈 세트 목록을 불러오는 중 오류가 발생했습니다."
       } else {
-        setError("모듈 세트 목록을 불러오는 중 오류가 발생했습니다.");
+        // setError("모듈 세트 목록을 불러오는 중 오류가 발생했습니다.");
       }
       // API 호출 실패 시 더미 데이터를 사용
       setModuleSets(initialDummyModuleSets);
@@ -211,12 +211,11 @@ function ModuleManagement() {
     } catch (err) {
       console.error(err);
       if (err.response && err.response.data) {
-        setError(
-          err.response.data.message ||
-            "모듈 목록을 불러오는 중 오류가 발생했습니다."
-        );
+        setError();
+        // err.response.data.message ||
+        //   "모듈 목록을 불러오는 중 오류가 발생했습니다."
       } else {
-        setError("모듈 목록을 불러오는 중 오류가 발생했습니다.");
+        // setError("모듈 목록을 불러오는 중 오류가 발생했습니다.");
       }
       // API 호출 실패 시 더미 데이터를 사용
       setModules(initialDummyModules);
@@ -833,13 +832,13 @@ function ModuleManagement() {
             className="add-button"
             onClick={() => handleAddClick("moduleSet")}
           >
-            + 모듈 세트 등록
+            모듈 세트 등록
           </button>
           <button
             className="add-button"
             onClick={() => handleAddClick("module")}
           >
-            + 모듈 등록
+            모듈 등록
           </button>
         </div>
       </div>
@@ -848,7 +847,7 @@ function ModuleManagement() {
       <div className="filters">
         <h2>모듈 세트 목록</h2>
         <label>
-          검색:
+          검색
           <input
             type="text"
             name="moduleSetSearch"
@@ -918,7 +917,7 @@ function ModuleManagement() {
                         className="detail-button"
                         onClick={() => handleModuleSetDetailClick(set)}
                       >
-                        🔍 상세보기
+                        <MdSearch />
                       </button>
                     </td>
                   </tr>
@@ -962,7 +961,7 @@ function ModuleManagement() {
       <div className="filters">
         <h2>모듈 목록</h2>
         <label>
-          상태:
+          상태
           <select
             name="moduleStatus"
             value={filters.moduleStatus}
@@ -975,7 +974,7 @@ function ModuleManagement() {
           </select>
         </label>
         <label>
-          검색:
+          검색
           <input
             type="text"
             name="moduleSearch"
@@ -1032,7 +1031,7 @@ function ModuleManagement() {
                         className="detail-button"
                         onClick={() => handleModuleDetailClick(module)}
                       >
-                        🔍 상세보기
+                        <MdSearch />
                       </button>
                     </td>
                   </tr>

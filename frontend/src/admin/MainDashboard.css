@@ -13,13 +13,30 @@
   margin-bottom: 40px;
 }
 
-.section {
-  margin-bottom: 100px;
+.section-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
 }
+
+.section {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 50px;
+  margin-right: 10px;
+  margin-left: 10px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .section h2 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
+  text-align: left;
+  margin-left: 20px;
 }
 
 /* Fleet Utilization 섹션 */
@@ -28,6 +45,7 @@
   justify-content: space-around;
   flex-wrap: wrap;
 }
+
 .pie-chart-container {
   margin: 20px;
   text-align: center;

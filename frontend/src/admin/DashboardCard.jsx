@@ -4,8 +4,8 @@ import "./DashboardCard.css";
 function DashboardCard({ title, value }) {
   return (
     <div className="dashboard-card">
-      <p>{title}</p>
-      <h2>{value}</h2>
+      <p className="dashboard-card-title">{title}</p>
+      <h2 className="dashboard-card-value">{value}</h2>
     </div>
   );
 }
