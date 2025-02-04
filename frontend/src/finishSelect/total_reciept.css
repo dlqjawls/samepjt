@@ -1,87 +1,87 @@
-.receipt-container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-}
+  .receipt-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+  }
 
-.receipt {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+  .receipt {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
 
-.receipt-title {
-  text-align: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333;
-}
+  .receipt-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
 
-.receipt-header {
-  border-bottom: 2px dashed #eee;
-  padding-bottom: 15px;
-  margin-bottom: 20px;
-}
+  .receipt-header {
+    border-bottom: 2px dashed #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+  }
 
-.receipt-items table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
+  .receipt-items table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
 
-.receipt-items th,
-.receipt-items td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
+  .receipt-items th,
+  .receipt-items td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
 
-.receipt-items th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-}
+  .receipt-items th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
 
-.receipt-total {
-  margin: 20px 0;
-  padding: 20px 0;
-  border-top: 2px dashed #eee;
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-}
+  .receipt-total {
+    margin: 20px 0;
+    padding: 20px 0;
+    border-top: 2px dashed #eee;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
 
-.button-group {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 30px;
-}
+  .button-group {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+  }
 
-.payment-button,
-.back-button {
-  padding: 12px 40px;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  border: none;
-}
+  .payment-button,
+  .back-button {
+    padding: 12px 40px;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: none;
+  }
 
-.payment-button {
-  background-color: #007bff;
-  color: white;
-}
+  .payment-button {
+    background-color: #007bff;
+    color: white;
+  }
 
-.back-button {
-  background-color: #6c757d;
-  color: white;
-}
+  .back-button {
+    background-color: #6c757d;
+    color: white;
+  }
 
-.payment-button:hover {
-  background-color: #0056b3;
-}
+  .payment-button:hover {
+    background-color: #0056b3;
+  }
 
-.back-button:hover {
-  background-color: #5a6268;
-}
+  .back-button:hover {
+    background-color: #5a6268;
+  }

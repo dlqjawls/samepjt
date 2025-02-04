@@ -237,7 +237,7 @@ const ExistOptionsPage = () => {
         )}
 
         <div className="navigation-buttons">
-          <button onClick={goToPreviousPage} className="custom-next-button">
+          <button onClick={goToPreviousPage} className="custom-preview-button">
             이전 페이지로 돌아가기
           </button>
           <button onClick={goToNextPage} className="custom-next-button">

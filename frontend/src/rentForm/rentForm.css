@@ -1,5 +1,5 @@
 /* 전체 레이아웃 */
-.rent-form-wrapper {
+.rent-form-wrapper-unique {
   display: flex;
   flex-direction: row; /* 왼쪽에 지도, 오른쪽에 폼 */
   height: 100vh; /* 화면 전체 높이 */
@@ -9,11 +9,11 @@
 }
 
 /* 지도 컨테이너 */
-.map-container {
+.map-container-unique {
   flex: 2; /* 지도 영역이 더 크게 보이도록 설정 */
 }
 
-.map-image {
+.map-image-unique {
   width: 100%;
   height: 100%;
   object-fit: cover; /* 이미지 크기에 맞춰 보기 좋게 조정 */
@@ -22,48 +22,49 @@
 }
 
 /* 폼 컨테이너 */
-.form-container {
+.form-container-unique {
   margin: 10px;
   flex: 1; /* 폼 영역 */
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-
   flex-direction: column;
   justify-content: space-between; /* 버튼을 아래에 고정 */
+  max-width: 500px; /* 최대 너비 설정 */
+  width: 100%; /* 반응형 너비 */
 }
 
 /* 제목 스타일 */
-.form-title {
+.form-title-unique {
   font-size: 1.5rem;
   margin-bottom: 20px;
   text-align: center;
 }
 
 /* 입력 폼 그룹 */
-.form-group {
+.form-group-unique {
   margin-bottom: 15px;
 }
 
-.form-group label {
+.form-group-unique label {
   display: block;
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-.form-input {
+.form-input-unique {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box; /* 박스 크기 조정 */
 }
 
 /* 버튼 스타일 */
-.reset-button {
+.reset-button-unique {
   padding: 10px 15px;
   background-color: #f1f1f1;
   color: #333;
@@ -74,9 +75,9 @@
   width: 100%;
 }
 
-.next-button {
+.next-button-unique {
   padding: 10px 15px;
-  background-color: #007bff;
+  background-color: black;
   color: white;
   font-size: 1rem;
   border: none;
@@ -87,31 +88,31 @@
   box-sizing: border-box;
 }
 
-.next-button:hover {
-  background-color: #0056b3;
+.next-button-unique:hover {
+  background-color: gray  ;
 }
 
 @media (max-width: 768px) {
-  .rent-form-wrapper {
+  .rent-form-wrapper-unique {
     flex-direction: column;
   }
 
-  .map-container {
+  .map-container-unique {
     flex: none;
     height: 50%;
   }
 
-  .form-container {
+  .form-container-unique {
     flex: none;
     height: auto;
   }
 }
 
-.form-content {
+.form-content-unique {
   flex: 1;
 }
 
-.error-message {
+.error-message-unique {
   color: #dc3545;
   font-size: 0.9rem;
   margin: 10px 0;
@@ -121,18 +122,18 @@
   text-align: center;
 }
 
-.button-group {
+.button-group-unique {
   margin-top: 20px;
 }
 
-.form-input:invalid {
+.form-input-unique:invalid {
   border-color: #dc3545;
 }
 
-.form-group {
+.form-group-unique {
   margin-bottom: 20px;
 }
 
-.reset-button:hover {
+.reset-button-unique:hover {
   background-color: #e2e2e2;
 }
