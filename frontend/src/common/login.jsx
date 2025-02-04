@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import LoginModal from "../LoginModal"
-
+import { toast } from "react-toastify";
 const LoginButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false) // 모달 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false) // 로그인 상태
@@ -20,13 +20,13 @@ const LoginButton = () => {
     sessionStorage.setItem("token") // 임시 토큰 저장
     setIsLoggedIn(true)
     setIsModalOpen(false)
-    alert("로그인 성공!")
+    
   }
 
   const handleLogout = () => {
     sessionStorage.removeItem("token")
     setIsLoggedIn(false)
-    alert("로그아웃되었습니다.")
+    toast.info("로그아웃 되었습니다.");
     navigate("/") // 홈으로 리디렉션
   }
 

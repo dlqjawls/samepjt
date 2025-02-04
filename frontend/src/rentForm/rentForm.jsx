@@ -10,11 +10,12 @@ const RentForm = () => {
 
   useEffect(() => {
     const now = new Date();
+    now.setMinutes(now.getMinutes() + 15); // 현재 시간에 15분 추가
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes() + 15).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
     setRentStartDate(formattedDate);
   }, []);
