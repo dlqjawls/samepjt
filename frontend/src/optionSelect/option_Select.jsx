@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import "./option_Select.css"
 
 const OptionDetailsModal = ({ option, onClose }) => {
+  
   if (!option) return null
 
   return (
@@ -13,7 +14,7 @@ const OptionDetailsModal = ({ option, onClose }) => {
           ×
         </button>
         <img src={option.imgUrls[0]} alt={option.optionTypeName} className="modal-image" />
-        <h2>{option.optionTypeName}</h2>
+         <h2>{option.optionTypeName}</h2>
         <div className="modal-details">
           <p>
             <strong>설명:</strong> {option.description}
@@ -36,6 +37,9 @@ const OptionDetailsModal = ({ option, onClose }) => {
 const ExistOptionsPage = () => {
   const location = useLocation()
   const navigate = useNavigate()
+  const moduleSetcarString = sessionStorage.getItem("ModuleSet");
+  const moduleSetcar = JSON.parse(moduleSetcarString);
+  console.log(moduleSetcar);
 
   const [selectedOptions, setSelectedOptions] = useState([])
   const [allOptions, setAllOptions] = useState([])
@@ -72,6 +76,7 @@ const ExistOptionsPage = () => {
       const existingOptions = location.state?.existingOptions || []
       const moduleOptions = location.state?.selectedModule?.moduleSetOptionTypes || []
       const selectedOptionData = existingOptions.length > 0 ? existingOptions : moduleOptions
+  
 
       const completeSelectedOptions = selectedOptionData
         .map((selectedItem) => {
@@ -162,6 +167,12 @@ const ExistOptionsPage = () => {
   return (
     <div className="custom-container">
       <div className="vehicle-image">
+        <h1 className="custom-heading">
+          {moduleSetcar.moduleSetName} 차량
+        </h1>
+        <h3 className="custom-subheading">
+          {moduleSetcar.description}
+        </h3>
         <img src="./pbvcarsi.gif" alt="Vehicle" />
       </div>
 
@@ -179,7 +190,6 @@ const ExistOptionsPage = () => {
 
         {activeTab === "selected" && (
           <div className="options-section">
-            
             <div className="custom-grid">
               {selectedOptions.map((option) => (
                 <div key={option.optionTypeId} className="custom-card" onClick={() => setSelectedOptionDetails(option)}>
