@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import moducar_logo from "../assets/moducar_logo.svg";
 import { toast } from "react-toastify";
+import { AdminAuthContext } from "./context/AdminAuthContext";
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const { loginAdmin } = useContext(AdminAuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -31,13 +33,20 @@ const AdminLogin = () => {
     try {
       const response = await axios.post(
         "https://backend-wandering-river-6835.fly.dev/auth/admin/login",
-        formData
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
       );
       toast.success("관리자 로그인 성공");
       console.log("관리자 로그인 성공:", response.data);
       const token = response.data.access_token;
       console.log(token);
-      localStorage.setItem("adminToken", token);
+      const adminData = { id: formData.id, token: token };
+      loginAdmin(adminData);
       navigate("/admin/index");
     } catch (err) {
       // setError(

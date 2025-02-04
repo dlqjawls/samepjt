@@ -3,16 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { FaBell, FaEnvelope } from "react-icons/fa";
 import "./Header.css";
 import accountCircle from "../assets/account_circle.svg";
+import { AdminAuthContext } from "./context/AdminAuthContext";
 
 function Header() {
   const navigate = useNavigate();
-
-  const logout = () => {
-    localStorage.removeItem("adminToken");
-  };
+  const { admin, logoutAdmin } = useContext(AdminAuthContext);
 
   const handleLogout = () => {
-    logout();
+    logoutAdmin();
     navigate("/admin/login");
   };
 
@@ -33,7 +31,7 @@ function Header() {
             alt="admin-profile"
             className="profile-image"
           />
-          <span className="profile-name">admin</span>
+          <span className="profile-name">{admin ? admin.id : "관리자"}</span>
         </div>
         <button className="admin-logout-button" onClick={handleLogout}>
           로그아웃
