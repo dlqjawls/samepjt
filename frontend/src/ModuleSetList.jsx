@@ -65,6 +65,7 @@ function ModuleSetList() {
 
   const handleNextStep = () => {
     navigate("/option_select", { state: { selectedModule } });
+    sessionStorage.setItem("ModuleSet", JSON.stringify(selectedModule));
   };
 
   return (
