@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./RegistrationForm.css";
+
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
     id: "",
     password: "",
+    confirmPassword: "",
     email: "",
     name: "",
     phoneNum: "",
@@ -44,6 +46,8 @@ const RegistrationForm = () => {
     const newErrors = {};
     if (!formData.id) newErrors.id = "아이디를 입력해주세요";
     if (!formData.password) newErrors.password = "비밀번호를 입력해주세요";
+    if (!formData.confirmPassword) newErrors.confirmPassword = "비밀번호 확인을 입력해주세요";
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "비밀번호가 일치하지 않습니다";
     if (!formData.email) newErrors.email = "이메일을 입력해주세요";
     else if (!validateEmail(formData.email))
       newErrors.email = "올바른 이메일 형식이 아닙니다";
@@ -105,6 +109,18 @@ const RegistrationForm = () => {
         )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
+            <label>아이디</label>
+            <input
+              type="text"
+              name="id"
+              value={formData.id}
+              onChange={handleChange}
+              className={errors.id ? "input-error" : ""}
+            />
+            {errors.id && <p className="error">{errors.id}</p>}
+          </div>
+
+          <div className="form-group">
             <label>이메일</label>
             <input
               type="email"
@@ -132,12 +148,12 @@ const RegistrationForm = () => {
             <label>전화번호</label>
             <input
               type="tel"
-              name="phone"
-              value={formData.phone}
+              name="phoneNum"
+              value={formData.phoneNum}
               onChange={handleChange}
-              className={errors.phone ? "input-error" : ""}
+              className={errors.phoneNum ? "input-error" : ""}
             />
-            {errors.phone && <p className="error">{errors.phone}</p>}
+            {errors.phoneNum && <p className="error">{errors.phoneNum}</p>}
           </div>
 
           <div className="form-group">
@@ -190,7 +206,6 @@ const RegistrationForm = () => {
       </div>
     </div>
   );
-
 };
 
 export default RegistrationForm;
