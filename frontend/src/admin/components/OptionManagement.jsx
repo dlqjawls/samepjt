@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 import "./OptionManagement.css";
+import { MdSearch } from "react-icons/md";
 
 function OptionManagement() {
   /**
@@ -448,14 +449,14 @@ function OptionManagement() {
       <div className="option-header">
         <h1>옵션 관리</h1>
         <button className="add-button" onClick={() => openModal("add")}>
-          + 신규 등록
+          신규 등록
         </button>
       </div>
 
       {/* 필터링 섹션 */}
       <div className="filters">
         <label>
-          검색:
+          검색
           <input
             type="text"
             name="search"
@@ -465,7 +466,7 @@ function OptionManagement() {
           />
         </label>
         <label>
-          상태:
+          상태
           <select
             name="status"
             value={filters.status}
@@ -520,7 +521,7 @@ function OptionManagement() {
                         className="detail-button"
                         onClick={() => openModal("detail", option)}
                       >
-                        🔍 상세보기
+                        <MdSearch />
                       </button>
                     </td>
                   </tr>

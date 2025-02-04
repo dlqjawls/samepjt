@@ -50,9 +50,9 @@
 
 /* 닫기 버튼 */
 .admin-modal-close-button {
-  position: absolute;
+  position:absolute;
   top: 12px;
-  right: 12px;
+  right: 0px;
   background: none;
   border: none;
   font-size: 24px;

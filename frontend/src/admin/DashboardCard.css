@@ -5,6 +5,7 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
     text-align: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 10px;
   }
   
   .dashboard-card:hover {
@@ -20,7 +21,7 @@
   }
   
   .dashboard-card-value {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 700;
     color: #007bff; /* 파란색 강조 */
   }

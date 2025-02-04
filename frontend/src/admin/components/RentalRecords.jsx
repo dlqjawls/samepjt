@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 import "./RentalRecords.css";
+import { MdVideoLibrary, MdSearch, MdVideocam } from "react-icons/md";
 
 function RentalRecords() {
   /**
@@ -231,9 +232,13 @@ function RentalRecords() {
     setLoading(true);
     setError("");
     try {
+      /**
+       * !!! 이 부분은 최신 버전으로 갱신해야 함
+       */
+
       // API 연동 시 주석 해제하고 사용
       /*
-      const response = await axios.get(`${BASE_URL}/admin/rent/list`, {
+      const response = await axios.get(`${BASE_URL}/admin/rent-history`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : undefined,
@@ -363,7 +368,7 @@ function RentalRecords() {
       {/* 필터링 섹션 */}
       <div className="filters">
         <label>
-          사용자 ID:
+          사용자 ID
           <input
             type="text"
             name="userId"
@@ -373,7 +378,7 @@ function RentalRecords() {
           />
         </label>
         <label>
-          차량 ID/번호:
+          차량 ID/번호
           <input
             type="text"
             name="carId"
@@ -383,7 +388,7 @@ function RentalRecords() {
           />
         </label>
         <label>
-          시작 날짜:
+          시작 날짜
           <input
             type="date"
             name="startDate"
@@ -392,7 +397,7 @@ function RentalRecords() {
           />
         </label>
         <label>
-          종료 날짜:
+          종료 날짜
           <input
             type="date"
             name="endDate"
@@ -454,7 +459,7 @@ function RentalRecords() {
                         className="detail-button"
                         onClick={() => openModal("detail", log)}
                       >
-                        🔍 상세보기
+                        <MdSearch />
                       </button>
                     </td>
                     <td>
@@ -462,7 +467,7 @@ function RentalRecords() {
                         className="video-button"
                         onClick={() => openModal("autonomousVideo", log)}
                       >
-                        📹 자율 주행 영상
+                        <MdVideoLibrary />
                       </button>
                     </td>
                     <td>
@@ -470,7 +475,7 @@ function RentalRecords() {
                         className="video-button"
                         onClick={() => openModal("moduleVideo", log)}
                       >
-                        📹 모듈 장착 영상
+                        <MdVideocam />
                       </button>
                     </td>
                   </tr>

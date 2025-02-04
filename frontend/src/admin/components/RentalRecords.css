@@ -2,21 +2,20 @@
 
 .rental-container {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
-.rental-header {
+.rental-container .rental-header {
   display: flex;
   justify-content: left;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.rental-header h1 {
+.rental-container .rental-header h1 {
   font-size: 2em;
 }
 
-.filters {
+.rental-container .filters {
   margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
@@ -24,52 +23,22 @@
   align-items: center;
 }
 
-.filters label {
+.rental-container .filters label {
   display: flex;
   flex-direction: column;
   font-weight: bold;
 }
 
-.filters input,
-.filters select {
+.rental-container .filters input,
+.rental-container .filters select {
   padding: 8px;
   margin-top: 5px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-.filters button {
+.rental-container .filters button {
   padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.filters button:hover {
-  background-color: #45a049;
-}
-
-.rental-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.rental-table th,
-.rental-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: center;
-}
-
-.rental-table th {
-  background-color: #f2f2f2;
-}
-
-.detail-button {
-  padding: 8px 12px;
   background-color: #2196f3;
   color: white;
   border: none;
@@ -77,32 +46,61 @@
   border-radius: 4px;
 }
 
-.detail-button:hover {
+.rental-container .filters button:hover {
+  background-color: #45a049;
+}
+
+.rental-container .rental-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.rental-container .rental-table th,
+.rental-container .rental-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.rental-container .rental-table th {
+  background-color: #f2f2f2;
+}
+
+.rental-container .detail-button {
+  padding: 6px 8px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.rental-container .detail-button:hover {
   background-color: #0b7dda;
 }
 
-.video-button {
-  padding: 8px 12px;
+.rental-container .video-button {
+  padding: 6px 8px;
   background-color: #ff9800;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
-  margin-right: 5px;
+  border-radius: 20px;
 }
 
-.video-button:hover {
+.rental-container .video-button:hover {
   background-color: #e68900;
 }
 
-.pagination {
+.rental-container .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
 }
 
-.pagination button {
+.rental-container .pagination button {
   padding: 8px 16px;
   background-color: #e7e7e7;
   border: none;
@@ -110,71 +108,71 @@
   border-radius: 4px;
 }
 
-.pagination button:disabled {
+.rental-container .pagination button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.error {
+.rental-container .error {
   color: red;
   text-align: center;
   margin-bottom: 10px;
 }
 
 /* 모달 내용 스타일링 */
-.detail-content,
-.autonomous-video-content,
-.module-video-content {
+.rental-container .detail-content,
+.rental-container .autonomous-video-content,
+.rental-container .module-video-content {
   padding: 20px;
 }
 
-.detail-content h2,
-.autonomous-video-content h2,
-.module-video-content h2 {
+.rental-container .detail-content h2,
+.rental-container .autonomous-video-content h2,
+.rental-container .module-video-content h2 {
   margin-bottom: 20px;
   text-align: center;
 }
 
-.detail-content p,
-.autonomous-video-content p,
-.module-video-content p {
+.rental-container .detail-content p,
+.rental-container .autonomous-video-content p,
+.rental-container .module-video-content p {
   margin-bottom: 10px;
 }
 
-.detail-content h3,
-.autonomous-video-content h3,
-.module-video-content h3 {
+.rental-container .detail-content h3,
+.rental-container .autonomous-video-content h3,
+.rental-container .module-video-content h3 {
   margin-top: 20px;
   margin-bottom: 10px;
 }
 
-.detail-content ul,
-.autonomous-video-content ul {
+.rental-container .detail-content ul,
+.rental-container .autonomous-video-content ul {
   list-style-type: disc;
   padding-left: 20px;
 }
 
-.autonomous-log,
-.module-video {
+.rental-container .autonomous-log,
+.rental-container .module-video {
   margin-bottom: 20px;
 }
 
-.video-section {
+.rental-container .video-section {
   margin-bottom: 15px;
 }
 
-.video-section p {
+.rental-container .video-section p {
   margin-bottom: 5px;
 }
 
-.autonomous-video-content video,
-.module-video-content video {
+.rental-container .autonomous-video-content video,
+.rental-container .module-video-content video {
   width: 100%;
   height: auto;
   margin-bottom: 10px;
 }
 
-.modal-actions {
+.rental-container .modal-actions {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
@@ -183,19 +181,19 @@
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-  .filters {
+  .rental-container .filters {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .rental-table th,
-  .rental-table td {
+  .rental-container .rental-table th,
+  .rental-container .rental-table td {
     padding: 8px;
   }
 
-  .detail-content h2,
-  .autonomous-video-content h2,
-  .module-video-content h2 {
+  .rental-container .detail-content h2,
+  .rental-container .autonomous-video-content h2,
+  .rental-container .module-video-content h2 {
     font-size: 1.5em;
   }
 }

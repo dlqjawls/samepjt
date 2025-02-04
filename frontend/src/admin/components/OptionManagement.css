@@ -4,18 +4,18 @@
   padding: 20px;
 }
 
-.option-header {
+.option-container .option-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.option-header h1 {
+.option-container .option-header h1 {
   margin-bottom: 10px;
 }
 
-.add-button {
+.option-container .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
   color: white;
@@ -24,50 +24,19 @@
   border-radius: 4px;
 }
 
-.add-button:hover {
+.option-container .add-button:hover {
   background-color: #45a049;
 }
 
-.filters {
+.option-container .filters {
   margin: 20px 0;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.filters label {
-  margin-right: 20px;
-  display: flex;
-  align-items: center;
-}
-
-.filters input,
-.filters select {
-  margin-left: 10px;
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.option-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.option-table th,
-.option-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.option-table th {
-  background-color: #f2f2f2;
-  text-align: left;
-}
-
-.detail-button {
-  padding: 5px 10px;
+.option-container .filters button {
+  padding: 10px 20px;
   background-color: #2196f3;
   color: white;
   border: none;
@@ -75,18 +44,59 @@
   border-radius: 4px;
 }
 
-.detail-button:hover {
+.option-container .filters label {
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.option-container .filters input,
+.option-container .filters select {
+  margin-left: 10px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.option-container .option-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.option-container .option-table th,
+.option-container .option-table td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 8px;
+}
+
+.option-container .option-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.option-container .detail-button {
+  padding: 6px 8px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.option-container .detail-button:hover {
   background-color: #0b7dda;
 }
 
-.pagination {
+.option-container .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 40px;
 }
 
-.pagination button {
+.option-container .pagination button {
   padding: 5px 10px;
   margin: 0 10px;
   background-color: #e7e7e7;
@@ -95,67 +105,67 @@
   border-radius: 4px;
 }
 
-.pagination button:disabled {
+.option-container .pagination button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.error {
+.option-container .error {
   color: red;
   margin-bottom: 10px;
 }
 
 /* 모달 내용 스타일링 */
-.detail-content,
-.edit-content,
-.delete-content,
-.add-content {
+.option-container .detail-content,
+.option-container .edit-content,
+.option-container .delete-content,
+.option-container .add-content {
   padding: 20px;
 }
 
-.detail-content h2,
-.edit-content h2,
-.delete-content h2,
-.add-content h2 {
+.option-container .detail-content h2,
+.option-container .edit-content h2,
+.option-container .delete-content h2,
+.option-container .add-content h2 {
   margin-bottom: 20px;
 }
 
-.detail-content p,
-.edit-content p,
-.delete-content p,
-.add-content p {
+.option-container .detail-content p,
+.option-container .edit-content p,
+.option-container .delete-content p,
+.option-container .add-content p {
   margin-bottom: 10px;
 }
 
-.edit-form label,
-.add-form label {
+.option-container .edit-form label,
+.option-container .add-form label {
   display: block;
   margin-bottom: 10px;
 }
 
-.edit-form input,
-.edit-form select,
-.edit-form textarea,
-.add-form input,
-.add-form select,
-.add-form textarea {
+.option-container .edit-form input,
+.option-container .edit-form select,
+.option-container .edit-form textarea,
+.option-container .add-form input,
+.option-container .add-form select,
+.option-container .add-form textarea {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
   box-sizing: border-box;
 }
 
-.modal-actions {
+.option-container .modal-actions {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
 
-.edit-button,
-.delete-button,
-.save-button,
-.cancel-button,
-.confirm-delete-button {
+.option-container .edit-button,
+.option-container .delete-button,
+.option-container .save-button,
+.option-container .cancel-button,
+.option-container .confirm-delete-button {
   padding: 8px 16px;
   margin-left: 10px;
   border: none;
@@ -163,53 +173,53 @@
   border-radius: 4px;
 }
 
-.edit-button {
+.option-container .edit-button {
   background-color: #ffc107;
   color: white;
 }
 
-.edit-button:hover {
+.option-container .edit-button:hover {
   background-color: #e0a800;
 }
 
-.delete-button {
+.option-container .delete-button {
   background-color: #f44336;
   color: white;
 }
 
-.delete-button:hover {
+.option-container .delete-button:hover {
   background-color: #da190b;
 }
 
-.save-button {
+.option-container .save-button {
   background-color: #4caf50;
   color: white;
 }
 
-.save-button:hover {
+.option-container .save-button:hover {
   background-color: #45a049;
 }
 
-.cancel-button {
+.option-container .cancel-button {
   background-color: #e7e7e7;
   color: black;
 }
 
-.cancel-button:hover {
+.option-container .cancel-button:hover {
   background-color: #d5d5d5;
 }
 
-.confirm-delete-button {
+.option-container .confirm-delete-button {
   background-color: #f44336;
   color: white;
 }
 
-.confirm-delete-button:hover {
+.option-container .confirm-delete-button:hover {
   background-color: #da190b;
 }
 
 /* 옵션 이미지 스타일링 */
-.option-image {
+.option-container .option-image {
   width: 100px;
   height: auto;
   margin-bottom: 10px;

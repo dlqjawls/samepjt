@@ -2,21 +2,20 @@
 
 .maintenance-container {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
-.maintenance-header {
+.maintenance-container .maintenance-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.maintenance-header h1 {
+.maintenance-container .maintenance-header h1 {
   font-size: 2em;
 }
 
-.add-button {
+.maintenance-container .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
   color: white;
@@ -25,11 +24,11 @@
   border-radius: 4px;
 }
 
-.add-button:hover {
+.maintenance-container .add-button:hover {
   background-color: #45a049;
 }
 
-.filters {
+.maintenance-container .filters {
   margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
@@ -37,21 +36,21 @@
   align-items: center;
 }
 
-.filters label {
+.maintenance-container .filters label {
   display: flex;
   flex-direction: column;
   font-weight: bold;
 }
 
-.filters input,
-.filters select {
+.maintenance-container .filters input,
+.maintenance-container .filters select {
   padding: 8px;
   margin-top: 5px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-.filters button {
+.maintenance-container .filters button {
   padding: 10px 20px;
   background-color: #2196f3;
   color: white;
@@ -60,84 +59,84 @@
   border-radius: 4px;
 }
 
-.filters button:hover {
+.maintenance-container .filters button:hover {
   background-color: #0b7dda;
 }
 
-.maintenance-table {
+.maintenance-container .maintenance-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-.maintenance-table th,
-.maintenance-table td {
+.maintenance-container .maintenance-table th,
+.maintenance-container .maintenance-table td {
   border: 1px solid #ddd;
   padding: 12px;
   text-align: center;
 }
 
-.maintenance-table th {
+.maintenance-container .maintenance-table th {
   background-color: #f2f2f2;
 }
 
-.detail-button {
-  padding: 6px 10px;
+.maintenance-container .detail-button {
+  padding: 6px 8px;
   background-color: #2196f3;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 20px;
 }
 
-.detail-button:hover {
+.maintenance-container .detail-button:hover {
   background-color: #0b7dda;
 }
 
-.edit-button {
-  padding: 6px 10px;
+.maintenance-container .edit-button {
+  padding: 6px 8px;
   background-color: #ff9800;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 20px;
 }
 
-.edit-button:disabled {
+.maintenance-container .edit-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.edit-button:hover:not(:disabled) {
+.maintenance-container .edit-button:hover:not(:disabled) {
   background-color: #e68900;
 }
 
-.delete-button {
-  padding: 6px 10px;
+.maintenance-container .delete-button {
+  padding: 6px 8px;
   background-color: #f44336;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 20px;
 }
 
-.delete-button:disabled {
+.maintenance-container .delete-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.delete-button:hover:not(:disabled) {
+.maintenance-container .delete-button:hover:not(:disabled) {
   background-color: #da190b;
 }
 
-.pagination {
+.maintenance-container .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
 }
 
-.pagination button {
+.maintenance-container .pagination button {
   padding: 8px 16px;
   background-color: #e7e7e7;
   border: none;
@@ -145,74 +144,74 @@
   border-radius: 4px;
 }
 
-.pagination button:disabled {
+.maintenance-container .pagination button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.error {
+.maintenance-container .error {
   color: red;
   text-align: center;
   margin-bottom: 10px;
 }
 
 /* 모달 내용 스타일링 */
-.detail-content,
-.edit-content,
-.delete-content,
-.add-content {
+.maintenance-container .detail-content,
+.maintenance-container .edit-content,
+.maintenance-container .delete-content,
+.maintenance-container .add-content {
   padding: 20px;
 }
 
-.detail-content h2,
-.edit-content h2,
-.delete-content h2,
-.add-content h2 {
+.maintenance-container .detail-content h2,
+.maintenance-container .edit-content h2,
+.maintenance-container .delete-content h2,
+.maintenance-container .add-content h2 {
   margin-bottom: 20px;
   text-align: center;
 }
 
-.detail-content p,
-.edit-content p,
-.delete-content p,
-.add-content p {
+.maintenance-container .detail-content p,
+.maintenance-container .edit-content p,
+.maintenance-container .delete-content p,
+.maintenance-container .add-content p {
   margin-bottom: 10px;
 }
 
-.edit-form,
-.add-form {
+.maintenance-container .edit-form,
+.maintenance-container .add-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.edit-form label,
-.add-form label {
+.maintenance-container .edit-form label,
+.maintenance-container .add-form label {
   display: flex;
   flex-direction: column;
   font-weight: bold;
 }
 
-.edit-form input,
-.edit-form select,
-.edit-form textarea,
-.add-form input,
-.add-form select,
-.add-form textarea {
+.maintenance-container .edit-form input,
+.maintenance-container .edit-form select,
+.maintenance-container .edit-form textarea,
+.maintenance-container .add-form input,
+.maintenance-container .add-form select,
+.maintenance-container .add-form textarea {
   padding: 8px;
   margin-top: 5px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-.modal-actions {
+.maintenance-container .modal-actions {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.save-button {
+.maintenance-container .save-button {
   padding: 8px 16px;
   background-color: #4caf50;
   color: white;
@@ -221,11 +220,11 @@
   border-radius: 4px;
 }
 
-.save-button:hover {
+.maintenance-container .save-button:hover {
   background-color: #45a049;
 }
 
-.cancel-button {
+.maintenance-container .cancel-button {
   padding: 8px 16px;
   background-color: #e7e7e7;
   color: black;
@@ -234,11 +233,11 @@
   border-radius: 4px;
 }
 
-.cancel-button:hover {
+.maintenance-container .cancel-button:hover {
   background-color: #d5d5d5;
 }
 
-.confirm-delete-button {
+.maintenance-container .confirm-delete-button {
   padding: 8px 16px;
   background-color: #f44336;
   color: white;
@@ -247,26 +246,26 @@
   border-radius: 4px;
 }
 
-.confirm-delete-button:hover {
+.maintenance-container .confirm-delete-button:hover {
   background-color: #da190b;
 }
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-  .filters {
+  .maintenance-container .filters {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .maintenance-table th,
-  .maintenance-table td {
+  .maintenance-container .maintenance-table th,
+  .maintenance-container .maintenance-table td {
     padding: 8px;
   }
 
-  .detail-content h2,
-  .edit-content h2,
-  .delete-content h2,
-  .add-content h2 {
+  .maintenance-container .detail-content h2,
+  .maintenance-container .edit-content h2,
+  .maintenance-container .delete-content h2,
+  .maintenance-container .add-content h2 {
     font-size: 1.5em;
   }
 }

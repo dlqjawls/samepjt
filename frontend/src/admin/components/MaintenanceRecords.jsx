@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 import "./MaintenanceRecords.css";
 import axios from "axios";
+import { MdEdit, MdDelete, MdSearch } from "react-icons/md";
 
 function MaintenanceRecords() {
   /**
@@ -416,14 +417,14 @@ function MaintenanceRecords() {
       <div className="maintenance-header">
         <h1>정비 기록 관리</h1>
         <button className="add-button" onClick={() => openModal("add")}>
-          + 신규 정비 요청
+          신규 정비 요청
         </button>
       </div>
 
       {/* 필터링 섹션 */}
       <div className="filters">
         <label>
-          정비 대상 종류:
+          정비 대상 종류
           <select
             name="type"
             value={filters.type}
@@ -436,7 +437,7 @@ function MaintenanceRecords() {
           </select>
         </label>
         <label>
-          대상 ID:
+          대상 ID
           <input
             type="text"
             name="targetId"
@@ -446,7 +447,7 @@ function MaintenanceRecords() {
           />
         </label>
         <label>
-          정비 상태:
+          정비 상태
           <select
             name="status"
             value={filters.status}
@@ -459,7 +460,7 @@ function MaintenanceRecords() {
           </select>
         </label>
         <label>
-          시작 날짜:
+          시작 날짜
           <input
             type="date"
             name="startDate"
@@ -468,7 +469,7 @@ function MaintenanceRecords() {
           />
         </label>
         <label>
-          종료 날짜:
+          종료 날짜
           <input
             type="date"
             name="endDate"
@@ -540,7 +541,7 @@ function MaintenanceRecords() {
                         className="detail-button"
                         onClick={() => openModal("detail", record)}
                       >
-                        🔍 상세보기
+                        <MdSearch />
                       </button>
                     </td>
                     <td>
@@ -554,7 +555,7 @@ function MaintenanceRecords() {
                             : "정비 기록 수정"
                         }
                       >
-                        ✏️ 수정
+                        <MdEdit />
                       </button>
                     </td>
                     <td>
@@ -568,7 +569,7 @@ function MaintenanceRecords() {
                             : "정비 기록 삭제"
                         }
                       >
-                        🗑️ 삭제
+                        <MdDelete />
                       </button>
                     </td>
                   </tr>

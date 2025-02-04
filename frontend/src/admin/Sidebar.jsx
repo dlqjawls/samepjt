@@ -109,7 +109,7 @@ function Sidebar() {
 
       <div className="sidebar-footer">
         <button
-          className="nav-link settings-button"
+          className="settings-button"
           onClick={openSettingsModal}
           aria-label="설정"
         >

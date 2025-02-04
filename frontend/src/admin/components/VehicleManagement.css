@@ -4,13 +4,13 @@
   padding: 20px;
 }
 
-.vehicle-header {
+.vehicle-container .vehicle-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.add-button {
+.vehicle-container .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
   color: white;
@@ -19,56 +19,70 @@
   border-radius: 4px;
 }
 
-.add-button:hover {
+.vehicle-container .add-button:hover {
   background-color: #45a049;
 }
 
-.filters {
+.vehicle-container .filters {
   display: flex;
   align-items: center;
   gap: 20px;
   margin-bottom: 20px;
 }
 
-.filter-item {
+.vehicle-container .filter-item {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.filter-description {
+.vehicle-container .filter-description {
   font-size: 16px;
   font-weight: 600;
   color: #333;
 }
 
 /* select와 input에 동일한 높이와 패딩 설정 */
-.filters select,
-.filters input {
+.vehicle-container .filters select,
+.vehicle-container .filters input {
   padding: 8px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.vehicle-table {
+.vehicle-container .vehicle-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.vehicle-table th,
-.vehicle-table td {
+.vehicle-container .vehicle-table th,
+.vehicle-container .vehicle-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  text-align: center;
+  padding: 12px;
 }
 
-.vehicle-table th {
+.vehicle-container .vehicle-table th {
   background-color: #f2f2f2;
-  text-align: left;
+  font-size: 16px;
 }
 
-.detail-button {
-  padding: 5px 10px;
+.vehicle-container .vehicle-table td {
+  font-size: 14px;
+}
+
+.vehicle-container .detail-button {
+  padding: 6px 8px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.vehicle-container .filters button {
+  padding: 10px 20px;
   background-color: #2196f3;
   color: white;
   border: none;
@@ -76,18 +90,18 @@
   border-radius: 4px;
 }
 
-.detail-button:hover {
+.vehicle-container .detail-button:hover {
   background-color: #0b7dda;
 }
 
-.pagination {
+.vehicle-container .pagination {
   margin: 20px 0;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.pagination button {
+.vehicle-container .pagination button {
   padding: 5px 10px;
   margin: 0 10px;
   background-color: #e7e7e7;
@@ -96,35 +110,35 @@
   border-radius: 4px;
 }
 
-.pagination button:disabled {
+.vehicle-container .pagination button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.error {
+.vehicle-container .error {
   color: red;
   margin-bottom: 10px;
 }
 
 /* 모달 내용 스타일링 */
-.detail-content,
-.edit-content,
-.delete-content,
+.vehicle-container .detail-content,
+.vehicle-container .edit-content,
+.vehicle-container .delete-content,
 .add-content {
   padding: 20px;
 }
 
-.modal-actions {
+.vehicle-container .modal-actions {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
 
-.edit-button,
-.delete-button,
-.save-button,
-.cancel-button,
-.confirm-delete-button {
+.vehicle-container .edit-button,
+.vehicle-container .delete-button,
+.vehicle-container .save-button,
+.vehicle-container .cancel-button,
+.vehicle-container .confirm-delete-button {
   padding: 8px 16px;
   margin-left: 10px;
   border: none;
@@ -132,47 +146,47 @@
   border-radius: 4px;
 }
 
-.edit-button {
+.vehicle-container .edit-button {
   background-color: #ffc107;
   color: white;
 }
 
-.edit-button:hover {
+.vehicle-container .edit-button:hover {
   background-color: #e0a800;
 }
 
-.delete-button {
+.vehicle-container .delete-button {
   background-color: #f44336;
   color: white;
 }
 
-.delete-button:hover {
+.vehicle-container .delete-button:hover {
   background-color: #da190b;
 }
 
-.save-button {
+.vehicle-container .save-button {
   background-color: #4caf50;
   color: white;
 }
 
-.save-button:hover {
+.vehicle-container .save-button:hover {
   background-color: #45a049;
 }
 
-.cancel-button {
+.vehicle-container .cancel-button {
   background-color: #e7e7e7;
   color: black;
 }
 
-.cancel-button:hover {
+.vehicle-container .cancel-button:hover {
   background-color: #d5d5d5;
 }
 
-.confirm-delete-button {
+.vehicle-container .confirm-delete-button {
   background-color: #f44336;
   color: white;
 }
 
-.confirm-delete-button:hover {
+.vehicle-container .confirm-delete-button:hover {
   background-color: #da190b;
 }

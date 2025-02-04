@@ -1,7 +1,7 @@
 /* Sidebar.css */
 
 .sidebar {
-  width: 240px;
+  width: 210px;
   height: 100vh;
   background-color: #f8f9fa;
   display: flex;
@@ -48,7 +48,7 @@
   align-items: center;
   text-decoration: none;
   color: #333;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   padding: 10px 50px;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -77,7 +77,7 @@
 }
 
 .sidebar-footer {
-  /* margin: 50px 0px 0px 0px; */
+  margin: 0px 0px 0px 0px;
 }
 
 .settings-button {
@@ -95,11 +95,6 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.settings-button:hover {
-  background-color: #e2e6ea;
-  color: #65bbe6;
 }
 
 .settings-button .nav-icon {
@@ -142,11 +137,11 @@
   }
 
   .sidebar-footer {
-    padding: 10px 0;
+    padding: 0px 0;
   }
 
   .settings-button {
-    padding: 10px 0;
+    padding: 20px 0;
     justify-content: center;
   }
 
