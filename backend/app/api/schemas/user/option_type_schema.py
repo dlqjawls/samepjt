@@ -1,8 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from app.api.schemas.common import ResponseBase
-from app.api.schemas.pagination import Pagination
-
+from app.api.schemas.common import ResponseBase, Pagination
 
 class OptionType(BaseModel):
     """옵션 타입 개별 항목 모델"""

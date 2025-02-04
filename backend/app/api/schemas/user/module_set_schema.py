@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
-from app.api.schemas.common import ResponseBase
-from app.api.schemas.pagination import Pagination
+from typing import List
+from app.api.schemas.common import ResponseBase, Pagination
 
 
 class ModuleSetOptionType(BaseModel):

@@ -1,0 +1,57 @@
+from pydantic import BaseModel, Field
+from typing import List
+from datetime import datetime
+from app.api.schemas.common import Coordinate, ResponseBase, Pagination
+
+
+class RentHistoryItem(BaseModel):
+    """렌트 히스토리 개별 항목"""
+    rent_id: int = Field(..., example=101)
+    user_pk: int = Field(..., example=3)
+    vehicle_number: str = Field(..., example="PBV-1234")
+    option_types: str = Field(..., example="1,2,3")
+    departure_location: Coordinate = Field(..., example={"x": 11.512, "y": 30.4531})
+    arrival_location: Coordinate = Field(..., example={"x": 11.512, "y": 30.4531})
+    cost: float = Field(..., example=150.00)
+    mileage: float = Field(..., example=450.5)
+    status: str = Field(..., example="In-progress")
+    created_at: datetime = Field(..., example="2025-02-01T10:00:00")
+    updated_at: datetime = Field(..., example="2025-02-01T15:00:00")
+
+class RentHistoryData(BaseModel):
+    """렌트 히스토리 데이터"""
+    rent_history: List[RentHistoryItem]
+    pagination: Pagination
+
+class RentHistoryResponse(ResponseBase[RentHistoryData]):
+    """렌트 히스토리 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Rent logs retrieved successfully",
+                "data": {
+                    "rent_history": [
+                        {
+                            "rent_id": 101,
+                            "user_pk": 3,
+                            "vehicle_number": "PBV-1234",
+                            "option_types": "1,2,3",
+                            "departure_location": "Seoul",
+                            "arrival_location": "Busan", 
+                            "cost": 150.00,
+                            "mileage": 450.5,
+                            "status": "In-progress",
+                            "created_at": "2025-02-01T10:00:00",
+                            "updated_at": "2025-02-01T15:00:00"
+                        }
+                    ],
+                    "pagination": {
+                        "currentPage": 1,
+                        "totalPages": 3,
+                        "totalItems": 25,
+                        "pageSize": 10
+                    }
+                }
+            }
+        } 
