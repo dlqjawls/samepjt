@@ -1,40 +1,5 @@
 import pytest
-from datetime import datetime, timedelta
-from typing import Dict
-
-def create_valid_rent_request() -> Dict:
-    """유효한 렌트 요청 데이터를 생성하는 함수"""
-    return {
-        "selectedOptionTypes": [
-            {"optionTypeId": 1, "quantity": 1},
-            {"optionTypeId": 2, "quantity": 1}
-        ],
-        "autonomousArrivalPoint": {"x": 12.313, "y": 32.3232},
-        "autonomousDeparturePoint": {"x": 11.512, "y": 30.4531},
-        "rentStartDate": (datetime.now() + timedelta(days=1)).isoformat(),
-        "rentEndDate": (datetime.now() + timedelta(days=2)).isoformat()
-    }
-
-def register_and_login(client) -> str:
-    """테스트용 사용자 등록 및 로그인 후 access_token 반환"""
-    # 회원가입 요청
-    register_payload = {
-        "id": "rentuser",
-        "password": "test1234",
-        "email": "rent@example.com",
-        "name": "렌트테스트",
-        "phoneNum": "010-1234-5678",
-        "address": "Seoul, Korea"
-    }
-    client.post("/auth/register", json=register_payload)
-
-    # 로그인 요청
-    login_payload = {
-        "id": "rentuser",
-        "password": "test1234"
-    }
-    login_response = client.post("/auth/login", json=login_payload)
-    return login_response.json()["data"]["access_token"]
+from tests.helpers import create_valid_rent_request, register_and_login
 
 def test_create_rent_success(client):
     """✅ 정상적인 렌트 생성 테스트"""
