@@ -70,7 +70,7 @@ function ModuleSetList() {
 
   return (
     <div className="module-list-container">
-      <h2>모듈 세트 목록</h2>
+      <h1>모듈 세트 목록</h1>
 
       {loading && <div className="loading">Loading...</div>}
       {error && <div className="error">{error}</div>}
@@ -132,12 +132,12 @@ function ModuleSetList() {
 
               <div className="module-modal-details">
                 <div className="module-modal-description">
-                  <h4>상세 설명</h4>
+                  <h3>상세 설명</h3>
                   <p>{selectedModule.description}</p>
                 </div>
 
                 <div className="modal-module-options">
-                  <h4>포함된 옵션</h4>
+                  <h3>포함된 옵션</h3>
                   <ul>
                     {selectedModule.moduleSetOptionTypes.map((option) => (
                       <li key={option.optionTypeId}>
@@ -147,8 +147,8 @@ function ModuleSetList() {
                   </ul>
                 </div>
 
-                <div className="modal-total-cost">
-                  <h4>총 비용: {selectedModule.basePrice}원</h4>
+                <div className="modal-total-cost-container">
+                  <h3 >총 비용: {selectedModule.basePrice}원</h3>
                 </div>
               </div>
               <button
@@ -156,8 +156,8 @@ function ModuleSetList() {
                 className="module-set-modal-next-button"
               >
                 다음 단계 →
-              </button></div>
-
+              </button>
+            </div>
           </div>
         </div>
       )}

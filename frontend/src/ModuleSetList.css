@@ -1,12 +1,16 @@
 /* 전체 레이아웃 */
 .module-list-container {
-  padding: 17px;
+  padding: 80px;
+}
+
+.module-list-container h1 {
+  text-align: center;
 }
 .module-list {
   max-width: 35%;
   max-height: 80vh;
   overflow-y: auto;
-  padding-right: 10px; /* 스크롤바와 내용 사이에 10px 여백 추가 */
+  /*  padding-right: 10px; /* 스크롤바와 내용 사이에 10px 여백 추가 */
 }
 
 .module-list h2 {
@@ -17,6 +21,7 @@
   display: flex; /* 가로 배치 */
   align-items: center; /* 수직 정렬을 가운데로 설정 */
   border: 1px solid #e0e0e0;
+  overflow: hidden;
   border-radius: 13px;
   margin-bottom: 20px;
   padding: 10px;
@@ -91,11 +96,11 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  /*gap: 20px;*/
 }
 
 .module-set-modal-image-container {
-  width: 660px;
+  width: 730px;
   height: 400px;
   overflow: hidden;
   display: flex;
@@ -110,45 +115,45 @@
   border-radius: 8px;
 }
 
+/*모달 모듈 디테일 설명*/
+.module-modal-details p,
+.module-modal-details li {
+  color: #4a4a4a;
+}
+
 /* 모달 총 비용*/
-.modal-total-cost h4 {
-  color: rgb(197, 16, 130);
+.total-cost-korean{
+  display: inline;
+}
+.module-total-cost-won{
+  display: inline;
+  color: rgb(151, 5, 73);
+
 }
 
-/* 모달 푸터 */
-.module-set-modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 20px;
-  border-top: 1px solid #eee;
-}
-
-.module-set-modal-footer button {
-  margin-left: 10px;
-}
 
 /* 버튼 스타일 */
 .module-set-modal-close-button {
-  color: #e0e0e0;
+  color: white;
   padding: 10px;
   border-radius: 20px;
-  background-color: red;
+  background-color: rgb(180, 171, 171);
   border: none;
   font-family: "500";
 }
 
 .module-set-modal-close-button:hover {
-  background-color: #d9363e;
+  background-color: rgb(61, 60, 60);
 }
 
 .module-set-modal-next-button {
-  color: #e0e0e0;
+  color: white;
   padding: 10px;
   border-radius: 20px;
-  background-color: green;
+  background-color: black;
   border: none;
   font-family: "600";
 }
 .module-set-modal-next-button:hover {
-  background-color: rgb(13, 95, 13);
+  background-color: rgb(61, 60, 60);
 }
