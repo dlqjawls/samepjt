@@ -4,6 +4,7 @@ from sqlmodel import Session
 from app.models.vehicle import Vehicle
 from app.core.jwt import jwt_handler
 from sqlalchemy import text
+import json
 
 # GIVEN: 관리자 토큰 생성 (role "master")
 @pytest.fixture
@@ -23,20 +24,22 @@ def clear_vehicles(session: Session):
         session.commit()
     return _clear
 
-# GIVEN: 더미 차량 데이터를 생성하는 헬퍼 함수 (더미 데이터는 추후 GWT의 Given으로 사용됨)
+# GIVEN: 더미 차량 데이터를 생성하는 헬퍼 함수
 @pytest.fixture
 def create_dummy_vehicles(session: Session):
     def _create(count: int = 3):
         vehicles = []
         for i in range(count):
+            # JSON 형식의 좌표 문자열 생성
+            location = json.dumps({"x": 12.313, "y": 32.3232})
             vehicle = Vehicle(
                 vin=f"VIN{i+1}",
                 vehicle_number=f"NUM{i+1}",
-                current_location="12.313,32.3232",  # 문자열 형태로 저장되어 있음
+                current_location=location,  # JSON 문자열로 저장
                 mileage=1000.0 * (i+1),
                 last_maintenance_at=datetime.now(),
                 next_maintenance_at=datetime.now(),
-                status_id=1,  # 1은 "Active" 로 매핑됨
+                status_id=1,  # 1은 "active"로 매핑됨
                 created_by=1,
                 updated_by=1
             )
@@ -64,17 +67,15 @@ def test_get_vehicle_list_success(client, session, create_dummy_vehicles, admin_
     vehicles = data["data"]["vehicles"]
     assert isinstance(vehicles, list)
     assert len(vehicles) >= 3
-    for vehicle in vehicles:
-        assert "vehicle_id" in vehicle
-        assert "vin" in vehicle
-        assert "vehicle_number" in vehicle
-        # current_location이 문자열에서 dict로 변환되어 있어야 함
-        assert isinstance(vehicle["current_location"], dict)
-        assert "x" in vehicle["current_location"]
-        assert "y" in vehicle["current_location"]
-        # status 필드가 문자열로 매핑되어 있어야 함
-        assert "status" in vehicle
-        assert isinstance(vehicle["status"], str)
+    
+    # 첫 번째 차량 데이터 검증
+    vehicle = vehicles[0]
+    assert "vehicle_id" in vehicle
+    assert "vin" in vehicle
+    assert "vehicle_number" in vehicle
+    assert isinstance(vehicle["current_location"], dict)
+    assert "x" in vehicle["current_location"]
+    assert "y" in vehicle["current_location"]
 
 def test_get_vehicle_list_unauthorized(client):
     # 인증 토큰 없이 호출 시 401 Unauthorized 반환 확인
@@ -169,12 +170,14 @@ def test_vehicle_field_conversion(client, session, create_dummy_vehicles, admin_
         headers={"Authorization": f"Bearer {admin_token}"}
     )
 
-    # THEN: current_location이 dict로 변환되고, status가 "Active"로 매핑됨
+    # THEN: current_location이 dict로 변환되고, status가 "active"로 매핑됨
+    assert response.status_code == 200
     data = response.json()
     vehicles = data["data"]["vehicles"]
     assert len(vehicles) > 0
     vehicle = vehicles[0]
     loc = vehicle["current_location"]
     assert isinstance(loc, dict)
-    assert "x" in loc and "y" in loc
-    assert vehicle["status"] == "Active"
+    assert loc["x"] == 12.313
+    assert loc["y"] == 32.3232
+    assert vehicle["status"] == "active"

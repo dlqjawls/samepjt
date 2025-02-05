@@ -1,3 +1,4 @@
+import json
 import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session
@@ -22,12 +23,12 @@ def create_dummy_rent_history(session: Session, count: int = 5):
     """
     try:
         now = datetime.now()
-        
+        location = json.dumps({"x": 12.313, "y": 32.3232})
         # 먼저 차량과 옵션을 생성
         vehicle = Vehicle(
             vin="TEST123",
             vehicle_number="TEST123",
-            current_location="37.123,127.123",
+            current_location=location,
             status_id=ITEM_STATUS.ACTIVE,
             created_by=1,
             updated_by=1,
@@ -52,8 +53,8 @@ def create_dummy_rent_history(session: Session, count: int = 5):
         for i in range(count):
             rent = RentHistory(
                 user_pk=i + 1,
-                departure_location="12.345,67.890",
-                arrival_location="98.765,43.210",
+                departure_location=location,
+                arrival_location=location,
                 cost=100.0 * (i + 1),
                 mileage=10.0 * (i + 1),
                 status_id=RENT_STATUS.COMPLETED,
