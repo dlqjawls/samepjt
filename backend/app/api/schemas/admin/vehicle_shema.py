@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from app.api.schemas.common import ResponseBase, Pagination, Coordinate
+import re
 
 class VehicleItem(BaseModel):
     """차량 개별 정보 모델"""
@@ -54,5 +55,45 @@ class VehiclesResponse(ResponseBase[VehiclesData]):
                         "pageSize": 10
                     }
                 }
+            }
+        }
+
+class VehicleCreate(BaseModel):
+    """차량 등록 요청 스키마"""
+    vin: str = Field(
+        ...,
+        description="차량의 고유한 차대번호 (Vehicle Identification Number)",
+        min_length=1,
+        max_length=50,
+        example="ABC123456789XYZ"
+    )
+    vehicle_number: str = Field(
+        ...,
+        description="차량의 번호판",
+        min_length=1,
+        max_length=20,
+        example="PBV-1234"
+    )
+
+    @validator('vehicle_number')
+    def validate_vehicle_number(cls, v: str) -> str:
+        """차량 번호 형식 검증 (PBV-숫자4자리)"""
+        pattern = r'^PBV-\d{4}$'
+        if not re.match(pattern, v):
+            raise ValueError("Invalid vehicle number format. Must be 'PBV-' followed by 4 digits")
+        return v
+
+    @validator('vin')
+    def validate_vin(cls, v: str) -> str:
+        """VIN 형식 검증 (영문자와 숫자만 허용)"""
+        if not v.isalnum():
+            raise ValueError("VIN must contain only letters and numbers")
+        return v.upper()  # VIN은 대문자로 저장
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "vin": "ABC123456789XYZ",
+                "vehicle_number": "PBV-1234"
             }
         }
