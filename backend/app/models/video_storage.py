@@ -1,6 +1,8 @@
 from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
+from sqlalchemy import text
+
 
 class VideoStorage(SQLModel, table=True): 
     __tablename__ = "video_storage"
@@ -12,5 +14,5 @@ class VideoStorage(SQLModel, table=True):
     video_url: str = Field(nullable=False, max_length=500, description="URL of the stored video")
 
     created_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )

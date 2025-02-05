@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
@@ -18,12 +19,12 @@ class Option(SQLModel, table=True):
     status_id: int = Field(foreign_key="lut_item_status.item_status_id", nullable=False, description="Option status")
 
     created_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )
     created_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who created this record")
 
     updated_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
     )
     updated_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who last updated this record")
 

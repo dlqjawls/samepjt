@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
@@ -13,8 +14,8 @@ class UsageHistory(SQLModel, table=True):
     status_id: int = Field(foreign_key="lut_usage_status.usage_status_id", nullable=False, description="Usage status")
 
     created_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, default=datetime.now())
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )
     updated_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, default=datetime.now(), onupdate=datetime.now())
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now())
     )

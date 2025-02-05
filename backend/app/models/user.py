@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Column
-from sqlalchemy import DateTime, event
+from sqlalchemy import DateTime, event, text
 from typing import Optional
 from datetime import datetime
 
@@ -17,7 +17,7 @@ class User(SQLModel, table=True):
     role_id: int = Field(foreign_key="lut_roles.role_id", nullable=False)
 
     created_at: datetime = Field(
-        sa_column=Column("created_at", DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+        sa_column=Column("created_at", DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )
     created_by: Optional[int] = Field(
         foreign_key="user.user_pk", 
@@ -25,7 +25,7 @@ class User(SQLModel, table=True):
         description="생성한 사용자"
     )
     updated_at: datetime = Field(
-        sa_column=Column("updated_at", DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+        sa_column=Column("updated_at", DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
     )
     updated_by: Optional[int] = Field(
         foreign_key="user.user_pk", 

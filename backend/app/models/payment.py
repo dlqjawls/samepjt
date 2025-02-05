@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
@@ -13,8 +14,8 @@ class Payment(SQLModel, table=True):
     method_id: int = Field(foreign_key="lut_payment_method.payment_method_id", nullable=False, description="Payment method")
 
     created_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )
     updated_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
     )

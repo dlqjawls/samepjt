@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
+from sqlalchemy import text
 
 class RentHistory(SQLModel, table=True):
     __tablename__ = "rent_history"
@@ -17,8 +18,8 @@ class RentHistory(SQLModel, table=True):
     status_id: int = Field(foreign_key="lut_rent_status.rent_status_id", nullable=False, description="Rental status")
 
     created_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )
     updated_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
     )

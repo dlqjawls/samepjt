@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlmodel import SQLModel, Field, Column, DateTime
 from typing import Optional
 from datetime import datetime
@@ -15,12 +16,12 @@ class OptionType(SQLModel, table=True):
     option_type_features: str = Field(nullable=False, description="Features of the Option Type")
 
     created_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP")
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )
     created_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who created this record")
 
     updated_at: datetime = Field(
-        sa_column=Column(DateTime, nullable=False, server_default="CURRENT_TIMESTAMP", onupdate=datetime.now)
+        sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
     )
     updated_by: int = Field(foreign_key="user.user_pk", nullable=False, description="User who last updated this record")
 
