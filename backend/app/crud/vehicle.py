@@ -53,4 +53,12 @@ class VehicleCRUD(CRUDBase[Vehicle]):
         mapping = get_item_type_mapping()
         return mapping.get(type_id, "Unknown")
 
+    def get_by_vin(self, session: Session, vin: str) -> Optional[Vehicle]:
+        """VIN으로 차량 조회"""
+        return session.exec(select(Vehicle).where(Vehicle.vin == vin)).first()
+
+    def get_by_vehicle_number(self, session: Session, vehicle_number: str) -> Optional[Vehicle]:
+        """차량 번호로 차량 조회"""
+        return session.exec(select(Vehicle).where(Vehicle.vehicle_number == vehicle_number)).first()
+
 vehicle_crud = VehicleCRUD()
