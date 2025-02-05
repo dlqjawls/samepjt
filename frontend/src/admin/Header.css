@@ -5,8 +5,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #fff; /* 원하는 배경색으로 변경 */
+  background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-search {
+  display: flex;
+  align-items: center;
 }
 
 .header-search input {
@@ -27,26 +32,68 @@
   box-shadow: 0 0 5px rgba(101, 187, 230, 0.5);
 }
 
+.total-search-button {
+  background-color: #65bbe6;
+  color: white;
+  border: none;
+  padding: 8px;
+  margin-left: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.total-search-button:hover {
+  background-color: #549acb;
+}
+
 .header-right {
   display: flex;
   align-items: center;
+  margin-right: 0px;
 }
 
 .icon {
   margin-left: 24px;
   font-size: 20px;
   cursor: pointer;
+  color: #A0A0A0;
 }
 
 .profile {
+  margin-left: 20px;
+  position: relative;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  margin-left: 20px;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 100%; 
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 10;
+  border-top: rgba(160, 160, 160, 0.3) 1px solid;
+}
+
+.admin-logout-button {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 6px 16px;
 }
 
 .profile-name {
   margin-right: 10px;
   font-weight: 600;
+  font-size: 18px;
 }
 
 .profile-image {
@@ -56,17 +103,3 @@
   margin: 10px;
 }
 
-.admin-logout-button {
-  margin-left: 20px;
-  padding: 8px 15px;
-  margin-right: 20px;
-  background-color: #ff4d4f; /* 로그아웃 버튼의 배경색 */
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.admin-logout-button:hover {
-  background-color: #d9363e; /* 호버 시 배경색 변경 */
-}
