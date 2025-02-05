@@ -1,111 +1,114 @@
 # LUT 값을 상수로 미리 정의
 from enum import IntEnum
+from typing import Any, Dict
 
-class ROLE(IntEnum):
+class Role(IntEnum):
     MASTER = 1
     SEMI = 2
     USER = 3
 
-class ITEM_TYPE(IntEnum):
+class ItemType(IntEnum):
     VEHICLE = 1
     MODULE = 2
     OPTION = 3
 
-class ITEM_STATUS(IntEnum):
+class ItemStatus(IntEnum):
     ACTIVE = 1
     INACTIVE = 2
     MAINTENANCE = 3
 
-class RENT_STATUS(IntEnum):
+class RentStatus(IntEnum):
     IN_PROGRESS = 1
     COMPLETED = 2
     CANCELED = 3
 
-class MODULE_TYPE(IntEnum):
+class ModuleType(IntEnum):
     SMALL = 1
     MEDIUM = 2
     LARGE = 3
 
-class MAINTENANCE_STATUS(IntEnum):
+class MaintenanceStatus(IntEnum):
     PENDING = 1
     IN_PROGRESS = 2
     COMPLETED = 3
 
-class USAGE_STATUS(IntEnum):
+class UsageStatus(IntEnum):
     IN_USE = 1
     COMPLETED = 2
 
-class VIDEO_TYPE(IntEnum):
+class VideoType(IntEnum):
     MODULE = 1
     AUTONOMOUS_DRIVING = 2
 
-class PAYMENT_STATUS(IntEnum):
+class PaymentStatus(IntEnum):
     PENDING = 1
     COMPLETED = 2
     FAILED = 3
     REFUNDED = 4
 
-class PAYMENT_METHOD(IntEnum):
+class PaymentMethod(IntEnum):
     CREDIT_CARD = 1
     BANK_TRANSFER = 2
     PAYPAL = 3
 
-# 매핑 정보
-ROLE_MAPPING = {
-    ROLE.MASTER: "master",
-    ROLE.SEMI: "semi",
-    ROLE.USER: "user"
-}
+class LUTConstants:
+    """LUT 상수들을 관리하는 클래스입니다."""
+    
+    ROLE_NAMES: Dict[Role, str] = {
+        Role.MASTER: "master",
+        Role.SEMI: "semi",
+        Role.USER: "user"
+    }
 
-ITEM_TYPE_MAPPING = {
-    ITEM_TYPE.VEHICLE: "vehicle",
-    ITEM_TYPE.MODULE: "module",
-    ITEM_TYPE.OPTION: "option"
-}
+    ITEM_TYPE_NAMES: Dict[ItemType, str] = {
+        ItemType.VEHICLE: "vehicle",
+        ItemType.MODULE: "module",
+        ItemType.OPTION: "option"
+    }
 
-ITEM_STATUS_MAPPING = {
-    ITEM_STATUS.ACTIVE: "active",
-    ITEM_STATUS.INACTIVE: "inactive",
-    ITEM_STATUS.MAINTENANCE: "maintenance"
-}
+    ITEM_STATUS_NAMES: Dict[ItemStatus, str] = {
+        ItemStatus.ACTIVE: "active",
+        ItemStatus.INACTIVE: "inactive",
+        ItemStatus.MAINTENANCE: "maintenance"
+    }
 
-RENT_STATUS_MAPPING = {
-    RENT_STATUS.IN_PROGRESS: "in_progress",
-    RENT_STATUS.COMPLETED: "completed",
-    RENT_STATUS.CANCELED: "canceled"
-}
+    RENT_STATUS_NAMES: Dict[RentStatus, str] = {
+        RentStatus.IN_PROGRESS: "in_progress",
+        RentStatus.COMPLETED: "completed",
+        RentStatus.CANCELED: "canceled"
+    }
 
-MODULE_TYPE_MAPPING = {
-    MODULE_TYPE.SMALL: {"name": "small", "size": "S", "cost": 100.0},
-    MODULE_TYPE.MEDIUM: {"name": "medium", "size": "M", "cost": 200.0},
-    MODULE_TYPE.LARGE: {"name": "large", "size": "L", "cost": 300.0}
-}
+    MODULE_TYPE_INFO: Dict[ModuleType, Dict[str, Any]] = {
+        ModuleType.SMALL: {"name": "small", "size": "S", "cost": 100.0},
+        ModuleType.MEDIUM: {"name": "medium", "size": "M", "cost": 200.0},
+        ModuleType.LARGE: {"name": "large", "size": "L", "cost": 300.0}
+    }
 
-MAINTENANCE_STATUS_MAPPING = {
-    MAINTENANCE_STATUS.PENDING: "pending",
-    MAINTENANCE_STATUS.IN_PROGRESS: "in_progress",
-    MAINTENANCE_STATUS.COMPLETED: "completed"
-}
+    MAINTENANCE_STATUS_NAMES: Dict[MaintenanceStatus, str] = {
+        MaintenanceStatus.PENDING: "pending",
+        MaintenanceStatus.IN_PROGRESS: "in_progress",
+        MaintenanceStatus.COMPLETED: "completed"
+    }
 
-USAGE_STATUS_MAPPING = {
-    USAGE_STATUS.IN_USE: "in_use",
-    USAGE_STATUS.COMPLETED: "completed"
-}
+    USAGE_STATUS_NAMES: Dict[UsageStatus, str] = {
+        UsageStatus.IN_USE: "in_use",
+        UsageStatus.COMPLETED: "completed"
+    }
 
-VIDEO_TYPE_MAPPING = {
-    VIDEO_TYPE.MODULE: "module",
-    VIDEO_TYPE.AUTONOMOUS_DRIVING: "autonomous driving"
-}
+    VIDEO_TYPE_NAMES: Dict[VideoType, str] = {
+        VideoType.MODULE: "module",
+        VideoType.AUTONOMOUS_DRIVING: "autonomous driving"
+    }
 
-PAYMENT_STATUS_MAPPING = {
-    PAYMENT_STATUS.PENDING: "pending",
-    PAYMENT_STATUS.COMPLETED: "completed",
-    PAYMENT_STATUS.FAILED: "failed",
-    PAYMENT_STATUS.REFUNDED: "refunded"
-}
+    PAYMENT_STATUS_NAMES: Dict[PaymentStatus, str] = {
+        PaymentStatus.PENDING: "pending",
+        PaymentStatus.COMPLETED: "completed",
+        PaymentStatus.FAILED: "failed",
+        PaymentStatus.REFUNDED: "refunded"
+    }
 
-PAYMENT_METHOD_MAPPING = {
-    PAYMENT_METHOD.CREDIT_CARD: "credit_card",
-    PAYMENT_METHOD.BANK_TRANSFER: "bank_transfer",
-    PAYMENT_METHOD.PAYPAL: "paypal"
-} 
+    PAYMENT_METHOD_NAMES: Dict[PaymentMethod, str] = {
+        PaymentMethod.CREDIT_CARD: "credit_card",
+        PaymentMethod.BANK_TRANSFER: "bank_transfer",
+        PaymentMethod.PAYPAL: "paypal"
+    } 
