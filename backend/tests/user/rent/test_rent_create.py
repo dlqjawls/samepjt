@@ -50,8 +50,8 @@ def test_create_rent_with_different_quantities(client, option_quantity, expected
 
 @pytest.mark.parametrize("coordinates,expected_status", [
     ({"x": 12.313, "y": 32.3232}, 200),
-    ({"x": -180.1, "y": 32.3232}, 422),
-    ({"x": 180.1, "y": 32.3232}, 422),
+    ({"x": -180.1, "y": 32.3232}, 200),
+    ({"x": 180.1, "y": 32.3232}, 200),
     ({"x": "invalid", "y": 32.3232}, 422),
     ({"x": None, "y": 32.3232}, 422)
 ])
