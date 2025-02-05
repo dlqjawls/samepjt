@@ -318,4 +318,12 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
             status_id=self.STATUS_INACTIVE
         )
 
+    def get_usage_status_name(self, status_id: int) -> str:
+        """
+        주어진 사용 상태 ID에 해당하는 이름을 반환합니다.
+        """
+        from app.crud.lut import get_usage_status_mapping
+        mapping = get_usage_status_mapping()
+        return mapping.get(status_id, "Unknown")
+
 usage_history_crud = UsageHistoryCRUD()

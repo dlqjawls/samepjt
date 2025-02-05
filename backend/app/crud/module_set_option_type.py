@@ -28,4 +28,12 @@ class ModuleSetOptionTypesCRUD(CRUDBase[ModuleSetOptionTypes]):
         )
         return list(session.exec(statement).all())
 
+    def get_item_type_name(self, item_type_id: int) -> str:
+        """
+        모듈 세트 옵션 타입 관련 기능에서 사용될 수 있는 아이템 유형 이름을 반환합니다.
+        """
+        from app.crud.lut import get_item_type_mapping
+        mapping = get_item_type_mapping()
+        return mapping.get(item_type_id, "Unknown")
+
 module_set_option_type_crud = ModuleSetOptionTypesCRUD()

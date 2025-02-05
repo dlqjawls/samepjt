@@ -85,4 +85,12 @@ class RentHistoryCRUD(CRUDBase[RentHistory]):
             )
         
     
+def get_rent_status_name(status_id: int) -> str:
+    """
+    주어진 대여 상태 ID에 해당하는 이름을 반환합니다.
+    """
+    from app.crud.lut import get_rent_status_mapping
+    mapping = get_rent_status_mapping()
+    return mapping.get(status_id, "Unknown")
+
 rent_history_crud = RentHistoryCRUD()

@@ -42,4 +42,13 @@ class ModuleCRUD(CRUDBase[Module]):
                 detail={"error": str(e)}
             )        
         
+    def get_module_type_name(self, module_type_id: int) -> str:
+        """
+        주어진 모듈 유형 ID에 해당하는 'name' 값을 반환합니다.
+        """
+        from app.crud.lut import get_module_type_mapping
+        mapping = get_module_type_mapping()
+        # mapping에는 {id: {"name": ..., ...}} 형태이므로 "name" 키를 추출합니다.
+        return mapping.get(module_type_id, {}).get("name", "Unknown")
+
 module_crud = ModuleCRUD()

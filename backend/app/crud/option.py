@@ -121,5 +121,12 @@ class OptionCRUD(CRUDBase[Option]):
                 }
             )
 
+    def get_option_status_name(self, status_id: int) -> str:
+        """
+        주어진 옵션(status) ID에 해당하는 이름을 반환합니다.
+        """
+        from app.crud.lut import get_item_status_mapping
+        mapping = get_item_status_mapping()
+        return mapping.get(status_id, "Unknown")
 
 option_crud = OptionCRUD()

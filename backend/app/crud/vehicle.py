@@ -44,4 +44,13 @@ class VehicleCRUD(CRUDBase[Vehicle]):
                 )
 
     
+    def get_vehicle_type_name(self, type_id: int) -> str:
+        """
+        주어진 차량 유형 ID에 해당하는 이름을 반환합니다.
+        (ITEM_TYPE_MAPPING을 활용)
+        """
+        from app.crud.lut import get_item_type_mapping
+        mapping = get_item_type_mapping()
+        return mapping.get(type_id, "Unknown")
+
 vehicle_crud = VehicleCRUD()
