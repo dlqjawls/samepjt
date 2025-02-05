@@ -1,13 +1,16 @@
 from typing import List
 from sqlmodel import Session
-from app.api.schemas.admin.vehicle_schema import VehicleItem, VehiclesData, VehiclesResponse, VehicleCreate, VehicleUpdateRequest, VehicleUpdateResponse
-from app.crud.vehicle import vehicle_crud
+from app.api.schemas.admin.vehicle_schema import VehicleItem, VehiclesData, VehiclesResponse, VehicleCreate, VehicleUpdateRequest, VehicleUpdateResponse, VehicleDeleteResponse
+from app.db.crud.vehicle import vehicle_crud
 from app.api.schemas.common import Coordinate
-from app.models.vehicle import Vehicle
+from app.db.models.vehicle import Vehicle
 from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
-from app.utils.lut_constants import ITEM_STATUS, ITEM_STATUS_MAPPING
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
+from app.db.crud.usage_history import usage_history_crud
+from sqlalchemy import select
+from app.utils.lut_constants import ItemStatus, ItemType, UsageStatus, LUTConstants
+from app.db.models.usage_history import UsageHistory
 
 class VehicleService:
   
@@ -49,7 +52,7 @@ class VehicleService:
             mileage=vehicle.mileage,
             last_maintenance_at=vehicle.last_maintenance_at,
             next_maintenance_at=vehicle.next_maintenance_at, 
-            status=ITEM_STATUS_MAPPING.get(ITEM_STATUS(vehicle.status_id), "Unknown"),
+            status=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(vehicle.status_id), "Unknown"),
             created_at=vehicle.created_at,
             created_by=vehicle.created_by,
             updated_at=vehicle.updated_at,
@@ -59,7 +62,7 @@ class VehicleService:
     @staticmethod
     def get_vehicle_list(session: Session, page: int, page_size: int) -> VehiclesResponse:
         "관리자 차량 목록 조회 서비스"
-        paginated_result = vehicle_crud.get_all(session, page, page_size)
+        paginated_result = vehicle_crud.paginate(session, page, page_size)
         vehicles: List[Vehicle] = paginated_result["items"]
         
         # 차량 데이터 변환
@@ -96,7 +99,7 @@ class VehicleService:
             vehicle_number=vehicle_data.vehicle_number,
             current_location=str(Coordinate(x=0.0, y=0.0)),  # 초기 위치는 (0,0)
             mileage=0.0,  # 초기 주행거리는 0
-            status_id=ITEM_STATUS.INACTIVE,  # 초기 상태는 INACTIVE
+            status_id=ItemStatus.INACTIVE,  # 초기 상태는 INACTIVE
             created_by=user_pk,
             updated_by=user_pk,
             created_at=datetime.now(),
@@ -129,8 +132,43 @@ class VehicleService:
         update_data["updated_by"] = user_pk
         update_data["updated_at"] = datetime.now()
         
-        vehicle_crud.update(session, vehicle_id, update_data)
+        vehicle_crud.update(session, vehicle_id, update_data, "vehicle_id")
         return VehicleUpdateResponse.success(
             message="Vehicle updated successfully"
+        )
+
+    @staticmethod
+    @handle_transaction
+    def delete_vehicle(session: Session, vehicle_id: int, user_pk: int) -> VehicleDeleteResponse:
+        """차량 삭제 서비스"""
+        # 차량 존재 여부 확인
+        vehicle = vehicle_crud.get_by_id(session, vehicle_id)
+        if not vehicle:
+            raise NotFoundError(
+                message="Vehicle not found",
+                detail={"vehicle_id": vehicle_id}
+            )
+        
+        # 차량이 현재 사용 중(대여 중)인지 UsageHistory 테이블에서 확인 (렌트 기록에는 차량 id가 없음)
+        active_usage = session.scalars(
+            select(UsageHistory).where(
+                UsageHistory.item_id == vehicle_id,
+                UsageHistory.item_type_id == ItemType.VEHICLE,
+                UsageHistory.status_id == UsageStatus.IN_USE
+            )
+        ).first()
+
+        if active_usage:
+            raise ConflictError(
+                message="Vehicle is currently in use and cannot be deleted",
+                detail={"vehicle_id": vehicle_id}
+            )
+
+        # 차량 삭제
+        vehicle_crud.soft_delete(session, vehicle_id, "vehicle_id")
+
+        return VehicleDeleteResponse(
+            resultCode="SUCCESS",
+            message="Vehicle deleted successfully"
         )   
         
