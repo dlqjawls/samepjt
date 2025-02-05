@@ -93,7 +93,6 @@ function ModuleSetList() {
                 <div className="module-card-content">
                   <h3>{moduleSet.moduleSetName}</h3>
                   <p>{moduleSet.description}</p>
-                  <p className="price">렌트 비용: {moduleSet.basePrice}원</p>
                 </div>
               </div>
             ))}
@@ -148,7 +147,7 @@ function ModuleSetList() {
                 </div>
 
                 <div className="modal-total-cost-container">
-                  <h3>총 비용: {selectedModule.basePrice}원</h3>
+                  <h3>렌트 비용: {selectedModule.basePrice}원</h3>
                 </div>
               </div>
               <button

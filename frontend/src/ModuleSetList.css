@@ -27,13 +27,30 @@
 .module-card {
   background-color: white;
 }
+
 .module-card-content {
-  padding: 10px; /* 카드 내용 패딩 */
+  padding: 10px;
+  height: 100px;
   text-align: center;
+  margin-left: 10px;
+  width: 80%;
+  height: 60%;
 }
+
 .module-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.module-card-content h3 {
+  margin: 0 0 10px 0;
+}
+
+.module-card-content p {
+  text-align: left;
+  margin: 0; /* 본문 텍스트 간격 제거 */
+  margin-bottom: 5px;
+  color: rgb(45, 45, 45); /* 텍스트 색상을 연한 회색으로 설정 */
 }
 
 .custom-image {
@@ -51,23 +68,7 @@
   object-fit: cover;
 }
 
-.module-card-content {
-  margin-left: 20px;
-}
-
-.module-card-content h3 {
-  margin: 0 0 10px 0;
-}
-
-.module-card-content p {
-  text-align: left;
-  margin: 0; /* 본문 텍스트 간격 제거 */
-  margin-bottom: 5px;
-  color: rgb(45, 45, 45); /* 텍스트 색상을 연한 회색으로 설정 */
-}
-
-/* ############# 모달 ############ */
-/* 모달 오버레이 */
+/*  모달  */
 .module-set-card-modal-overlay {
   position: fixed; /* 화면 고정 */
   top: 0;
