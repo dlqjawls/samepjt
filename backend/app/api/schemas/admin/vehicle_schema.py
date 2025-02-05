@@ -97,3 +97,35 @@ class VehicleCreate(BaseModel):
                 "vehicle_number": "PBV-1234"
             }
         }
+
+class VehicleUpdateRequest(BaseModel):
+    vehicle_number: Optional[str] = Field(None, example="PBV-1234")
+    last_maintenance_at: Optional[datetime] = Field(None, example="2025-01-10T12:00:00")
+    next_maintenance_at: Optional[datetime] = Field(None, example="2025-06-10T12:00:00")
+
+    @validator('vehicle_number')
+    def validate_vehicle_number(cls, v: str) -> str:
+        """차량 번호 형식 검증 (PBV-숫자4자리)"""
+        pattern = r'^PBV-\d{4}$'
+        if not re.match(pattern, v):
+            raise ValueError("Invalid vehicle number format. Must be 'PBV-' followed by 4 digits")
+        return v
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "vehicle_number": "PBV-5678",
+                "last_maintenance_at": "2025-01-10T12:00:00",
+                "next_maintenance_at": "2025-06-10T12:00:00"
+            }
+        }
+
+class VehicleUpdateResponse(ResponseBase):
+    """관리자 차량 목록 조회 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Vehicle data updated successfully",
+            }
+        }
