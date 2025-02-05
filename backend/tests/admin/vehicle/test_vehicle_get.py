@@ -46,15 +46,14 @@ def create_dummy_vehicles(session: Session):
         return vehicles
     return _create
 
-def test_get_vehicle_list_success(client, session, create_dummy_vehicles):
+def test_get_vehicle_list_success(client, session, create_dummy_vehicles, admin_token):
     # GIVEN: 관리자 토큰과 3개의 더미 차량 데이터가 준비됨
-    # (admin_token 은 fixture를 통해 주입됨)
     create_dummy_vehicles(3)
     
     # WHEN: /admin/vehicles 엔드포인트를 GET 요청
     response = client.get(
         "/admin/vehicles?page=1&pageSize=10",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
     
     # THEN: 응답이 성공적이고, 각 차량 필드가 올바르게 매핑됨
@@ -82,19 +81,19 @@ def test_get_vehicle_list_unauthorized(client):
     response = client.get("/admin/vehicles?page=1&pageSize=10")
     assert response.status_code == 401
 
-def test_get_vehicle_list_non_admin(client, session, create_dummy_vehicles):
+def test_get_vehicle_list_non_admin(client, session, create_dummy_vehicles, non_admin_token):
     # GIVEN: 비관리자 토큰과 3개의 더미 차량 데이터가 준비됨
     create_dummy_vehicles(3)
 
     # WHEN: /admin/vehicles 엔드포인트를 비관리자 토큰으로 호출
     response = client.get(
         "/admin/vehicles?page=1&pageSize=10",
-        headers={"Authorization": f"Bearer {non_admin_token()}"}
+        headers={"Authorization": f"Bearer {non_admin_token}"}
     )
     # THEN: 403 Forbidden 응답이 발생함
     assert response.status_code == 403
 
-def test_get_vehicle_list_empty(client, session):
+def test_get_vehicle_list_empty(client, session, admin_token):
     # GIVEN: 차량 테이블을 초기화하여 빈 상태로 만듦
     session.exec(text("DELETE FROM vehicle"))
     session.commit()
@@ -102,7 +101,7 @@ def test_get_vehicle_list_empty(client, session):
     # WHEN: 관리자 토큰으로 빈 차량 목록 조회 요청
     response = client.get(
         "/admin/vehicles?page=1&pageSize=10",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
     # THEN: 응답 결과는 빈 리스트이어야 함
     assert response.status_code == 200
@@ -112,23 +111,23 @@ def test_get_vehicle_list_empty(client, session):
     assert isinstance(vehicles, list)
     assert len(vehicles) == 0
 
-def test_get_vehicle_list_pagination(client, session, create_dummy_vehicles):
+def test_get_vehicle_list_pagination(client, session, create_dummy_vehicles, admin_token, clear_vehicles):
     # GIVEN: 차량 테이블 초기화 후 5개의 더미 차량 생성
-    clear_vehicles(session)  # clear_vehicles fixture를 통해 DB 초기화
+    clear_vehicles()  # clear_vehicles fixture를 통해 DB 초기화
     create_dummy_vehicles(5)
 
     # WHEN: 페이지 사이즈 3으로 각 페이지 요청 (page1, page2, page3)
     response1 = client.get(
         "/admin/vehicles?page=1&pageSize=3",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
     response2 = client.get(
         "/admin/vehicles?page=2&pageSize=3",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
     response3 = client.get(
         "/admin/vehicles?page=3&pageSize=3",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
 
     # THEN: page1은 3개, page2는 2개, page3는 빈 리스트
@@ -139,35 +138,35 @@ def test_get_vehicle_list_pagination(client, session, create_dummy_vehicles):
     assert len(data2["data"]["vehicles"]) == 2
     assert len(data3["data"]["vehicles"]) == 0
 
-def test_get_vehicle_list_invalid_page(client):
+def test_get_vehicle_list_invalid_page(client, admin_token):
     # GIVEN: 관리자 토큰 생성
     # WHEN: page 값이 0으로 GET 요청 시
     response = client.get(
         "/admin/vehicles?page=0&pageSize=10",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
     # THEN: 유효성 검사 실패로 422 에러가 발생함
     assert response.status_code == 422
 
-def test_get_vehicle_list_invalid_page_size(client):
+def test_get_vehicle_list_invalid_page_size(client, admin_token):
     # GIVEN: 관리자 토큰 생성
     # WHEN: pageSize 값이 0으로 GET 요청 시
     response = client.get(
         "/admin/vehicles?page=1&pageSize=0",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
     # THEN: 유효성 검사 실패로 422 에러가 발생함
     assert response.status_code == 422
 
-def test_vehicle_field_conversion(client, session, create_dummy_vehicles):
+def test_vehicle_field_conversion(client, session, create_dummy_vehicles, admin_token, clear_vehicles):
     # GIVEN: 차량 테이블 초기화 후 단일 차량 데이터 생성
-    clear_vehicles(session)
+    clear_vehicles()
     create_dummy_vehicles(1)
 
     # WHEN: 관리자 토큰으로 단일 차량 조회 GET 요청 수행
     response = client.get(
         "/admin/vehicles?page=1&pageSize=10",
-        headers={"Authorization": f"Bearer {admin_token()}"}
+        headers={"Authorization": f"Bearer {admin_token}"}
     )
 
     # THEN: current_location이 dict로 변환되고, status가 "Active"로 매핑됨
