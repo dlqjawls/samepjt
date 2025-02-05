@@ -1,9 +1,10 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.vehicle_service import VehicleService
-from app.api.schemas.admin.vehicle_shema import VehiclesResponse
+from app.api.schemas.admin.vehicle_shema import VehicleCreate, VehiclesResponse
 
 router = APIRouter()
 
@@ -82,3 +83,114 @@ async def get_vehicle_list(
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["semi", "master"]))
 ):
     return VehicleService.get_vehicle_list(session, page, pageSize)
+
+@router.post(
+    "/vehicles",
+    response_model=VehiclesResponse,
+    status_code=201,
+    responses={
+        201: {
+            "description": "차량이 성공적으로 등록됨",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Vehicle registered successfully"
+                    }
+                }
+            }
+        },
+        401: {
+            "description": "인증 실패",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Authentication required",
+                        "error_code": "UNAUTHORIZED",
+                        "detail": {
+                            "error": "Authorization header is missing"
+                        }
+                    }
+                }
+            }
+        },
+        403: {
+            "description": "권한 없음",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Permission denied",
+                        "error_code": "FORBIDDEN",
+                        "detail": {
+                            "role_required": "master",
+                            "role_provided": "admin"
+                        }
+                    }
+                }
+            }
+        },
+        409: {
+            "description": "차대번호 또는 차량 번호 중복",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Vehicle already exists",
+                        "error_code": "CONFLICT",
+                        "detail": {
+                            "vin": "ABC123456789XYZ",
+                            "error": "VIN already exists"
+                        }
+                    }
+                }
+            }
+        },
+        422: {
+            "description": "유효하지 않은 입력값",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Validation error",
+                        "error_code": "VALIDATION_ERROR",
+                        "detail": {
+                            "errors": [
+                                {
+                                    "field": "vin",
+                                    "message": "VIN cannot be empty"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+async def create_vehicle(
+    vehicle_data: VehicleCreate,
+    session: Annotated[Session, Depends(get_session)],
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> VehiclesResponse:
+    """
+    차량 등록 API
+
+    Args:
+    - vehicle_data: 차량 등록 정보
+        - vin (str): 차량 식별 번호 (Vehicle Identification Number)
+        - vehicle_number (str): 차량 번호판 (예: "PBV-1234")
+
+    Returns:
+    - VehiclesResponse: 차량 등록 결과
+        - resultCode (str): 처리 결과 코드
+        - message (str): 처리 결과 메시지
+
+    Raises:
+    - 401 UNAUTHORIZED: 인증 실패
+    - 403 FORBIDDEN: 권한 없음 (master 권한 필요)
+    - 409 CONFLICT: 차대번호 또는 차량 번호 중복
+    - 422 VALIDATION_ERROR: 유효하지 않은 입력값
+    """
+    return VehicleService.create_vehicle(session, vehicle_data, token_data.user_pk)
