@@ -1,8 +1,8 @@
 import pytest
 from sqlmodel import Session, select, text, delete
-from app.models.vehicle import Vehicle
+from app.db.models.vehicle import Vehicle
 from app.core.jwt import jwt_handler
-from app.utils.lut_constants import ITEM_STATUS
+from app.utils.lut_constants import ItemStatus
 
 @pytest.fixture
 def master_token():
@@ -45,8 +45,9 @@ def test_create_vehicle_success(client, session, master_token, clear_vehicles):
     vehicle = session.exec(select(Vehicle).where(Vehicle.vin == vehicle_data["vin"])).first()
     assert vehicle is not None
     assert vehicle.vehicle_number == vehicle_data["vehicle_number"]
-    assert vehicle.status_id == ITEM_STATUS.INACTIVE
+    assert vehicle.status_id == ItemStatus.INACTIVE
     assert vehicle.mileage == 0.0
+
 
 def test_create_vehicle_duplicate_vin(client, session, master_token, clear_vehicles):
     """❌ 중복된 VIN으로 차량 등록 시도"""

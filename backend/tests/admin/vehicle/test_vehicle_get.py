@@ -1,10 +1,12 @@
 import pytest
 from datetime import datetime
 from sqlmodel import Session
-from app.models.vehicle import Vehicle
+from app.db.models.vehicle import Vehicle
 from app.core.jwt import jwt_handler
 from sqlalchemy import text
 import json
+
+from app.utils.lut_constants import ItemStatus
 
 # GIVEN: 관리자 토큰 생성 (role "master")
 @pytest.fixture
@@ -39,7 +41,7 @@ def create_dummy_vehicles(session: Session):
                 mileage=1000.0 * (i+1),
                 last_maintenance_at=datetime.now(),
                 next_maintenance_at=datetime.now(),
-                status_id=1,  # 1은 "active"로 매핑됨
+                status_id=ItemStatus.ACTIVE,
                 created_by=1,
                 updated_by=1
             )

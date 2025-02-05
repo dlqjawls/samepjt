@@ -1,9 +1,9 @@
 import pytest
 from datetime import datetime
 from app.core.jwt import jwt_handler
-from app.models.vehicle import Vehicle
+from app.db.models.vehicle import Vehicle
 from sqlmodel import Session, select
-from app.utils.lut_constants import ITEM_STATUS
+from app.utils.lut_constants import ItemStatus
 
 @pytest.fixture
 def master_token():
@@ -22,7 +22,7 @@ def test_vehicle(session: Session):
         vin="TEST123456789",
         vehicle_number="PBV-1234",
         current_location='{"x": 12.313, "y": 32.3232}',
-        status_id=ITEM_STATUS.ACTIVE,
+        status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
@@ -128,7 +128,7 @@ def test_update_vehicle_duplicate_number(client, session, master_token, test_veh
         vin="OTHER123456789",
         vehicle_number="PBV-9999",
         current_location='{"x": 12.313, "y": 32.3232}',
-        status_id=ITEM_STATUS.ACTIVE,
+        status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),

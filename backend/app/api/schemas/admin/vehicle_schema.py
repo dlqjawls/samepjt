@@ -129,3 +129,13 @@ class VehicleUpdateResponse(ResponseBase):
                 "message": "Vehicle data updated successfully",
             }
         }
+        
+class VehicleDeleteResponse(ResponseBase):
+    """차량 삭제 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Vehicle deleted successfully"
+            } 
+        }

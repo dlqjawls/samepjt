@@ -1,38 +1,21 @@
 from datetime import datetime, timedelta
 from typing import List
 from sqlmodel import Session
-from app.models.option import Option
-from app.models.rent_history import RentHistory
+from app.db.models.option import Option
+from app.db.models.rent_history import RentHistory
 from app.api.schemas.user import rent_schema
-from app.utils.exceptions import ConflictError, ForbiddenError, NotFoundError
+from app.utils.exceptions import ConflictError, ForbiddenError, NotFoundError, DatabaseError
 from app.utils.handle_transaction import handle_transaction
-from app.crud.rent_history import rent_history_crud
-from app.crud.vehicle import vehicle_crud
-from app.crud.module import module_crud
-from app.crud.option import option_crud
-from app.crud.usage_history import usage_history_crud
+from app.db.crud.rent_history import rent_history_crud
+from app.db.crud.vehicle import vehicle_crud
+from app.db.crud.module import module_crud
+from app.db.crud.option import option_crud
+from app.db.crud.usage_history import usage_history_crud
+from app.utils.lut_constants import ItemType, ItemStatus, RentStatus, UsageStatus
+import json
 
 
 class RentService:
-    # TODO:LUT 조회 구현(하드코딩)
-    # ITEM TYPE ID
-    VEHICLE = 1
-    MODULE = 2
-    OPTION = 3
-
-    # ITEM STATUS ID
-    ACTIVE = 1  # 사용 중
-    INACTIVE = 2  # 대기 중
-
-    # RENT STATUS ID
-    IN_PROGRESS = 1  # 진행 중
-    CANCELED = 3  # 취소됨
-    COMPLETED = 4  # 완료됨
-
-    # USAGE STATUS ID
-    IN_USE = 1  # 사용 중
-    COMPLETED = 2  # 완료됨
-    
     @staticmethod
     def get_options_for_rent(
         session: Session,
@@ -46,7 +29,7 @@ class RentService:
                 session=session,
                 option_type_id=opt_type.optionTypeId,  
                 required_quantity=opt_type.quantity,
-                status_id=RentService.INACTIVE
+                status_id=ItemStatus.INACTIVE
             )
         ]
 
@@ -55,11 +38,17 @@ class RentService:
         """렌트 기록 생성"""
         return RentHistory(
             user_pk=user_pk,
-            departure_location=f"({rent_request.autonomousDeparturePoint.x}, {rent_request.autonomousDeparturePoint.y})",
-            arrival_location=f"({rent_request.autonomousArrivalPoint.x}, {rent_request.autonomousArrivalPoint.y})",
+            departure_location=json.dumps({
+                "x": rent_request.autonomousDeparturePoint.x,
+                "y": rent_request.autonomousDeparturePoint.y,
+            }),
+            arrival_location=json.dumps({
+                "x": rent_request.autonomousArrivalPoint.x,
+                "y": rent_request.autonomousArrivalPoint.y,
+            }),
             cost=500 + (options_count * 50),
             mileage=0,
-            status_id=RentService.IN_PROGRESS,
+            status_id=RentStatus.IN_PROGRESS,
             created_at=datetime.now(),
             updated_at=datetime.now()
         )
@@ -97,31 +86,60 @@ class RentService:
         )
         session.refresh(rent_history)
 
+        if rent_history.rent_id is None:
+            raise DatabaseError(
+                message="Missing rent history ID after creation",
+                detail={"rent_history": rent_history.dict()}
+            )
+        if vehicle.vehicle_id is None:
+            raise DatabaseError(
+                message="Missing vehicle ID",
+                detail={"vehicle": vehicle.dict()}
+            )
+        if module.module_id is None:
+            raise DatabaseError(
+                message="Missing module ID",
+                detail={"module": module.dict()}
+            )
+
         # 5. 사용 상태 업데이트
         vehicle_crud.update(
             session, 
             vehicle.vehicle_id, 
-            {"status_id": RentService.ACTIVE}
+            {"status_id": ItemStatus.ACTIVE},
+            id_field="vehicle_id"
         )
         module_crud.update(
             session, 
             module.module_id, 
-            {"status_id": RentService.ACTIVE}
+            {"status_id": ItemStatus.ACTIVE},
+            id_field="module_id"
         )
+
         for option in selected_options:
             option_crud.update(
                 session,
                 option.option_id,
-                {"status_id": RentService.ACTIVE}
+                {"status_id": ItemStatus.ACTIVE},
+                id_field="option_id"
             )
 
         # 6. 사용 기록 생성
+        option_ids = []
+        for opt in selected_options:
+            if opt.option_id is None:
+                raise DatabaseError(
+                    message="Missing option ID",
+                    detail={"option": opt.dict()}
+                )
+            option_ids.append(opt.option_id)
+
         usage_entries = usage_history_crud.create_usage_entries(
             session=session,
             rent_id=rent_history.rent_id,
             vehicle_id=vehicle.vehicle_id,
             module_id=module.module_id,
-            option_ids=[opt.option_id for opt in selected_options]
+            option_ids=option_ids
         )
 
         return rent_schema.RentResponse(
@@ -139,7 +157,6 @@ class RentService:
         user_pk: int
     ) -> rent_schema.CancelRentResponse:
         """렌트 취소 처리"""
-        print( "렌트 취소 처리")
         # 1. 렌트 기록 조회 및 검증
         rent_history = rent_history_crud.get_by_id(
             session, 
@@ -152,7 +169,6 @@ class RentService:
                     "rent_id": rent_id
                 }
             )
-        print( "렌트 기록 조회 및 검증")
         # 2. 사용자 권한 검증
         if rent_history.user_pk != user_pk:
             raise ForbiddenError(
@@ -163,9 +179,8 @@ class RentService:
                     "rent_user": rent_history.user_pk
                 }
             )
-        print( "사용자 권한 검증")
         # 3. 렌트 상태 검증
-        if rent_history.status_id in [RentService.CANCELED, RentService.COMPLETED]:
+        if rent_history.status_id in [RentStatus.CANCELED, RentStatus.COMPLETED]:
             raise ConflictError(
                 message="Rent already canceled or completed",
                 detail={
@@ -175,43 +190,42 @@ class RentService:
             )
 
      
-        print( "렌트 상태 검증")
         # 4. 사용 기록 조회
         usage_entries = usage_history_crud.get_usage_entries(
             session,
             rent_id
         )
-        print( "사용 기록 조회")
         # 5. 아이템 ID 분류
         vehicle_id = next(
-            (u.item_id for u in usage_entries if u.item_type_id == RentService.VEHICLE),
+            (u.item_id for u in usage_entries if u.item_type_id == ItemType.VEHICLE),
             None
         )
         module_id = next(
-            (u.item_id for u in usage_entries if u.item_type_id == RentService.MODULE),
+            (u.item_id for u in usage_entries if u.item_type_id == ItemType.MODULE),
             None
         )
         option_ids = [
             u.item_id for u in usage_entries 
-            if u.item_type_id == RentService.OPTION
+            if u.item_type_id == ItemType.OPTION
         ]
-        print( "아이템 ID 분류")
+        
         # 6. 사용 기록 및 아이템 상태 업데이트
-        usage_history_crud.cancel_usage_entries(
+        usage_history_crud.update_usage_entries_status(
             session,
             rent_id,
             vehicle_id,
             module_id,
-            option_ids
+            option_ids,
+            UsageStatus.COMPLETED
         )
-        print( "사용 기록 및 아이템 상태 업데이트")
+
         # 7. 렌트 상태 업데이트
         rent_history_crud.update(
-            session=session,
-            id=rent_id,
-            obj_in={"status_id": RentService.CANCELED}
+            session,
+            rent_id,
+            obj_in={"status_id": RentStatus.CANCELED},
+            id_field="rent_id"
         )
-        print( "렌트 상태 업데이트")
         return rent_schema.CancelRentResponse(
             message="Rent canceled successfully",
             data=rent_schema.CancelRentResponseData(
@@ -260,7 +274,7 @@ class RentService:
             )
 
         # 3. 렌트 상태 검증
-        if rent_history.status_id in [RentService.CANCELED, RentService.COMPLETED]:
+        if rent_history.status_id in [RentStatus.CANCELED, RentStatus.COMPLETED]:
             raise ConflictError(
                 message="Rent already canceled or completed",
                 detail={
@@ -330,7 +344,7 @@ class RentService:
             )
 
         # 3. 렌트 상태 검증
-        if rent_history.status_id in [RentService.CANCELED, RentService.COMPLETED]:
+        if rent_history.status_id in [RentStatus.CANCELED, RentStatus.COMPLETED]:
             raise ConflictError(
                 message="Rent already completed or canceled",
                 detail={
@@ -344,26 +358,28 @@ class RentService:
 
         # 5. 아이템 ID 분류
         vehicle_id = next(
-            (u.item_id for u in usage_entries if u.item_type_id == RentService.VEHICLE),
+            (u.item_id for u in usage_entries if u.item_type_id == ItemType.VEHICLE),
             None
         )
         module_id = next(
-            (u.item_id for u in usage_entries if u.item_type_id == RentService.MODULE),
+            (u.item_id for u in usage_entries if u.item_type_id == ItemType.MODULE),
             None
         )
         option_ids = [
             u.item_id for u in usage_entries 
-            if u.item_type_id == RentService.OPTION
+            if u.item_type_id == ItemType.OPTION
         ]
 
         # 6. 사용 기록 및 아이템 상태 업데이트
-        usage_history_crud.complete_usage_entries(
+        usage_history_crud.update_usage_entries_status(
             session,
             rent_id,
             vehicle_id,
             module_id,
-            option_ids
+            option_ids,
+            UsageStatus.COMPLETED
         )
+
 
         # 7. 렌트 상태 업데이트 및 최종 데이터 계산
         usage_duration = int((datetime.now() - rent_history.created_at).total_seconds() / 60)
@@ -371,13 +387,14 @@ class RentService:
         estimated_payback = rent_history.cost * 0.05  # TODO: 실제 페이백 계산 로직 구현
 
         rent_history_crud.update(
-            session=session,
-            id=rent_id,
+            session,
+            rent_id,
             obj_in={
-                "status_id": RentService.COMPLETED,
+                "status_id": RentStatus.COMPLETED,
                 "mileage": total_mileage,
                 "updated_at": datetime.now()
-            }
+            },
+            id_field="rent_id"
         )
 
         return rent_schema.CompleteRentResponse(

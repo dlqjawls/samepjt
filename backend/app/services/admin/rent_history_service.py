@@ -1,13 +1,13 @@
 from sqlmodel import Session
 from app.api.schemas.common import Coordinate
-from app.models.rent_history import RentHistory
+from app.db.models.rent_history import RentHistory
 from app.utils.exceptions import NotFoundError, DatabaseError
-from app.crud.usage_history import usage_history_crud
-from app.crud.vehicle import vehicle_crud
-from app.crud.option import option_crud
-from app.crud.rent_history import rent_history_crud
+from app.db.crud.usage_history import usage_history_crud
+from app.db.crud.vehicle import vehicle_crud
+from app.db.crud.option import option_crud
+from app.db.crud.rent_history import rent_history_crud
 from app.api.schemas.admin.rent_history_schema import RentHistoryResponse, RentHistoryData, RentHistoryItem
-from app.utils.lut_constants import RENT_STATUS, RENT_STATUS_MAPPING, ITEM_TYPE
+from app.utils.lut_constants import ItemType, RentStatus, LUTConstants 
 
 
 class RentHistoryService:
@@ -57,9 +57,9 @@ class RentHistoryService:
         option_type_ids: list[str] = []
         
         for entry in usage_entries:
-            if entry.item_type_id == ITEM_TYPE.VEHICLE:
+            if entry.item_type_id == ItemType.VEHICLE:
                 vehicle_number = RentHistoryService._validate_vehicle(entry.item_id, session)
-            elif entry.item_type_id == ITEM_TYPE.OPTION:
+            elif entry.item_type_id == ItemType.OPTION:
                 option_type_id = RentHistoryService._validate_option(entry.item_id, session)
                 option_type_ids.append(option_type_id)
 
@@ -86,7 +86,7 @@ class RentHistoryService:
             arrival_location=Coordinate.from_str(rent.arrival_location),
             cost=float(rent.cost) if rent.cost else 0.0,
             mileage=float(rent.mileage) if rent.mileage else 0.0,
-            status=RENT_STATUS_MAPPING.get(RENT_STATUS(rent.status_id), "unknown"),
+            status=LUTConstants.RENT_STATUS_NAMES.get(RentStatus(rent.status_id), "unknown"),
             created_at=rent.created_at,
             updated_at=rent.updated_at
         )
@@ -94,7 +94,7 @@ class RentHistoryService:
     @staticmethod
     def get_rent_history(session: Session, page: int = 1, page_size: int = 10) -> RentHistoryResponse:
         """렌트 히스토리 조회"""
-        paginated_result = rent_history_crud.get_all(session, page, page_size)
+        paginated_result = rent_history_crud.paginate(session, page, page_size)
         
         rent_history_items: list[RentHistoryItem] = []
         for rent in paginated_result["items"]:

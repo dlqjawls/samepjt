@@ -1,7 +1,7 @@
 from sqlmodel import Session
 from typing import List
-from app.models.option_type import OptionType 
-from app.crud.option_type import option_types_crud
+from app.db.models.option_type import OptionType 
+from app.db.crud.option_type import option_types_crud
 from app.api.schemas.user import option_type_schema
 from app.utils.exceptions import NotFoundError, ValidationError
 from app.utils.handle_transaction import handle_transaction
@@ -70,8 +70,9 @@ class OptionTypeService:
     def get_all_option_types(session: Session, page: int = 1, page_size: int = 10) -> option_type_schema.OptionTypesResponse:
         """ ✅ 옵션 타입 목록 조회 (페이지네이션 적용) """
         
-        paginated_result = option_types_crud.get_all(session, page, page_size)
+        paginated_result = option_types_crud.paginate(session, page, page_size)
         option_types: List[OptionType] = paginated_result["items"]
+
 
         option_types_data = [
             OptionTypeServiceUtils.convert_to_schema(
@@ -100,7 +101,7 @@ class OptionTypeService:
                 detail={"option_type_id": option_type_id}
             )
         
-        option_type = option_types_crud.get_by_id(session, option_type_id)
+        option_type = option_types_crud._get_by_field(session, option_type_id, "option_type_id")
         if option_type is None:
             raise NotFoundError(
                 message="Option type not found",    
