@@ -1,15 +1,37 @@
 from typing import List
-from sqlmodel import Session, select
-from app.api.schemas.admin.vehicle_shema import VehicleItem, VehiclesData, VehiclesResponse, VehicleCreate
+from sqlmodel import Session
+from app.api.schemas.admin.vehicle_schema import VehicleItem, VehiclesData, VehiclesResponse, VehicleCreate, VehicleUpdateRequest, VehicleUpdateResponse
 from app.crud.vehicle import vehicle_crud
 from app.api.schemas.common import Coordinate
 from app.models.vehicle import Vehicle
-from app.utils.exceptions import DatabaseError, ConflictError
+from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
 from app.utils.lut_constants import ITEM_STATUS, ITEM_STATUS_MAPPING
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
 
 class VehicleService:
+  
+    @staticmethod
+    def _check_vin_exists(session: Session, vin: str) -> None:
+        """VIN 중복 검사"""
+        if vehicle_crud.get_by_vin(session, vin):
+            raise ConflictError(
+                message="Vehicle already exists",
+                detail={"vin": vin, "error": "VIN already exists"}
+            )
+            
+    @staticmethod
+    def _check_vehicle_number_exists(session: Session, vehicle_number: str) -> None:
+        """차량 번호 중복 검사"""
+        if vehicle_crud.get_by_vehicle_number(session, vehicle_number):
+            raise ConflictError(
+                message="Vehicle number already exists",
+                detail={
+                    "vehicle_number": vehicle_number,
+                    "error": "Vehicle number already exists"
+                }
+            )
+
     @staticmethod
     def _convert_vehicle_data(vehicle: Vehicle) -> VehicleItem:
         """차량 데이터 변환"""
@@ -63,24 +85,10 @@ class VehicleService:
     def create_vehicle(session: Session, vehicle_data: VehicleCreate, user_pk: int) -> VehiclesResponse:
         """차량 등록 서비스"""
         # 1. VIN 중복 검사
-        if vehicle_crud.get_by_vin(session, vehicle_data.vin):
-            raise ConflictError(
-                message="Vehicle already exists",
-                detail={
-                    "vin": vehicle_data.vin,
-                    "error": "VIN already exists"
-                }
-            )
+        VehicleService._check_vin_exists(session, vehicle_data.vin)
 
         # 2. 차량 번호 중복 검사
-        if vehicle_crud.get_by_vehicle_number(session, vehicle_data.vehicle_number):
-            raise ConflictError(
-                message="Vehicle already exists",
-                detail={
-                    "vehicle_number": vehicle_data.vehicle_number,
-                    "error": "Vehicle number already exists"
-                }
-            )
+        VehicleService._check_vehicle_number_exists(session, vehicle_data.vehicle_number)
 
         # 3. 새 차량 생성
         new_vehicle = Vehicle(
@@ -99,3 +107,30 @@ class VehicleService:
         return VehiclesResponse.success(
             message="Vehicle registered successfully"
         )
+
+    @staticmethod
+    @handle_transaction
+    def update_vehicle(session: Session, vehicle_data: VehicleUpdateRequest, vehicle_id: int, user_pk: int) -> VehicleUpdateResponse:
+        """차량 정보 수정 서비스"""
+        # 1. 차량 존재 여부 확인
+        vehicle = vehicle_crud.get_by_id(session, vehicle_id)
+        if not vehicle:
+            raise NotFoundError(
+                message="Vehicle not found",
+                detail={"vehicle_id": vehicle_id}
+            )
+
+        # 2. 차량 번호 중복 검사 (차량 번호가 변경되는 경우에만)
+        if vehicle_data.vehicle_number and vehicle_data.vehicle_number != vehicle.vehicle_number:
+            VehicleService._check_vehicle_number_exists(session, vehicle_data.vehicle_number)
+
+        # 3. 업데이트 데이터 준비 및 실행
+        update_data = vehicle_data.dict(exclude_unset=True)
+        update_data["updated_by"] = user_pk
+        update_data["updated_at"] = datetime.now()
+        
+        vehicle_crud.update(session, vehicle_id, update_data)
+        return VehicleUpdateResponse.success(
+            message="Vehicle updated successfully"
+        )   
+        
