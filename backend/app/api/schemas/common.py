@@ -49,15 +49,21 @@ class Coordinate(BaseModel):
     y: float = Field(..., description="Y coordinate (latitude)")
 
     def __str__(self) -> str:
-        """좌표를 문자열로 변환"""
-        return f"x={self.x},y={self.y}"
-
+        """좌표를 문자열로 변환 (JSON 형식)"""
+        return json.dumps({"x": self.x, "y": self.y})
 
     @classmethod
     def from_str(cls, coord_str: str) -> "Coordinate":
         """문자열에서 좌표 객체 생성"""
         try:
-            x, y = map(float, coord_str.split(","))
-            return cls(x=x, y=y)
-        except (ValueError, TypeError, AttributeError) as e:
+            if not coord_str:
+                return cls(x=0.0, y=0.0)
+                
+            # JSON 문자열을 파싱
+            coord_dict = json.loads(coord_str)
+            return cls(
+                x=float(coord_dict["x"]),
+                y=float(coord_dict["y"])
+            )
+        except (ValueError, TypeError, AttributeError, json.JSONDecodeError) as e:
             raise ValueError(f"Invalid coordinate string format: {coord_str}") from e
