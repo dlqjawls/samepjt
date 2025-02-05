@@ -1,10 +1,10 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Path
+from fastapi import APIRouter, Depends, Query, Path, HTTPException
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.vehicle_service import VehicleService
-from app.api.schemas.admin.vehicle_schema import VehicleCreate, VehiclesResponse, VehicleUpdateRequest, VehicleUpdateResponse
+from app.api.schemas.admin.vehicle_schema import VehicleCreate, VehiclesResponse, VehicleUpdateRequest, VehicleUpdateResponse, VehicleDeleteResponse
 
 router = APIRouter()
 
@@ -269,5 +269,91 @@ async def update_vehicle(
     - 422 VALIDATION_ERROR: 유효하지 않은 입력값
     """
     return VehicleService.update_vehicle(session = session, vehicle_data = vehicle_data, vehicle_id = vehicle_id, user_pk = token_data.user_pk)
+
+@router.delete(
+    "/vehicles/{vehicle_id}",
+    response_model=VehicleDeleteResponse,
+    responses={
+        200: {
+            "description": "차량이 성공적으로 삭제됨",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Vehicle deleted successfully"
+                    }
+                }
+            }
+        },
+        400: {
+            "description": "차량이 대여 중으로 삭제 불가",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Vehicle cannot be deleted while it is in use",
+                        "error_code": "BAD_REQUEST",
+                        "detail": {
+                            "vehicle_id": 102,
+                            "rent_status": "in-progress"
+                        }
+                    }
+                }
+            }
+        },
+        401: {
+            "description": "인증 실패",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Authentication required",
+                        "error_code": "UNAUTHORIZED",
+                        "detail": {
+                            "error": "Authorization header is missing"
+                        }
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "차량이 존재하지 않음",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Vehicle not found",
+                        "error_code": "NOT_FOUND",
+                        "detail": {
+                            "vehicle_id": 999
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+async def delete_vehicle(
+    vehicle_id: int = Path(..., description="🚗 차량 ID (최소 1)", gt=0),
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> VehicleDeleteResponse:
+    """
+    차량 삭제 API
+
+    Args:
+    - vehicle_id: 삭제할 차량의 고유 ID
+
+    Returns:
+    - VehicleDeleteResponse: 차량 삭제 결과
+        - resultCode (str): 처리 결과 코드
+        - message (str): 처리 결과 메시지
+
+    Raises:
+    - 400 BAD_REQUEST: 차량이 대여 중으로 삭제 불가
+    - 401 UNAUTHORIZED: 인증 실패
+    - 404 NOT_FOUND: 존재하지 않는 차량 ID
+    """
+    return VehicleService.delete_vehicle(session, vehicle_id, token_data.user_pk)
 
 
