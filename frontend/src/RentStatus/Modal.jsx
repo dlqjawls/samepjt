@@ -1,9 +1,19 @@
 import "./Modal.css"
 
-const Modal = () => {
+const Modal = ({ isOpen, onClose, title, children }) => {
+    if (!isOpen) return null;
+
     return (
-        <div>
-            모달 틀
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h2>{title}</h2>
+                    <button onClick={onClose}>닫기</button>
+                </div>
+                <div className="modal-body">
+                    {children}
+                </div>
+            </div>
         </div>
     )
 }

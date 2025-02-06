@@ -44,20 +44,41 @@ const LoginModal = ({ onClose }) => {
       const refreshToken = response.data.data.refresh_token;
       sessionStorage.setItem("token", token);
       sessionStorage.setItem("refreshToken", refreshToken);
-      onClose();
+      
+      try {
+        const rentresponse = await axios.get(
+          "https://backend-wandering-river-6835.fly.dev/user/me/rent/current", 
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+        
+        if (rentresponse.data.resultCode === "SUCCESS") {
+          console.log("차량 상태 조회 완료:", rentresponse.data);
+          sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data));
+        }
+        
+        navigate("/");
+        onClose();
+        
+      } catch (rentError) {
+        console.error("차량 상태 조회 실패:", rentError);
+        // 차량 상태 조회 실패해도 로그인은 완료된 상태이므로 계속 진행
+        navigate("/");
+        onClose();
+      }
+
     } catch (err) {
       setError(
         err.response?.data?.message ||
           "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
       );
-      // toast.error(
-      //   err.response?.data?.message ||
-      //     "로그인 중 오류가 발생했습니다. 다시 시도해 주세요."
-      // );
     } finally {
       setIsLoading(false);
     }
-  };
+};
 
   return (
     <div className="lm-overlay">

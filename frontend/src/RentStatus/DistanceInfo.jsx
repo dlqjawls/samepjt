@@ -3,7 +3,7 @@ import "./DistanceInfo.css"
 const DistanceInfo = () => {
     return (
         <div>
-            거리 정보
+            <h1>주행거리: 12.3km</h1>
         </div>
     )
 }

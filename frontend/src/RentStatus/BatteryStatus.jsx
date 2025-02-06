@@ -5,7 +5,7 @@ import "./BatteryStatus.css"
 const BatteryStatus = () => {
     return (
         <div>
-            배터리 상태
+           <h1>배터리리80% </h1>
         </div>
     )
 }

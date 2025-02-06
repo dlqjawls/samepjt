@@ -137,8 +137,28 @@ const Total_reciept = () => {
             toast.success(
               `예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`
             );
-            sessionStorage.removeItem("selectedOptionData");
-            // navigate("/");
+            // sessionStorage.removeItem("selectedOptionData");
+            sessionStorage.setItem("rent_id", rent_id);
+            
+            try {
+              const rentresponse = await axios.get(
+                `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+            
+              if (rentresponse.data.resultCode === "SUCCESS") {
+                console.log("차량 상태 조회 완료:", rentresponse.data);
+                sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data));
+                navigate("/car_status");
+              }
+            } catch (error) {
+              console.error("차량 상태 조회 중 오류:", error);
+              toast.error("차량 상태 조회에 실패했습니다.");
+            }
           }
         } catch (error) {
           if (error.response && error.response.status === 401) {
@@ -161,7 +181,6 @@ const Total_reciept = () => {
                 `예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`
               );
               sessionStorage.removeItem("selectedOptionData");
-              // navigate("/");
             }
           } else {
             throw error;
