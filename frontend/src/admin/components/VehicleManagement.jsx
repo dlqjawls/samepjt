@@ -1,4 +1,4 @@
-// src/components/VehicleManagement.jsx
+// src/admin/components/VehicleManagement.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "./Modal";
@@ -12,28 +12,28 @@ function VehicleManagement() {
    */
   const initialDummyData = [
     {
-      vehicleId: 1,
-      carNumber: "아3123",
-      vin: "VIN1241241",
-      currentLocation: "차고지",
+      vehicle_id: 1,
+      vin: "ABC123456789XYZ",
+      vehicle_number: "PBV-1234",
+      current_location: { x: 12.313, y: 32.3232 },
       status: "active",
-      mileage: 3000,
-      lastMaintenanceAt: "2024-12-21",
-      nextMaintenanceAt: "2025-03-01",
-      createdAt: "2024-01-01T09:00",
-      updatedAt: "2024-12-21T09:00",
+      mileage: 12000.5,
+      last_maintenance_at: "2025-01-10T12:00:00",
+      next_maintenance_at: "2025-06-10T12:00:00",
+      created_at: "2024-05-01T08:30:00",
+      updated_at: "2025-01-10T12:00:00",
     },
     {
-      vehicleId: 2,
-      carNumber: "나3123",
-      vin: "VIN1243141",
-      currentLocation: "차고지",
-      status: "active",
-      mileage: 2000,
-      lastMaintenanceAt: "2024-01-21",
-      nextMaintenanceAt: "2025-04-01",
-      createdAt: "2024-02-01T10:00",
-      updatedAt: "2024-01-21T10:00",
+      vehicle_id: 2,
+      vin: "DEF987654321ZYX",
+      vehicle_number: "PBV-5678",
+      current_location: { x: 0, y: 0 },
+      status: "inactive",
+      mileage: 8000,
+      last_maintenance_at: "2024-11-21T10:00:00",
+      next_maintenance_at: "2025-04-01T10:00:00",
+      created_at: "2024-02-01T10:00:00",
+      updated_at: "2024-11-21T10:00:00",
     },
   ];
 
@@ -47,13 +47,7 @@ function VehicleManagement() {
   const [modalContentType, setModalContentType] = useState("detail");
 
   const [formData, setFormData] = useState({
-    carNumber: "",
-    vin: "",
-    currentLocation: "",
-    status: "active",
-    mileage: "",
-    lastMaintenanceAt: "",
-    nextMaintenanceAt: "",
+    vehicle_number: "",
   });
 
   // 필터 상태
@@ -84,13 +78,13 @@ function VehicleManagement() {
 
   /**
    * 차량 목록 조회 함수
-   * API 호출 시도 후 실패하면 더미 데이터를 사용합니다.
+   * API 호출 시도 후 실패하면 더미 데이터를 사용
    */
   const fetchVehicles = async () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get(`${BASE_URL}/admin/vehicle/list`, {
+      const response = await axios.get(`${BASE_URL}/admin/vehicles`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : undefined,
@@ -106,6 +100,7 @@ function VehicleManagement() {
       if (response.data.resultCode === "SUCCESS") {
         setVehicles(response.data.data.vehicles);
         setPagination(response.data.data.pagination);
+        console.log(response.data);
       } else {
         setError(
           response.data.message || "차량 목록을 불러오는 데 실패했습니다."
@@ -138,8 +133,8 @@ function VehicleManagement() {
   // 필터 변경 핸들러
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    setFilters((prev) => ({
+      ...prev,
       [name]: value,
       page: 1,
     }));
@@ -147,8 +142,8 @@ function VehicleManagement() {
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    setFilters((prev) => ({
+      ...prev,
       page: newPage,
     }));
   };
@@ -169,13 +164,7 @@ function VehicleManagement() {
   // 상세보기에서 수정 버튼 클릭 시 -> 모달 콘텐츠를 "edit"으로 전환
   const handleEditClick = () => {
     setFormData({
-      carNumber: selectedVehicle.carNumber,
-      vin: selectedVehicle.vin,
-      currentLocation: selectedVehicle.currentLocation,
-      status: selectedVehicle.status,
-      mileage: selectedVehicle.mileage,
-      lastMaintenanceAt: selectedVehicle.lastMaintenanceAt,
-      nextMaintenanceAt: selectedVehicle.nextMaintenanceAt,
+      vehicle_number: selectedVehicle.vehicle_number,
     });
     setModalContentType("edit");
   };
@@ -188,13 +177,8 @@ function VehicleManagement() {
   // 신규 등록 버튼 클릭 시 -> 모달 콘텐츠를 "add"로 전환
   const handleAddClick = () => {
     setFormData({
-      carNumber: "",
+      vehicle_number: "",
       vin: "",
-      currentLocation: "",
-      status: "inactive",
-      mileage: "",
-      lastMaintenanceAt: "",
-      nextMaintenanceAt: "",
     });
     setModalContentType("add");
     setIsModalOpen(true);
@@ -203,13 +187,8 @@ function VehicleManagement() {
   // 신규 등록 모달 닫기 함수
   const closeAddModal = () => {
     setFormData({
-      carNumber: "",
+      vehicle_number: "",
       vin: "",
-      currentLocation: "",
-      status: "inactive",
-      mileage: "",
-      lastMaintenanceAt: "",
-      nextMaintenanceAt: "",
     });
     closeModal();
   };
@@ -231,12 +210,11 @@ function VehicleManagement() {
   const handleSaveEditDummy = () => {
     setVehicles((prevVehicles) =>
       prevVehicles.map((item) =>
-        item.vehicleId === selectedVehicle.vehicleId
+        item.vehicle_id === selectedVehicle.vehicle_id
           ? {
               ...item,
-              ...formData,
-              mileage: Number(formData.mileage),
-              updatedAt: new Date().toISOString(),
+              vehicle_number: formData.vehicle_number,
+              updated_at: new Date().toISOString(),
             }
           : item
       )
@@ -250,12 +228,11 @@ function VehicleManagement() {
     setError("");
     try {
       const payload = {
-        carNumber: formData.carNumber,
-        status: formData.status,
+        vehicle_number: formData.vehicle_number,
       };
 
-      const response = await axios.put(
-        `${BASE_URL}/admin/vehicle/update/${selectedVehicle.vehicleId}`,
+      const response = await axios.patch(
+        `${BASE_URL}/admin/vehicles/${selectedVehicle.vehicle_id}`,
         payload,
         {
           headers: {
@@ -275,14 +252,10 @@ function VehicleManagement() {
       }
     } catch (err) {
       console.error(err);
-      if (err.response && err.response.data) {
-        setError(
-          err.response.data.message ||
-            "차량 정보를 수정하는 중 오류가 발생했습니다."
-        );
-      } else {
-        setError("차량 정보를 수정하는 중 오류가 발생했습니다.");
-      }
+      setError(
+        err.response?.data?.message ||
+          "차량 정보를 수정하는 중 오류가 발생했습니다."
+      );
       setVehicles(initialDummyData);
     } finally {
       setLoading(false);
@@ -293,7 +266,7 @@ function VehicleManagement() {
   const handleConfirmDeleteDummy = () => {
     setVehicles((prevVehicles) =>
       prevVehicles.filter(
-        (item) => item.vehicleId !== selectedVehicle.vehicleId
+        (item) => item.vehicle_id !== selectedVehicle.vehicle_id
       )
     );
     closeModal();
@@ -305,7 +278,7 @@ function VehicleManagement() {
     setError("");
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/vehicle/delete/${selectedVehicle.vehicleId}`,
+        `${BASE_URL}/admin/vehicles/${selectedVehicle.vehicle_id}`,
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
@@ -321,13 +294,9 @@ function VehicleManagement() {
       }
     } catch (err) {
       console.error(err);
-      if (err.response && err.response.data) {
-        setError(
-          err.response.data.message || "차량을 삭제하는 중 오류가 발생했습니다."
-        );
-      } else {
-        setError("차량을 삭제하는 중 오류가 발생했습니다.");
-      }
+      setError(
+        err.response?.data?.message || "차량을 삭제하는 중 오류가 발생했습니다."
+      );
       setVehicles(initialDummyData);
     } finally {
       setLoading(false);
@@ -337,36 +306,42 @@ function VehicleManagement() {
   // 신규 등록 저장 시 (더미 데이터 사용)
   const handleSaveAddDummy = () => {
     const newVehicle = {
-      vehicleId: vehicles.length + 1,
-      ...formData,
-      mileage: Number(formData.mileage),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      vehicle_id: vehicles.length + 1,
+      vin: formData.vin,
+      vehicle_number: formData.vehicle_number,
+      current_location: { x: 0, y: 0 }, // 등록 시에는 미정으로 처리
+      status: "inactive",
+      mileage: Number(formData.mileage) || 0,
+      last_maintenance_at: formData.last_maintenance_at,
+      next_maintenance_at: formData.next_maintenance_at,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
-    setVehicles((prevVehicles) => [...prevVehicles, newVehicle]);
+    setVehicles((prev) => [...prev, newVehicle]);
     closeModal();
   };
 
   // 신규 등록 저장 시 (API 연동)
   const handleSaveAdd = async () => {
+    if (!formData.vin.trim() || !formData.vehicle_number.trim()) {
+      setError("VIN과 차량 번호는 필수 항목입니다.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
       const payload = {
         vin: formData.vin,
-        carNumber: formData.carNumber,
+        vehicle_number: formData.vehicle_number,
       };
 
-      const response = await axios.post(
-        `${BASE_URL}/admin/vehicle/register`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : undefined,
-          },
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/admin/vehicles`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      });
 
       if (response.data.resultCode === "SUCCESS") {
         fetchVehicles();
@@ -376,16 +351,12 @@ function VehicleManagement() {
       }
     } catch (err) {
       console.error(err);
-      if (err.response && err.response.data) {
-        const errorMessages = err.response.data.errors
-          ? err.response.data.errors
-              .map((error) => `${error.field}: ${error.message}`)
-              .join(", ")
-          : err.response.data.message;
-        setError(errorMessages || "차량을 등록하는 중 오류가 발생했습니다.");
-      } else {
-        setError("차량을 등록하는 중 오류가 발생했습니다.");
-      }
+      const errorMessages = err.response?.data?.errors
+        ? err.response.data.errors
+            .map((error) => `${error.field}: ${error.message}`)
+            .join(", ")
+        : err.response?.data?.message;
+      setError(errorMessages || "차량을 등록하는 중 오류가 발생했습니다.");
       setVehicles(initialDummyData);
     } finally {
       setLoading(false);
@@ -433,7 +404,7 @@ function VehicleManagement() {
 
       {/* 차량 목록 테이블 */}
       {loading ? (
-        <p>로딩 중...</p>
+        <p>로딩 중</p>
       ) : (
         <table className="vehicle-table">
           <thead>
@@ -451,20 +422,26 @@ function VehicleManagement() {
           <tbody>
             {vehicles.length > 0 ? (
               vehicles.map((vehicle) => (
-                <tr key={vehicle.vehicleId}>
-                  <td>{vehicle.carNumber}</td>
+                <tr key={vehicle.vehicle_id}>
+                  <td>{vehicle.vehicle_number}</td>
                   <td>{vehicle.vin}</td>
-                  <td>{vehicle.currentLocation || "미정"}</td>
+                  <td>
+                    {vehicle.current_location
+                      ? `x: ${vehicle.current_location.x}, y: ${vehicle.current_location.y}`
+                      : "미정"}
+                  </td>
                   <td>
                     {vehicle.status === "active"
                       ? "활성화"
                       : vehicle.status === "inactive"
                       ? "비활성화"
-                      : "정비 중"}
+                      : vehicle.status === "maintenance"
+                      ? "정비 중"
+                      : "알 수 없음"}
                   </td>
                   <td>{vehicle.mileage || 0}</td>
-                  <td>{vehicle.lastMaintenanceAt || "없음"}</td>
-                  <td>{vehicle.nextMaintenanceAt || "없음"}</td>
+                  <td>{vehicle.last_maintenance_at || "없음"}</td>
+                  <td>{vehicle.next_maintenance_at || "없음"}</td>
                   <td>
                     <button
                       className="detail-button"
@@ -521,20 +498,31 @@ function VehicleManagement() {
       >
         {modalContentType === "detail" && selectedVehicle && (
           <div className="detail-content">
-            <p>차량번호: {selectedVehicle.carNumber}</p>
+            <p>차량번호: {selectedVehicle.vehicle_number}</p>
             <p>차대번호 (VIN): {selectedVehicle.vin}</p>
-            <p>현재 위치: {selectedVehicle.currentLocation || "미정"}</p>
+            <p>
+              현재 위치:{" "}
+              {selectedVehicle.current_location
+                ? `x: ${selectedVehicle.current_location.x}, y: ${selectedVehicle.current_location.y}`
+                : "미정"}
+            </p>
             <p>
               상태:{" "}
               {selectedVehicle.status === "active"
                 ? "활성화"
                 : selectedVehicle.status === "inactive"
                 ? "비활성화"
-                : "정비 중"}
+                : selectedVehicle.status === "maintenance"
+                ? "정비 중"
+                : "알 수 없음"}
             </p>
             <p>주행 거리: {selectedVehicle.mileage || 0} km</p>
-            <p>최근 정비 일자: {selectedVehicle.lastMaintenanceAt || "없음"}</p>
-            <p>다음 정비 일자: {selectedVehicle.nextMaintenanceAt || "없음"}</p>
+            <p>
+              최근 정비 일자: {selectedVehicle.last_maintenance_at || "없음"}
+            </p>
+            <p>
+              다음 정비 일자: {selectedVehicle.next_maintenance_at || "없음"}
+            </p>
             <div className="modal-actions">
               <button onClick={handleEditClick} className="edit-button">
                 수정
@@ -549,90 +537,36 @@ function VehicleManagement() {
           </div>
         )}
 
-        {modalContentType === "edit" && (
+        {modalContentType === "edit" && selectedVehicle && (
           <div className="edit-content">
             <form className="edit-form">
               <label>
                 차량번호:
                 <input
                   type="text"
-                  name="carNumber"
-                  value={formData.carNumber}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                차대번호 (VIN):
-                <input
-                  type="text"
-                  name="vin"
-                  value={formData.vin}
-                  onChange={handleFormChange}
-                  disabled
-                />
-              </label>
-              <label>
-                현재 위치:
-                <input
-                  type="text"
-                  name="currentLocation"
-                  value={formData.currentLocation}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                상태:
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleFormChange}
-                >
-                  <option value="active">활성화</option>
-                  <option value="inactive">비활성화</option>
-                  <option value="maintenance">정비 중</option>
-                </select>
-              </label>
-              <label>
-                주행 거리 (km):
-                <input
-                  type="number"
-                  name="mileage"
-                  value={formData.mileage}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                최근 정비 일자:
-                <input
-                  type="date"
-                  name="lastMaintenanceAt"
-                  value={formData.lastMaintenanceAt}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                다음 정비 일자:
-                <input
-                  type="date"
-                  name="nextMaintenanceAt"
-                  value={formData.nextMaintenanceAt}
+                  name="vehicle_number"
+                  value={formData.vehicle_number}
                   onChange={handleFormChange}
                 />
               </label>
             </form>
             <div className="modal-actions">
               {/* 더미 데이터 수정 저장 */}
-              <button
+              {/* <button
                 onClick={handleSaveEditDummy}
                 className="save-button"
                 disabled={loading}
               >
                 저장
-              </button>
-              {/* API 연동 수정 저장 */}
-              {/* <button onClick={handleSaveEdit} className="save-button" disabled={loading}>
-                저장
               </button> */}
+              {/* API 연동 수정 저장 */}
+              <button
+                onClick={handleSaveEdit}
+                className="save-button"
+                disabled={loading}
+              >
+                저장
+              </button>
               <button
                 onClick={() => setModalContentType("detail")}
                 className="cancel-button"
@@ -649,17 +583,21 @@ function VehicleManagement() {
             <p>정말로 이 차량을 삭제하시겠습니까?</p>
             <div className="modal-actions">
               {/* 더미 데이터 삭제 */}
-              <button
+              {/* <button
                 onClick={handleConfirmDeleteDummy}
                 className="confirm-delete-button"
                 disabled={loading}
               >
                 삭제
-              </button>
-              {/* API 연동 삭제 */}
-              {/* <button onClick={handleConfirmDelete} className="confirm-delete-button" disabled={loading}>
-                삭제
               </button> */}
+              {/* API 연동 삭제 */}
+              <button
+                onClick={handleConfirmDelete}
+                className="confirm-delete-button"
+                disabled={loading}
+              >
+                삭제
+              </button>
               <button
                 onClick={() => setModalContentType("detail")}
                 className="cancel-button"
@@ -672,13 +610,15 @@ function VehicleManagement() {
 
         {modalContentType === "add" && (
           <div className="add-content">
+            <p>vehicle_number: PBV-1234</p>
+            <p>vin: ABC123456789XYZ</p>
             <form className="add-form">
               <label>
                 차량번호:
                 <input
                   type="text"
-                  name="carNumber"
-                  value={formData.carNumber}
+                  name="vehicle_number"
+                  value={formData.vehicle_number}
                   onChange={handleFormChange}
                   required
                 />
@@ -693,69 +633,24 @@ function VehicleManagement() {
                   required
                 />
               </label>
-              <label>
-                현재 위치:
-                <input
-                  type="text"
-                  name="currentLocation"
-                  value={formData.currentLocation}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                상태:
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleFormChange}
-                >
-                  <option value="active">활성화</option>
-                  <option value="inactive">비활성화</option>
-                  <option value="maintenance">정비 중</option>
-                </select>
-              </label>
-              <label>
-                주행 거리 (km):
-                <input
-                  type="number"
-                  name="mileage"
-                  value={formData.mileage}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                최근 정비 일자:
-                <input
-                  type="date"
-                  name="lastMaintenanceAt"
-                  value={formData.lastMaintenanceAt}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                다음 정비 일자:
-                <input
-                  type="date"
-                  name="nextMaintenanceAt"
-                  value={formData.nextMaintenanceAt}
-                  onChange={handleFormChange}
-                />
-              </label>
             </form>
             <div className="modal-actions">
               {/* 더미 데이터 신규 등록 저장 */}
-              <button
+              {/* <button
                 onClick={handleSaveAddDummy}
                 className="save-button"
                 disabled={loading}
               >
                 등록
-              </button>
-              {/* API 연동 신규 등록 저장 */}
-              {/* <button onClick={handleSaveAdd} className="save-button" disabled={loading}>
-                등록
               </button> */}
+              {/* API 연동 신규 등록 저장 */}
+              <button
+                onClick={handleSaveAdd}
+                className="save-button"
+                disabled={loading}
+              >
+                등록
+              </button>
               <button onClick={closeAddModal} className="cancel-button">
                 취소
               </button>
