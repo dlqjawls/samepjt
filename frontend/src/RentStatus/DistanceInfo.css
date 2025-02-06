@@ -1,0 +1,17 @@
+.distance-info {
+  background: #f0f0f0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.distance-info h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.distance-info p {
+  font-size: 1.2rem;
+  color: #333;
+}

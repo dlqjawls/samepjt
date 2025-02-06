@@ -1,33 +1,28 @@
 // import "./App.css"
 
-import React, { useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import Home from "./main/Home";
-import SignupPage from "./SignupPage";
-import RegistrationForm from "./RegistrationForm";
-import ModuleSetList from "./ModuleSetList";
-import AdminLogin from "./admin/Login";
-import AdminLayout from "./admin/AdminLayout";
-import MainDashboard from "./admin/MainDashboard";
-import ExistOptionsPage from "./optionSelect/option_Select";
-import Navbar from "./common/navigationBar";
-import VehicleManagement from "./admin/components/VehicleManagement";
-import ModuleManagement from "./admin/components/ModuleManagement";
-import OptionManagement from "./admin/components/OptionManagement";
-import RentalRecords from "./admin/components/RentalRecords";
-import MaintenanceRecords from "./admin/components/MaintenanceRecords";
-import RentForm from "./rentForm/rentForm";
-import Total_reciept from "./finishSelect/total_reciept";
-import UserLayout from "./user/userLayout";
-import Dashboard from "./RentStatus/Dashboard";
+import React, { useState } from "react"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import Home from "./main/Home"
+import SignupPage from "./SignupPage"
+import RegistrationForm from "./RegistrationForm"
+import ModuleSetList from "./ModuleSetList"
+import AdminLogin from "./admin/Login"
+import AdminLayout from "./admin/AdminLayout"
+import MainDashboard from "./admin/MainDashboard"
+import ExistOptionsPage from "./optionSelect/option_Select"
+import Navbar from "./common/navigationBar"
+import VehicleManagement from "./admin/components/VehicleManagement"
+import ModuleManagement from "./admin/components/ModuleManagement"
+import OptionManagement from "./admin/components/OptionManagement"
+import RentalRecords from "./admin/components/RentalRecords"
+import MaintenanceRecords from "./admin/components/MaintenanceRecords"
+import RentForm from "./rentForm/rentForm"
+import Total_reciept from "./finishSelect/total_reciept"
+import UserLayout from "./user/userLayout"
+import Dashboard from "./RentStatus/Dashboard"
 
-import { ToastContainer } from "react-toastify";
-import { AdminAuthProvider } from "./admin/context/AdminAuthProvider";
+import { ToastContainer } from "react-toastify"
+import { AdminAuthProvider } from "./admin/context/AdminAuthProvider"
 
 function App() {
   return (
@@ -42,7 +37,7 @@ function App() {
           <Route path="option_select" element={<ExistOptionsPage />}></Route>
           <Route path="rentForm" element={<RentForm />}></Route>
           <Route path="total_reciept" element={<Total_reciept />}></Route>
-          <Route path="car_status" element={Dashboard}></Route>
+          <Route path="car_status" element={<Dashboard />}></Route>
         </Route>
 
         {/* 관리자 로그인 */}
@@ -77,18 +72,9 @@ function App() {
       </Routes>
 
       {/* ToastContainer - 앱 전역에서 생성된 토스트 알림들이 이 컨테이너에서 렌더링된다. */}
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover={false}
-      />
+      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick pauseOnFocusLoss draggable pauseOnHover={false} />
     </Router>
-  );
+  )
 }
 
-export default App;
+export default App
