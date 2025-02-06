@@ -100,6 +100,7 @@ function RentalRecords() {
       if (response.data.resultCode === "SUCCESS") {
         setRentLogs(response.data.data.rent_history);
         setPagination(response.data.data.pagination);
+        console.log(response.data.data.rent_history);
       } else {
         setError(
           response.data.message || "대여 로그를 불러오는 데 실패했습니다."
@@ -240,11 +241,11 @@ function RentalRecords() {
                     <td>{Number(log.cost).toLocaleString()}원</td>
                     <td>{Number(log.mileage).toLocaleString()} km</td>
                     <td>
-                      {log.status === "In-progress"
+                      {log.status === "in_progress"
                         ? "진행 중"
-                        : log.status === "Completed"
+                        : log.status === "completed"
                         ? "완료됨"
-                        : log.status === "Canceled"
+                        : log.status === "canceled"
                         ? "취소됨"
                         : "알 수 없음"}
                     </td>
@@ -324,11 +325,11 @@ function RentalRecords() {
             </p>
             <p>
               <strong>대여 상태:</strong>{" "}
-              {selectedRentLog.status === "In-progress"
+              {selectedRentLog.status === "in_progress"
                 ? "진행 중"
-                : selectedRentLog.status === "Completed"
+                : selectedRentLog.status === "completed"
                 ? "완료됨"
-                : selectedRentLog.status === "Canceled"
+                : selectedRentLog.status === "canceled"
                 ? "취소됨"
                 : "알 수 없음"}
             </p>
