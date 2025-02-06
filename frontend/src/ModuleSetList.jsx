@@ -70,7 +70,6 @@ function ModuleSetList() {
 
   return (
     <div className="module-list-container">
-      <h1>모듈 세트 목록</h1>
 
       {loading && <div className="loading">Loading...</div>}
       {error && <div className="error">{error}</div>}
@@ -84,17 +83,9 @@ function ModuleSetList() {
                 className="module-card"
                 onClick={() => handleSelectModule(moduleSet)}
               >
-                <div className="module-card-image">
-                  <img
-                    src={moduleSet.imgUrls[0]}
-                    alt={moduleSet.moduleSetName}
-                  />
-                </div>
-                <div className="module-card-content">
-                  <h3>{moduleSet.moduleSetName}</h3>
-                  <p>{moduleSet.description}</p>
-                  <p className="price">총 비용: ${moduleSet.basePrice}</p>
-                </div>
+                <img src={moduleSet.imgUrls[0]} alt={moduleSet.moduleSetName} />
+
+                <h4>{moduleSet.moduleSetName}</h4>
               </div>
             ))}
           </div>
@@ -121,14 +112,14 @@ function ModuleSetList() {
             </div>
 
             <div className="module-set-modal-body">
-              <div className="module-set-modal-image-container">
+              
                 <img
                   src={selectedModule.imgUrls[0]}
                   alt={`${selectedModule.moduleSetName} - 이미지 ${
                     currentImageIndex + 1
                   }`}
                 />
-              </div>
+              
 
               <div className="module-modal-details">
                 <div className="module-modal-description">
@@ -148,7 +139,7 @@ function ModuleSetList() {
                 </div>
 
                 <div className="modal-total-cost-container">
-                  <h3 >총 비용: {selectedModule.basePrice}원</h3>
+                  <h3>렌트 비용: {selectedModule.basePrice}원</h3>
                 </div>
               </div>
               <button

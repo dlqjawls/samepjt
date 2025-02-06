@@ -1,85 +1,68 @@
-/* 전체 레이아웃 */
+/* 전체 화면 */
 .module-list-container {
-  padding: 80px;
+  padding: 20px 5px 0px px;
+  background-color: #f5f5f5;
 }
 
 .module-list-container h1 {
   text-align: center;
 }
-.module-list {
-  max-width: 35%;
-  max-height: 80vh;
-  overflow-y: auto;
-  /*  padding-right: 10px; /* 스크롤바와 내용 사이에 10px 여백 추가 */
-}
 
-.module-list h2 {
-  margin-bottom: 20px; /* 제목 하단에 20px의 간격 추가 */
-}
-
+/* 모듈 리스트 */
 .module-card {
-  display: flex; /* 가로 배치 */
-  align-items: center; /* 수직 정렬을 가운데로 설정 */
-  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /*border: 1px solid #e0e0e0; 기아자동차 웹페이지와 비슷하게 하려고 없앰*/
   overflow: hidden;
   border-radius: 13px;
-  margin-bottom: 20px;
-  padding: 10px;
+  padding: 6px 10px 10px 10px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s; /* hover 시 부드러운 애니메이션 효과 추가 */
+  transition: transform 0.2s, box-shadow 0.2s;
+  /*background-color: white;*/
+}
+.module-card h4 {
+  margin: 10px;
+}
+.module-card img {
+  width: 100%;
+  height: 108px;
+  object-fit: cover;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
 .module-card:hover {
-  transform: translateY(-2px); /* 카드가 위로 약간 올라가도록 설정 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 그림자를 추가해 강조 효과 */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.module-card-image img {
-  width: 100px; /* 이미지의 너비를 100px로 설정 */
-  height: 100px; /* 이미지의 높이를 100px로 설정 */
-  object-fit: cover; /* 이미지 비율을 유지하며 잘리는 부분은 숨김 */
-  border-radius: 8px; /* 이미지 모서리를 둥글게 설정 */
-}
-
-.module-card-content {
-  margin-left: 20px; /* 카드 이미지와 내용 간의 간격을 20px로 설정 */
-}
-
-.module-card-content h3 {
-  margin: 0 0 10px 0; /* 제목 하단에 10px 간격 추가 */
-}
-
-.module-card-content p {
-  margin: 0; /* 본문 텍스트 간격 제거 */
-  color: #666; /* 텍스트 색상을 연한 회색으로 설정 */
-}
-
-/* 모달 오버레이 */
+/*  모달  */
 .module-set-card-modal-overlay {
-  position: fixed; /* 화면 고정 */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100vw; /* 화면 너비 100% */
-  height: 100vh; /* 화면 높이 100% */
-  background-color: rgba(0, 0, 0, 0.5); /* 배경을 반투명 검정색으로 설정 */
-  display: flex; /* 내용을 가운데 정렬 */
+  width: 100%;
+  height: 100%;
+  background-color: rgba(50, 50, 50, 0.5);
+  display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* 다른 요소들보다 위에 표시 */
+  z-index: 1000;
 }
 
-/* 모달 콘텐츠 */
 .module-set-card-modal-content {
   position: relative;
-  width: 80%; /* 너비 80% */
+  width: 90%;
+  height: auto;
+  max-height: 90vh;
   max-width: 800px; /* 최대 너비 800px */
-  background-color: #fff; /* 배경색을 흰색으로 설정 */
-  border-radius: 8px; /* 모서리 둥글게 설정 */
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 활성화 */
-  max-height: 90vh; /* 최대 높이 90% */
+  background-color: white;
+  border-radius: 12px;
+  overflow-y: auto;
 }
 
-/* 모달 헤더 */
+/* 모달 헤더*/
 .module-set-modal-header {
   display: flex;
   justify-content: space-between;
@@ -91,47 +74,6 @@
   margin: 0;
 }
 
-/* 모달 바디 */
-.module-set-modal-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  /*gap: 20px;*/
-}
-
-.module-set-modal-image-container {
-  width: 730px;
-  height: 400px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.module-set-modal-image-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* 이미지 비율을 유지하며 잘리는 부분은 숨김 */
-  border-radius: 8px;
-}
-
-/*모달 모듈 디테일 설명*/
-.module-modal-details p,
-.module-modal-details li {
-  color: #4a4a4a;
-}
-
-/* 모달 총 비용*/
-.total-cost-korean {
-  display: inline;
-}
-.module-total-cost-won {
-  display: inline;
-  color: rgb(153, 12, 78);
-}
-
-/* 버튼 스타일 */
-/* 버튼 스타일 */
 .module-set-modal-close-button {
   display: inline-block;
   padding: 10px 20px;
@@ -147,6 +89,47 @@
   z-index: 1;
   overflow: hidden;
   transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* 모달 바디 */
+.module-set-modal-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.module-set-modal-body img {
+  width: 95%;
+  padding: 10px;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: cover; /* 이미지 비율을 유지하며 잘리는 부분은 숨김 */
+  border-radius: 8px;
+}
+
+.module-modal-details {
+  padding: 10px;
+}
+
+.module-modal-details h3 {
+  margin: 0;
+}
+
+/*모달 모듈 디테일 설명*/
+.module-modal-details p,
+.module-modal-details li {
+  color: #787777;
+}
+
+/* 모달 총 비용*/
+.total-cost-korean {
+  display: inline;
+}
+.module-total-cost-won {
+  display: inline;
+  color: rgb(153, 12, 78);
 }
 
 /* 오버레이 효과 */
@@ -172,18 +155,15 @@
   transform: translateY(-3px);
 }
 
-/* 클릭 시 반응 */
 .module-set-modal-close-button:active {
   transform: scale(0.95);
   background-color: rgb(80, 78, 78);
 }
 
-/* 포커스 효과 */
 .module-set-modal-close-button:focus {
   outline: none;
   box-shadow: 0 0 5px rgba(61, 60, 60, 0.5);
 }
-
 
 .module-set-modal-next-button {
   display: block;
@@ -230,4 +210,39 @@
 .module-set-modal-next-button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+/* module-grid: 카드 3개씩 배치 */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(300px, 1fr)
+  ); /* 반응형 1~3열 */
+  gap: 1px;
+  margin: 10px auto; /* 중앙 정렬 */
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Default: 3 columns */
+}
+
+/* 반응형 스타일링 */
+@media screen and (max-width: 768px) {
+  .module-grid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(250px, 1fr)
+    ); /* 작은 화면에서는 더 작은 카드 */
+  }
+}
+
+@media (max-width: 768px) {
+  .module-grid {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* Change to 2 columns on small screens */
+  }
 }
