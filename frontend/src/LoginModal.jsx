@@ -57,7 +57,7 @@ const LoginModal = ({ onClose }) => {
         
         if (rentresponse.data.resultCode === "SUCCESS") {
           console.log("차량 상태 조회 완료:", rentresponse.data);
-          sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data));
+          sessionStorage.setItem("rent_id", rentresponse.data.data.rent_id);
         }
         
         navigate("/");
