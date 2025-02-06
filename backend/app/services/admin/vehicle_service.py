@@ -7,7 +7,6 @@ from app.db.models.vehicle import Vehicle
 from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
-from app.db.crud.usage_history import usage_history_crud
 from sqlalchemy import select
 from app.utils.lut_constants import ItemStatus, ItemType, UsageStatus, LUTConstants
 from app.db.models.usage_history import UsageHistory

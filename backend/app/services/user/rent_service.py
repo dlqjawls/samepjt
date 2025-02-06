@@ -209,7 +209,7 @@ class RentService:
             if u.item_type_id == ItemType.OPTION
         ]
         
-        # 6. 사용 기록 및 아이템 상태 업데이트
+        # 6. 사용 기록 업데이트트
         usage_history_crud.update_usage_entries_status(
             session,
             rent_id,
@@ -218,7 +218,28 @@ class RentService:
             option_ids,
             UsageStatus.COMPLETED
         )
+        
+        # 아이템 상태 업데이트
+        vehicle_crud.update(
+            session,
+            vehicle_id,
+            {"status_id": ItemStatus.INACTIVE},
+            id_field="vehicle_id"
+        )
+        module_crud.update(
+            session,
+            module_id,
+            {"status_id": ItemStatus.INACTIVE},
+            id_field="module_id"
+        )
 
+        for option_id in option_ids:
+            option_crud.update(
+                session,
+                option_id,
+                {"status_id": ItemStatus.INACTIVE},
+                id_field="option_id"
+            )   
         # 7. 렌트 상태 업데이트
         rent_history_crud.update(
             session,
@@ -378,8 +399,27 @@ class RentService:
             module_id,
             option_ids,
             UsageStatus.COMPLETED
+        )       # 아이템 상태 업데이트
+        vehicle_crud.update(
+            session,
+            vehicle_id,
+            {"status_id": ItemStatus.INACTIVE},
+            id_field="vehicle_id"
+        )
+        module_crud.update(
+            session,
+            module_id,
+            {"status_id": ItemStatus.INACTIVE},
+            id_field="module_id"
         )
 
+        for option_id in option_ids:
+            option_crud.update(
+                session,
+                option_id,
+                {"status_id": ItemStatus.INACTIVE},
+                id_field="option_id"
+            )   
 
         # 7. 렌트 상태 업데이트 및 최종 데이터 계산
         usage_duration = int((datetime.now() - rent_history.created_at).total_seconds() / 60)

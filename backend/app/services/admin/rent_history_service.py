@@ -1,6 +1,7 @@
 from sqlmodel import Session
 from app.api.schemas.common import Coordinate
 from app.db.models.rent_history import RentHistory
+from app.db.models.vehicle import Vehicle
 from app.utils.exceptions import NotFoundError, DatabaseError
 from app.db.crud.usage_history import usage_history_crud
 from app.db.crud.vehicle import vehicle_crud
@@ -12,17 +13,11 @@ from app.utils.lut_constants import ItemType, RentStatus, LUTConstants
 
 class RentHistoryService:
     @staticmethod
-    def _validate_vehicle(vehicle_id: int, session: Session) -> str:
-        """차량 정보 검증 및 조회"""
-        vehicle = vehicle_crud.get_by_id(session, vehicle_id)
+    def _validate_vehicle(session: Session, vehicle_id: int) -> str:
+        vehicle = session.get(Vehicle, vehicle_id)
         if not vehicle:
-            raise DatabaseError(
+            raise NotFoundError(
                 message="Vehicle not found",
-                detail={"vehicle_id": vehicle_id}
-            )
-        if not vehicle.vehicle_number:
-            raise DatabaseError(
-                message="Vehicle number is required",
                 detail={"vehicle_id": vehicle_id}
             )
         return vehicle.vehicle_number
@@ -58,7 +53,7 @@ class RentHistoryService:
         
         for entry in usage_entries:
             if entry.item_type_id == ItemType.VEHICLE:
-                vehicle_number = RentHistoryService._validate_vehicle(entry.item_id, session)
+                vehicle_number = RentHistoryService._validate_vehicle(session, entry.item_id)
             elif entry.item_type_id == ItemType.OPTION:
                 option_type_id = RentHistoryService._validate_option(entry.item_id, session)
                 option_type_ids.append(option_type_id)
