@@ -194,8 +194,8 @@ def seed_data(session: Session) -> None:
         dummy_modules = [
             Module(
                 module_id=i + 1,
-                module_nfc_tag_id=fake.uuid4(),
-                module_type=1,
+                module_nfc_tag_id=fake.hexify(text='^^^^^^^^^^^^^^', upper=True),  # 14자리 16진수 생성 (7바이트)
+                module_type_id=1,
                 status_id=2,
                 last_maintenance_at=base_date,
                 next_maintenance_at=base_date,

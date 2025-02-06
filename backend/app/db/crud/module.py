@@ -4,6 +4,7 @@ from app.db.models.module import Module
 from app.db.crud.base import CRUDBase
 from app.utils.exceptions import DatabaseError, NotFoundError
 from app.utils.lut_constants import ItemStatus
+from typing import Optional
 
 class ModuleCRUD(CRUDBase[Module]):
     def __init__(self):
@@ -40,5 +41,11 @@ class ModuleCRUD(CRUDBase[Module]):
                 message="Failed to fetch available module",
                 detail={"error": str(e)}
             )        
+
+    def get_by_module_nfc_tag_id(self, session: Session, module_nfc_tag_id: str) -> Optional[Module]:
+        """Return the module with the specified NFC tag ID, if exists."""
+        return session.exec(
+            select(self.model).where(self.model.module_nfc_tag_id == module_nfc_tag_id)
+        ).first()
 
 module_crud = ModuleCRUD()
