@@ -10,6 +10,7 @@ export const AdminAuthProvider = ({ children }) => {
   const loginAdmin = (adminData) => {
     setAdmin(adminData);
     localStorage.setItem("adminInfo", JSON.stringify(adminData));
+    localStorage.setItem("adminToken", adminData.token);
   };
 
   const logoutAdmin = () => {
