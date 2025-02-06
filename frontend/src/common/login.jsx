@@ -39,7 +39,7 @@ const LoginButton = () => {
       );
   
       if (response.data.resultCode === 'SUCCESS') {
-        sessionStorage.removeItem("token");
+        sessionStorage.clear();
         setIsLoggedIn(false);
         toast.info("로그아웃 되었습니다.");
         navigate("/");

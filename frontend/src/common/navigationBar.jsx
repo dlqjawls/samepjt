@@ -17,10 +17,12 @@ const Navbar = () => {
             <img src="Vector.svg" alt="MODUCAR Logo" className="navbar-icon" />
             <span>MODUCAR</span>
           </div>
+          
         </button>
         <div className="navbar-login">
           <LoginButton />
         </div>
+
       </div>
     </nav>
   )
