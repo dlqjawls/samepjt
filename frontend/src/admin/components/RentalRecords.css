@@ -50,7 +50,12 @@
   background-color: #45a049;
 }
 
+.rental-container .rental-wrapper {
+  overflow-x: auto;
+}
+
 .rental-container .rental-table {
+  min-width: 800px;
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
@@ -58,13 +63,62 @@
 
 .rental-container .rental-table th,
 .rental-container .rental-table td {
-  border: 1px solid #ddd;
   padding: 12px;
-  text-align: center;
+  border-bottom: 1px solid #ddd;
 }
 
 .rental-container .rental-table th {
   background-color: #f2f2f2;
+  font-size: 16px;
+  text-align: left;
+  padding: 12px;
+}
+
+.rental-container .rental-table td {
+  font-size: 14px;
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+  background-color: #ffffff; /* 데이터 배경 흰색 */
+  padding: 12px;
+}
+
+/* 진행 중 배지 */
+.rental-container .status-in-progress {
+  background-color: #007bff; /* 파란색 */
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* 완료됨 배지 */
+.rental-container .status-completed {
+  background-color: #28a745; /* 녹색 */
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* 취소됨 배지 */
+.rental-container .status-canceled {
+  background-color: #dc3545; /* 빨간색 */
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* 알 수 없음 배지 */
+.rental-container .status-unknown {
+  background-color: #6c757d; /* 회색 */
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
 }
 
 .rental-container .detail-button {
@@ -101,16 +155,23 @@
 }
 
 .rental-container .pagination button {
-  padding: 8px 16px;
+  padding: 6px 12px;
+  margin: 0 10px;
   background-color: #e7e7e7;
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.rental-container .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
 }
 
 .rental-container .pagination button:disabled {
   background-color: #cccccc;
-  cursor: not-allowed;
+  cursor: default;
+  /* cursor: not-allowed; */
 }
 
 .rental-container .error {
