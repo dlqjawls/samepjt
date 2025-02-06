@@ -208,65 +208,79 @@ function RentalRecords() {
       ) : (
         <>
           {error && <p className="error">{error}</p>}
-          <table className="rental-table">
-            <thead>
-              <tr>
-                <th>대여 ID</th>
-                <th>사용자 ID</th>
-                <th>차량 번호</th>
-                <th>옵션 타입</th>
-                <th>출발 위치 (x, y)</th>
-                <th>도착 위치 (x, y)</th>
-                <th>대여 비용 (원)</th>
-                <th>주행 거리 (km)</th>
-                <th>대여 상태</th>
-                <th>등록 일자</th>
-                <th>상세 보기</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rentLogs.length > 0 ? (
-                rentLogs.map((log) => (
-                  <tr key={log.rent_id}>
-                    <td>{log.rent_id}</td>
-                    <td>{log.user_pk}</td>
-                    <td>{log.vehicle_number}</td>
-                    <td>{log.option_types}</td>
-                    <td>
-                      {log.departure_location.x}, {log.departure_location.y}
-                    </td>
-                    <td>
-                      {log.arrival_location.x}, {log.arrival_location.y}
-                    </td>
-                    <td>{Number(log.cost).toLocaleString()}원</td>
-                    <td>{Number(log.mileage).toLocaleString()} km</td>
-                    <td>
-                      {log.status === "in_progress"
-                        ? "진행 중"
-                        : log.status === "completed"
-                        ? "완료됨"
-                        : log.status === "canceled"
-                        ? "취소됨"
-                        : "알 수 없음"}
-                    </td>
-                    <td>{new Date(log.created_at).toLocaleString()}</td>
-                    <td>
-                      <button
-                        className="detail-button"
-                        onClick={() => openModal("detail", log)}
-                      >
-                        <MdSearch />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
+          <div className="rental-wrapper">
+            <table className="rental-table">
+              <thead>
                 <tr>
-                  <td colSpan="11">조회된 대여 로그가 없습니다.</td>
+                  <th>대여 ID</th>
+                  <th>사용자 ID</th>
+                  <th>차량 번호</th>
+                  <th>옵션 타입</th>
+                  <th>출발 위치 (x, y)</th>
+                  <th>도착 위치 (x, y)</th>
+                  <th>대여 비용 (원)</th>
+                  <th>주행 거리 (km)</th>
+                  <th>대여 상태</th>
+                  <th>등록 일자</th>
+                  <th>상세 보기</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rentLogs.length > 0 ? (
+                  rentLogs.map((log) => (
+                    <tr key={log.rent_id}>
+                      <td>{log.rent_id}</td>
+                      <td>{log.user_pk}</td>
+                      <td>{log.vehicle_number}</td>
+                      <td>{log.option_types}</td>
+                      <td>
+                        {log.departure_location.x}, {log.departure_location.y}
+                      </td>
+                      <td>
+                        {log.arrival_location.x}, {log.arrival_location.y}
+                      </td>
+                      <td>{Number(log.cost).toLocaleString()}원</td>
+                      <td>{Number(log.mileage).toLocaleString()} km</td>
+                      <td>
+                        <span
+                          className={`status-badge ${
+                            log.status === "in_progress"
+                              ? "status-in-progress"
+                              : log.status === "completed"
+                              ? "status-completed"
+                              : log.status === "canceled"
+                              ? "status-canceled"
+                              : "status-unknown"
+                          }`}
+                        >
+                          {log.status === "in_progress"
+                            ? "진행 중"
+                            : log.status === "completed"
+                            ? "완료됨"
+                            : log.status === "canceled"
+                            ? "취소됨"
+                            : "알 수 없음"}
+                        </span>
+                      </td>
+                      <td>{new Date(log.created_at).toLocaleString()}</td>
+                      <td>
+                        <button
+                          className="detail-button"
+                          onClick={() => openModal("detail", log)}
+                        >
+                          <MdSearch />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="11">조회된 대여 로그가 없습니다.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
 
           {/* 페이지네이션 */}
           <div className="pagination">

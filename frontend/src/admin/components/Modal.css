@@ -31,6 +31,7 @@
   overflow-y: auto;
   /* 내용이 모달 상단에서 시작하도록 */
   display: flex;
+  position: relative;
   flex-direction: column;
 }
 
@@ -50,9 +51,9 @@
 
 /* 닫기 버튼 */
 .admin-modal-close-button {
-  position:absolute;
+  position: absolute;
   top: 12px;
-  right: 0px;
+  right: 10px;
   background: none;
   border: none;
   font-size: 24px;

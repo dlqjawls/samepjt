@@ -51,25 +51,62 @@
   border-radius: 4px;
 }
 
+.vehicle-container .table-wrapper {
+  overflow-x: auto;
+}
+
 .vehicle-container .vehicle-table {
+  min-width: 800px;
   width: 100%;
   border-collapse: collapse;
 }
 
 .vehicle-container .vehicle-table th,
 .vehicle-container .vehicle-table td {
-  border: 1px solid #ddd;
-  text-align: center;
   padding: 12px;
+  border-bottom: 1px solid #ddd;
 }
 
 .vehicle-container .vehicle-table th {
   background-color: #f2f2f2;
   font-size: 16px;
+  text-align: left;
+  padding: 12px;
+  /* border: 1px solid #ddd; */
 }
 
 .vehicle-container .vehicle-table td {
   font-size: 14px;
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+  background-color: #ffffff; /* 데이터 배경 흰색 */
+  padding: 12px;
+}
+
+.vehicle-table .status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 4px;
+  color: #fff;
+}
+
+/* 활성화: 연한 초록 배경, 텍스트는 원래 초록색 */
+.vehicle-table .status-active {
+  background-color: #c3e6cb; /* 연한 초록색 */
+  color: #28a745; /* 기존 초록색 */
+}
+
+/* 비활성화: 연한 빨강/분홍 배경, 텍스트는 원래 빨강색 */
+.vehicle-table .status-inactive {
+  background-color: #f5c6cb; /* 연한 빨강/분홍색 */
+  color: #dc3545; /* 기존 빨강색 */
+}
+
+/* 정비 중: 연한 주황 배경, 텍스트는 원래 주황색 */
+.vehicle-table .status-maintenance {
+  background-color: #ffe5b4; /* 연한 주황색 */
+  color: #fd7e14; /* 기존 주황색 */
 }
 
 .vehicle-container .detail-button {
@@ -102,17 +139,22 @@
 }
 
 .vehicle-container .pagination button {
-  padding: 5px 10px;
+  padding: 6px 12px;
   margin: 0 10px;
   background-color: #e7e7e7;
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.vehicle-container .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
 }
 
 .vehicle-container .pagination button:disabled {
   background-color: #cccccc;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .vehicle-container .error {

@@ -44,8 +44,13 @@ const AdminLogin = () => {
       toast.success("관리자 로그인 성공");
       console.log("관리자 로그인 성공:", response.data);
       const token = response.data.data.access_token;
+      const refreshToken = response.data.data.refresh_token;
       // console.log(token);
-      const adminData = { id: formData.id, token: token };
+      const adminData = {
+        id: formData.id,
+        token: token,
+        refreshToken: refreshToken,
+      };
       loginAdmin(adminData);
       console.log(adminData);
       navigate("/admin/index");

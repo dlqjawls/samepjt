@@ -406,59 +406,73 @@ function VehicleManagement() {
       {loading ? (
         <p>로딩 중</p>
       ) : (
-        <table className="vehicle-table">
-          <thead>
-            <tr>
-              <th>차량번호</th>
-              <th>차대번호 (VIN)</th>
-              <th>현재 위치</th>
-              <th>현재 상태</th>
-              <th>주행 거리 (km)</th>
-              <th>최근 정비 일자</th>
-              <th>다음 정비 일자</th>
-              <th>상세 보기</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vehicles.length > 0 ? (
-              vehicles.map((vehicle) => (
-                <tr key={vehicle.vehicle_id}>
-                  <td>{vehicle.vehicle_number}</td>
-                  <td>{vehicle.vin}</td>
-                  <td>
-                    {vehicle.current_location
-                      ? `x: ${vehicle.current_location.x}, y: ${vehicle.current_location.y}`
-                      : "미정"}
-                  </td>
-                  <td>
-                    {vehicle.status === "active"
-                      ? "활성화"
-                      : vehicle.status === "inactive"
-                      ? "비활성화"
-                      : vehicle.status === "maintenance"
-                      ? "정비 중"
-                      : "알 수 없음"}
-                  </td>
-                  <td>{vehicle.mileage || 0}</td>
-                  <td>{vehicle.last_maintenance_at || "없음"}</td>
-                  <td>{vehicle.next_maintenance_at || "없음"}</td>
-                  <td>
-                    <button
-                      className="detail-button"
-                      onClick={() => handleDetailClick(vehicle)}
-                    >
-                      <MdSearch />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
+        <div className="table-wrapper">
+          <table className="vehicle-table">
+            <thead>
               <tr>
-                <td colSpan="8">조회된 차량이 없습니다.</td>
+                <th>차량번호</th>
+                <th>차대번호 (VIN)</th>
+                <th>현재 위치</th>
+                <th>현재 상태</th>
+                <th>주행 거리 (km)</th>
+                <th>최근 정비 일자</th>
+                <th>다음 정비 일자</th>
+                <th>상세 보기</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {vehicles.length > 0 ? (
+                vehicles.map((vehicle) => (
+                  <tr key={vehicle.vehicle_id}>
+                    <td>{vehicle.vehicle_number}</td>
+                    <td>{vehicle.vin}</td>
+                    <td>
+                      {vehicle.current_location
+                        ? `x: ${vehicle.current_location.x}, y: ${vehicle.current_location.y}`
+                        : "미정"}
+                    </td>
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          vehicle.status === "active"
+                            ? "status-active"
+                            : vehicle.status === "inactive"
+                            ? "status-inactive"
+                            : vehicle.status === "maintenance"
+                            ? "status-maintenance"
+                            : ""
+                        }`}
+                      >
+                        {vehicle.status === "active"
+                          ? "활성화"
+                          : vehicle.status === "inactive"
+                          ? "비활성화"
+                          : vehicle.status === "maintenance"
+                          ? "정비 중"
+                          : "알 수 없음"}
+                      </span>
+                    </td>
+                    <td>{vehicle.mileage || 0}</td>
+                    <td>{vehicle.last_maintenance_at || "없음"}</td>
+                    <td>{vehicle.next_maintenance_at || "없음"}</td>
+                    <td>
+                      <button
+                        className="detail-button"
+                        onClick={() => handleDetailClick(vehicle)}
+                      >
+                        <MdSearch />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8">조회된 차량이 없습니다.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* 페이지네이션 섹션 */}
@@ -610,8 +624,8 @@ function VehicleManagement() {
 
         {modalContentType === "add" && (
           <div className="add-content">
-            <p>vehicle_number: PBV-1234</p>
-            <p>vin: ABC123456789XYZ</p>
+            <p>ex) vehicle_number: PBV-1234</p>
+            <p>ex) vin: ABC123456789XYZ</p>
             <form className="add-form">
               <label>
                 차량번호:

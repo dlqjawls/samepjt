@@ -64,12 +64,18 @@ export const AdminAuthProvider = ({ children }) => {
           !originalRequest._retry
         ) {
           originalRequest._retry = true;
+          // refreshToken이 없는 경우 바로 로그아웃
+          if (!refreshToken) {
+            console.error("리프레시 토큰이 없습니다.");
+            logoutAdmin();
+            return Promise.reject(error);
+          }
           try {
+            console.log("토큰 갱신 시도, 현재 refreshToken:", refreshToken);
             const refreshResponse = await axios.post(
               `${BASE_URL}/auth/refresh-token`,
-              {
-                refresh_token: refreshToken,
-              }
+              { refresh_token: refreshToken },
+              { headers: { "Content-Type": "application/json" } }
             );
             if (refreshResponse.data.resultCode === "SUCCESS") {
               const newAccessToken = refreshResponse.data.data.access_token;
@@ -89,10 +95,12 @@ export const AdminAuthProvider = ({ children }) => {
               ] = `Bearer ${newAccessToken}`;
               return axios(originalRequest);
             } else {
+              console.error("토큰 갱신 응답 실패:", refreshResponse.data);
               logoutAdmin();
               return Promise.reject(error);
             }
           } catch (refreshError) {
+            console.error("토큰 갱신 중 오류:", refreshError);
             logoutAdmin();
             return Promise.reject(refreshError);
           }
