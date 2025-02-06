@@ -19,18 +19,34 @@ router = APIRouter()
                 "application/json": {
                     "example": {
                         "resultCode": "SUCCESS",
-                        "message": "Rent status retrieved successfully",
+                        "message": "Vehicle rent status retrieved successfully",
                         "data": {
-                            "rent_id": 123,
-                            "vehicle_number": "서울 12가 3456",
-                            "current_status": "in_progress",
-                            "current_location": { "lat": 37.5665, "lng": 126.9780 },
-                            "destination": { "lat": 37.579617, "lng": 126.977041 },
-                            "route_path": [
-                                { "lat": 37.5665, "lng": 126.9780 },
-                                { "lat": 37.5701, "lng": 126.9795 },
-                                { "lat": 37.5745, "lng": 126.9813 }
-                            ]
+                            "isArrive": False,
+                            "location": {"x": 12.313, "y": 32.3232},
+                            "destination": {"x": 40.1111, "y": 100.4194},
+                            "ETA": "2025-01-13T14:30:00Z",
+                            "distanceTravelled": 120.0,
+                            "plannedPath": [
+                                {"x": 12.3200, "y": 32.3300},
+                                {"x": 15.4500, "y": 35.6000}
+                            ],
+                            "SLAMMapData": "base64-encoded-map-data",
+                            "status": {
+                                "vehicle": {
+                                    "batteryLevel": 85,
+                                    "lightBrightness": 80
+                                },
+                                "options": [
+                                    {
+                                        "optionName": "물탱크",
+                                        "optionStatus": "잔여량: 50L"
+                                    },
+                                    {
+                                        "optionName": "배터리 팩",
+                                        "optionStatus": "잔여량: 80%"
+                                    }
+                                ]
+                            }
                         }
                     }
                 }
