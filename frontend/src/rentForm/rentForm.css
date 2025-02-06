@@ -34,6 +34,7 @@
   justify-content: space-between; /* 버튼을 아래에 고정 */
   max-width: 500px; /* 최대 너비 설정 */
   width: 100%; /* 반응형 너비 */
+  box-sizing: border-box;
 }
 
 /* 제목 스타일 */
@@ -60,7 +61,7 @@
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* 박스 크기 조정 */
+  box-sizing: border-box;
 }
 
 /* 버튼 스타일 */
@@ -89,7 +90,7 @@
 }
 
 .next-button-unique:hover {
-  background-color: gray  ;
+  background-color: gray;
 }
 
 @media (max-width: 768px) {
@@ -136,4 +137,91 @@
 
 .reset-button-unique:hover {
   background-color: #e2e2e2;
+}
+
+@media (max-width: 768px) {
+  .rent-form-wrapper-unique {
+    flex-direction: column;
+    padding: 10px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .map-container-unique {
+    flex: none;
+    height: 300px;
+    margin-bottom: 20px;
+  }
+
+  .form-container-unique {
+    flex: none;
+    margin: 0;
+    padding: 15px;
+    max-width: 100%;
+    box-shadow: none;
+  }
+
+  .form-title-unique {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+
+  .form-group-unique {
+    margin-bottom: 15px;
+  }
+
+  .form-input-unique {
+    padding: 12px;
+    font-size: 16px; /* 모바일에서 자동 확대 방지 */
+  }
+
+  .button-group-unique {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reset-button-unique,
+  .next-button-unique {
+    padding: 15px;
+    font-size: 16px;
+    height: 50px;
+    margin-top: 0;
+  }
+
+  .error-message-unique {
+    margin: 8px 0;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-container-unique {
+    height: 250px;
+  }
+
+  .form-container-unique {
+    padding: 10px;
+  }
+
+  .form-title-unique {
+    font-size: 1.2rem;
+  }
+
+  .form-input-unique {
+    padding: 10px;
+  }
+}
+
+/* 터치 인터페이스 최적화 */
+@media (hover: none) {
+  .reset-button-unique,
+  .next-button-unique {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .form-input-unique {
+    -webkit-appearance: none;
+  }
 }
