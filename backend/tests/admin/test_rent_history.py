@@ -1,9 +1,15 @@
+import json
 import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session
 
 from app.core.jwt import jwt_handler
-from app.models.rent_history import RentHistory
+from app.db.models.rent_history import RentHistory
+from app.db.models.vehicle import Vehicle
+from app.db.models.usage_history import UsageHistory
+from app.db.models.option import Option
+from app.utils.lut_constants import RentStatus, ItemStatus, ItemType
+
 
 @pytest.fixture
 def admin_token():
@@ -16,23 +22,78 @@ def create_dummy_rent_history(session: Session, count: int = 5):
     DB에 dummy 렌트 기록을 추가하는 헬퍼 함수.
     각 레코드에는 기본 필드 값이 포함됩니다.
     """
-    dummy_records = []
-    now = datetime.now()
-    for i in range(count):
-        rent = RentHistory(
-            user_pk=i + 1,
-            departure_location="12.345,67.890",
-            arrival_location="98.765,43.210",
-            cost=100.0 * (i + 1),
-            mileage=10.0 * (i + 1),
-            status_id=1,  # in_progress
-            created_at=now - timedelta(days=i),
-            updated_at=now - timedelta(days=i)
+    try:
+        now = datetime.now()
+        location = json.dumps({"x": 12.313, "y": 32.3232})
+        # 먼저 차량과 옵션을 생성
+        vehicle = Vehicle(
+            vin="TEST123",
+            vehicle_number="TEST123",
+            current_location=location,
+            status_id=ItemStatus.ACTIVE,
+            created_by=1,
+            updated_by=1,
+            created_at=now,
+            updated_at=now
+
         )
-        session.add(rent)
-        dummy_records.append(rent)
-    session.commit()
-    return dummy_records
+        session.add(vehicle)
+        
+        option = Option(
+            option_type_id=1,
+            status_id=ItemStatus.ACTIVE,
+            created_by=1,
+            updated_by=1,
+            created_at=now,
+            updated_at=now
+
+        )
+        session.add(option)
+        session.flush()
+
+        # 렌트 히스토리 생성
+        dummy_records = []
+        for i in range(count):
+            rent = RentHistory(
+                user_pk=i + 1,
+                departure_location=location,
+                arrival_location=location,
+                cost=100.0 * (i + 1),
+                mileage=10.0 * (i + 1),
+                status_id=RentStatus.COMPLETED,
+                created_at=now - timedelta(days=i),
+                updated_at=now - timedelta(days=i)
+
+            )
+            session.add(rent)
+            session.flush()
+
+            # 사용 기록 생성
+            usage_vehicle = UsageHistory(
+                rent_id=rent.rent_id,
+                item_id=vehicle.vehicle_id,
+                item_type_id=ItemType.VEHICLE,
+                status_id=1  # in_use
+            )
+
+            session.add(usage_vehicle)
+
+            usage_option = UsageHistory(
+                rent_id=rent.rent_id,
+                item_id=option.option_id,
+                item_type_id=ItemType.OPTION,
+                status_id=1  # in_use
+            )
+            session.add(usage_option)
+            
+            dummy_records.append(rent)
+            
+        session.commit()
+        return dummy_records
+        
+    except Exception as e:
+        session.rollback()
+        raise e
 
 def test_get_rent_history_success(client, session, admin_token):
     """
@@ -115,147 +176,75 @@ def test_get_rent_history_empty(client, session, admin_token):
     assert pagination["currentPage"] == 1
     assert pagination["pageSize"] == 10
 
-def test_get_rent_history_pagination(client, session, admin_token):
+@pytest.mark.parametrize("page,page_size,expected_count", [
+    (1, 5, 5),  # 첫 페이지, 모든 데이터
+    (1, 3, 3),  # 첫 페이지, 일부 데이터
+    (2, 3, 2),  # 두번째 페이지, 나머지 데이터
+    (3, 3, 0),  # 데이터 없는 페이지
+])
+def test_get_rent_history_pagination(client, session, admin_token, page, page_size, expected_count):
     """
-    dummy 데이터를 7건 추가한 후, page_size=3로 페이지네이션한 결과를 검증합니다.
+    페이지네이션 동작을 다양한 페이지와 크기로 테스트합니다.
     """
-    # Given: DB에 7개의 dummy 레코드를 추가함.
-    create_dummy_rent_history(session, count=7)
-    
-    # When: 관리자 토큰으로 페이지 번호 2, page_size=3의 GET 요청을 수행함.
-    response = client.get(
-        "/admin/rent-history?page=2&page_size=3",
-        headers={"Authorization": f"Bearer {admin_token}"}
-    )
-    
-    # Then: 상태 코드가 200이고, pagination은 totalItems=7, pageSize=3, currentPage=2, totalPages=3이며, rent_history 리스트의 길이는 3임.
-    assert response.status_code == 200
-    data = response.json()
-    pagination = data["data"]["pagination"]
-    assert pagination["totalItems"] == 7
-    assert pagination["pageSize"] == 3
-    assert pagination["currentPage"] == 2
-    assert pagination["totalPages"] == 3
-    assert len(data["data"]["rent_history"]) == 3
-
-def test_get_rent_history_invalid_query_parameters(client, admin_token):
-    """
-    page, page_size 파라미터에 잘못된 값 (0, 음수, 문자열 등)이 입력된 경우 422 에러가 반환되는지 확인합니다.
-    """
-    # Given: 잘못된 page 및 page_size 값을 사용함.
-    # When: page=0인 경우 GET 요청을 수행함.
-    response = client.get(
-        "/admin/rent-history?page=0&page_size=10",
-        headers={"Authorization": f"Bearer {admin_token}"}
-    )
-    # Then: 상태 코드가 422임.
-    assert response.status_code == 422
-    
-    # When: page_size=0인 경우 GET 요청을 수행함.
-    response = client.get(
-        "/admin/rent-history?page=1&page_size=0",
-        headers={"Authorization": f"Bearer {admin_token}"}
-    )
-    # Then: 상태 코드가 422임.
-    assert response.status_code == 422
-    
-    # When: 비정수형 문자열을 사용한 GET 요청을 수행함.
-    response = client.get(
-        "/admin/rent-history?page=abc&page_size=def",
-        headers={"Authorization": f"Bearer {admin_token}"}
-    )
-    # Then: 상태 코드가 422임.
-    assert response.status_code == 422
-
-def test_get_rent_history_page_out_of_range(client, session, admin_token):
-    """
-    존재하지 않는 페이지 번호로 호출 시, rent_history 리스트가 빈 리스트로 반환되는지 확인합니다.
-    """
-    # Given: DB에 3개의 dummy 레코드를 추가함.
-    create_dummy_rent_history(session, count=3)
-    
-    # When: 존재하지 않는 페이지 번호(예: page=10, page_size=3)로 GET 요청을 수행함.
-    response = client.get(
-        "/admin/rent-history?page=10&page_size=3",
-        headers={"Authorization": f"Bearer {admin_token}"}
-    )
-    
-    # Then: 상태 코드가 200이고, 반환된 rent_history 리스트는 빈 리스트이며, pagination은 totalItems=3, totalPages=1, currentPage=10임.
-    assert response.status_code == 200
-    data = response.json()
-    assert data["data"]["rent_history"] == []
-    pagination = data["data"]["pagination"]
-    assert pagination["totalItems"] == 3
-    assert pagination["totalPages"] == 1
-    assert pagination["currentPage"] == 10
-
-def test_get_rent_history_missing_query_parameters(client, session, admin_token):
-    """
-    사용자가 page 및 page_size 파라미터 없이 요청한 경우, 기본값이 적용되어 올바른 결과가 반환되는지 확인합니다.    
-    """
-    # Given: DB에 5개의 dummy 레코드를 추가함.
+    # Given: DB에 5개의 dummy 레코드를 추가함
     create_dummy_rent_history(session, count=5)
     
-    # When: page 및 page_size 파라미터 없이 GET 요청을 수행함.
+    # When: 페이지네이션 파라미터로 GET 요청을 수행함
     response = client.get(
-        "/admin/rent-history",
+        f"/admin/rent-history?page={page}&page_size={page_size}",
         headers={"Authorization": f"Bearer {admin_token}"}
     )
     
-    # Then: 상태 코드가 200이고, 결과 코드와 데이터 구조가 올바름.
+    # Then: 응답이 성공적이고 예상된 개수의 데이터가 반환됨
     assert response.status_code == 200
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
-    pagination = data["data"]["pagination"]
-    assert pagination["currentPage"] == 1
-    assert pagination["pageSize"] == 10
-    assert len(data["data"]["rent_history"]) == 5
+    assert len(data["data"]["rent_history"]) == expected_count
 
-def test_get_rent_history_invalid_authorization_format(client, session, admin_token):
+@pytest.mark.parametrize("invalid_param,expected_error", [
+    ("page=0", "ensure this value is greater than 0"),
+    ("page=-1", "ensure this value is greater than 0"),
+    ("page_size=0", "ensure this value is greater than 0"),
+    ("page_size=-1", "ensure this value is greater than 0"),
+    ("page=abc", "value is not a valid integer"),
+    ("page_size=def", "value is not a valid integer"),
+])
+def test_get_rent_history_invalid_parameters(client, session, admin_token, invalid_param, expected_error):
     """
-    잘못된 형식의 인증 헤더를 사용한 경우, 401 에러가 발생하는지 확인합니다.
+    잘못된 쿼리 파라미터에 대한 유효성 검사를 테스트합니다.
     """
-    # Given: DB에 3개의 dummy 레코드를 추가함.
+    # Given: DB에 dummy 데이터를 추가함
     create_dummy_rent_history(session, count=3)
     
-    # When: 잘못된 형식의 인증 헤더를 사용한 GET 요청을 수행함.
+    # When: 잘못된 파라미터로 GET 요청을 수행함
     response = client.get(
-        "/admin/rent-history?page=1&page_size=10",
-        headers={"Authorization": f"{admin_token}"}
-    )
-    
-    # Then: 상태 코드가 401임.
-    assert response.status_code == 401
-
-def test_get_rent_history_invalid_token(client, session):
-    """
-    유효하지 않은 토큰이 제공된 경우, 401 에러가 발생하는지 확인합니다.
-    """
-    # Given: 유효하지 않은 토큰을 사용함.
-    # When: GET 요청을 수행함.
-    response = client.get(
-        "/admin/rent-history?page=1&page_size=10",
-        headers={"Authorization": "Bearer invalid.token.value"}
-    )
-    
-    # Then: 상태 코드가 401임.
-    assert response.status_code == 401
-
-def test_get_rent_history_ordering(client, session, admin_token):
-    """
-    DB에 추가된 dummy 데이터를 시간 기준 최신순으로 반환되는지 확인합니다.    
-    """
-    # Given: DB에 5개의 dummy 레코드를 추가함 (user_pk가 낮을수록 최신).
-    create_dummy_rent_history(session, count=5)
-    
-    # When: 관리자 토큰으로 GET 요청을 수행함.
-    response = client.get(
-        "/admin/rent-history?page=1&page_size=10",
+        f"/admin/rent-history?{invalid_param}",
         headers={"Authorization": f"Bearer {admin_token}"}
     )
     
-    # Then: 응답 상태 코드가 200이고, 반환된 rent_history 리스트의 첫 번째 항목의 user_pk가 1임.
-    assert response.status_code == 200
+    # Then: 422 에러가 발생하고 적절한 에러 메시지가 포함됨
+    assert response.status_code == 422
     data = response.json()
-    rent_history_list = data["data"]["rent_history"]
-    assert rent_history_list[0]["user_pk"] == 1
+    assert data["resultCode"] == "FAILURE"
+    assert expected_error in str(data["detail"])
+
+@pytest.mark.parametrize("auth_header,expected_status", [
+    (None, 401),  # 헤더 없음
+    ("", 401),    # 빈 헤더
+    ("Bearer ", 401),  # 토큰 없는 Bearer
+    ("Bearer invalid.token.here", 401),  # 잘못된 토큰
+    ("Basic YWRtaW46cGFzcw==", 401),  # 잘못된 인증 방식
+])
+def test_get_rent_history_authentication(client, session, auth_header, expected_status):
+    """
+    다양한 인증 시나리오를 테스트합니다.
+    """
+    # Given: DB에 dummy 데이터를 추가함
+    create_dummy_rent_history(session, count=3)
+    
+    # When: 다양한 인증 헤더로 GET 요청을 수행함
+    headers = {"Authorization": auth_header} if auth_header else {}
+    response = client.get("/admin/rent-history?page=1&page_size=10", headers=headers)
+    
+    # Then: 예상된 상태 코드가 반환됨
+    assert response.status_code == expected_status

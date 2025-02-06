@@ -10,7 +10,7 @@ from faker import Faker
 from sqlmodel import Session
 import logging
 
-from app.models import (
+from app.db.models import (
     Role, ItemStatus, ItemType, ModuleType,
     MaintenanceStatus, UsageStatus, RentStatus, VideoType,
     PaymentStatus, PaymentMethod,

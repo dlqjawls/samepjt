@@ -1,5 +1,5 @@
 import pytest
-from app.models.option_type import OptionType
+from app.db.models.option_type import OptionType
 
 # 기본 조회 테스트
 def test_get_option_types(client):

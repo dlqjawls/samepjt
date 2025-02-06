@@ -3,13 +3,14 @@ from typing import Optional, List
 from sqlmodel import Session
 from datetime import datetime
 
-from app.models.user import User
-from app.crud.user import user_crud
-from app.crud.lut import role
+from app.db.models.user import User
+from app.db.crud.user import user_crud
+from app.db.crud.lut import role
 from app.api.schemas import auth_schema
 from app.utils.bcrypt import hash_password, verify_password
 from app.core.jwt import JWTPayload, jwt_handler
 from app.utils.handle_transaction import handle_transaction
+
 from app.utils.exceptions import BadRequestError, DatabaseError, ForbiddenError, NotFoundError, UnauthorizedError
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ class AuthServiceUtils:
     """ 🎯 AuthService 공통 로직 """
     @staticmethod
     def validate_user_credentials(session: Session, user_id: str, password: str) -> User:
-        user = user_crud.get_user_by_user_id(session, user_id)
+        user = user_crud.get_by_id(session, user_id)
         if not user or not verify_password(password, user.user_password):
             raise UnauthorizedError(
                 message="Invalid credentials", 
@@ -51,7 +52,7 @@ class AuthService:
         """
         새 유저 등록
         """
-        if user_crud.get_user_by_user_id(session, register_req.id):
+        if user_crud._get_by_field(session, register_req.id, "user_id"):
             raise BadRequestError(
                 message="User ID already exists",
                 detail={
@@ -59,7 +60,7 @@ class AuthService:
                 }
             )
 
-        if user_crud.get_user_by_email(session, register_req.email):
+        if user_crud.get_by_email(session, register_req.email):
             raise BadRequestError(
                 message="Email is already exists",
                 detail={
