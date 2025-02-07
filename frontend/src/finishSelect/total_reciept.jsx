@@ -77,7 +77,7 @@ const Total_reciept = () => {
 
       if (response.data.resultCode === "SUCCESS") {
         console.log("토큰 갱신 성공:", response.data);
-        const { access_token, refresh_token } = response.data;
+        const { access_token, refresh_token } = response.data.data;
         sessionStorage.setItem("token", access_token);
         sessionStorage.setItem("refreshToken", refresh_token);
         return access_token;
