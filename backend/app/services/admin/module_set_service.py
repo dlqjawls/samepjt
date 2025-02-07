@@ -127,5 +127,35 @@ class ModuleSetService:
 
         return ModuleSetDeleteResponse.success(
             message="Module set deleted successfully"
+        )
+
+    @staticmethod
+    def _save_module_set_images(module_set_images: List[str]) -> str:
+        """모듈 세트 이미지 저장 후 이미지 경로 문자열 반환
+           (저장 후 반환된 이미지 주소들을 콤마로 구분하여 DB에 저장)
+        """
+        saved_images = [ModuleSetService._save_image(image) for image in module_set_images]
+        return ",".join(saved_images)
+
+    @staticmethod
+    def _save_image(image: str) -> str:
+        """이미지 저장 후 이미지 경로 반환 (단순히 원본 문자열 반환)"""
+        return image
+
+    @staticmethod
+    def schema_to_model(register_request: ModuleSetRegisterRequest, user_pk: int) -> ModuleSet:
+        """모듈 세트 등록 요청 스키마를 ModuleSet 모델로 변환"""
+        images = register_request.module_set_images or []
+        processed_images = ModuleSetService._save_module_set_images(images)
+        return ModuleSet(
+            module_set_name=register_request.module_set_name,
+            description=register_request.description or "",
+            module_set_images=processed_images,
+            module_set_features=register_request.module_set_features or "",
+            module_type_id=register_request.module_type_id,
+            created_by=user_pk,
+            updated_by=user_pk,
+            created_at=datetime.now(),
+            updated_at=datetime.now()
         )   
         
