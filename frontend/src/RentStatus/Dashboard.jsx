@@ -215,11 +215,11 @@ function Dashboard() {
             <h1 className="vehicle-name">PBV 모듀카</h1>
             <span className="vehicle-number">123가4589</span>
           </div>
-          <div className="key-info">
+          {/* <div className="key-info">
             <span>블루키</span>
             <span>/</span>
             <span>Digital key</span>
-          </div>
+          </div> */}
         </div>
 
         <div className="stats-grid">

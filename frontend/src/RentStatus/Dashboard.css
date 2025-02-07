@@ -139,3 +139,50 @@
   font-size: 14px;
   color: #666;
 }
+
+/* ...existing code... */
+
+.score-ranks button {
+  padding: 10px 20px;
+  border: 2px solid #000;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.score-ranks button:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.score-ranks button:active {
+  transform: scale(0.98);
+}
+
+/* 대여취소 버튼 특별 스타일 */
+.score-ranks button:first-child {
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.score-ranks button:first-child:hover {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+/* 차량반납 버튼 특별 스타일 */
+.score-ranks button:nth-child(2) {
+  border-color: #000;
+}
+
+/* 버튼 사이 간격 조정 */
+.score-ranks {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
