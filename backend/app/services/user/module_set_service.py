@@ -5,7 +5,7 @@ from app.db.models.option_type import OptionType
 from app.db.models.module_set_option_types import ModuleSetOptionTypes
 from app.db.crud.module_set import module_set_crud
 from app.db.crud.module_set_option_type import module_set_option_type_crud
-from app.db.crud.option_type import option_types_crud
+from app.db.crud.option_type import option_type_crud
 from app.api.schemas.user import module_set_schema
 from app.utils.handle_transaction import handle_transaction
 from app.utils.exceptions import (
@@ -28,7 +28,7 @@ class ModuleSetServiceUtils:
             module_set_option_types.append(
                 module_set_schema.ModuleSetOptionType(
                     optionTypeId=module_option.option_type_id,
-                    optionTypeName=option_types_crud.get_option_name_by_id(session, module_option.option_type_id),
+                    optionTypeName=option_type_crud.get_option_name_by_id(session, module_option.option_type_id),
                     quantity=module_option.option_quantity or 0  # ✅ `None`일 경우 기본값 `0`
                 )
             )

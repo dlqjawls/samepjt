@@ -54,4 +54,4 @@ class OptionTypeCRUD(CRUDBase[OptionType]):
                 detail={"error": str(e)}
             )
 
-option_types_crud = OptionTypeCRUD()
+option_type_crud = OptionTypeCRUD()
