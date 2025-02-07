@@ -1,0 +1,131 @@
+from typing import List
+from sqlmodel import Session
+from app.api.schemas.admin.module_set_schema import ModuleSetItem, ModuleSetData, ModuleSetGetResponse, ModuleSetRegisterRequest, ModuleSetRegisterResponse, ModuleSetUpdateRequest, ModuleSetUpdateResponse, ModuleSetDeleteResponse
+from app.db.crud.module_set import module_set_crud
+from app.db.models.module_set import ModuleSet
+from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
+from app.utils.handle_transaction import handle_transaction
+from datetime import datetime
+from fastapi import HTTPException
+
+class ModuleSetService:
+  
+    @staticmethod
+    def _convert_module_set_data(module_set: ModuleSet) -> ModuleSetItem:
+        """모듈 세트 데이터 변환"""
+        if module_set.module_set_id is None:
+            raise DatabaseError(
+                message="Module set ID is required",
+                detail={"module_set": module_set.dict()}
+            )
+            
+        return ModuleSetItem(
+            module_set_id=module_set.module_set_id,
+            module_set_name=module_set.module_set_name,
+            description=module_set.description or "", 
+            module_set_images=module_set.module_set_images or "",
+            module_set_features=module_set.module_set_features or "",
+            module_type_id=module_set.module_type_id,
+            cost=0,
+            created_at=module_set.created_at,
+            created_by=module_set.created_by,
+            updated_at=module_set.updated_at,
+            updated_by=module_set.updated_by
+        )
+
+    @staticmethod
+    def get_module_set_list(session: Session, page: int, page_size: int) -> ModuleSetGetResponse:
+        """관리자 모듈 세트 목록 조회 서비스"""
+        paginated_result = module_set_crud.paginate(session, page, page_size)
+        module_sets: List[ModuleSet] = paginated_result["items"]
+        
+        # 모듈 세트 데이터 변환
+        module_set_items = [
+            ModuleSetItem.parse_obj(
+                ModuleSetService._convert_module_set_data(module_set)
+            )
+            for module_set in module_sets
+        ]
+
+        module_set_data = ModuleSetData(
+            module_sets=module_set_items,
+            pagination=paginated_result["pagination"]
+        )
+
+        return ModuleSetGetResponse.success(
+            data=module_set_data,
+            message="Module set data retrieved successfully"
+        )
+
+    @staticmethod
+    @handle_transaction
+    def register_module_set(session: Session, module_set_data: ModuleSetRegisterRequest, user_pk: int) -> ModuleSetRegisterResponse:
+        """모듈 세트 등록 서비스"""
+
+        # 2. 새 모듈 세트 생성
+        new_module_set = ModuleSet(
+            module_set_name=module_set_data.module_set_name,
+            description=module_set_data.description,
+            module_set_images=module_set_data.module_set_images,
+            module_set_features=module_set_data.module_set_features,
+            module_type_id=module_set_data.module_type_id,
+            created_by=user_pk,
+            updated_by=user_pk,
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
+
+        module_set_crud.create(session, new_module_set)
+        return ModuleSetRegisterResponse.success(
+            message="Module set registered successfully"
+        )
+
+    @staticmethod
+    @handle_transaction
+    def update_module_set(
+        session: Session,
+        module_set_id: int,
+        update_data,  # ModuleSetUpdateRequest 객체라고 가정
+        user_pk: int
+    ) -> ModuleSetUpdateResponse:
+        # 기존에 등록된 모듈 세트 객체를 조회합니다.
+        module_set = session.get(ModuleSet, module_set_id)
+        if not module_set:
+            raise HTTPException(status_code=404, detail="Module set not found")
+        
+        # 클라이언트가 전달한 변경된 필드만 기존 객체에 업데이트합니다.
+        update_fields = update_data.dict(exclude_unset=True)
+        for key, value in update_fields.items():
+            setattr(module_set, key, value)
+        
+        # 업데이트 정보 갱신
+        module_set.updated_by = user_pk
+        module_set.updated_at = datetime.now()
+        
+        session.commit()
+        session.refresh(module_set)
+        
+        # 업데이트 성공 후 등록된 모듈 세트의 id를 응답에 포함합니다.
+        return ModuleSetUpdateResponse.success(
+            message="Module set updated successfully"
+        )
+
+    @staticmethod
+    @handle_transaction
+    def delete_module_set(session: Session, module_set_id: int, user_pk: int) -> ModuleSetDeleteResponse:
+        """모듈 세트 삭제 서비스"""
+        # 모듈 세트 존재 여부 확인
+        module_set = module_set_crud._get_by_field(session, module_set_id, "module_set_id")
+        if not module_set:
+            raise NotFoundError(
+                message="Module set not found",
+                detail={"module_set_id": module_set_id}
+            )
+
+        # 모듈 세트 삭제
+        module_set_crud.soft_delete(session, module_set_id, "module_set_id")
+
+        return ModuleSetDeleteResponse.success(
+            message="Module set deleted successfully"
+        )   
+        
