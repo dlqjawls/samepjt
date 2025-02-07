@@ -1,6 +1,24 @@
 from typing import Dict, Optional, Tuple
 from datetime import datetime, timedelta
 from fastapi.testclient import TestClient
+from app.core.jwt import jwt_handler
+import pytest
+
+# GIVEN: 관리자 토큰 생성 (role "master")
+@pytest.fixture
+def master_token():
+    return jwt_handler.create_token(1, role="master")[0]
+
+# GIVEN: 일반 관리자 토큰 생성 (role "semi")
+@pytest.fixture
+def semi_admin_token():
+    return jwt_handler.create_token(2, role="semi")[0]  
+
+# GIVEN: 비관리자 토큰 생성 (role "user")
+@pytest.fixture
+def user_token():
+    return jwt_handler.create_token(2, role="user")[0]
+
 
 def register_and_login(
     client: TestClient,
