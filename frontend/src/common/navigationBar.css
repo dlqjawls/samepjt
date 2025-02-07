@@ -58,6 +58,111 @@
 }
 
 .hide-button {
-  all: unset;
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
+}
+
+.rent-status-button {
+  padding: 8px 16px;
+  margin-right: 12px;
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 6px;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.rent-status-button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.rent-status-button:active {
+  transform: scale(0.98);
+}
+
+.navbar-login {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 로그인 버튼 스타일링 */
+.login-button {
+  padding: 8px 16px;
+  background-color: #000000;
+  border: 2px solid #000000;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.login-button:active {
+  transform: scale(0.98);
+}
+
+
+@media screen and (max-width: 768px) {
+  .navbar {
+    padding: 8px 12px;
+  }
+
+  .navbar-container {
+    max-width: 100%;
+  }
+
+  .navbar-logo {
+    font-size: 16px;
+    gap: 6px;
+  }
+
+  .navbar-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .navbar-login {
+    gap: 8px;
+  }
+
+  .rent-status-button {
+    padding: 6px 12px;
+    font-size: 12px;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+
+  .login-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .navbar-logo span {
+    display: none;
+  }
+
+  .rent-status-button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .login-button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
 }
