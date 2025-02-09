@@ -55,3 +55,47 @@ class RentHistoryResponse(ResponseBase[RentHistoryData]):
                 }
             }
         } 
+        
+        
+        
+class RentVideoItem(BaseModel):
+    video_id: int = Field(..., example=501)
+    rent_id: int = Field(..., example=101)
+    # video_type 필드를 통해 'autonomous driving' 또는 'module installation' 으로 구분
+    video_type: str = Field(
+        ...,
+        example="autonomous driving",
+        description="영상 유형. 'autonomous driving' 또는 'module installation' 중 하나"
+    )
+    video_url: str = Field(..., example="https://example.com/videos/501.mp4")
+    recorded_at: datetime = Field(..., example="2025-02-01T10:00:00")
+
+class RentVideoData(BaseModel):
+    videos: List[RentVideoItem]
+
+class RentVideoResponse(ResponseBase[RentVideoData]):
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Rent videos retrieved successfully",
+                "data": {
+                    "videos": [
+                        {
+                            "video_id": 501,
+                            "rent_id": 101,
+                            "video_type": "autonomous driving",
+                            "video_url": "https://example.com/videos/501.mp4",
+                            "recorded_at": "2025-02-01T10:00:00"
+                        },
+                        {
+                            "video_id": 602,
+                            "rent_id": 101,
+                            "video_type": "module installation",
+                            "video_url": "https://example.com/videos/602.mp4",
+                            "recorded_at": "2025-02-01T10:15:00"
+                        }
+                    ]
+                }
+            }
+        } 
