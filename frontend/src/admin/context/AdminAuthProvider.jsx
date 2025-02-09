@@ -1,10 +1,14 @@
+// src/admin/context/AdminAuthProvider.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AdminAuthContext } from "./AdminAuthContext";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
 export const AdminAuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [admin, setAdmin] = useState(() => {
     const storedAdmin = localStorage.getItem("adminInfo");
     return storedAdmin ? JSON.parse(storedAdmin) : null;
@@ -13,7 +17,6 @@ export const AdminAuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(() =>
     localStorage.getItem("adminToken")
   );
-
   const [refreshToken, setRefreshToken] = useState(() =>
     localStorage.getItem("adminRefreshToken")
   );
@@ -39,9 +42,8 @@ export const AdminAuthProvider = ({ children }) => {
     localStorage.removeItem("adminRefreshToken");
   };
 
-  // Axios 인터셉터를 이용하여 토큰 갱신 로직 구현
   useEffect(() => {
-    // 인터셉터 추가: 모든 요청에 Authorization 헤더 자동 설정
+    // 요청 인터셉터: 모든 요청에 Authorization 헤더 자동 설정
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
         if (accessToken) {
@@ -52,12 +54,11 @@ export const AdminAuthProvider = ({ children }) => {
       (error) => Promise.reject(error)
     );
 
-    // 응답 인터셉터 추가: 401 발생 시 토큰 갱신 시도
+    // 응답 인터셉터: 401 에러 발생 시 토큰 갱신 시도
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-        // 토큰 갱신 요청이 아니고 401 에러인 경우
         if (
           error.response &&
           error.response.status === 401 &&
@@ -67,7 +68,9 @@ export const AdminAuthProvider = ({ children }) => {
           // refreshToken이 없는 경우 바로 로그아웃
           if (!refreshToken) {
             console.error("리프레시 토큰이 없습니다.");
+            toast.error("세션이 만료되었습니다. 다시 로그인 해주세요.");
             logoutAdmin();
+            navigate("/admin/login");
             return Promise.reject(error);
           }
           try {
@@ -82,12 +85,10 @@ export const AdminAuthProvider = ({ children }) => {
               const newRefreshToken = refreshResponse.data.data.refresh_token;
               setAccessToken(newAccessToken);
               setRefreshToken(newRefreshToken);
-
               console.log("Token refreshed successfully:", {
                 newAccessToken,
                 newRefreshToken,
               });
-
               localStorage.setItem("adminToken", newAccessToken);
               localStorage.setItem("adminRefreshToken", newRefreshToken);
               originalRequest.headers[
@@ -96,12 +97,16 @@ export const AdminAuthProvider = ({ children }) => {
               return axios(originalRequest);
             } else {
               console.error("토큰 갱신 응답 실패:", refreshResponse.data);
+              toast.error("세션이 만료되었습니다. 다시 로그인 해주세요.");
               logoutAdmin();
+              navigate("/admin/login");
               return Promise.reject(error);
             }
           } catch (refreshError) {
             console.error("토큰 갱신 중 오류:", refreshError);
+            toast.error("세션이 만료되었습니다. 다시 로그인 해주세요.");
             logoutAdmin();
+            navigate("/admin/login");
             return Promise.reject(refreshError);
           }
         }
@@ -113,7 +118,7 @@ export const AdminAuthProvider = ({ children }) => {
       axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, [accessToken, refreshToken]);
+  }, [accessToken, refreshToken, navigate]);
 
   return (
     <AdminAuthContext.Provider
