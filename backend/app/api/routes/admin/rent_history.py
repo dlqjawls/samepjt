@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Path
 from sqlmodel import Session
-from app.services.admin.rent_history_service import RentHistoryService
+from app.services.admin.rent_history_service import RentHistoryService 
 from app.core.database import get_session
-from app.api.schemas.admin.rent_history_schema import RentHistoryResponse
+from app.api.schemas.admin.rent_history_schema import RentHistoryResponse, RentVideoResponse
 from app.core.jwt import JWTPayload, jwt_handler
+from app.utils.lut_constants import LUTConstants
 
 router = APIRouter()
+
 
 @router.get(
     "/rent-history",
@@ -110,3 +112,22 @@ async def get_rent_history(
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
 ):
     return RentHistoryService.get_rent_history(session, page, page_size)
+
+
+@router.get("/rent-history/{rent_id}/module-install-videos", response_model=RentVideoResponse, summary="렌트 히스토리 모듈 설치 영상 조회")
+def get_rent_videos(
+    session: Session = Depends(get_session),
+    rent_id: int = Path(..., description="대여 ID"),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
+):
+    return RentHistoryService.get_rent_videos(session, rent_id, "module installation") 
+
+
+
+@router.get("/rent-history/{rent_id}/autonomous-videos", response_model=RentVideoResponse, summary="렌트 히스토리 자율주행 영상 조회")
+def get_rent_videos(
+    session: Session = Depends(get_session),
+    rent_id: int = Path(..., description="대여 ID"),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
+):
+    return RentHistoryService.get_rent_videos(session, rent_id, "autonomous driving") 
