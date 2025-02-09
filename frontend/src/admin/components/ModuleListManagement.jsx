@@ -1,22 +1,31 @@
 // src/admin/components/ModuleListManagement.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { MdSearch } from "react-icons/md";
-import Modal from "./Modal"; // Modal 컴포넌트 경로 (예시)
-import "./ModuleManagement.css";
+import { MdSearch, MdEdit, MdDelete } from "react-icons/md";
+import Modal from "./Modal";
+import "./ModuleListManagement.css";
 
 const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
-const ModuleManagementList = ({ token, onSelectModule }) => {
-  const [modules, setModules] = useState([]);
+const ModuleManagementList = () => {
+  const token = localStorage.getItem("adminToken");
+
+  // 백엔드에서 받아온 전체 모듈 데이터와 필터링된 데이터 상태
+  const [allModules, setAllModules] = useState([]);
+  const [filteredModules, setFilteredModules] = useState([]);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 필터 관련 상태 (검색어, 상태, 페이지, 페이지당 항목수)
   const [filters, setFilters] = useState({
     moduleSearch: "",
     moduleStatus: "",
     modulePage: 1,
     modulePageSize: 10,
   });
+
+  // 클라이언트 단 페이징 계산
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -24,19 +33,12 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
     pageSize: 10,
   });
 
-  // 모달 관련 상태: modalType는 "add", "edit", "delete"
+  // 모달 관련 상태: modalType는 "add", "edit", "delete", "detail"
   const [modalType, setModalType] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
   const [formData, setFormData] = useState({
     moduleNfcTagId: "",
     moduleTypeId: "",
-    moduleType: "",
-    moduleSize: "",
-    moduleCost: "",
-    status: "active",
-    lastMaintenanceAt: "",
-    nextMaintenanceAt: "",
-    currentLocation: "",
   });
 
   const fetchModules = useCallback(async () => {
@@ -48,16 +50,10 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : undefined,
         },
-        params: {
-          search: filters.moduleSearch || undefined,
-          status: filters.moduleStatus || undefined,
-          page: filters.modulePage,
-          pageSize: filters.modulePageSize,
-        },
       });
       if (response.data.resultCode === "SUCCESS") {
-        setModules(response.data.data.modules);
-        setPagination(response.data.data.pagination);
+        const modulesData = response.data.data.modules;
+        setAllModules(modulesData);
       } else {
         setError(
           response.data.message || "모듈 목록을 불러오는 데 실패했습니다."
@@ -69,18 +65,56 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
     } finally {
       setLoading(false);
     }
-  }, [token, filters]);
+  }, [token]);
 
   useEffect(() => {
     fetchModules();
   }, [fetchModules]);
+
+  // 필터(검색어, 상태)와 전체 데이터를 기준으로 클라이언트 단 필터링
+  useEffect(() => {
+    let result = allModules;
+
+    // 검색어 필터: NFC 태그 ID와 모듈 타입 이름을 소문자로 비교
+    if (filters.moduleSearch) {
+      const searchLower = filters.moduleSearch.toLowerCase();
+      result = result.filter(
+        (module) =>
+          module.module_nfc_tag_id.toLowerCase().includes(searchLower) ||
+          module.module_type_name.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // 상태 필터: status_name이 필터값과 일치하는 경우
+    if (filters.moduleStatus) {
+      result = result.filter(
+        (module) => module.status_name === filters.moduleStatus
+      );
+    }
+
+    setFilteredModules(result);
+
+    // 필터링된 데이터의 총 개수를 기준으로 페이지네이션 계산
+    setPagination({
+      currentPage: filters.modulePage,
+      totalItems: result.length,
+      pageSize: filters.modulePageSize,
+      totalPages: Math.ceil(result.length / filters.modulePageSize),
+    });
+  }, [filters, allModules]);
+
+  // 현재 페이지에 해당하는 모듈 데이터 (client-side 페이징)
+  const paginatedModules = filteredModules.slice(
+    (filters.modulePage - 1) * filters.modulePageSize,
+    filters.modulePage * filters.modulePageSize
+  );
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
       ...prev,
       [name]: value,
-      modulePage: 1,
+      modulePage: 1, // 필터 변경 시 첫 페이지로 초기화
     }));
   };
 
@@ -99,18 +133,11 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
     }));
   };
 
-  // 모달 열기 함수
+  // 모달 열기 함수들
   const openAddModal = () => {
     setFormData({
       moduleNfcTagId: "",
       moduleTypeId: "",
-      moduleType: "",
-      moduleSize: "",
-      moduleCost: "",
-      status: "active",
-      lastMaintenanceAt: "",
-      nextMaintenanceAt: "",
-      currentLocation: "",
     });
     setModalType("add");
   };
@@ -118,17 +145,16 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
   const openEditModal = (module) => {
     setSelectedModule(module);
     setFormData({
-      moduleNfcTagId: module.moduleNfcTagId,
-      moduleTypeId: module.moduleTypeId,
-      moduleType: module.moduleType,
-      moduleSize: module.moduleSize,
-      moduleCost: module.moduleCost,
-      status: module.status,
-      lastMaintenanceAt: module.lastMaintenanceAt || "",
-      nextMaintenanceAt: module.nextMaintenanceAt || "",
-      currentLocation: module.currentLocation || "",
+      moduleNfcTagId: module.module_nfc_tag_id,
+      moduleTypeId: module.module_type_id,
     });
     setModalType("edit");
+  };
+
+  // 상세 보기 모달 열기 함수 추가
+  const openDetailModal = (module) => {
+    setSelectedModule(module);
+    setModalType("detail");
   };
 
   const openDeleteModal = (module) => {
@@ -142,17 +168,10 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
     setFormData({
       moduleNfcTagId: "",
       moduleTypeId: "",
-      moduleType: "",
-      moduleSize: "",
-      moduleCost: "",
-      status: "active",
-      lastMaintenanceAt: "",
-      nextMaintenanceAt: "",
-      currentLocation: "",
     });
   };
 
-  // CRUD API 호출 함수
+  // 신규 모듈 등록 API 호출
   const handleSaveModuleAdd = async () => {
     if (!formData.moduleNfcTagId.trim() || !formData.moduleTypeId.trim()) {
       setError("NFC 태그 ID와 모듈 타입은 필수 항목입니다.");
@@ -185,16 +204,17 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
     }
   };
 
+  // 모듈 수정 API 호출 (모듈 타입만 수정 가능)
   const handleSaveModuleEdit = async () => {
     if (!selectedModule) return;
     setLoading(true);
     setError("");
     try {
       const payload = {
-        moduleTypeId: Number(formData.moduleTypeId),
+        module_type_id: Number(formData.moduleTypeId),
       };
       const response = await axios.patch(
-        `${BASE_URL}/admin/modules/${selectedModule.moduleId}`,
+        `${BASE_URL}/admin/modules/${selectedModule.module_id}`,
         payload,
         {
           headers: {
@@ -217,13 +237,14 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
     }
   };
 
+  // 모듈 삭제 API 호출
   const handleConfirmDelete = async () => {
     if (!selectedModule) return;
     setLoading(true);
     setError("");
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/module/${selectedModule.moduleId}`,
+        `${BASE_URL}/admin/modules/${selectedModule.module_id}`,
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
@@ -246,8 +267,14 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
 
   return (
     <div className="module-management-list">
+      <div className="module-management-list-header">
+        <h1>모듈 목록</h1>
+        <button className="add-button" onClick={openAddModal}>
+          모듈 등록
+        </button>
+      </div>
+
       <div className="filters">
-        <h2>모듈 목록</h2>
         <label>
           상태
           <select
@@ -271,10 +298,8 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
             placeholder="모듈 NFC 태그 ID 또는 타입 검색"
           />
         </label>
-        <button onClick={fetchModules}>검색</button>
-        <button className="add-button" onClick={openAddModal}>
-          모듈 등록
-        </button>
+        {/* 검색 버튼: 필터 상태 변경은 useEffect에서 처리됨 */}
+        <button onClick={() => setFilters({ ...filters })}>검색</button>
       </div>
       {error && <p className="error">{error}</p>}
       {loading ? (
@@ -287,10 +312,9 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
                 <th>모듈 ID</th>
                 <th>NFC 태그 ID</th>
                 <th>모듈 타입</th>
-                <th>모듈 크기</th>
-                <th>모듈 비용 (원)</th>
+                <th>마지막 정비 일자</th>
+                <th>다음 정비 일자</th>
                 <th>상태</th>
-                <th>현재 위치</th>
                 <th>등록 일자</th>
                 <th>수정 일자</th>
                 <th>상세 보기</th>
@@ -299,48 +323,37 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
               </tr>
             </thead>
             <tbody>
-              {modules.length > 0 ? (
-                modules.map((module) => (
-                  <tr key={module.moduleId}>
-                    <td>{module.moduleId}</td>
-                    <td>{module.moduleNfcTagId}</td>
-                    <td>{module.moduleType}</td>
-                    <td>{module.moduleSize}</td>
-                    <td>{module.moduleCost.toLocaleString()}원</td>
+              {paginatedModules.length > 0 ? (
+                paginatedModules.map((module, index) => (
+                  <tr key={module.module_id || index}>
+                    <td>{module.module_id}</td>
+                    <td>{module.module_nfc_tag_id}</td>
+                    <td>{module.module_type_name}</td>
                     <td>
-                      <span
-                        className={`status-badge ${
-                          module.status === "active"
-                            ? "status-active"
-                            : module.status === "inactive"
-                            ? "status-inactive"
-                            : "status-maintenance"
-                        }`}
-                      >
-                        {module.status === "active"
-                          ? "활성화"
-                          : module.status === "inactive"
-                          ? "비활성화"
-                          : "정비 중"}
-                      </span>
-                    </td>
-                    <td>{module.currentLocation || "미정"}</td>
-                    <td>
-                      {module.createdAt
-                        ? new Date(module.createdAt).toLocaleString()
+                      {module.last_maintenance_at
+                        ? new Date(module.last_maintenance_at).toLocaleString()
                         : "-"}
                     </td>
                     <td>
-                      {module.updatedAt
-                        ? new Date(module.updatedAt).toLocaleString()
+                      {module.next_maintenance_at
+                        ? new Date(module.next_maintenance_at).toLocaleString()
+                        : "-"}
+                    </td>
+                    <td>{module.status_name || "-"}</td>
+                    <td>
+                      {module.created_at
+                        ? new Date(module.created_at).toLocaleString()
+                        : "-"}
+                    </td>
+                    <td>
+                      {module.updated_at
+                        ? new Date(module.updated_at).toLocaleString()
                         : "-"}
                     </td>
                     <td>
                       <button
                         className="detail-button"
-                        onClick={() => {
-                          if (onSelectModule) onSelectModule(module);
-                        }}
+                        onClick={() => openDetailModal(module)}
                       >
                         <MdSearch />
                       </button>
@@ -350,7 +363,7 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
                         className="edit-button"
                         onClick={() => openEditModal(module)}
                       >
-                        수정
+                        <MdEdit />
                       </button>
                     </td>
                     <td>
@@ -358,14 +371,14 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
                         className="delete-button"
                         onClick={() => openDeleteModal(module)}
                       >
-                        삭제
+                        <MdDelete />
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="12">조회된 모듈이 없습니다.</td>
+                  <td colSpan="11">조회된 모듈이 없습니다.</td>
                 </tr>
               )}
             </tbody>
@@ -392,6 +405,40 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
 
       {modalType && (
         <Modal isOpen={true} onClose={closeModal}>
+          {modalType === "detail" && selectedModule && (
+            <div className="detail-content">
+              <h2>모듈 상세 정보</h2>
+              <p>
+                <strong>모듈 ID:</strong> {selectedModule.module_id}
+              </p>
+              <p>
+                <strong>NFC 태그 ID:</strong> {selectedModule.module_nfc_tag_id}
+              </p>
+              <p>
+                <strong>모듈 타입:</strong> {selectedModule.module_type_name}
+              </p>
+              <p>
+                <strong>상태:</strong> {selectedModule.status_name}
+              </p>
+              <p>
+                <strong>등록 일자:</strong>{" "}
+                {selectedModule.created_at
+                  ? new Date(selectedModule.created_at).toLocaleString()
+                  : "-"}
+              </p>
+              <p>
+                <strong>수정 일자:</strong>{" "}
+                {selectedModule.updated_at
+                  ? new Date(selectedModule.updated_at).toLocaleString()
+                  : "-"}
+              </p>
+              <div className="modal-actions">
+                <button onClick={closeModal} className="cancel-button">
+                  닫기
+                </button>
+              </div>
+            </div>
+          )}
           {modalType === "add" && (
             <div className="add-content">
               <h2>모듈 등록</h2>
@@ -414,75 +461,6 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
                     value={formData.moduleTypeId}
                     onChange={handleFormChange}
                     required
-                  />
-                </label>
-                <label>
-                  모듈 타입:
-                  <input
-                    type="text"
-                    name="moduleType"
-                    value={formData.moduleType}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  모듈 크기:
-                  <input
-                    type="text"
-                    name="moduleSize"
-                    value={formData.moduleSize}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  모듈 비용 (원):
-                  <input
-                    type="number"
-                    name="moduleCost"
-                    value={formData.moduleCost}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  상태:
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleFormChange}
-                  >
-                    <option value="active">활성화</option>
-                    <option value="inactive">비활성화</option>
-                    <option value="maintenance">정비 중</option>
-                  </select>
-                </label>
-                <label>
-                  최근 정비 일자:
-                  <input
-                    type="date"
-                    name="lastMaintenanceAt"
-                    value={formData.lastMaintenanceAt}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  다음 정비 일자:
-                  <input
-                    type="date"
-                    name="nextMaintenanceAt"
-                    value={formData.nextMaintenanceAt}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  현재 위치:
-                  <input
-                    type="text"
-                    name="currentLocation"
-                    value={formData.currentLocation}
-                    onChange={handleFormChange}
                   />
                 </label>
               </form>
@@ -512,6 +490,7 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
                     value={formData.moduleNfcTagId}
                     onChange={handleFormChange}
                     required
+                    readOnly
                   />
                 </label>
                 <label>
@@ -522,75 +501,6 @@ const ModuleManagementList = ({ token, onSelectModule }) => {
                     value={formData.moduleTypeId}
                     onChange={handleFormChange}
                     required
-                  />
-                </label>
-                <label>
-                  모듈 타입:
-                  <input
-                    type="text"
-                    name="moduleType"
-                    value={formData.moduleType}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  모듈 크기:
-                  <input
-                    type="text"
-                    name="moduleSize"
-                    value={formData.moduleSize}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  모듈 비용 (원):
-                  <input
-                    type="number"
-                    name="moduleCost"
-                    value={formData.moduleCost}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  상태:
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleFormChange}
-                  >
-                    <option value="active">활성화</option>
-                    <option value="inactive">비활성화</option>
-                    <option value="maintenance">정비 중</option>
-                  </select>
-                </label>
-                <label>
-                  최근 정비 일자:
-                  <input
-                    type="date"
-                    name="lastMaintenanceAt"
-                    value={formData.lastMaintenanceAt}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  다음 정비 일자:
-                  <input
-                    type="date"
-                    name="nextMaintenanceAt"
-                    value={formData.nextMaintenanceAt}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  현재 위치:
-                  <input
-                    type="text"
-                    name="currentLocation"
-                    value={formData.currentLocation}
-                    onChange={handleFormChange}
                   />
                 </label>
               </form>

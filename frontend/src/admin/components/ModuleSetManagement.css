@@ -1,0 +1,227 @@
+/* src/admin/components/ModuleSetManagement.css */
+
+.module-set-management {
+  padding: 20px;
+}
+
+.module-set-management .module-set-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.module-set-management .maintenance-header h1 {
+  font-size: 2em;
+}
+
+.module-set-management .add-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.module-set-management .add-button:hover {
+  background-color: #45a049;
+}
+
+/* 필터 영역 */
+.module-set-management .filters {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.module-set-management .filters label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.module-set-management .filters input,
+.module-set-management .filters select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.module-set-management .filters button {
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.module-set-management .filters button:hover {
+  background-color: #1976d2;
+}
+
+/* 테이블 영역 */
+.module-set-management .table-wrapper {
+  overflow-x: auto;
+}
+
+.module-set-management .module-set-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+}
+
+.module-set-management .module-set-table th,
+.module-set-management .module-set-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.module-set-management .module-set-table th {
+  background-color: #f2f2f2;
+  font-size: 16px;
+}
+
+.module-set-management .module-set-table td {
+  font-size: 14px;
+  background-color: #ffffff;
+}
+
+/* 이미지 */
+.module-set-management .module-set-image {
+  max-width: 100px;
+  max-height: 100px;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* 버튼들 */
+.module-set-management .detail-button {
+  padding: 6px 8px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.module-set-management .detail-button:hover {
+  background-color: #0b7dda;
+}
+
+.module-set-management .edit-button {
+  padding: 8px 16px;
+  background-color: #ffc107;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.module-set-management .edit-button:hover {
+  background-color: #e0a800;
+}
+
+.module-set-management .delete-button {
+  padding: 8px 16px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.module-set-management .delete-button:hover {
+  background-color: #da190b;
+}
+
+/* 페이지네이션 */
+.module-set-management .pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.module-set-management .pagination button {
+  padding: 6px 12px;
+  background-color: #e7e7e7;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.module-set-management .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+
+.module-set-management .pagination button:disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+/* 에러 메시지 */
+.module-set-management .error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* 모달 내용 스타일 */
+.module-set-management .detail-content,
+.module-set-management .edit-content,
+.module-set-management .delete-content,
+.module-set-management .add-content {
+  padding: 20px;
+}
+
+.module-set-management .modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.module-set-management .save-button {
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.module-set-management .save-button:hover {
+  background-color: #45a049;
+}
+
+.module-set-management .cancel-button {
+  padding: 8px 16px;
+  background-color: #e7e7e7;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.module-set-management .cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+.module-set-management .confirm-delete-button {
+  padding: 8px 16px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.module-set-management .confirm-delete-button:hover {
+  background-color: #da190b;
+}
