@@ -115,9 +115,10 @@ async def get_rent_history(
 
 
 @router.get("/rent-history/{rent_id}/module-install-videos", response_model=RentVideoResponse, summary="렌트 히스토리 모듈 설치 영상 조회")
-def get_rent_videos(
+def get_module_install_videos(
     session: Session = Depends(get_session),
     rent_id: int = Path(..., description="대여 ID"),
+
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
 ):
     return RentHistoryService.get_rent_videos(session, rent_id, "module installation") 
@@ -125,9 +126,10 @@ def get_rent_videos(
 
 
 @router.get("/rent-history/{rent_id}/autonomous-videos", response_model=RentVideoResponse, summary="렌트 히스토리 자율주행 영상 조회")
-def get_rent_videos(
+def get_autonomous_videos(
     session: Session = Depends(get_session),
     rent_id: int = Path(..., description="대여 ID"),
+
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
 ):
     return RentHistoryService.get_rent_videos(session, rent_id, "autonomous driving") 
