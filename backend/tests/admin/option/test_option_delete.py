@@ -39,7 +39,7 @@ def rented_option(session: Session):
     """대여 중인 옵션 데이터 생성"""
     option = Option(
         option_type_id=1,
-        status_id=ItemStatus.ACTIVE,
+        item_status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
@@ -56,7 +56,7 @@ def rented_option(session: Session):
         arrival_location='{"x": 12.313, "y": 32.3232}',
         cost=100000,
         mileage=10000,
-        status_id=RentStatus.IN_PROGRESS,
+        rent_status_id=RentStatus.IN_PROGRESS,
         created_at=datetime.now(),
         updated_at=datetime.now()
     )
@@ -68,7 +68,7 @@ def rented_option(session: Session):
          rent_id=rent_history.rent_id,
          item_id=option.option_id,
          item_type_id=ItemType.OPTION,
-         status_id=UsageStatus.IN_USE,
+         usage_status_id=UsageStatus.IN_USE,
          created_at=datetime.now(),
          updated_at=datetime.now()
     )

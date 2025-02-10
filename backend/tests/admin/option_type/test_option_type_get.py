@@ -1,3 +1,4 @@
+from datetime import datetime
 import pytest
 from sqlmodel import Session
 from app.db.models.option_type import OptionType
@@ -21,12 +22,14 @@ def create_dummy_option_types(session: Session):
         for i in range(count):
             option_type = OptionType(
                 option_type_name=f"OPTION_TYPE{i+1}",
-                option_type_size=500,
+                option_type_size="1x1",
                 option_type_cost=10000,
                 description=f"DESCRIPTION{i+1}",
                 option_type_images=f"https://www.google.com/image{i+1}",
                 option_type_features=f"FEATURES{i+1}",
+                created_at=datetime.now(),
                 created_by=1,
+                updated_at=datetime.now(),
                 updated_by=1
             )
             session.add(option_type)
@@ -35,8 +38,9 @@ def create_dummy_option_types(session: Session):
         return option_types
     return _create
 
-def test_get_option_type_list_success(client, session, create_dummy_option_types, master_token):
+def test_get_option_type_list_success(client, session, clear_option_types, create_dummy_option_types, master_token):
     # GIVEN: 관리자 토큰과 3개의 더미 옵션 타입 데이터가 준비됨
+    clear_option_types()
     create_dummy_option_types(3)
     
     # WHEN: /admin/option-types 엔드포인트를 GET 요청

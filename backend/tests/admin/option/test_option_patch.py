@@ -23,7 +23,7 @@ def test_option(session: Session):
         option_type_id=1,
         last_maintenance_at=datetime.now(),
         next_maintenance_at=datetime.now(),
-        status_id=ItemStatus.ACTIVE,
+        item_status_id=ItemStatus.ACTIVE,  
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),

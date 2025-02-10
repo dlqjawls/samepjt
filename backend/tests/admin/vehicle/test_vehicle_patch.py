@@ -22,11 +22,12 @@ def test_vehicle(session: Session):
         vin="TEST123456789",
         vehicle_number="PBV-1234",
         current_location='{"x": 12.313, "y": 32.3232}',
-        status_id=ItemStatus.ACTIVE,
+        item_status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
         updated_at=datetime.now()
+
     )
     session.add(vehicle)
     session.commit()
@@ -128,11 +129,12 @@ def test_update_vehicle_duplicate_number(client, session, master_token, test_veh
         vin="OTHER123456789",
         vehicle_number="PBV-9999",
         current_location='{"x": 12.313, "y": 32.3232}',
-        status_id=ItemStatus.ACTIVE,
+        item_status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
         updated_at=datetime.now()
+
     )
     session.add(other_vehicle)
     session.commit()

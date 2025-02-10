@@ -2,21 +2,11 @@ import pytest
 from sqlmodel import Session
 from app.db.models.usage_history import UsageHistory
 from app.db.models.module import Module
-from app.core.jwt import jwt_handler
 from app.utils.lut_constants import ItemStatus, ItemType, RentStatus, UsageStatus
 from datetime import datetime
 from app.db.models.rent_history import RentHistory
 
-@pytest.fixture
-def master_token():
-    """마스터 권한 토큰 생성"""
-    return jwt_handler.create_token(1, role="master")[0]
-
-# 추가: 일반 관리자(권한 부족) 토큰 생성 피스쳐
-@pytest.fixture
-def semi_admin_token():
-    """일반 관리자(권한 부족) 토큰 생성"""
-    return jwt_handler.create_token(2, role="semi")[0]
+from tests.helpers import master_token, semi_admin_token
 
 @pytest.fixture
 def test_module(session: Session):
@@ -25,7 +15,7 @@ def test_module(session: Session):
         module_nfc_tag_id="1A1FF1043E2BC6",
         module_type_id=1,
         current_location='{"x": 12.313, "y": 32.3232}',
-        status_id=ItemStatus.INACTIVE,
+        item_status_id=ItemStatus.INACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
@@ -43,7 +33,7 @@ def rented_module(session: Session):
         module_nfc_tag_id="1A1FF1043E2BC6",
         module_type_id=1,
         current_location='{"x": 12.313, "y": 32.3232}',
-        status_id=ItemStatus.ACTIVE,
+        item_status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
@@ -60,7 +50,7 @@ def rented_module(session: Session):
         arrival_location='{"x": 12.313, "y": 32.3232}',
         cost=100000,
         mileage=10000,
-        status_id=RentStatus.IN_PROGRESS,
+        rent_status_id=RentStatus.IN_PROGRESS,
         created_at=datetime.now(),
         updated_at=datetime.now()
     )
@@ -72,7 +62,7 @@ def rented_module(session: Session):
          rent_id=rent_history.rent_id,
          item_id=module.module_id,
          item_type_id=ItemType.MODULE,
-         status_id=UsageStatus.IN_USE,
+         usage_status_id=UsageStatus.IN_USE,
          created_at=datetime.now(),
          updated_at=datetime.now()
     )

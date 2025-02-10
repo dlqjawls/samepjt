@@ -48,7 +48,7 @@ def test_create_module_success(client, session, master_token, clear_modules):
     module = session.exec(select(Module).where(Module.module_nfc_tag_id == module_data["module_nfc_tag_id"])).first()
     assert module is not None
     assert module.module_nfc_tag_id == module_data["module_nfc_tag_id"]
-    assert module.status_id == ItemStatus.INACTIVE
+    assert module.item_status_id == ItemStatus.INACTIVE
 
 
 def test_create_module_duplicate_nfc_tag_id(client, session, master_token, clear_modules):

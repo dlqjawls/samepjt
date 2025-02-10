@@ -35,7 +35,7 @@ def create_dummy_options(session: Session):
             # JSON 형식의 좌표 문자열 생성
             option = Option(
                 option_type_id=1,
-                status_id=ItemStatus.ACTIVE,
+                item_status_id=ItemStatus.ACTIVE,
                 created_by=1,
                 updated_by=1
             )
@@ -68,7 +68,7 @@ def test_get_option_list_success(client, session, create_dummy_options, admin_to
     option = options[0]
     assert "option_id" in option
     assert "option_type_id" in option
-    assert "status" in option
+    assert "item_status_name" in option
     assert "created_at" in option
     assert "created_by" in option
     assert "updated_at" in option
@@ -177,4 +177,4 @@ def test_option_field_conversion(client, session, create_dummy_options, admin_to
     # assert isinstance(loc, dict)
     # assert loc["x"] == 12.313
     # assert loc["y"] == 32.3232
-    assert option["status"] == "active"
+    assert option["item_status_name"] == "active"

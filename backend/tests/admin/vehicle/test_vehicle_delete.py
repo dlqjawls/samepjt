@@ -26,11 +26,12 @@ def test_vehicle(session: Session):
         vehicle_number="PBV-1234",
         current_location='{"x": 12.313, "y": 32.3232}',
         mileage=10000,
-        status_id=ItemStatus.INACTIVE,
+        item_status_id=ItemStatus.INACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
         updated_at=datetime.now()
+
     )
     session.add(vehicle)
     session.commit()
@@ -45,11 +46,12 @@ def rented_vehicle(session: Session):
         vehicle_number="PBV-5678",
         current_location='{"x": 12.313, "y": 32.3232}',
         mileage=10000,
-        status_id=ItemStatus.ACTIVE,
+        item_status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
         updated_at=datetime.now()
+
     )
     session.add(vehicle)
     session.commit()
@@ -62,9 +64,10 @@ def rented_vehicle(session: Session):
         arrival_location='{"x": 12.313, "y": 32.3232}',
         cost=100000,
         mileage=10000,
-        status_id=RentStatus.IN_PROGRESS,
+        rent_status_id=RentStatus.IN_PROGRESS,
         created_at=datetime.now(),
         updated_at=datetime.now()
+
     )
     session.add(rent_history)
     session.commit()
@@ -74,7 +77,7 @@ def rented_vehicle(session: Session):
          rent_id=rent_history.rent_id,
          item_id=vehicle.vehicle_id,
          item_type_id=ItemType.VEHICLE,
-         status_id=UsageStatus.IN_USE,
+         usage_status_id=UsageStatus.IN_USE,
          created_at=datetime.now(),
          updated_at=datetime.now()
     )

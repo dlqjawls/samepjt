@@ -45,7 +45,7 @@ def test_create_vehicle_success(client, session, master_token, clear_vehicles):
     vehicle = session.exec(select(Vehicle).where(Vehicle.vin == vehicle_data["vin"])).first()
     assert vehicle is not None
     assert vehicle.vehicle_number == vehicle_data["vehicle_number"]
-    assert vehicle.status_id == ItemStatus.INACTIVE
+    assert vehicle.item_status_id == ItemStatus.INACTIVE
     assert vehicle.mileage == 0.0
 
 

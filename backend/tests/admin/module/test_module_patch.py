@@ -22,7 +22,7 @@ def test_module(session: Session):
         module_nfc_tag_id="1A1FF1043E2BC6",
         module_type_id=1,
         current_location='{"x": 12.313, "y": 32.3232}',
-        status_id=ItemStatus.ACTIVE,
+        item_status_id=ItemStatus.ACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
@@ -37,7 +37,7 @@ def test_update_module_success(client, session, master_token, test_module):
     """✅ 정상적인 모듈 정보 업데이트 테스트"""
     # Given: 업데이트할 모듈 데이터
     update_data = {
-        "module_type_id": 2,
+        "module_type_id": 3,
     }
 
     # When: 마스터 권한으로 모듈 정보 업데이트 요청

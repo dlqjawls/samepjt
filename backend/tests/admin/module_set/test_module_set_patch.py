@@ -29,6 +29,8 @@ def test_module_set(session: Session):
 def get_module_set_id(session: Session, module_set_name: str) -> int:
     """모듈 세트 ID 조회"""
     module_set = session.exec(select(ModuleSet).where(ModuleSet.module_set_name == module_set_name)).first()
+    if not module_set or not module_set.module_set_id:
+        raise ValueError(f"Module set with name {module_set_name} not found")
     return module_set.module_set_id
 
 def test_update_module_set_success(client, session, master_token, test_module_set):

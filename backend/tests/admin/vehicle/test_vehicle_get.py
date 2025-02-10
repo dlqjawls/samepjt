@@ -41,9 +41,10 @@ def create_dummy_vehicles(session: Session):
                 mileage=1000.0 * (i+1),
                 last_maintenance_at=datetime.now(),
                 next_maintenance_at=datetime.now(),
-                status_id=ItemStatus.ACTIVE,
+                item_status_id=ItemStatus.ACTIVE,
                 created_by=1,
                 updated_by=1
+
             )
             session.add(vehicle)
             vehicles.append(vehicle)
@@ -182,4 +183,4 @@ def test_vehicle_field_conversion(client, session, create_dummy_vehicles, admin_
     assert isinstance(loc, dict)
     assert loc["x"] == 12.313
     assert loc["y"] == 32.3232
-    assert vehicle["status"] == "active"
+    assert vehicle["item_status_name"] == "active"
