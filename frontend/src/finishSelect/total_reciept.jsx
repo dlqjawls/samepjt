@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import "./total_reciept.css"
 import axios from "axios"
-import { showConfirmToast } from "./ConfirmToast"
+import { showConfirmModal } from "./ConfirmModal"
 
 const Total_reciept = () => {
   const navigate = useNavigate()
@@ -92,7 +92,7 @@ const Total_reciept = () => {
     }
   };
   const handlePayment = async () => {
-    const confirmPayment = await showConfirmToast();
+    const confirmPayment = await showConfirmModal();  // showConfirmToast를 showConfirmModal로 변경
     if (confirmPayment) {
       try {
         let token = sessionStorage.getItem("token");
@@ -180,7 +180,28 @@ const Total_reciept = () => {
               toast.success(
                 `예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`
               );
-              sessionStorage.removeItem("selectedOptionData");
+              sessionStorage.setItem("rent_id", rent_id);
+              
+              // 토큰 갱신 후 rentStatus 조회 추가
+              try {
+                const rentresponse = await axios.get(
+                  `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+            
+                if (rentresponse.data.resultCode === "SUCCESS") {
+                  console.log("차량 상태 조회 완료:", rentresponse.data);
+                  sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data));
+                  navigate("/car_status");
+                }
+              } catch (error) {
+                console.error("차량 상태 조회 중 오류:", error);
+                toast.error("차량 상태 조회에 실패했습니다.");
+              }
             }
           } else {
             throw error;

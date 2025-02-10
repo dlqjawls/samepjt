@@ -1,87 +1,89 @@
-  .receipt-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-  }
+.receipt-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
 
-  .receipt {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
+.receipt {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
 
-  .receipt-title {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #333;
-  }
+.receipt-title {
+  text-align: center;
+  font-size: clamp(18px, 5vw, 24px);
+  margin-bottom: 20px;
+  color: #333;
+}
 
-  .receipt-header {
-    border-bottom: 2px dashed #eee;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-  }
+.receipt-header {
+  border-bottom: 2px dashed #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  font-size: clamp(14px, 4vw, 16px);
+}
 
-  .receipt-items table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-  }
+.receipt-items table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: clamp(12px, 3.5vw, 16px);
+}
 
-  .receipt-items th,
-  .receipt-items td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
+.receipt-items th,
+.receipt-items td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  word-break: keep-all;
+}
 
-  .receipt-items th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-  }
+.receipt-total {
+  margin: 20px 0;
+  padding: 20px 0;
+  border-top: 2px dashed #eee;
+  text-align: center;
+  font-size: clamp(16px, 4.5vw, 18px);
+  font-weight: bold;
+}
 
-  .receipt-total {
-    margin: 20px 0;
-    padding: 20px 0;
-    border-top: 2px dashed #eee;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-  }
+.button-group {
+  display: flex;
+  gap: clamp(10px, 3vw, 20px);
+  justify-content: center;
+  margin-top: 30px;
+}
 
-  .button-group {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 30px;
-  }
-
-  .payment-button,
-  .back-button {
-    padding: 12px 40px;
-    border-radius: 4px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    border: none;
-  }
-
+.payment-button,
+.back-button {
+  padding: clamp(8px, 2vw, 12px) clamp(20px, 5vw, 40px);
+  border-radius: 4px;
+  font-size: clamp(14px, 4vw, 1.1rem);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: none;
+  white-space: nowrap;
+}
   .payment-button {
-    background-color: #007bff;
+    background-color: #000000;
     color: white;
   }
-
+  
   .back-button {
-    background-color: #6c757d;
-    color: white;
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #000000;
   }
-
+  
   .payment-button:hover {
-    background-color: #0056b3;
+    background-color: #333333;
   }
-
+  
   .back-button:hover {
-    background-color: #5a6268;
+    background-color: #f0f0f0;
   }

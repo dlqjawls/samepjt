@@ -74,6 +74,7 @@ function Dashboard() {
           if (isRefreshed) {
             token = sessionStorage.getItem("token");
             console.log("새 토큰:", token); 
+            return cancelRent();
           } else {
             console.log("토큰 갱신 실패");
             sessionStorage.clear();
