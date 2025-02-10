@@ -9,7 +9,7 @@ class ModuleSetItem(BaseModel):
     module_set_id: int = Field(..., example=101, gt=0)
     module_set_name: str = Field(..., example="캠핑카 모듈 세트")
     description: Optional[str] = Field(None, example="캠핑을 위한 완벽한 모듈 세트")
-    module_set_images: str = Field(..., example="https://example.com/images/module-set-101.jpg")
+    module_set_images: List[str] = Field(..., example=["https://example.com/images/module-set-101.jpg", "https://example.com/images/module-set-102.jpg"])
     module_set_features: str = Field(..., example="배터리 팩, 태양광 패널 포함")
     module_type_id: int = Field(..., example=1, gt=0)
     cost: float = Field(..., example=1400)

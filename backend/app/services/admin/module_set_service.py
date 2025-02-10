@@ -6,7 +6,6 @@ from app.db.models.module_set import ModuleSet
 from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
-from fastapi import HTTPException
 
 class ModuleSetService:
   
@@ -46,7 +45,7 @@ class ModuleSetService:
             module_set_id=module_set.module_set_id,
             module_set_name=module_set.module_set_name,
             description=module_set.description or "", 
-            module_set_images=module_set.module_set_images, # module_set_images TODO: 이미지 경로 리스트로 변환
+            module_set_images=module_set_images,
             module_set_features=module_set.module_set_features or "",
             module_type_id=module_set.module_type_id,
             cost=0,
@@ -54,6 +53,7 @@ class ModuleSetService:
             created_by=module_set.created_by,
             updated_at=module_set.updated_at,
             updated_by=module_set.updated_by
+
         )
         
     @staticmethod
@@ -84,10 +84,11 @@ class ModuleSetService:
         # 모듈 세트 데이터 변환
         module_set_items = [
             ModuleSetItem.parse_obj(
-                ModuleSetService._convert_module_set_data(module_set)
+                ModuleSetService._convert_model_to_schema(module_set)
             )
             for module_set in module_sets
         ]
+
 
         module_set_data = ModuleSetData(
             module_sets=module_set_items,
@@ -133,8 +134,12 @@ class ModuleSetService:
         # 기존에 등록된 모듈 세트 객체를 조회합니다.
         module_set = session.get(ModuleSet, module_set_id)
         if not module_set:
-            raise HTTPException(status_code=404, detail="Module set not found")
+            raise NotFoundError(
+                message="Module set not found",
+                detail={"module_set_id": module_set_id}
+            )
         
+
         # 클라이언트가 전달한 변경된 필드만 기존 객체에 업데이트합니다.
         update_fields = update_data.dict(exclude_unset=True)
         for key, value in update_fields.items():
