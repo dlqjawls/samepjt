@@ -4,6 +4,9 @@ import "./ModuleSetList.css";
 import { useNavigate } from "react-router-dom";
 
 function ModuleSetList() {
+  const [isNavigating, setIsNavigating] = useState(false);  // 네비게이션 로딩 상태 추가
+  const [loadingText, setLoadingText] = useState("모듈 초기화 중...");
+
   const [moduleSets, setModuleSets] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -63,9 +66,24 @@ function ModuleSetList() {
     setShowModal(true);
   };
 
-  const handleNextStep = () => {
-    navigate("/option_select", { state: { selectedModule } });
-    sessionStorage.setItem("ModuleSet", JSON.stringify(selectedModule));
+  const handleNextStep = async () => {
+    setIsNavigating(true);
+    try {
+      sessionStorage.setItem("ModuleSet", JSON.stringify(selectedModule));
+      
+      // 로딩 텍스트 변경을 위한 타이머 설정
+      setTimeout(() => setLoadingText("모듈 때려 박는중..."), 2000);
+      setTimeout(() => setLoadingText("모듈 발로 밀어넣는중 ..."), 5000);
+      setTimeout(() => setLoadingText("발로 조립 완료!"), 9500);
+      
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      navigate("/option_select", { state: { selectedModule } });
+    } catch (error) {
+      console.error("Navigation error:", error);
+    } finally {
+      setIsNavigating(false);
+      setLoadingText("모듈 조립하러 가는중..."); // 초기 텍스트로 리셋
+    }
   };
 
   return (
@@ -150,8 +168,26 @@ function ModuleSetList() {
               </button>
             </div>
           </div>
+          
         </div>
+        
       )}
+      {/* 네비게이션 로딩 오버레이 */}
+      {isNavigating && (
+  <div className="loading-overlay">
+    <div className="loading-container">
+      <img 
+        src="/moduleloading.gif" 
+        alt="로딩 중..." 
+        className="loading-image"
+      />
+      <div className="loading-text">{loadingText}</div>
+      <div className="loading-progress">
+        <div className="loading-progress-bar"></div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
