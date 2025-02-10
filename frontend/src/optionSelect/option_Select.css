@@ -4,7 +4,7 @@
   flex-direction: row; /* 가로 방향으로 정렬 */
   justify-content: space-between; /* 양쪽 끝에 배치 */
   padding: 20px;
-  font-family: Arial, sans-serif;
+
   height: 100vh;
   overflow: hidden;
   background-color: #f5f5f5;
@@ -651,7 +651,7 @@
     margin-bottom: 0px;
     width: 100%;
   }
-} 
+}
 
 /* 터치 인터페이스 최적화 */
 @media (hover: none) {
