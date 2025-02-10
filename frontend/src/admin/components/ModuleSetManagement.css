@@ -225,3 +225,20 @@
 .module-set-management .confirm-delete-button:hover {
   background-color: #da190b;
 }
+
+.module-type-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.module-type-table th,
+.module-type-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.module-type-table th {
+  background-color: #f9f9f9;
+}
