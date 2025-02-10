@@ -34,6 +34,7 @@ const OptionDetailsModal = ({ option, onClose }) => {
 };
 
 const ExistOptionsPage = () => {
+  const [showScroll, setShowScroll] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const moduleSetcarString = sessionStorage.getItem("ModuleSet");
@@ -97,7 +98,23 @@ const ExistOptionsPage = () => {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    const checkScrollTop = () => {
+      if (!showScroll && window.pageYOffset > 400) {
+        setShowScroll(true);
+      } else if (showScroll && window.pageYOffset <= 400) {
+        setShowScroll(false);
+      }
+    };
+    window.addEventListener('scroll', checkScrollTop);
+    return () => window.removeEventListener('scroll', checkScrollTop);
+  }, [showScroll]);
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
   useEffect(() => {
     fetchCompleteOptionData();
   }, []);
@@ -266,7 +283,14 @@ const ExistOptionsPage = () => {
           </button>
         </div>
       </div>
+      <button 
+        className={`scroll-to-top ${showScroll ? 'visible' : ''}`}
+        onClick={scrollToTop}
+      >
+        ↑
+      </button>
     </div>
+    
   );
 };
 
