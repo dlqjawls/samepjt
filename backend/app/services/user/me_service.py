@@ -24,7 +24,7 @@ class MeRentInfoService:
         """
         query = select(RentHistory).where(
             RentHistory.user_pk == user_pk,
-            RentHistory.status_id == RentStatus.IN_PROGRESS
+            RentHistory.rent_status_id == RentStatus.IN_PROGRESS
         )
         rent_history = session.exec(query).first()
         if not rent_history:

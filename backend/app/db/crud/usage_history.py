@@ -18,7 +18,7 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
         model,
         identifier: int,
         field_name: str,
-        item_status_id: int,
+        usage_status_id: int,
         extra_conditions: Optional[List[Any]] = None
 
     ) -> None:
@@ -30,9 +30,10 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
           model (_type_): 업데이트할 모델 (예: Vehicle, Module 등)
           identifier (int): 업데이트 대상의 ID
           field_name (str): 모델의 ID 필드 이름 (예: "vehicle_id", "module_id")
-          item_status_id (int): 변경할 상태 ID
+          usage_status_id (int): 변경할 상태 ID
           extra_conditions (Optional[List[Any]], optional): 추가 조건 (예: rent id 등). Defaults to None.
       """
+
 
         condition = getattr(model, field_name) == identifier
         if extra_conditions:
@@ -41,7 +42,7 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
         session.execute(
             update(model)
             .where(condition)
-            .values(item_status_id=item_status_id)
+            .values(usage_status_id=usage_status_id)
         )
         
 
