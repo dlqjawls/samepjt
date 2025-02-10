@@ -8,14 +8,16 @@ from typing import Optional
 
 class ModuleCRUD(CRUDBase[Module]):
     def __init__(self):
-        super().__init__(Module)
+        super().__init__(Module)    
         
-    def get_first_available_module(self, session: Session, status_id: int = ItemStatus.INACTIVE) -> Module:
+    def get_first_available_module(self, session: Session, item_status_id: int = ItemStatus.INACTIVE) -> Module:
         """첫 번째 사용 가능한 모듈을 조회합니다.
+
 
         Args:
             session (Session): DB 세션
-            status_id (int, optional): 사용 가능한 모듈 상태 ID. Defaults to 2 (INACTIVE).
+            item_status_id (int, optional): 사용 가능한 모듈 상태 ID. Defaults to 2 (INACTIVE).
+
 
         Returns:
             Module: 첫 번째 사용 가능한 모듈 객체
@@ -26,14 +28,15 @@ class ModuleCRUD(CRUDBase[Module]):
         """
         try:
             query = select(self.model).where(
-                self.model.status_id == status_id,
+                self.model.item_status_id == item_status_id,
                 self.model.deleted_at == None
             ).limit(1)
+
             module = session.exec(query).first()
             if not module:
                 raise NotFoundError(
                     message="No available module found",
-                    detail={"status_id": status_id, "error": "모든 모듈이 사용 중입니다."}
+                    detail={"item_status_id": item_status_id, "error": "모든 모듈이 사용 중입니다."}
                 )
             return module
         except SQLAlchemyError as e:

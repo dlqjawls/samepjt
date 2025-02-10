@@ -18,8 +18,9 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
         model,
         identifier: int,
         field_name: str,
-        status_id: int,
+        item_status_id: int,
         extra_conditions: Optional[List[Any]] = None
+
     ) -> None:
         """지정된 모델의 특정 필드를 기준으로 상태 업데이트를 수행하는 헬퍼 메서드입니다.
         추가 조건이 있다면 rent id 등도 함께 필터링합니다.
@@ -29,9 +30,10 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
           model (_type_): 업데이트할 모델 (예: Vehicle, Module 등)
           identifier (int): 업데이트 대상의 ID
           field_name (str): 모델의 ID 필드 이름 (예: "vehicle_id", "module_id")
-          status_id (int): 변경할 상태 ID
+          item_status_id (int): 변경할 상태 ID
           extra_conditions (Optional[List[Any]], optional): 추가 조건 (예: rent id 등). Defaults to None.
       """
+
         condition = getattr(model, field_name) == identifier
         if extra_conditions:
             for cond in extra_conditions:
@@ -39,9 +41,10 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
         session.execute(
             update(model)
             .where(condition)
-            .values(status_id=status_id)
+            .values(item_status_id=item_status_id)
         )
         
+
         
     def get_item_usage_history(
         self,
@@ -173,9 +176,10 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
             # 2. 사용 기록 생성
             items = [(ItemType.VEHICLE, vehicle_id), (ItemType.MODULE, module_id)] + [(ItemType.OPTION, oid) for oid in option_ids]
             usage_entries = [
-                UsageHistory(rent_id=rent_id, item_id=item, item_type_id=item_type, status_id=UsageStatus.IN_USE)
+                UsageHistory(rent_id=rent_id, item_id=item, item_type_id=item_type, usage_status_id=UsageStatus.IN_USE)
                 for item_type, item in items if item > 0
             ]
+
 
             # DB에 일괄 저장
             session.add_all(usage_entries)
@@ -200,9 +204,10 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
         vehicle_id: Optional[int],
         module_id: Optional[int],
         option_ids: List[int],
-        status_id: int
+        usage_status_id: int
     ) -> None:
         """사용 기록 및 아이템 상태 업데이트
+
 
         Args:
             session: DB 세션
@@ -210,9 +215,10 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
             vehicle_id: 차량 ID
             module_id: 모듈 ID
             option_ids: 옵션 ID 목록
-            status_id: 변경할 상태 ID
+            usage_status_id: 변경할 상태 ID
         """
         try:
+
             # 업데이트 대상 및 항목 타입 매핑 (항목 타입: 1=차량, 2=모듈, 3=옵션)
             updates = []
             if vehicle_id is not None:
@@ -229,8 +235,9 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
                     UsageHistory,
                     item_id,
                     "item_id",
-                    status_id,
+                    usage_status_id,
                     extra_conditions=[UsageHistory.item_type_id == item_type, UsageHistory.rent_id == rent_id]
+
                 )
         except SQLAlchemyError as e:
             raise DatabaseError(
@@ -238,7 +245,7 @@ class UsageHistoryCRUD(CRUDBase[UsageHistory]):
                 detail={
                     "error": str(e),
                     "rent_id": rent_id,
-                    "status_id": status_id
+                    "usage_status_id": usage_status_id
                 }
             )
 

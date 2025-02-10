@@ -19,7 +19,8 @@ class Vehicle(SQLModel, table=True):
         sa_column=Column(DateTime, nullable=True), description="Next scheduled maintenance date"
     )
 
-    status_id: int = Field(foreign_key="lut_item_status.item_status_id", nullable=False, description="Vehicle status (Active, Inactive, Maintenance)")
+    item_status_id: int = Field(foreign_key="lut_item_status.item_status_id", nullable=False, description="Vehicle status (Active, Inactive, Maintenance)")
+
 
     created_at: datetime = Field(
         sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))

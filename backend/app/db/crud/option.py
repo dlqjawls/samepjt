@@ -89,15 +89,17 @@ class OptionCRUD(CRUDBase[Option]):
         session: Session,
         option_type_id: int,
         required_quantity: int,
-        status_id: int = ItemStatus.INACTIVE
+        item_status_id: int = ItemStatus.INACTIVE
     ) -> List[Option]:
         """특정 옵션 타입에서 사용 가능한 옵션을 조회합니다.
+
 
         Args:
             session (Session): DB 세션
             option_type_id (int): 옵션 타입 ID
-            required_quantity (int): 필요한 옵션 수량
-            status_id (int, optional): 옵션 상태 ID. Defaults to 2.
+              required_quantity (int): 필요한 옵션 수량
+            item_status_id (int, optional): 옵션 상태 ID. Defaults to 2.
+
 
         Returns:
             List[Option]: 사용 가능한 옵션 리스트
@@ -122,9 +124,10 @@ class OptionCRUD(CRUDBase[Option]):
         try:
             query = select(self.model).where(
                 self.model.option_type_id == option_type_id,
-                self.model.status_id == status_id,
+                self.model.item_status_id == item_status_id,
                 self.model.deleted_at == None  # soft delete check
             ).limit(required_quantity)
+
 
             available_options = list(session.exec(query).all())
 
