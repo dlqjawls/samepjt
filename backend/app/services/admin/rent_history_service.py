@@ -83,7 +83,7 @@ class RentHistoryService:
             arrival_location=Coordinate.from_str(rent.arrival_location),
             cost=float(rent.cost) if rent.cost else 0.0,
             mileage=float(rent.mileage) if rent.mileage else 0.0,
-            status=LUTConstants.RENT_STATUS_NAMES.get(RentStatus(rent.status_id), "unknown"),
+            rent_status_name=LUTConstants.RENT_STATUS_NAMES.get(RentStatus(rent.rent_status_id), "unknown"),
             created_at=rent.created_at,
             updated_at=rent.updated_at
         )

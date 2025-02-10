@@ -6,12 +6,13 @@ class UsageHistoryItem(BaseModel):
     usage_id: int = Field(..., example=501)
     rent_id: int = Field(..., example=1)
     item_id: int = Field(..., example=101)
-    item_type: str = Field(
+    item_type_name: str = Field(
         ...,
         example="vehicle",
         description="항목 유형: vehicle, module, option"
     )
-    status: str = Field(
+
+    usage_status_name: str = Field(
         ...,
         example="completed",
         description="사용 상태: in_use 또는 completed"

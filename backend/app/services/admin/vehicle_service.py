@@ -51,7 +51,7 @@ class VehicleService:
             mileage=vehicle.mileage,
             last_maintenance_at=vehicle.last_maintenance_at,
             next_maintenance_at=vehicle.next_maintenance_at, 
-            status=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(vehicle.status_id), "Unknown"),
+            item_status_name=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(vehicle.item_status_id), "Unknown"),
             created_at=vehicle.created_at,
             created_by=vehicle.created_by,
             updated_at=vehicle.updated_at,

@@ -13,7 +13,7 @@ from app.db.models.module import Module
 from app.db.models.option import Option
 from app.db.crud.lut import usage_status
 from app.utils.lut_constants import LUTConstants 
-from typing import cast
+
 
 class UsageHistoryService:
     @staticmethod
@@ -63,8 +63,8 @@ class UsageHistoryService:
                 usage_id=record.usage_id,
                 rent_id=record.rent_id,
                 item_id=record.item_id,
-                item_type=LUTConstants.ITEM_TYPE_NAMES.get(record.item_type_id, "Unknown"),
-                status=usage_status.get_by_id(session, record.status_id).usage_status_name,
+                item_type_name=LUTConstants.ITEM_TYPE_NAMES.get(record.item_type_id, "Unknown"),
+                usage_status_name=usage_status.get_by_id(session, record.usage_status_id).usage_status_name,
                 created_at=record.created_at,
                 updated_at=record.updated_at
             )

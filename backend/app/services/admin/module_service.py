@@ -43,8 +43,8 @@ class ModuleService:
             module_type_name=module_type_name,
             last_maintenance_at=module.last_maintenance_at,
             next_maintenance_at=module.next_maintenance_at, 
-            status_id=module.status_id,
-            status_name=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(module.status_id), "Unknown"),
+            item_status_id=module.item_status_id,
+            item_status_name=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(module.item_status_id), "Unknown"),
             created_at=module.created_at,
             created_by=module.created_by,
             updated_at=module.updated_at,
@@ -87,7 +87,7 @@ class ModuleService:
             module_nfc_tag_id=module_data.module_nfc_tag_id,
             module_type_id=module_data.module_type_id,
             current_location=json.dumps(Coordinate(x=0, y=0).dict()),
-            status_id=ItemStatus.INACTIVE,  # 초기 상태는 INACTIVE
+            item_status_id=ItemStatus.INACTIVE,  # 초기 상태는 INACTIVE
             created_by=user_pk,
             updated_by=user_pk,
             created_at=datetime.now(),
@@ -140,7 +140,7 @@ class ModuleService:
             select(UsageHistory).where(
                 UsageHistory.item_id == module_id,
                 UsageHistory.item_type_id == ItemType.MODULE,
-                UsageHistory.status_id == UsageStatus.IN_USE
+                UsageHistory.usage_status_id == UsageStatus.IN_USE
             )
         ).first()
 

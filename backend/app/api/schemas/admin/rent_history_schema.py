@@ -14,9 +14,10 @@ class RentHistoryItem(BaseModel):
     arrival_location: Coordinate = Field(..., example={"x": 11.512, "y": 30.4531})
     cost: float = Field(..., example=150.00)
     mileage: float = Field(..., example=450.5)
-    status: str = Field(..., example="In-progress")
+    rent_status_name: str = Field(..., example="In-progress")
     created_at: datetime = Field(..., example="2025-02-01T10:00:00")
     updated_at: datetime = Field(..., example="2025-02-01T15:00:00")
+
 
 class RentHistoryData(BaseModel):
     """렌트 히스토리 데이터"""
@@ -41,9 +42,10 @@ class RentHistoryResponse(ResponseBase[RentHistoryData]):
                             "arrival_location": "Busan", 
                             "cost": 150.00,
                             "mileage": 450.5,
-                            "status": "In-progress",
+                            "rent_status_name": "In-progress",
                             "created_at": "2025-02-01T10:00:00",
                             "updated_at": "2025-02-01T15:00:00"
+
                         }
                     ],
                     "pagination": {

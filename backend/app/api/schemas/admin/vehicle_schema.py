@@ -13,9 +13,10 @@ class VehicleItem(BaseModel):
     mileage: float = Field(..., example=12000.5)
     last_maintenance_at: Optional[datetime] = Field(None, example="2025-01-10T12:00:00")
     next_maintenance_at: Optional[datetime] = Field(None, example="2025-06-10T12:00:00")
-    status: str = Field(..., example="Active")
+    item_status_name: str = Field(..., example="Active")
     created_at: datetime = Field(..., example="2024-05-01T08:30:00")
     created_by: int = Field(..., example=3)
+
     updated_at: datetime = Field(..., example="2025-01-10T12:00:00")
     updated_by: int = Field(..., example=5)
 
@@ -41,7 +42,7 @@ class VehiclesResponse(ResponseBase[VehiclesData]):
                             "mileage": 12000.5,
                             "last_maintenance_at": "2025-01-10T12:00:00",
                             "next_maintenance_at": "2025-06-10T12:00:00",
-                            "status": "Active",
+                            "item_status_name": "Active",
                             "created_at": "2024-05-01T08:30:00",
                             "created_by": 3,
                             "updated_at": "2025-01-10T12:00:00",

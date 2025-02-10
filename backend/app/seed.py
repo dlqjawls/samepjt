@@ -103,10 +103,10 @@ def seed_data(session: Session) -> None:
 
         # 📌 결제 상태(Payment Status)
         payment_statuses = [
-            PaymentStatus(payment_status_id=1, payment_status_name="pending", payment_type_id=1),
-            PaymentStatus(payment_status_id=2, payment_status_name="completed", payment_type_id=1),
-            PaymentStatus(payment_status_id=3, payment_status_name="failed", payment_type_id=1),
-            PaymentStatus(payment_status_id=4, payment_status_name="refunded", payment_type_id=2)
+            PaymentStatus(payment_status_id=1, payment_status_name="pending"),
+            PaymentStatus(payment_status_id=2, payment_status_name="completed"),
+            PaymentStatus(payment_status_id=3, payment_status_name="failed"),
+            PaymentStatus(payment_status_id=4, payment_status_name="refunded")
         ]
         session.add_all(payment_statuses)
 
@@ -179,7 +179,7 @@ def seed_data(session: Session) -> None:
                 mileage=0,
                 last_maintenance_at=base_date,
                 next_maintenance_at=None,
-                status_id=2,
+                item_status_id=2,
                 created_at=base_date,
                 created_by=1,
                 updated_at=base_date,
@@ -196,7 +196,7 @@ def seed_data(session: Session) -> None:
                 module_id=i + 1,
                 module_nfc_tag_id=fake.hexify(text='^^^^^^^^^^^^^^', upper=True),  # 14자리 16진수 생성 (7바이트)
                 module_type_id=1,
-                status_id=2,
+                item_status_id=2,
                 last_maintenance_at=base_date,
                 next_maintenance_at=base_date,
                 current_location=json.dumps({"x": 0, "y": 0}),
@@ -269,7 +269,7 @@ def seed_data(session: Session) -> None:
                 option = Option(
                     option_id=current_id,
                     option_type_id=option_type.option_type_id,
-                    status_id=2,
+                    item_status_id=2,
                     created_at=base_date,
                     updated_at=base_date,
                     created_by=1,
@@ -324,7 +324,6 @@ def seed_data(session: Session) -> None:
                     option_type_id = option_type_name_to_id[option_type_name]
                     dummy_module_set_option_types.append(
                         ModuleSetOptionTypes(
-                            module_set_option_type_id=current_id,
                             module_set_id=module_set_id,
                             option_type_id=option_type_id,
                             option_quantity=1
