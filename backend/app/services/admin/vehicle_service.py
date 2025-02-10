@@ -98,7 +98,7 @@ class VehicleService:
             vehicle_number=vehicle_data.vehicle_number,
             current_location=str(Coordinate(x=0.0, y=0.0)),  # 초기 위치는 (0,0)
             mileage=0.0,  # 초기 주행거리는 0
-            status_id=ItemStatus.INACTIVE,  # 초기 상태는 INACTIVE
+            item_status_id=ItemStatus.INACTIVE,  # 초기 상태는 INACTIVE
             created_by=user_pk,
             updated_by=user_pk,
             created_at=datetime.now(),
