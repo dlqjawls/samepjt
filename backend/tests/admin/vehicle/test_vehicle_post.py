@@ -24,7 +24,7 @@ def test_create_vehicle_success(client, session, master_token, clear_vehicles):
     """✅ 정상적인 차량 등록 테스트"""
     # Given: 차량 등록 요청 데이터
     vehicle_data = {
-        "vin": "TEST123456789",
+        "vin": "ABC123456789XYZ",
         "vehicle_number": "PBV-1234"
     }
 

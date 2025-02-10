@@ -23,11 +23,12 @@ def test_option(session: Session):
     """테스트용 옵션 데이터 생성"""
     option = Option(
         option_type_id=1,
-        status_id=ItemStatus.INACTIVE,
+        item_status_id=ItemStatus.INACTIVE,
         created_by=1,
         updated_by=1,
         created_at=datetime.now(),
         updated_at=datetime.now()
+
     )
     session.add(option)
     session.commit()

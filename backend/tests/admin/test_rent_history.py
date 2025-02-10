@@ -30,22 +30,22 @@ def create_dummy_rent_history(session: Session, count: int = 5):
             vin="TEST123",
             vehicle_number="TEST123",
             current_location=location,
-            status_id=ItemStatus.ACTIVE,
+            item_status_id=ItemStatus.ACTIVE,
             created_by=1,
             updated_by=1,
             created_at=now,
             updated_at=now
-
         )
         session.add(vehicle)
         
         option = Option(
             option_type_id=1,
-            status_id=ItemStatus.ACTIVE,
+            item_status_id=ItemStatus.ACTIVE,
             created_by=1,
             updated_by=1,
             created_at=now,
             updated_at=now
+
 
         )
         session.add(option)
@@ -60,7 +60,7 @@ def create_dummy_rent_history(session: Session, count: int = 5):
                 arrival_location=location,
                 cost=100.0 * (i + 1),
                 mileage=10.0 * (i + 1),
-                status_id=RentStatus.COMPLETED,
+                rent_status_id=RentStatus.COMPLETED,
                 created_at=now - timedelta(days=i),
                 updated_at=now - timedelta(days=i)
 
@@ -73,8 +73,9 @@ def create_dummy_rent_history(session: Session, count: int = 5):
                 rent_id=rent.rent_id,
                 item_id=vehicle.vehicle_id,
                 item_type_id=ItemType.VEHICLE,
-                status_id=1  # in_use
+                usage_status_id=1  # in_use
             )
+
 
             session.add(usage_vehicle)
 
@@ -82,7 +83,7 @@ def create_dummy_rent_history(session: Session, count: int = 5):
                 rent_id=rent.rent_id,
                 item_id=option.option_id,
                 item_type_id=ItemType.OPTION,
-                status_id=1  # in_use
+                usage_status_id=1  # in_use
             )
             session.add(usage_option)
             

@@ -33,7 +33,7 @@ def test_cancel_other_user_rent(client):
     assert response.status_code == 403
     data = response.json()
     assert data["resultCode"] == "FAILURE"
-    assert "unauthorized" in data["message"].lower()
+    assert "permission denied" in data["message"].lower()
 
 # ❓ 존재하지 않는 렌트 취소
 def test_cancel_nonexistent_rent(client):
@@ -71,7 +71,7 @@ def test_cancel_already_canceled_rent(client):
     assert response.status_code == 409
     data = response.json()
     assert data["resultCode"] == "FAILURE"
-    assert "already canceled" in data["message"].lower()
+    assert "rent already completed or canceled" in data["message"].lower()
 
 # ❌ 인증 없이 렌트 취소
 def test_cancel_rent_without_token(client):
