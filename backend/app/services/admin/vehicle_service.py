@@ -153,7 +153,7 @@ class VehicleService:
             select(UsageHistory).where(
                 UsageHistory.item_id == vehicle_id,
                 UsageHistory.item_type_id == ItemType.VEHICLE,
-                UsageHistory.status_id == UsageStatus.IN_USE
+                UsageHistory.usage_status_id == UsageStatus.IN_USE
             )
         ).first()
 

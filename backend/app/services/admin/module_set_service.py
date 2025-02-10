@@ -11,7 +11,25 @@ from fastapi import HTTPException
 class ModuleSetService:
   
     @staticmethod
-    def _convert_module_set_data(module_set: ModuleSet) -> ModuleSetItem:
+    def _save_module_set_images(module_set_images: List[str]) -> str:
+        """모듈 세트 이미지 저장 후 이미지 경로 문자열 반환
+           (저장 후 반환된 이미지 주소들을 콤마로 구분하여 DB에 저장)
+        """
+        saved_images = [ModuleSetService._save_image(image) for image in module_set_images]
+        return ",".join(saved_images)
+
+    @staticmethod
+    def _parse_module_set_images(module_set_images: str) -> List[str]:
+        """모듈 세트 이미지 문자열 파싱 후 리스트 반환"""
+        return module_set_images.split(",")
+
+    @staticmethod
+    def _save_image(image: str) -> str:
+        """이미지 저장 후 이미지 경로 반환 (단순히 원본 문자열 반환)"""
+        return image
+        
+    @staticmethod
+    def _convert_model_to_schema(module_set: ModuleSet) -> ModuleSetItem:
         """모듈 세트 데이터 변환"""
         if module_set.module_set_id is None:
             raise DatabaseError(
@@ -19,11 +37,16 @@ class ModuleSetService:
                 detail={"module_set": module_set.dict()}
             )
             
+        if module_set.module_set_images:
+            module_set_images = ModuleSetService._parse_module_set_images(module_set.module_set_images)
+        else:
+            module_set_images = []
+            
         return ModuleSetItem(
             module_set_id=module_set.module_set_id,
             module_set_name=module_set.module_set_name,
             description=module_set.description or "", 
-            module_set_images=module_set.module_set_images or "",
+            module_set_images=module_set.module_set_images, # module_set_images TODO: 이미지 경로 리스트로 변환
             module_set_features=module_set.module_set_features or "",
             module_type_id=module_set.module_type_id,
             cost=0,
@@ -32,6 +55,25 @@ class ModuleSetService:
             updated_at=module_set.updated_at,
             updated_by=module_set.updated_by
         )
+        
+    @staticmethod
+    def schema_to_model(register_request: ModuleSetRegisterRequest, user_pk: int) -> ModuleSet:
+        """모듈 세트 등록 요청 스키마를 ModuleSet 모델로 변환"""
+        images = register_request.module_set_images or []
+        processed_images = ModuleSetService._save_module_set_images(images)
+        return ModuleSet(
+            module_set_name=register_request.module_set_name,
+            description=register_request.description or "",
+            module_set_images=processed_images,
+            module_set_features=register_request.module_set_features or "",
+            module_type_id=register_request.module_type_id,
+            created_by=user_pk,
+            updated_by=user_pk,
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )   
+        
+
 
     @staticmethod
     def get_module_set_list(session: Session, page: int, page_size: int) -> ModuleSetGetResponse:
@@ -128,34 +170,3 @@ class ModuleSetService:
         return ModuleSetDeleteResponse.success(
             message="Module set deleted successfully"
         )
-
-    @staticmethod
-    def _save_module_set_images(module_set_images: List[str]) -> str:
-        """모듈 세트 이미지 저장 후 이미지 경로 문자열 반환
-           (저장 후 반환된 이미지 주소들을 콤마로 구분하여 DB에 저장)
-        """
-        saved_images = [ModuleSetService._save_image(image) for image in module_set_images]
-        return ",".join(saved_images)
-
-    @staticmethod
-    def _save_image(image: str) -> str:
-        """이미지 저장 후 이미지 경로 반환 (단순히 원본 문자열 반환)"""
-        return image
-
-    @staticmethod
-    def schema_to_model(register_request: ModuleSetRegisterRequest, user_pk: int) -> ModuleSet:
-        """모듈 세트 등록 요청 스키마를 ModuleSet 모델로 변환"""
-        images = register_request.module_set_images or []
-        processed_images = ModuleSetService._save_module_set_images(images)
-        return ModuleSet(
-            module_set_name=register_request.module_set_name,
-            description=register_request.description or "",
-            module_set_images=processed_images,
-            module_set_features=register_request.module_set_features or "",
-            module_type_id=register_request.module_type_id,
-            created_by=user_pk,
-            updated_by=user_pk,
-            created_at=datetime.now(),
-            updated_at=datetime.now()
-        )   
-        

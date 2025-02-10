@@ -244,7 +244,7 @@ def seed_data(session: Session) -> None:
 
         dummy_option_types = [
             OptionType(
-                option_type_id=i,
+                option_type_id=i+1,
                 option_type_name=option_def.name,
                 option_type_size=f"{random.randint(1, 3)}x{random.randint(1, 3)}",
                 option_type_cost=round(random.uniform(10.0, 100.0), 2),
@@ -298,7 +298,7 @@ def seed_data(session: Session) -> None:
                 module_set_id=i + 1,
                 module_set_name=module_set_def.name,
                 description=fake.text(),
-                module_set_images=fake.image_url(),
+                module_set_images="https://github.com/user-attachments/assets/caaa16b4-702b-4708-8973-c1ac948c5ef4,https://github.com/user-attachments/assets/edb03e19-1008-49f3-8e6d-208e9f6d478e",
                 module_set_features="",  # 옵션 타입에 기반하여 업데이트될 것임
                 module_type_id=1,
                 created_at=base_date,
