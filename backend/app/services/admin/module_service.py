@@ -52,6 +52,7 @@ class ModuleService:
         )
 
     @staticmethod
+    @handle_transaction
     def get_module_list(session: Session, page: int, page_size: int) -> ModuleResponse:
         "관리자 모듈 목록 조회 서비스"
         paginated_result = module_crud.paginate(session, page, page_size)
@@ -100,6 +101,7 @@ class ModuleService:
         )
 
     @staticmethod
+    @handle_transaction
     def update_module(session: Session, module_id: int, module_data: ModuleUpdateRequest, user_pk: int) -> ModuleUpdateResponse:
         """
         모듈 수정 서비스 함수:
@@ -115,6 +117,7 @@ class ModuleService:
         
         # 업데이트할 데이터 추출 (예: 변경할 필드만 선택)
         update_data = module_data.dict(exclude_unset=True)
+        print("update_data", update_data)
         
         # 모듈 업데이트 (업데이트 수행 메서드 사용, 필요시 트랜잭션 핸들러 적용)
         module_crud.update(session, module_id, update_data, id_field="module_id")

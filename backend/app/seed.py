@@ -193,7 +193,7 @@ def seed_data(session: Session) -> None:
         # 📌 모듈 데이터 삽입
         dummy_modules = [
             Module(
-                module_id=i + 1,
+                module_id=i,
                 module_nfc_tag_id=fake.hexify(text='^^^^^^^^^^^^^^', upper=True),  # 14자리 16진수 생성 (7바이트)
                 module_type_id=1,
                 item_status_id=2,
@@ -244,7 +244,7 @@ def seed_data(session: Session) -> None:
 
         dummy_option_types = [
             OptionType(
-                option_type_id=i + 1,
+                option_type_id=i,
                 option_type_name=option_def.name,
                 option_type_size=f"{random.randint(1, 3)}x{random.randint(1, 3)}",
                 option_type_cost=round(random.uniform(10.0, 100.0), 2),
