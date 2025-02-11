@@ -63,48 +63,54 @@ const Total_reciept = () => {
 
   const refreshAccessToken = async () => {
     try {
-      const refreshToken = sessionStorage.getItem("refreshToken");
+      const refreshToken = sessionStorage.getItem("refreshToken")
       if (!refreshToken) {
-        throw new Error("리프레시 토큰이 없습니다.");
+        throw new Error("리프레시 토큰이 없습니다.")
       }
 
-      const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/refresh-token",
-        {
-          refresh_token: refreshToken
-        }
-      );
+      const response = await axios.post("https://backend-wandering-river-6835.fly.dev/auth/refresh-token", {
+        refresh_token: refreshToken,
+      })
 
       if (response.data.resultCode === "SUCCESS") {
-        console.log("토큰 갱신 성공:", response.data);
-        const { access_token, refresh_token } = response.data.data;
-        sessionStorage.setItem("token", access_token);
-        sessionStorage.setItem("refreshToken", refresh_token);
-        return access_token;
+        console.log("토큰 갱신 성공:", response.data)
+        const { access_token, refresh_token } = response.data.data
+        sessionStorage.setItem("token", access_token)
+        sessionStorage.setItem("refreshToken", refresh_token)
+        return access_token
       }
-      throw new Error("토큰 갱신 실패");
+      throw new Error("토큰 갱신 실패")
     } catch (error) {
-      console.error("토큰 갱신 중 오류:", error);
-      toast.error("세션이 만료되었습니다. 다시 로그인해주세요.");
-      sessionStorage.clear();
-      navigate("/login");
-      throw error;
+      console.error("토큰 갱신 중 오류:", error)
+      toast.error("세션이 만료되었습니다. 다시 로그인해주세요.")
+      sessionStorage.clear()
+      navigate("/login")
+      throw error
     }
-  };
+  }
   const handlePayment = async () => {
-    const confirmPayment = await showConfirmModal();  // showConfirmToast를 showConfirmModal로 변경
+    const confirmPayment = await showConfirmModal()
     if (confirmPayment) {
       try {
-        let token = sessionStorage.getItem("token");
+        let token = sessionStorage.getItem("token")
         if (!token) {
-          toast.error("로그인이 필요합니다.");
-          return;
+          toast.error("로그인이 필요합니다.")
+          return
         }
-        const moduleTypeId= JSON.parse(sessionStorage.getItem("ModuleSet"));
+
+        const moduleTypeId = JSON.parse(sessionStorage.getItem("ModuleSet"))
         const selectedOptions = receiptDetails.options.map((option) => ({
           optionTypeId: option.optionTypeId,
           quantity: option.quantity,
-        }));
+        }))
+
+        // 비용 계산을 정확하게 수행
+        const module_type_cost = Number(moduleTypeId.moduleTypeCost)
+        const option_cost = Number(receiptDetails.totalAmount)
+        const date_cost = Number(sessionStorage.getItem("date_Cost"))
+
+        // 서버에서 기대하는 형식으로 total_cost 계산
+        const total_cost = ((module_type_cost + option_cost + date_cost) * 100) / 100
 
         const rentData = {
           selectedOptionTypes: selectedOptions,
@@ -117,105 +123,87 @@ const Total_reciept = () => {
             y: 30.4531,
           },
           moduleTypeId: moduleTypeId.moduleTypeId,
-          cost: 
-          1316664,
-          rentStartDate: "2025-01-15T09:00:00",
-          rentEndDate: "2025-01-20T18:00:00",
-        };
+          cost: total_cost, // 반올림된 총 비용
+          rentStartDate: JSON.parse(sessionStorage.getItem("rentDates")).startDate,
+          rentEndDate: JSON.parse(sessionStorage.getItem("rentDates")).endDate,
+        }
 
+        console.log(rentData)
         try {
-          const response = await axios.post(
-            "https://backend-wandering-river-6835.fly.dev/user/rent",
-            rentData,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          
+          const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/rent", rentData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
           if (response.data.resultCode === "SUCCESS") {
-            const { rent_id, vehicle_number } = response.data.data;
-            console.log("예약 완료:", response.data);
-            toast.success(
-              `예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`
-            );
+            const { rent_id, vehicle_number } = response.data.data
+            console.log("예약 완료:", response.data)
+            toast.success(`예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`)
             // sessionStorage.removeItem("selectedOptionData");
-            sessionStorage.setItem("rent_id", rent_id);
-            
+            sessionStorage.setItem("rent_id", rent_id)
+
             try {
-              const rentresponse = await axios.get(
-                `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              );
-            
+              const rentresponse = await axios.get(`https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+
               if (rentresponse.data.resultCode === "SUCCESS") {
-                console.log("차량 상태 조회 완료:", rentresponse.data);
-                sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data));
-                navigate("/car_status");
+                console.log("차량 상태 조회 완료:", rentresponse.data)
+                sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data))
+                navigate("/car_status")
               }
             } catch (error) {
-              console.error("차량 상태 조회 중 오류:", error);
-              toast.error("차량 상태 조회에 실패했습니다.");
+              console.error("차량 상태 조회 중 오류:", error)
+              toast.error("차량 상태 조회에 실패했습니다.")
             }
           }
         } catch (error) {
           if (error.response && error.response.status === 401) {
             // 토큰이 만료된 경우, 토큰 갱신 시도
-            token = await refreshAccessToken();
+            token = await refreshAccessToken()
             // 갱신된 토큰으로 다시 요청
-            const response = await axios.post(
-              "https://backend-wandering-river-6835.fly.dev/user/rent",
-              rentData,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
+            const response = await axios.post("https://backend-wandering-river-6835.fly.dev/user/rent", rentData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
 
             if (response.data.resultCode === "SUCCESS") {
-              const { rent_id, vehicle_number } = response.data.data;
-              toast.success(
-                `예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`
-              );
-              sessionStorage.setItem("rent_id", rent_id);
-              
+              const { rent_id, vehicle_number } = response.data.data
+              toast.success(`예약이 완료되었습니다!\n예약 번호: ${rent_id}\n차량 번호: ${vehicle_number}`)
+              sessionStorage.setItem("rent_id", rent_id)
+
               // 토큰 갱신 후 rentStatus 조회 추가
               try {
-                const rentresponse = await axios.get(
-                  `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                    },
-                  }
-                );
-            
+                const rentresponse = await axios.get(`https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                })
+
                 if (rentresponse.data.resultCode === "SUCCESS") {
-                  console.log("차량 상태 조회 완료:", rentresponse.data);
-                  sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data));
-                  navigate("/car_status");
+                  console.log("차량 상태 조회 완료:", rentresponse.data)
+                  sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data))
+                  navigate("/car_status")
                 }
               } catch (error) {
-                console.error("차량 상태 조회 중 오류:", error);
-                toast.error("차량 상태 조회에 실패했습니다.");
+                console.error("차량 상태 조회 중 오류:", error)
+                toast.error("차량 상태 조회에 실패했습니다.")
               }
             }
           } else {
-            throw error;
+            throw error
           }
         }
       } catch (error) {
-        console.error("결제 처리 중 오류:", error);
-        toast.error("차량이 모두 예약중입니다. 다른 시간대를 선택해주세요.");
+        console.error("결제 처리 중 오류:", error)
+
+        toast.error("차량이 모두 예약중입니다. 다른 시간대를 선택해주세요.")
       }
     }
-  };
+  }
   const handleGoBack = () => {
     navigate("/rentForm")
   }
