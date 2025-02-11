@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Path, HTTPException
+from fastapi import APIRouter, Depends, Query, Path
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
@@ -11,11 +11,11 @@ router = APIRouter()
 @router.get(
     "/option-types",
     response_model=OptionTypeGetResponse,
-    summary="🚗 관리자 옵션 타입 목록 조회",
+    summary="🛠️ 옵션 타입 목록 조회",
     description="관리자가 등록된 옵션 타입 목록을 페이지네이션 방식으로 조회합니다.",
     responses={
         200: {
-            "description": "✅ 옵션 타입 목록 조회 성공",
+            "description": "옵션 타입 목록 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -25,10 +25,13 @@ router = APIRouter()
                             "option_types": [
                                 {
                                     "option_type_id": 1,
-                                    "option_type_name": "Option Type 1",
-                                    "option_type_description": "Option Type 1 Description",
-                                    "option_type_status": "Active",
-                                    "created_at": "2024-05-01T08:30:00",
+                                    "option_type_name": "배터리 팩",
+                                    "description": "중형 배터리 팩 (리튬이온)",
+                                    "option_type_images": ["https://example.com/images/option-type-1.jpg"],
+                                    "option_type_features": "긴 배터리 수명, 빠른 충전",
+                                    "option_type_size": "Medium",
+                                    "option_type_cost": 500.00,
+                                    "created_at": "2025-01-10T12:00:00",
                                     "created_by": 3,
                                     "updated_at": "2025-01-10T12:00:00",
                                     "updated_by": 5
@@ -46,7 +49,7 @@ router = APIRouter()
             }
         },
         401: {
-            "description": "❌ 인증 실패",
+            "description": "인증 실패",
             "content": {
                 "application/json": {
                     "example": {
@@ -83,9 +86,10 @@ async def get_option_type_list(
 @router.post(
     "/option-types",
     response_model=OptionTypeRegisterResponse,
-    status_code=201,
+    summary="🛠️ 옵션 타입 등록",
+    description="관리자가 새로운 옵션 타입을 등록하는 API입니다.",
     responses={
-        201: {
+        200: {
             "description": "옵션 타입이 성공적으로 등록됨",
             "content": {
                 "application/json": {
@@ -170,33 +174,16 @@ async def create_option_type(
     session: Annotated[Session, Depends(get_session)],
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
 ) -> OptionTypeRegisterResponse:
-    """
-    옵션 타입 등록 API
-
-    Args:
-    - option_type_data: 옵션 타입 등록 정보
-        - option_type_name (str): 옵션 타입 이름
-        - option_type_description (str): 옵션 타입 설명
-
-    Returns:
-    - OptionTypesResponse: 옵션 타입 등록 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 403 FORBIDDEN: 권한 없음 (master 권한 필요)
-    - 409 CONFLICT: 옵션 타입 이름 중복
-    - 422 VALIDATION_ERROR: 유효하지 않은 입력값
-    """
     return OptionTypeService.register_option_type(session, option_type_data, token_data.user_pk)
 
 @router.patch(
     "/option-types/{option_type_id}",
     response_model=OptionTypeUpdateResponse,
+    summary="🛠️ 옵션 타입 수정",
+    description="관리자가 기존 옵션 타입을 수정하는 API입니다.",
     responses={
         200: {
-            "description": "옵션 타입가 성공적으로 수정됨",
+            "description": "옵션 타입 수정 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -241,33 +228,10 @@ async def create_option_type(
 )
 async def update_option_type(  
     option_type_data: OptionTypeUpdateRequest,
-    option_type_id: int = Path(..., description="🚗 옵션 타입 ID (최소 1)", gt=0),
+    option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
 ) -> OptionTypeUpdateResponse:
-    """
-    옵션 타입 수정 API
-
-    Args:
-    - option_type_data: 옵션 타입 수정 정보
-        - option_type_name (str): 옵션 타입 이름
-        - option_type_description (str): 옵션 타입 설명
-        - option_type_images (List[str]): 옵션 타입 이미지
-        - option_type_features (str): 옵션 타입 특징
-        - option_type_size (str): 옵션 타입 크기
-        - option_type_cost (float): 옵션 타입 가격
-
-    Returns:
-    - OptionTypeUpdateResponse: 옵션 타입 수정 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 403 FORBIDDEN: 권한 없음 (master 권한 필요)
-    - 409 CONFLICT: 옵션 타입 이름 중복
-    - 422 VALIDATION_ERROR: 유효하지 않은 입력값
-    """
     return OptionTypeService.update_option_type(
         session=session,
         option_type_id=option_type_id,
@@ -278,9 +242,11 @@ async def update_option_type(
 @router.delete(
     "/option-types/{option_type_id}",
     response_model=OptionTypeDeleteResponse,
+    summary="🛠️ 옵션 타입 삭제",
+    description="관리자가 기존 옵션 타입을 삭제하는 API입니다.",
     responses={
         200: {
-            "description": "옵션 타입가 성공적으로 삭제됨",
+            "description": "옵션 타입 삭제 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -306,7 +272,7 @@ async def update_option_type(
             }
         },
         404: {
-            "description": "옵션 타입가 존재하지 않음",
+            "description": "옵션 타입 존재하지 않음",
             "content": {
                 "application/json": {
                     "example": {
@@ -323,25 +289,10 @@ async def update_option_type(
     }
 )
 async def delete_option_type(
-    option_type_id: int = Path(..., description="🚗 옵션 타입 ID (최소 1)", gt=0),
+    option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
 ) -> OptionTypeDeleteResponse:
-    """
-    옵션 타입 삭제 API
-
-    Args:
-    - option_type_id: 삭제할 옵션 타입의 고유 ID
-
-    Returns:
-    - OptionTypeDeleteResponse: 옵션 타입 삭제 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 404 NOT_FOUND: 존재하지 않는 옵션 타입 ID
-    """
     return OptionTypeService.delete_option_type(session, option_type_id, token_data.user_pk)
 
 

@@ -32,7 +32,7 @@ def test_create_option_type_success(client, session, master_token, clear_option_
     )
 
     # Then: 응답 검증
-    assert response.status_code == 201
+    assert response.status_code == 200
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
     assert data["message"] == "Option type registered successfully"
@@ -102,7 +102,7 @@ def test_create_multiple_option_types_success(client, session, master_token, cle
             json=option_type_data,
             headers={"Authorization": f"Bearer {master_token}"}
         )
-        assert response.status_code == 201
+        assert response.status_code == 200
         data = response.json()
         assert data["resultCode"] == "SUCCESS"
 

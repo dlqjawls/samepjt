@@ -3,7 +3,7 @@ from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.option_service import OptionService
-from app.api.schemas.admin.option_schema import OptionDeleteResponse, OptionGetResponse, OptionItem, OptionData, OptionRegisterRequest, OptionRegisterResponse, OptionUpdateRequest, OptionUpdateResponse
+from app.api.schemas.admin.option_schema import OptionDeleteResponse, OptionGetResponse, OptionRegisterRequest, OptionRegisterResponse, OptionUpdateRequest, OptionUpdateResponse
 
 router = APIRouter(
 )
@@ -11,8 +11,42 @@ router = APIRouter(
 @router.get(
     "/options",
     response_model=OptionGetResponse,
-    summary="옵션 목록 조회",
-    description="관리자가 등록된 옵션 목록을 조회하는 API입니다. 옵션 타입 ID를 통한 페이지네이션을 지원합니다."
+    summary="🔧 옵션 목록 조회",
+    description="관리자가 등록된 옵션 목록을 조회하는 API입니다. 옵션 타입 ID를 통한 페이지네이션을 지원합니다.",
+    responses={
+        200: {
+            "description": "옵션 목록 조회 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "옵션 목록 조회 성공",
+                        "data": {
+                            "options": [
+                                {   
+                                    "option_id": 101,
+                                    "option_type_id": 1,
+                                    "item_status_name": "active",
+                                    "last_maintenance_at": "2025-01-10T12:00:00",
+                                    "next_maintenance_at": "2025-06-10T12:00:00",
+                                    "created_at": "2024-05-01T08:30:00",
+                                    "created_by": 3,  
+                                    "updated_at": "2025-01-10T12:00:00",
+                                    "updated_by": 5
+                                }
+                            ],
+                            "pagination": {
+                                "currentPage": 1,
+                                "totalPages": 5,
+                                "totalItems": 50, 
+                                "pageSize": 10
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 )
 def get_options(
     page: int = Query(1, ge=1, description="결과 페이지 번호 (기본값: 1)"),
@@ -25,8 +59,21 @@ def get_options(
 @router.post(
     "/options",
     response_model=OptionRegisterResponse,
-    summary="옵션 등록",
-    description="관리자가 새로운 옵션을 등록하는 API입니다."
+    summary="🔧 옵션 등록",
+    description="관리자가 새로운 옵션을 등록하는 API입니다.",
+    responses={
+        200: {
+            "description": "옵션 등록 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Option registered successfully"
+                    }
+                }
+            }
+        }
+    }
 )
 def register_option(
     option_data: OptionRegisterRequest,
@@ -38,8 +85,21 @@ def register_option(
 @router.patch(
     "/options/{option_id}",
     response_model=OptionUpdateResponse,
-    summary="옵션 수정",
-    description="관리자가 등록된 옵션을 수정하는 API입니다."
+    summary="🔧 옵션 수정",
+    description="관리자가 등록된 옵션을 수정하는 API입니다.",
+    responses={
+        200: {
+            "description": "옵션 수정 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Option updated successfully"
+                    }
+                }
+            }
+        }
+    }
 )
 def update_option(
     option_data: OptionUpdateRequest,
@@ -52,8 +112,21 @@ def update_option(
 @router.delete(
     "/options/{option_id}",
     response_model=OptionDeleteResponse,
-    summary="옵션 삭제",
-    description="관리자가 등록된 옵션을 삭제하는 API입니다."
+    summary="🔧 옵션 삭제",
+    description="관리자가 등록된 옵션을 삭제하는 API입니다.",
+    responses={
+        200: {
+            "description": "옵션 삭제 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Option deleted successfully"
+                    }
+                }
+            }
+        }
+    }
 )
 def delete_option(
     option_id: int = Path(..., description="삭제할 옵션의 ID", gt=0),

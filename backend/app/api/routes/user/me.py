@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get(
     "/me/rent/current",
     response_model=MeRentInfoResponse,
-    summary="현재 진행 중인 렌트 정보 조회",
+    summary="👀 현재 진행 중인 렌트 정보 조회",
     description="JWT 토큰으로 인증된 현재 사용자의 진행 중인 렌트 정보를 조회합니다.",
     responses={
         200: {

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
+from app.api.schemas.common import ResponseBase  
 
 class UsageHistoryItem(BaseModel):
     usage_id: int = Field(..., example=501)
@@ -30,7 +31,39 @@ class UsageHistoryData(BaseModel):
     usage_history: List[UsageHistoryItem]
     pagination: Pagination
 
-class UsageHistoryResponse(BaseModel):
-    resultCode: str = Field(..., example="SUCCESS")
-    message: str = Field(..., example="Usage history retrieved successfully")
-    data: UsageHistoryData
+class UsageHistoryGetResponse(ResponseBase[UsageHistoryData]):
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "사용 이력 조회 성공",
+                "data": {
+                  "usage_history": [
+                       {
+                          "usage_id": 1,
+                          "rent_id": 1,
+                          "item_id": 1,
+                          "item_type_name": "vehicle",
+                          "usage_status_name": "in_use",
+                          "created_at": "2025-01-01 12:00:00",
+                          "updated_at": "2025-01-01 12:00:00"
+                      },
+                      {
+                          "usage_id": 2,
+                          "rent_id": 1,
+                          "item_id": 3,
+                          "item_type_name": "module",
+                          "usage_status_name": "in_use",
+                          "created_at": "2025-01-01 12:00:00",
+                          "updated_at": "2025-01-01 12:00:00"
+                      } 
+                  ],
+                  "pagination": {
+                      "currentPage": 1,
+                      "totalPages": 1,
+                      "totalItems": 1,
+                      "pageSize": 10
+                    } 
+                }
+            }
+        } 

@@ -3,7 +3,7 @@ from sqlalchemy import func
 from app.db.models.usage_history import UsageHistory
 from app.db.models.lut import ItemType
 from app.api.schemas.admin.usage_history_schema import (
-    UsageHistoryResponse,
+    UsageHistoryGetResponse,
     UsageHistoryData,
     UsageHistoryItem,
     Pagination
@@ -17,7 +17,7 @@ from app.utils.lut_constants import LUTConstants
 
 class UsageHistoryService:
     @staticmethod
-    def get_usage_history(session: Session, page: int, page_size: int, include_deleted: bool = False) -> UsageHistoryResponse:
+    def get_usage_history(session: Session, page: int, page_size: int, include_deleted: bool = False) -> UsageHistoryGetResponse:
         """
         사용 이력 데이터를 조회합니다.
         기본적으로는 soft delete 처리된(삭제된) 항목은 제외합니다.
@@ -82,7 +82,7 @@ class UsageHistoryService:
             usage_history=usage_history_items,
             pagination=pagination
         )
-        return UsageHistoryResponse(
+        return UsageHistoryGetResponse(
             resultCode="SUCCESS",
             message="Usage history retrieved successfully",
             data=data

@@ -3,10 +3,9 @@ from sqlmodel import Session
 from app.api.schemas.admin.option_type_schema import OptionTypeItem, OptionTypeData, OptionTypeGetResponse, OptionTypeRegisterRequest, OptionTypeRegisterResponse, OptionTypeUpdateRequest, OptionTypeUpdateResponse, OptionTypeDeleteResponse
 from app.db.crud.option_type import option_type_crud
 from app.db.models.option_type import OptionType
-from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
+from app.utils.exceptions import DatabaseError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
-from fastapi import HTTPException
 
 class OptionTypeService:
     """옵션 타입 서비스"""
@@ -121,7 +120,10 @@ class OptionTypeService:
         # 기존에 등록된 옵션 타입 객체를 조회합니다.
         option_type = session.get(OptionType, option_type_id)
         if not option_type:
-            raise HTTPException(status_code=404, detail="Option type not found")
+            raise NotFoundError(
+                message="Option type not found",
+                detail={"option_type_id": option_type_id}
+            )
       
         # 클라이언트가 전달한 변경된 필드만 기존 객체에 업데이트합니다.
         update_fields = update_data.dict(exclude_unset=True)

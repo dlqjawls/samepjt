@@ -8,12 +8,12 @@ router = APIRouter()
 
 @router.get(
     "/option-types",
-    summary="🔧 옵션 타입 목록 조회",
+    summary="🛠️ 옵션 타입 목록 조회",
     description="사용자가 선택할 수 있는 **옵션 타입 목록**을 조회합니다. **페이지네이션을 지원합니다.**",
     response_model=option_type_schema.OptionTypesResponse,
     responses={
         200: {
-            "description": "✅ 옵션 타입 목록 조회 성공",
+            "description": "옵션 타입 목록 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -92,8 +92,8 @@ router = APIRouter()
     }
 )
 async def get_option_types(
-    page: int = Query(1,  description="📄 페이지 번호 (최소 1)",gt=0), 
-    page_size: int = Query(10, description="📄 페이지 크기 (기본값: 10, 최소 1)", gt=0),
+    page: int = Query(1,  description="페이지 번호 (최소 1)",gt=0), 
+    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0),
     session: Session = Depends(get_session)
 ):
     return OptionTypeService.get_all_option_types(session, page, page_size)
@@ -101,12 +101,12 @@ async def get_option_types(
 
 @router.get(
     "/option-types/{option_type_id}",
-    summary="🔧 옵션 타입 상세 조회",
+    summary="🛠️ 옵션 타입 상세 조회",
     description="특정 옵션 타입의 상세 정보를 조회합니다.",
     response_model=option_type_schema.OptionTypesResponse,
     responses={
         200: {
-            "description": "✅ 옵션 타입 상세 조회 성공",
+            "description": "옵션 타입 상세 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -126,7 +126,7 @@ async def get_option_types(
             }
         },
         404: {
-            "description": "❌ 옵션 타입 없음",
+            "description": "옵션 타입 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -179,7 +179,7 @@ async def get_option_types(
     }
 )
 async def get_option_type_by_id(
-  option_type_id: int = Path(..., description="🔍 옵션 타입 ID (최소 1)", gt=0),
+  option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),
   session: Session = Depends(get_session)
 ):
   return OptionTypeService.get_option_type_by_id(session, option_type_id)

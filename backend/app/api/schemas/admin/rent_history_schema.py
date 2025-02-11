@@ -34,18 +34,23 @@ class RentHistoryResponse(ResponseBase[RentHistoryData]):
                 "data": {
                     "rent_history": [
                         {
-                            "rent_id": 101,
-                            "user_pk": 3,
-                            "vehicle_number": "PBV-1234",
-                            "option_types": "1,2,3",
-                            "departure_location": "Seoul",
-                            "arrival_location": "Busan", 
-                            "cost": 150.00,
-                            "mileage": 450.5,
-                            "rent_status_name": "In-progress",
-                            "created_at": "2025-02-01T10:00:00",
-                            "updated_at": "2025-02-01T15:00:00"
-
+                            "rent_id": 1,
+                            "user_pk": 1,
+                            "vehicle_number": "PBV-00001",
+                            "option_types": "",
+                            "departure_location": {
+                              "x": 11.512,
+                              "y": 30.4531
+                            },
+                            "arrival_location": {
+                              "x": 12.313,
+                              "y": 32.3232
+                            },
+                            "cost": 500,
+                            "mileage": 0,
+                            "rent_status_name": "in_progress",
+                            "created_at": "2025-02-11T02:30:24.614775",
+                            "updated_at": "2025-02-11T02:30:24.614775"
                         }
                     ],
                     "pagination": {
@@ -80,7 +85,7 @@ class RentVideoResponse(ResponseBase[RentVideoData]):
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Rent videos retrieved successfully",
+                "message": "Videos retrieved successfully",
                 "data": {
                     "videos": [
                         {

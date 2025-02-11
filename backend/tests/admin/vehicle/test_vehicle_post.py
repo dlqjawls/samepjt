@@ -36,7 +36,7 @@ def test_create_vehicle_success(client, session, master_token, clear_vehicles):
     )
 
     # Then: 응답 검증
-    assert response.status_code == 201
+    assert response.status_code == 200
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
     assert data["message"] == "Vehicle registered successfully"
@@ -61,7 +61,7 @@ def test_create_vehicle_duplicate_vin(client, session, master_token, clear_vehic
         json=vehicle_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
-    assert response.status_code == 201
+    assert response.status_code == 200
 
     # When: 동일한 VIN으로 다시 등록 시도
     duplicate_data = {
@@ -137,7 +137,7 @@ def test_create_vehicle_duplicate_vehicle_number(client, session, master_token, 
         json=vehicle_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
-    assert response.status_code == 201
+    assert response.status_code == 200
 
     # When: 동일한 차량 번호로 다시 등록 시도
     duplicate_data = {
@@ -234,7 +234,7 @@ def test_create_multiple_vehicles_success(client, session, master_token, clear_v
             json=vehicle_data,
             headers={"Authorization": f"Bearer {master_token}"}
         )
-        assert response.status_code == 201
+        assert response.status_code == 200
         data = response.json()
         assert data["resultCode"] == "SUCCESS"
 

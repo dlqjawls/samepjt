@@ -12,13 +12,13 @@ from app.api.routes.admin.maintenance_history import router as maintenance_histo
 
 admin_router = APIRouter(prefix="/admin", tags=["Admin"])   
 
-admin_router.include_router(rent_history_router)
 admin_router.include_router(vehicle_router)
 admin_router.include_router(module_router)
-admin_router.include_router(module_type_router)
 admin_router.include_router(option_router)
 admin_router.include_router(module_set_router)
 admin_router.include_router(option_type_router)
+admin_router.include_router(rent_history_router)
 admin_router.include_router(usage_history_router)
-admin_router.include_router(maintenance_status_router)
 admin_router.include_router(maintenance_history_router)
+admin_router.include_router(maintenance_status_router)
+admin_router.include_router(module_type_router)

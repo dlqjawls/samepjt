@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Path, HTTPException
+from fastapi import APIRouter, Depends, Query, Path
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
@@ -11,24 +11,30 @@ router = APIRouter()
 @router.get(
     "/module-sets",
     response_model=ModuleSetGetResponse,
-    summary="🚗 관리자 모듈 세트 목록 조회",
+    summary="📦 관리자 모듈 세트 목록 조회",
     description="관리자가 등록된 모듈 세트 목록을 페이지네이션 방식으로 조회합니다.",
     responses={
         200: {
-            "description": "✅ 모듈 세트 목록 조회 성공",
+            "description": "모듈 세트 목록 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
                         "resultCode": "SUCCESS",
                         "message": "Module set data retrieved successfully",
                         "data": {
-                            "module_sets": [
-                                {
+                                    "module_sets": [
+                                        {
                                     "module_set_id": 1,
-                                    "module_set_name": "Module Set 1",
-                                    "module_set_description": "Module Set 1 Description",
-                                    "module_set_status": "Active",
-                                    "created_at": "2024-05-01T08:30:00",
+                                    "module_set_name": "캠핑카 모듈 세트",
+                                    "description": "캠핑을 위한 완벽한 모듈 세트",
+                                    "module_set_images": [  
+                                      "https://example.com/images/module-set-101.jpg", 
+                                      "https://example.com/images/module-set-102.jpg"
+                                    ],
+                                    "module_set_features": "배터리 팩, 태양광 패널 포함",
+                                    "module_type_id": 1,
+                                    "cost": 1400,
+                                    "created_at": "2025-01-10T12:00:00",
                                     "created_by": 3,
                                     "updated_at": "2025-01-10T12:00:00",
                                     "updated_by": 5
@@ -46,7 +52,7 @@ router = APIRouter()
             }
         },
         401: {
-            "description": "❌ 인증 실패",
+            "description": "인증 실패",
             "content": {
                 "application/json": {
                     "example": {
@@ -83,9 +89,10 @@ async def get_module_set_list(
 @router.post(
     "/module-sets",
     response_model=ModuleSetRegisterResponse,
-    status_code=201,
+    summary="📦 모듈 세트 등록",
+    description="관리자가 새로운 모듈 세트를 등록하는 API입니다.",
     responses={
-        201: {
+        200: {
             "description": "모듈 세트가 성공적으로 등록됨",
             "content": {
                 "application/json": {
@@ -170,33 +177,13 @@ async def create_module_set(
     session: Annotated[Session, Depends(get_session)],
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
 ) -> ModuleSetRegisterResponse:
-    """
-    모듈 세트 등록 API
-
-    Args:
-    - module_set_data: 모듈 세트 등록 정보
-        - module_set_name (str): 모듈 세트 이름
-        - module_set_description (str): 모듈 세트 설명
-        - module_set_images (List[str]): 모듈 세트 이미지
-        - module_set_features (str): 모듈 세트 특징
-        - module_type_id (int): 모듈 타입 ID
-
-    Returns:
-    - ModuleSetsResponse: 모듈 세트 등록 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 403 FORBIDDEN: 권한 없음 (master 권한 필요)
-    - 409 CONFLICT: 모듈 세트 이름 중복
-    - 422 VALIDATION_ERROR: 유효하지 않은 입력값
-    """
     return ModuleSetService.register_module_set(session, module_set_data, token_data.user_pk)
 
 @router.patch(
     "/module-sets/{module_set_id}",
     response_model=ModuleSetUpdateResponse,
+    summary="📦 모듈 세트 수정",
+    description="관리자가 기존 모듈 세트를 수정하는 API입니다.",
     responses={
         200: {
             "description": "모듈 세트가 성공적으로 수정됨",
@@ -244,32 +231,10 @@ async def create_module_set(
 )
 async def update_module_set(
     module_set_data: ModuleSetUpdateRequest,
-    module_set_id: int = Path(..., description="🚗 모듈 세트 ID (최소 1)", gt=0),
+    module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
 ) -> ModuleSetUpdateResponse:
-    """
-    모듈 세트 수정 API
-
-    Args:
-    - module_set_data: 모듈 세트 수정 정보
-        - module_set_name (str): 모듈 세트 이름
-        - module_set_description (str): 모듈 세트 설명
-        - module_set_images (List[str]): 모듈 세트 이미지
-        - module_set_features (str): 모듈 세트 특징
-        - module_type_id (int): 모듈 타입 ID
-
-    Returns:
-    - ModuleSetUpdateResponse: 모듈 세트 수정 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 403 FORBIDDEN: 권한 없음 (master 권한 필요)
-    - 409 CONFLICT: 모듈 세트 이름 중복
-    - 422 VALIDATION_ERROR: 유효하지 않은 입력값
-    """
     return ModuleSetService.update_module_set(
         session=session,
         module_set_id=module_set_id,
@@ -280,6 +245,8 @@ async def update_module_set(
 @router.delete(
     "/module-sets/{module_set_id}",
     response_model=ModuleSetDeleteResponse,
+    summary="📦 모듈 세트 삭제",
+    description="관리자가 기존 모듈 세트를 삭제하는 API입니다.",
     responses={
         200: {
             "description": "모듈 세트가 성공적으로 삭제됨",
@@ -325,25 +292,10 @@ async def update_module_set(
     }
 )
 async def delete_module_set(
-    module_set_id: int = Path(..., description="🚗 모듈 세트 ID (최소 1)", gt=0),
+    module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
 ) -> ModuleSetDeleteResponse:
-    """
-    모듈 세트 삭제 API
-
-    Args:
-    - module_set_id: 삭제할 모듈 세트의 고유 ID
-
-    Returns:
-    - ModuleSetDeleteResponse: 모듈 세트 삭제 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 404 NOT_FOUND: 존재하지 않는 모듈 세트 ID
-    """
     return ModuleSetService.delete_module_set(session, module_set_id, token_data.user_pk)
 
 

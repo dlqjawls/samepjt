@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlmodel import Session
 from app.core.database import get_session
 from app.services.admin.module_type_service import ModuleTypeService
@@ -11,15 +11,8 @@ router = APIRouter(
 @router.get(
     "/module-types",
     response_model=ModuleTypesResponse,
-    summary="모듈 타입 목록 조회",
-    description="""
-관리자 모듈 타입 조회 API
-
-- **경로**: `/admin/module-types`
-- **메서드**: GET
-- **설명**: 관리자가 등록된 모듈 타입 목록을 조회합니다.
-- **인증 필요**: Bearer 토큰 (role: ["semi", "master"])
-""",
+    summary="♟ 모듈 타입 목록 조회",
+    description="관리자가 등록된 모듈 타입 목록을 조회합니다.",
     responses={
         200: {
             "description": "모듈 타입 목록 조회 성공",
@@ -57,40 +50,4 @@ async def get_module_types(
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(["semi", "master"]))
 ) -> ModuleTypesResponse:
-    """
-    **요청 형식**
-    
-    **요청 헤더**
-    ```
-    Authorization: Bearer <관리자_토큰>
-    ```
-    
-    **응답 형식 (성공 예시)**
-    
-    ```json
-    {
-      "resultCode": "SUCCESS",
-      "message": "Module types retrieved successfully",
-      "data": {
-        "module_types": [
-          {
-            "module_type_id": 1,
-            "module_type_name": "small",
-            "module_type_size": "1.2m x 2.5m",
-            "module_type_cost": 500.00
-          },
-          {
-            "module_type_id": 2,
-            "module_type_name": "medium",
-            "module_type_size": "2.0m x 3.5m",
-            "module_type_cost": 800.00
-          }
-        ]
-      }
-    }
-    ```
-    """
-    try:
-        return ModuleTypeService.get_all_module_types(session)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return ModuleTypeService.get_all_module_types(session)

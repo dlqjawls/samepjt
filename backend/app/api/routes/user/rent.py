@@ -10,11 +10,11 @@ router = APIRouter()
 @router.get(
     "/rent/{rent_id}",
     response_model=rent_schema.RentStatusResponse,
-    summary="🚗 차량 렌트 상태 조회",
-    description="사용자가 **진행 중인 차량 렌트 상태를 조회**하는 API입니다.",
+    summary="🚀 렌트 차량 상태 조회",
+    description="사용자가 **진행 중인 렌트 차량 상태를 조회**하는 API입니다.",
     responses={
         200: {
-            "description": "✅ 차량 상태 조회 성공",
+            "description": "차량 상태 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -53,7 +53,7 @@ router = APIRouter()
             }
         },
         401: {
-            "description": "❌ 인증 실패",
+            "description": "인증 실패",
             "content": {
                 "application/json": {
                     "example": {
@@ -65,7 +65,7 @@ router = APIRouter()
             }
         },
         403: {
-            "description": "🚫 권한 없음",
+            "description": "권한 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -77,7 +77,7 @@ router = APIRouter()
             }
         },
         404: {
-            "description": "❓ 렌트 기록 없음",
+            "description": "렌트 기록 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -92,7 +92,7 @@ router = APIRouter()
             }
         },
         409: {
-            "description": "⚠️ 상태 충돌",
+            "description": "상태 충돌",
             "content": {
                 "application/json": {
                     "example": {
@@ -110,21 +110,20 @@ router = APIRouter()
     }
 )
 async def get_rent_status(
-    rent_id: int = Path(..., description="🔍 조회할 렌트 ID (1 이상)", gt=0),
+    rent_id: int = Path(..., description="조회할 렌트 ID (1 이상)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency())
 ) -> rent_schema.RentStatusResponse:
-    """차량 렌트 상태 조회 엔드포인트"""
     return RentService.get_rent_status(session, rent_id, token_data.user_pk)
   
 @router.post(
     "/rent",
     response_model=rent_schema.RentResponse,
-    summary="🚗 렌트 요청",
+    summary="🚀 렌트 요청",
     description="사용자가 차량, 모듈, 옵션을 선택하여 **렌트 요청**을 생성합니다.",
     responses={
         200: {
-            "description": "✅ 렌트 요청 성공",
+            "description": "렌트 요청 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -139,7 +138,7 @@ async def get_rent_status(
             }
         },
         404: {
-            "description": "❌ 리소스를 찾을 수 없음",
+            "description": "리소스를 찾을 수 없음",
             "content": {
                 "application/json": {
                     "examples": {
@@ -231,12 +230,12 @@ async def rent_vehicle(
 
 @router.delete(
     "/rent/{rent_id}",
-    summary="🚗 렌트 취소",
+    summary="🚀 렌트 취소",
     description="사용자가 **진행 중인 렌트 요청을 취소**하는 API입니다.",
     response_model=rent_schema.CancelRentResponse,
     responses={
         200: {
-            "description": "✅ 렌트 취소 성공",
+            "description": "렌트 취소 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -250,7 +249,7 @@ async def rent_vehicle(
             }
         },
         401: {
-            "description": "❌ 인증 실패",
+            "description": "인증 실패",
             "content": {
                 "application/json": {
                     "examples": {
@@ -270,7 +269,7 @@ async def rent_vehicle(
             }
         },
         403: {
-            "description": "🚫 권한 없음",
+            "description": "권한 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -287,7 +286,7 @@ async def rent_vehicle(
             }
         },
         404: {
-            "description": "❓ 렌트 기록 없음",
+            "description": "렌트 기록 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -302,7 +301,7 @@ async def rent_vehicle(
             }
         },
         409: {
-            "description": "⚠️ 상태 충돌",
+            "description": "상태 충돌",
             "content": {
                 "application/json": {
                     "example": {
@@ -318,7 +317,7 @@ async def rent_vehicle(
             }
         },
         422: {
-            "description": "❌ 유효성 검사 실패",
+            "description": "유효성 검사 실패",
             "content": {
                 "application/json": {
                     "example": {
@@ -337,7 +336,7 @@ async def rent_vehicle(
             }
         },
         500: {
-            "description": "⚠️ 서버 오류",
+            "description": "서버 오류",
             "content": {
                 "application/json": {
                     "example": {
@@ -355,7 +354,7 @@ async def rent_vehicle(
     }
 )
 async def soft_delete_rent(
-    rent_id: int = Path(..., description="🔍 렌트 ID (최소 1)", gt=0),
+    rent_id: int = Path(..., description="렌트 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency())
 ):
@@ -365,11 +364,11 @@ async def soft_delete_rent(
 @router.post(
     "/rent/{rent_id}/complete",
     response_model=rent_schema.CompleteRentResponse,
-    summary="🚗 렌트 완료",
+    summary="🚀 렌트 완료",
     description="사용자가 **진행 중인 렌트를 완료**하는 API입니다.",
     responses={
         200: {
-            "description": "✅ 렌트 완료 성공",
+            "description": "렌트 완료 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -386,7 +385,7 @@ async def soft_delete_rent(
             }
         },
         403: {
-            "description": "🚫 권한 없음",
+            "description": "권한 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -403,7 +402,7 @@ async def soft_delete_rent(
             }
         },
         404: {
-            "description": "❓ 렌트 기록 없음",
+            "description": "렌트 기록 없음",
             "content": {
                 "application/json": {
                     "example": {
@@ -418,7 +417,7 @@ async def soft_delete_rent(
             }
         },
         409: {
-            "description": "⚠️ 상태 충돌",
+            "description": "상태 충돌",
             "content": {
                 "application/json": {
                     "example": {
@@ -436,10 +435,9 @@ async def soft_delete_rent(
     }
 )
 async def complete_rent(
-    rent_id: int = Path(..., description="🔍 완료할 렌트 ID (최소 1)", gt=0),
+    rent_id: int = Path(..., description="완료할 렌트 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency())
 ) -> rent_schema.CompleteRentResponse:
-    """렌트 완료 엔드포인트"""
     return RentService.complete_rent(session, rent_id, token_data.user_pk)
 
