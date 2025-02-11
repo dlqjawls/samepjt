@@ -137,6 +137,24 @@ async def get_rent_status(
                 }
             }
         },
+        400: {
+            "description": "잘못된 요청",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "FAILURE",
+                        "message": "Invalid request",
+                        "error_code": "BAD_REQUEST",
+                        "detail": {
+                            "module_type_cost": 10000,
+                            "option_cost": 10000,
+                            "date_cost": 10000,
+                            "total_cost": 30000
+                        }
+                    }
+                }
+            }
+        },
         404: {
             "description": "리소스를 찾을 수 없음",
             "content": {

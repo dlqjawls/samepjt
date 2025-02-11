@@ -7,7 +7,7 @@ from sqlmodel import Session
 from app.db.models.option import Option
 from app.db.models.rent_history import RentHistory
 from app.api.schemas.user import rent_schema
-from app.utils.exceptions import ConflictError, ForbiddenError, NotFoundError, DatabaseError
+from app.utils.exceptions import BadRequestError, ConflictError, ForbiddenError, NotFoundError, DatabaseError
 from app.utils.handle_transaction import handle_transaction
 from app.db.crud.rent_history import rent_history_crud
 from app.db.crud.vehicle import vehicle_crud
@@ -15,7 +15,8 @@ from app.db.crud.module import module_crud
 from app.db.crud.option import option_crud
 from app.db.crud.usage_history import usage_history_crud
 from app.utils.lut_constants import ItemType, ItemStatus, RentStatus, UsageStatus
-
+from app.db.crud.lut import module_type as module_type_crud
+from app.db.crud.option_type import option_type_crud
 
 class RentService:
     @staticmethod
@@ -50,7 +51,7 @@ class RentService:
             "x": rent_request.autonomousArrivalPoint.x,
             "y": rent_request.autonomousArrivalPoint.y,
         }
-        cost = 500 + (options_count * 50)
+        cost = rent_request.cost
         now = datetime.now()
         return RentHistory(
             user_pk=user_pk,
@@ -204,6 +205,17 @@ class RentService:
         option_ids = [
             entry.item_id for entry in usage_entries if entry.item_type_id == ItemType.OPTION
         ]
+        if vehicle_id is None:
+            raise DatabaseError(
+                message="Missing vehicle ID",
+                detail={"vehicle_id": vehicle_id}
+            )
+        if module_id is None:
+            raise DatabaseError(
+                message="Missing module ID",
+                detail={"module_id": module_id}
+            )
+        
         return vehicle_id, module_id, option_ids
 
     @staticmethod
@@ -219,7 +231,7 @@ class RentService:
         module = module_crud.get_first_available_module(session)
         
         # 2. 선택된 옵션들을 검증 및 조회
-        selected_options = []
+        selected_options : List[Option] = []
         for opt_type in rent_request.selectedOptionTypes:
             options = option_crud.get_available_options_by_type(
                 session=session,
@@ -227,6 +239,24 @@ class RentService:
                 required_quantity=opt_type.quantity
             )
             selected_options.extend(options)
+
+        # 3. 가격 검증
+        module_type_cost = module_type_crud.get_by_id(session, rent_request.moduleTypeId).module_type_cost
+        option_cost = sum(option_type_crud.get_option_cost_by_id(session, option.option_type_id) for option in selected_options)
+        # 1시간 당 10000원 이용료 계산  
+        date_cost =  (rent_request.rentEndDate - rent_request.rentStartDate).total_seconds() / 3600 * 10000
+        # 총 비용 검증
+        total_cost = module_type_cost + option_cost + date_cost
+        if rent_request.cost != total_cost:
+            raise BadRequestError(
+                message="Invalid cost",
+                detail={
+                    "module_type_cost": module_type_cost,
+                    "option_cost": option_cost,
+                    "date_cost": date_cost,
+                    "total_cost": total_cost
+                }
+            )
 
         # 3. 렌트 기록 생성
         rent_history = rent_history_crud.create(
@@ -247,6 +277,22 @@ class RentService:
                 message="Missing option ID(s)",
                 detail={"options": missing_options}
             )
+        if rent_history.rent_id is None:
+            raise DatabaseError(
+                message="Missing rent history ID",
+                detail={"rent_history": rent_history.dict()}
+            )
+        if vehicle.vehicle_id is None:
+            raise DatabaseError(
+                message="Missing vehicle ID",
+                detail={"vehicle": vehicle.dict()}
+            )
+        if module.module_id is None:
+            raise DatabaseError(
+                message="Missing module ID",
+                detail={"module": module.dict()}
+            )
+
         usage_history_crud.create_usage_entries(
             session=session,
             rent_id=rent_history.rent_id,
