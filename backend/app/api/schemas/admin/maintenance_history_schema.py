@@ -104,7 +104,7 @@ class MaintenanceHistoryPostResponse(ResponseBase):
         }
 
 class MaintenanceHistoryPatchRequest(BaseModel):
-    item_status_id: Optional[int] = Field(
+    maintenance_status_id: Optional[int] = Field(
         None,
         description="정비 상태 ID (1: pending, 2: in_progress, 3: completed)"
     )
