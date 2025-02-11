@@ -1,76 +1,86 @@
-import React, { useState, useEffect } from "react";
-import "./rentForm.css";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react"
+import "./rentForm.css"
+import { useNavigate } from "react-router-dom"
 
 const RentForm = () => {
-  const [rentStartDate, setRentStartDate] = useState("");
-  const [rentEndDate, setRentEndDate] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [rentStartDate, setRentStartDate] = useState("")
+  const [rentEndDate, setRentEndDate] = useState("")
+  const [error, setError] = useState("")
+  const navigate = useNavigate()
 
   useEffect(() => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 15); // 현재 시간에 15분 추가
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
-    setRentStartDate(formattedDate);
-  }, []);
+    const now = new Date()
+    now.setMinutes(now.getMinutes() + 5) // 현재 시간에 5분 추가
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, "0")
+    const day = String(now.getDate()).padStart(2, "0")
+    const hours = String(now.getHours()).padStart(2, "0")
+    const minutes = String(now.getMinutes()).padStart(2, "0")
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:00`
+    setRentStartDate(formattedDate)
+  }, [])
 
   const validateDates = () => {
-    const start = new Date(rentStartDate);
-    const end = new Date(rentEndDate);
-    const now = new Date();
+    const start = new Date(rentStartDate)
+    const end = new Date(rentEndDate)
+    const now = new Date()
 
     if (!rentStartDate || !rentEndDate) {
-      setError("대여 시작일과 반납일을 모두 선택해주세요.");
-      return false;
+      setError("대여 시작일과 반납일을 모두 선택해주세요.")
+      return false
     }
 
-    if (start <= now) {
-      setError("대여 시작일은 현재 시간 이후여야 합니다.");
-      return false;
+    if (start < now) {
+      setError("대여 시작일은 현재 시간 이후여야 합니다.")
+      return false
     }
 
     if (end <= start) {
-      setError("반납일은 대여 시작일 이후여야 합니다.");
-      return false;
+      setError("반납일은 대여 시작일 이후여야 합니다.")
+      return false
     }
 
-    setError("");
-    return true;
-  };
+    setError("")
+    return true
+  }
 
   const handleNext = () => {
     if (validateDates()) {
+      const start = new Date(rentStartDate)
+      const end = new Date(rentEndDate)
+
+      // 시간 차이를 초 단위로 계산
+      const timeDifferenceInSeconds = Math.floor((end - start) / 1000)
+
+      // 시간당 10000원으로 계산 (3600초 = 1시간)
+      const hourlyRate = 10000
+      const dateCost = (timeDifferenceInSeconds / 3600) * hourlyRate
       sessionStorage.setItem(
         "rentDates",
         JSON.stringify({
           startDate: rentStartDate,
           endDate: rentEndDate,
         })
-      );
-      navigate("/total_reciept");
+      )
+      sessionStorage.setItem("date_Cost", dateCost)
+      navigate("/total_reciept")
     }
-  };
+  }
 
   const preview = () => {
-    const selectedOptionData = JSON.parse(sessionStorage.getItem("selectedOptionData") || "{}");
+    const selectedOptionData = JSON.parse(sessionStorage.getItem("selectedOptionData") || "{}")
     navigate("/option_select", {
       state: {
         existingOptions: selectedOptionData.selectedOptions || [],
       },
-    });
-  };
+    })
+  }
 
   const handleReset = () => {
-    setRentStartDate("");
-    setRentEndDate("");
-    setError("");
-  };
+    setRentStartDate("")
+    setRentEndDate("")
+    setError("")
+  }
 
   return (
     <div className="rent-form-wrapper-unique">
@@ -86,13 +96,7 @@ const RentForm = () => {
           <form>
             <div className="form-group-unique">
               <label htmlFor="rentStartDate">대여 시작일시</label>
-              <input
-                type="datetime-local"
-                id="rentStartDate"
-                value={rentStartDate}
-                onChange={(e) => setRentStartDate(e.target.value)}
-                className="form-input-unique"
-              />
+              <input type="datetime-local" id="rentStartDate" value={rentStartDate} onChange={(e) => setRentStartDate(e.target.value)} className="form-input-unique" />
             </div>
 
             <div className="form-group-unique">
@@ -101,7 +105,17 @@ const RentForm = () => {
                 type="datetime-local"
                 id="rentEndDate"
                 value={rentEndDate}
-                onChange={(e) => setRentEndDate(e.target.value)}
+                onChange={(e) => {
+                  const date = new Date(e.target.value)
+                  // date.setMinutes(date.getMinutes() + 6) // 6분 추가
+                  const year = date.getFullYear()
+                  const month = String(date.getMonth() + 1).padStart(2, "0")
+                  const day = String(date.getDate()).padStart(2, "0")
+                  const hours = String(date.getHours()).padStart(2, "0")
+                  const minutes = String(date.getMinutes()).padStart(2, "0")
+                  const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:00`
+                  setRentEndDate(formattedDate)
+                }}
                 className="form-input-unique"
                 min={rentStartDate}
               />
@@ -122,7 +136,7 @@ const RentForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RentForm;
+export default RentForm
