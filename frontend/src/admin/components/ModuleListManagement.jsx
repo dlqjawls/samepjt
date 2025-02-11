@@ -41,6 +41,8 @@ const ModuleManagementList = () => {
     moduleTypeId: "",
   });
 
+  const [moduleTypes, setModuleTypes] = useState([]);
+
   const fetchModules = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -67,9 +69,33 @@ const ModuleManagementList = () => {
     }
   }, [token]);
 
+  // 모듈 타입 목록 조회 함수
+  const fetchModuleTypes = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/module-types`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.resultCode === "SUCCESS") {
+        setModuleTypes(response.data.data.module_types);
+      } else {
+        console.error("모듈 타입 목록 불러오기 실패:", response.data.message);
+      }
+    } catch (err) {
+      console.error("모듈 타입 목록 불러오는 중 오류:", err);
+    }
+  };
+
   useEffect(() => {
     fetchModules();
   }, [fetchModules]);
+
+  // 컴포넌트가 마운트될 때 모듈 타입 목록도 조회
+  useEffect(() => {
+    fetchModuleTypes();
+  });
 
   // 필터(검색어, 상태)와 전체 데이터를 기준으로 클라이언트 단 필터링
   useEffect(() => {
@@ -456,7 +482,7 @@ const ModuleManagementList = () => {
                 <label>
                   모듈 타입 ID:
                   <input
-                    type="text"
+                    type="number"
                     name="moduleTypeId"
                     value={formData.moduleTypeId}
                     onChange={handleFormChange}
@@ -464,6 +490,34 @@ const ModuleManagementList = () => {
                   />
                 </label>
               </form>
+              {/* 모듈 타입 조회 표 추가 */}
+              <h3>모듈 타입 목록</h3>
+              <table className="module-type-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>크기</th>
+                    <th>비용</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {moduleTypes.length > 0 ? (
+                    moduleTypes.map((mt) => (
+                      <tr key={mt.module_type_id}>
+                        <td>{mt.module_type_id}</td>
+                        <td>{mt.module_type_name}</td>
+                        <td>{mt.module_type_size}</td>
+                        <td>{mt.module_type_cost.toLocaleString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4">모듈 타입이 없습니다.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
               <div className="modal-actions">
                 <button
                   onClick={handleSaveModuleAdd}
@@ -483,20 +537,9 @@ const ModuleManagementList = () => {
               <h2>모듈 수정</h2>
               <form className="edit-form">
                 <label>
-                  NFC 태그 ID:
-                  <input
-                    type="text"
-                    name="moduleNfcTagId"
-                    value={formData.moduleNfcTagId}
-                    onChange={handleFormChange}
-                    required
-                    readOnly
-                  />
-                </label>
-                <label>
                   모듈 타입 ID:
                   <input
-                    type="text"
+                    type="number"
                     name="moduleTypeId"
                     value={formData.moduleTypeId}
                     onChange={handleFormChange}
@@ -504,6 +547,34 @@ const ModuleManagementList = () => {
                   />
                 </label>
               </form>
+              {/* 모듈 타입 조회 표 추가 */}
+              <h3>모듈 타입 목록</h3>
+              <table className="module-type-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>크기</th>
+                    <th>비용</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {moduleTypes.length > 0 ? (
+                    moduleTypes.map((mt) => (
+                      <tr key={mt.module_type_id}>
+                        <td>{mt.module_type_id}</td>
+                        <td>{mt.module_type_name}</td>
+                        <td>{mt.module_type_size}</td>
+                        <td>{mt.module_type_cost.toLocaleString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4">모듈 타입이 없습니다.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
               <div className="modal-actions">
                 <button
                   onClick={handleSaveModuleEdit}
