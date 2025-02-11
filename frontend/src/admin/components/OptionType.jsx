@@ -174,7 +174,7 @@ function OptionTypeManagement() {
         option_type_cost: Number(formData.option_type_cost),
         description: formData.description,
         option_type_images: formData.option_type_images
-          ? formData.option_type_images.split(",").map((url) => url.trim())
+          ? formData.option_type_images.split(";;;").map((url) => url.trim())
           : [],
         option_type_features: formData.option_type_features,
       };

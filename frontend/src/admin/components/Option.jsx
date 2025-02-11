@@ -39,12 +39,8 @@ function Option() {
   const [modalType, setModalType] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   // Add 모달: 신규 등록 시 option_type_id만 입력받음
-  // Edit 모달: 수정 가능한 필드는 status, last_maintenance_at, next_maintenance_at
   const [formData, setFormData] = useState({
     option_type_id: "",
-    status: "",
-    last_maintenance_at: "",
-    next_maintenance_at: "",
   });
 
   // 전체 옵션 데이터를 API로부터 가져오기
@@ -153,22 +149,6 @@ function Option() {
     setModalType("add");
   };
 
-  // 옵션 수정 모달 (Edit): 수정 가능한 필드는 status, last_maintenance_at, next_maintenance_at
-  const openEditModal = (option) => {
-    setSelectedOption(option);
-    setFormData({
-      status: option.status,
-      // datetime-local 입력은 "YYYY-MM-DDTHH:mm" 형식 사용
-      last_maintenance_at: option.last_maintenance_at
-        ? option.last_maintenance_at.substring(0, 16)
-        : "",
-      next_maintenance_at: option.next_maintenance_at
-        ? option.next_maintenance_at.substring(0, 16)
-        : "",
-    });
-    setModalType("edit");
-  };
-
   // 옵션 삭제 모달 (Delete)
   const openDeleteModal = (option) => {
     setSelectedOption(option);
@@ -209,43 +189,6 @@ function Option() {
     } catch (err) {
       console.error(err);
       setError("옵션 등록 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 옵션 수정 API 호출 (PATCH /admin/options/{option_id})
-  const handleSaveEdit = async () => {
-    if (!selectedOption) return;
-    setLoading(true);
-    setError("");
-    try {
-      // datetime-local 입력값은 "YYYY-MM-DDTHH:mm" 형식이므로 ISO 8601 형식으로 변환
-      const convertToISO = (dt) => (dt ? new Date(dt).toISOString() : null);
-      const payload = {
-        status: formData.status,
-        last_maintenance_at: convertToISO(formData.last_maintenance_at),
-        next_maintenance_at: convertToISO(formData.next_maintenance_at),
-      };
-      const response = await axios.patch(
-        `${BASE_URL}/admin/options/${selectedOption.option_id}`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : undefined,
-          },
-        }
-      );
-      if (response.data.resultCode === "SUCCESS") {
-        fetchAllOptions();
-        closeModal();
-      } else {
-        setError(response.data.message || "옵션 수정에 실패했습니다.");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("옵션 수정 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -421,67 +364,10 @@ function Option() {
             </p>
             <div className="modal-actions">
               <button
-                onClick={() => openEditModal(selectedOption)}
-                className="edit-button"
-              >
-                수정
-              </button>
-              <button
                 onClick={() => openDeleteModal(selectedOption)}
                 className="delete-button"
               >
                 삭제
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 수정 모달 */}
-        {modalType === "edit" && selectedOption && (
-          <div className="edit-content">
-            <h2>옵션 수정</h2>
-            <form className="edit-form">
-              <label>
-                상태:
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleFormChange}
-                >
-                  <option value="active">활성화</option>
-                  <option value="inactive">비활성화</option>
-                  <option value="maintenance">정비 중</option>
-                </select>
-              </label>
-              <label>
-                마지막 정비 일자:
-                <input
-                  type="datetime-local"
-                  name="last_maintenance_at"
-                  value={formData.last_maintenance_at}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                예정된 다음 정비 일자:
-                <input
-                  type="datetime-local"
-                  name="next_maintenance_at"
-                  value={formData.next_maintenance_at}
-                  onChange={handleFormChange}
-                />
-              </label>
-            </form>
-            <div className="modal-actions">
-              <button
-                onClick={handleSaveEdit}
-                className="save-button"
-                disabled={loading}
-              >
-                저장
-              </button>
-              <button onClick={closeModal} className="cancel-button">
-                취소
               </button>
             </div>
           </div>
