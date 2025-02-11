@@ -2,6 +2,7 @@ from typing import List
 from sqlmodel import Session
 from app.api.schemas.admin.module_schema import ModuleDeleteResponse, ModuleItem, ModuleResponse, ModuleData, ModuleRegisterRequest, ModuleRegisterResponse, ModuleUpdateRequest, ModuleUpdateResponse 
 from app.db.crud.module import module_crud
+from app.db.crud.lut import module_type as module_type_crud
 from app.api.schemas.common import Coordinate
 from app.db.models.module import Module
 from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
@@ -13,6 +14,15 @@ from app.db.models.usage_history import UsageHistory
 import json
 
 class ModuleService:
+  
+    @staticmethod
+    def _check_module_type_exists(session: Session, module_type_id: int) -> None:
+        """모듈 타입 존재 여부 확인"""
+        if not module_type_crud.get_by_id(session, module_type_id):
+            raise NotFoundError(
+                message="Module type not found",
+                detail={"module_type_id": module_type_id}
+            )
   
     @staticmethod
     def _check_module_exists(session: Session, module_nfc_tag_id: str) -> None:
@@ -82,7 +92,10 @@ class ModuleService:
         """모듈 등록 서비스"""
         # 1. NFC 태그 ID 중복 검사
         ModuleService._check_module_exists(session, module_data.module_nfc_tag_id)
-
+        
+        # 2. 모듈 타입 존재 여부 확인
+        ModuleService._check_module_type_exists(session, module_data.module_type_id)
+            
         # 3. 새 모듈 생성
         new_module = Module(
             module_nfc_tag_id=module_data.module_nfc_tag_id,
@@ -114,6 +127,9 @@ class ModuleService:
                 message="Module not found",
                 detail={"module_id": module_id}
             )
+        
+        # 모듈 타입 존재 여부 확인
+        ModuleService._check_module_type_exists(session, module_data.module_type_id)
         
         # 업데이트할 데이터 추출 (예: 변경할 필드만 선택)
         update_data = module_data.dict(exclude_unset=True)

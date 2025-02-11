@@ -26,7 +26,7 @@ class ModuleSetData(BaseModel):
     pagination: Pagination
 
 class ModuleSetOptionItem(BaseModel):
-    option_type_id: int = Field(..., example=201, gt=0)
+    option_type_id: int = Field(..., example=200, gt=0)
     quantity: int = Field(..., example=1, gt=0)
     
 class ModuleSetGetResponse(ResponseBase[ModuleSetData]):
@@ -41,7 +41,10 @@ class ModuleSetGetResponse(ResponseBase[ModuleSetData]):
                             "module_set_id": 1,
                             "module_set_name": "캠핑카 모듈 세트",
                             "description": "캠핑을 위한 완벽한 모듈 세트",
-                            "module_set_images": "https://example.com/images/module-set-101.jpg",
+                            "module_set_images": [  
+                              "https://example.com/images/module-set-101.jpg", 
+                              "https://example.com/images/module-set-102.jpg"
+                            ],
                             "module_set_features": "배터리 팩, 태양광 패널 포함",
                             "module_type_id": 1,
                             "cost": 1400,

@@ -3,12 +3,22 @@ from sqlmodel import Session
 from app.api.schemas.admin.module_set_schema import ModuleSetItem, ModuleSetData, ModuleSetGetResponse, ModuleSetRegisterRequest, ModuleSetRegisterResponse, ModuleSetUpdateRequest, ModuleSetUpdateResponse, ModuleSetDeleteResponse
 from app.db.crud.module_set import module_set_crud
 from app.db.models.module_set import ModuleSet
-from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
+from app.utils.exceptions import DatabaseError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
+from app.db.crud.lut import module_type as module_type_crud
 
 class ModuleSetService:
-  
+    
+    @staticmethod
+    def _check_module_type_exists(session: Session, module_type_id: int) -> None:
+        """모듈 타입 존재 여부 확인"""
+        if not module_type_crud.get_by_id(session, module_type_id):
+            raise NotFoundError(
+                message="Module type not found",
+                detail={"module_type_id": module_type_id}
+            )
+            
     @staticmethod
     def _save_module_set_images(module_set_images: List[str]) -> str:
         """모듈 세트 이미지 저장 후 이미지 경로 문자열 반환
@@ -55,6 +65,7 @@ class ModuleSetService:
             updated_by=module_set.updated_by
 
         )
+    
         
     @staticmethod
     def schema_to_model(register_request: ModuleSetRegisterRequest, user_pk: int) -> ModuleSet:
@@ -73,7 +84,18 @@ class ModuleSetService:
             updated_at=datetime.now()
         )   
         
+    @staticmethod
+    def _calculate_option_cost(session: Session, module_set_id: int) -> float:
+        """모듈 세트에 포함된 옵션들의 비용 합산"""
+        from app.db.crud.module_set_option_type import module_set_option_type_crud
+        from app.db.crud.option_type import option_type_crud
+        option_types = module_set_option_type_crud.get_option_types_by_module_set(session, module_set_id)["items"]
+        return sum(option_type_crud.get_option_cost_by_id(session, opt.option_type_id) * (opt.option_quantity or 1) for opt in option_types)
 
+    @staticmethod
+    def _calculate_base_price(session: Session, module_set_id: int, module_type_cost: float) -> float:
+        """모듈 세트의 기본 가격 계산 (모듈 타입 비용 + 옵션 비용)"""
+        return module_type_cost + ModuleSetService._calculate_option_cost(session, module_set_id)
 
     @staticmethod
     def get_module_set_list(session: Session, page: int, page_size: int) -> ModuleSetGetResponse:
@@ -81,14 +103,23 @@ class ModuleSetService:
         paginated_result = module_set_crud.paginate(session, page, page_size)
         module_sets: List[ModuleSet] = paginated_result["items"]
         
-        # 모듈 세트 데이터 변환
-        module_set_items = [
-            ModuleSetItem.parse_obj(
-                ModuleSetService._convert_model_to_schema(module_set)
+        # 모듈 세트 데이터 변환 후 가격 계산 적용
+        module_set_items = []
+        for module_set in module_sets:
+            module_type_info = module_type_crud.get_by_id(session, module_set.module_type_id)
+            if not module_type_info:
+                raise DatabaseError(
+                    message="Module type not found",
+                    detail={"module_type_id": module_set.module_type_id}
+                )
+            calculated_cost = ModuleSetService._calculate_base_price(
+                session, 
+                module_set.module_set_id, 
+                float(module_type_info.module_type_cost)
             )
-            for module_set in module_sets
-        ]
-
+            schema_obj = ModuleSetService._convert_model_to_schema(module_set)
+            schema_obj.cost = calculated_cost
+            module_set_items.append(schema_obj)
 
         module_set_data = ModuleSetData(
             module_sets=module_set_items,
@@ -104,6 +135,8 @@ class ModuleSetService:
     @handle_transaction
     def register_module_set(session: Session, module_set_data: ModuleSetRegisterRequest, user_pk: int) -> ModuleSetRegisterResponse:
         """모듈 세트 등록 서비스"""
+        # 1. 모듈 타입 존재 여부 확인
+        ModuleSetService._check_module_type_exists(session, module_set_data.module_type_id)
 
         # 2. 새 모듈 세트 생성
         new_module_set = ModuleSet(
@@ -128,18 +161,20 @@ class ModuleSetService:
     def update_module_set(
         session: Session,
         module_set_id: int,
-        update_data,  # ModuleSetUpdateRequest 객체라고 가정
+        update_data: ModuleSetUpdateRequest,
         user_pk: int
     ) -> ModuleSetUpdateResponse:
         # 기존에 등록된 모듈 세트 객체를 조회합니다.
         module_set = session.get(ModuleSet, module_set_id)
-        if not module_set:
+        if not module_set or module_set.deleted_at or update_data.module_type_id is None: 
             raise NotFoundError(
                 message="Module set not found",
                 detail={"module_set_id": module_set_id}
-            )
+            )            
         
-
+        # 모듈 타입 존재 여부 확인
+        ModuleSetService._check_module_type_exists(session, update_data.module_type_id)
+  
         # 클라이언트가 전달한 변경된 필드만 기존 객체에 업데이트합니다.
         update_fields = update_data.dict(exclude_unset=True)
         for key, value in update_fields.items():
