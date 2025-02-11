@@ -160,7 +160,7 @@ function RentalRecords() {
       </div>
 
       {/* 필터링 섹션 */}
-      <div className="filters">
+      {/* <div className="filters">
         <label>
           사용자 ID
           <input
@@ -200,7 +200,7 @@ function RentalRecords() {
           />
         </label>
         <button onClick={fetchRentLogs}>검색</button>
-      </div>
+      </div> */}
 
       {/* 대여 로그 목록 테이블 */}
       {loading ? (

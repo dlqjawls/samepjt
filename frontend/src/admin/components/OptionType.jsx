@@ -280,7 +280,7 @@ function OptionTypeManagement() {
       </div>
 
       {/* 필터링 섹션: 옵션 타입 이름으로 검색 */}
-      <div className="filters">
+      {/* <div className="filters">
         <label>
           검색
           <input
@@ -292,7 +292,7 @@ function OptionTypeManagement() {
           />
         </label>
         <button onClick={() => setSearchFilter(searchFilter)}>검색</button>
-      </div>
+      </div> */}
 
       {loading ? (
         <p>로딩 중...</p>

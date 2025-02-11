@@ -38,16 +38,16 @@ function Header() {
     <header className="header">
       {/* 검색창 */}
       <div className="header-search">
-        <input type="text" placeholder="검색" />
+        {/* <input type="text" placeholder="검색" />
         <button className="total-search-button">
           <TbDatabaseSearch />
-        </button>
+        </button> */}
       </div>
 
       {/* 우측 아이콘/프로필 */}
       <div className="header-right">
-        <FaBell className="icon" />
-        <FaEnvelope className="icon" />
+        {/* <FaBell className="icon" />
+        <FaEnvelope className="icon" /> */}
         <div className="profile" onClick={toggleDropdown} ref={profileRef}>
           <img
             src={accountCircle}

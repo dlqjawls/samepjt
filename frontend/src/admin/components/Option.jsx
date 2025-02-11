@@ -232,7 +232,7 @@ function Option() {
       </div>
 
       {/* 필터링 섹션 */}
-      <div className="filters">
+      {/* <div className="filters">
         <label>
           검색
           <input
@@ -257,7 +257,7 @@ function Option() {
           </select>
         </label>
         <button onClick={() => setFilters({ ...filters })}>검색</button>
-      </div>
+      </div> */}
 
       {/* 옵션 목록 테이블 */}
       {loading ? (

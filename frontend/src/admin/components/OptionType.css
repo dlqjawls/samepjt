@@ -9,6 +9,7 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .option-type-container .option-type-header h1 {

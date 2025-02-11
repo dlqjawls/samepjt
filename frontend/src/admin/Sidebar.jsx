@@ -107,7 +107,7 @@ function Sidebar() {
         </ul>
       </nav>
 
-      <div className="sidebar-footer">
+      {/* <div className="sidebar-footer">
         <button
           className="settings-button"
           onClick={openSettingsModal}
@@ -116,7 +116,7 @@ function Sidebar() {
           <IoSettingsSharp className="nav-icon" />
           <span className="nav-text">설정</span>
         </button>
-      </div>
+      </div> */}
 
       {/* 설정 모달 */}
       {isSettingsModalOpen && <SettingsModal onClose={closeSettingsModal} />}

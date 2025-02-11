@@ -242,7 +242,7 @@ const MaintenanceRecords = () => {
         </button>
       </div>
 
-      <div className="filters">
+      {/* <div className="filters">
         <label>
           항목 유형:
           <select
@@ -265,7 +265,7 @@ const MaintenanceRecords = () => {
           />
         </label>
         <button onClick={() => setFilters({ ...filters })}>검색</button>
-      </div>
+      </div> */}
 
       {error && <p className="error">{error}</p>}
       {loading ? (

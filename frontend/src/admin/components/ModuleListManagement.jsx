@@ -300,7 +300,7 @@ const ModuleManagementList = () => {
         </button>
       </div>
 
-      <div className="filters">
+      {/* <div className="filters">
         <label>
           상태
           <select
@@ -323,10 +323,10 @@ const ModuleManagementList = () => {
             onChange={handleFilterChange}
             placeholder="모듈 NFC 태그 ID 또는 타입 검색"
           />
-        </label>
-        {/* 검색 버튼: 필터 상태 변경은 useEffect에서 처리됨 */}
-        <button onClick={() => setFilters({ ...filters })}>검색</button>
-      </div>
+        </label> */}
+      {/* 검색 버튼: 필터 상태 변경은 useEffect에서 처리됨 */}
+      {/* <button onClick={() => setFilters({ ...filters })}>검색</button>
+      </div> */}
       {error && <p className="error">{error}</p>}
       {loading ? (
         <p>로딩 중...</p>
