@@ -18,7 +18,7 @@ import RentalRecords from "./admin/components/RentalRecords"
 import MaintenanceRecords from "./admin/components/MaintenanceRecords"
 import RentForm from "./rentForm/rentForm"
 import Total_reciept from "./finishSelect/total_reciept"
-import UserLayout from "./user/userLayout"   
+import UserLayout from "./user/UserLayout"   
 import Dashboard from "./RentStatus/Dashboard"
 
 import { ToastContainer } from "react-toastify"
