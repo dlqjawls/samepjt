@@ -85,19 +85,6 @@ class ModuleSetService:
         )   
         
     @staticmethod
-    def _calculate_option_cost(session: Session, module_set_id: int) -> float:
-        """모듈 세트에 포함된 옵션들의 비용 합산"""
-        from app.db.crud.module_set_option_type import module_set_option_type_crud
-        from app.db.crud.option_type import option_type_crud
-        option_types = module_set_option_type_crud.get_option_types_by_module_set(session, module_set_id)["items"]
-        return sum(option_type_crud.get_option_cost_by_id(session, opt.option_type_id) * (opt.option_quantity or 1) for opt in option_types)
-
-    @staticmethod
-    def _calculate_base_price(session: Session, module_set_id: int, module_type_cost: float) -> float:
-        """모듈 세트의 기본 가격 계산 (모듈 타입 비용 + 옵션 비용)"""
-        return module_type_cost + ModuleSetService._calculate_option_cost(session, module_set_id)
-
-    @staticmethod
     def get_module_set_list(session: Session, page: int, page_size: int) -> ModuleSetGetResponse:
         """관리자 모듈 세트 목록 조회 서비스"""
         paginated_result = module_set_crud.paginate(session, page, page_size)
@@ -112,11 +99,17 @@ class ModuleSetService:
                     message="Module type not found",
                     detail={"module_type_id": module_set.module_type_id}
                 )
-            calculated_cost = ModuleSetService._calculate_base_price(
+                
+            if module_set.module_set_id is None:
+                raise DatabaseError(
+                    message="Module set ID is required",
+                    detail={"module_set_id": module_set.module_set_id}
+                ) 
+            calculated_cost = module_set_crud.calculate_base_price(
                 session, 
                 module_set.module_set_id, 
-                float(module_type_info.module_type_cost)
             )
+            
             schema_obj = ModuleSetService._convert_model_to_schema(module_set)
             schema_obj.cost = calculated_cost
             module_set_items.append(schema_obj)

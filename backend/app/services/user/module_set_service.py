@@ -36,17 +36,6 @@ class ModuleSetService:
         return module_set_option_types
 
     @staticmethod
-    def _calculate_option_cost(session: Session, module_set_id: int) -> int:
-        """모듈 세트에 포함된 옵션들의 비용 합산"""
-        option_types = ModuleSetService.get_option_types(session, module_set_id)
-        return sum(option_type_crud.get_option_cost_by_id(session, opt.optionTypeId) * opt.quantity for opt in option_types)
-
-    @staticmethod
-    def _calculate_base_price(session: Session, module_set_id: int, module_type_cost: int) -> int:
-        """모듈 세트의 기본 가격 계산 (모듈 자체 비용 + 옵션 비용)"""
-        return int(module_type_cost) + ModuleSetService._calculate_option_cost(session, module_set_id)
-
-    @staticmethod
     @handle_transaction
     def get_all_module_sets(session: Session, page: int = 1, page_size: int = 10) -> module_set_schema.ModuleSetsResponse:
 
@@ -67,7 +56,7 @@ class ModuleSetService:
                     message="ModuleSet ID cannot be None",
                     detail={"module_set": module_set.dict(exclude={"created_at", "updated_at", "deleted_at"})}
                 )
-                  
+
             module_type_info = module_type_dict.get(module_set.module_type_id)
             if module_type_info is None:
                 raise DatabaseError(
@@ -77,7 +66,7 @@ class ModuleSetService:
 
             module_set_option_types = ModuleSetService.get_option_types(session, module_set.module_set_id)
 
-            base_price = ModuleSetService._calculate_base_price(session, module_set.module_set_id, int(module_type_info.module_type_cost))
+            base_price = module_set_crud.calculate_base_price(session, module_set.module_set_id)
             
             # datetime 필드를 제외하고 필요한 필드만 응답 모델로 변환
             module_sets_data.append(
