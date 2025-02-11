@@ -6,7 +6,8 @@
 }
 
 .full-screen-image {
-  position: absolute;
+  object-position: 100% 100%;
+  /* position: absolute; */
   top: 0;
   left: 0;
   width: 100%;
@@ -16,7 +17,7 @@
 
 .headline-content {
   position: absolute;
-  bottom: 30px;
+  bottom: 60px;
   left: 20px;
   background: rgba(0, 0, 0, 0.7);
   padding: 20px;
@@ -111,6 +112,13 @@
 
 /* 작은 모바일 화면 대응 */
 @media screen and (max-width: 480px) {
+  .image-container {
+    height: 87vh;
+  }
+  .full-screen-image {
+    object-position: 47%;
+    
+  }
   .headline-content {
     bottom: 15px;
     left: 5px;

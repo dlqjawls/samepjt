@@ -20,7 +20,6 @@ import RentForm from "./rentForm/rentForm"
 import Total_reciept from "./finishSelect/total_reciept"
 import UserLayout from "./user/UserLayout"   
 import Dashboard from "./RentStatus/Dashboard"
-
 import { ToastContainer } from "react-toastify"
 import { AdminAuthProvider } from "./admin/context/AdminAuthProvider"
 
