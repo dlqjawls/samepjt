@@ -100,7 +100,7 @@ const Total_reciept = () => {
           toast.error("로그인이 필요합니다.");
           return;
         }
-
+        const moduleTypeId= JSON.parse(sessionStorage.getItem("ModuleSet"));
         const selectedOptions = receiptDetails.options.map((option) => ({
           optionTypeId: option.optionTypeId,
           quantity: option.quantity,
@@ -116,6 +116,9 @@ const Total_reciept = () => {
             x: 11.512,
             y: 30.4531,
           },
+          moduleTypeId: moduleTypeId.moduleTypeId,
+          cost: 
+          1316664,
           rentStartDate: "2025-01-15T09:00:00",
           rentEndDate: "2025-01-20T18:00:00",
         };
