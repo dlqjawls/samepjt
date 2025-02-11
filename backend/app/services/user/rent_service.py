@@ -60,6 +60,8 @@ class RentService:
             cost=cost,
             mileage=0,
             rent_status_id=RentStatus.IN_PROGRESS,
+            rent_start_date=rent_request.rentStartDate,
+            rent_end_date=rent_request.rentEndDate,
             created_at=now,
             updated_at=now
         )

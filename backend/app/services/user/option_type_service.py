@@ -101,7 +101,7 @@ class OptionTypeService:
                 detail={"option_type_id": option_type_id}
             )
         
-        option_type = option_type_crud._get_by_field(session, option_type_id, "option_type_id")
+        option_type = option_type_crud.get_by_field(session, option_type_id, "option_type_id")
         if option_type is None:
             raise NotFoundError(
                 message="Option type not found",    
