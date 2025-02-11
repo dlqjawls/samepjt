@@ -54,4 +54,32 @@ class OptionTypeCRUD(CRUDBase[OptionType]):
                 detail={"error": str(e)}
             )
 
+    def get_option_cost_by_id(self, session: Session, option_type_id: int) -> int:
+        """옵션 타입 ID에 해당하는 옵션 비용을 조회합니다.
+
+        Args:
+            session (Session): DB 세션
+            option_type_id (int): 옵션 타입 ID
+
+        Returns:
+            int: 옵션 비용
+
+        Raises:
+            DatabaseError: DB 조회 중 오류 발생 시
+        """
+        try:
+            option = session.exec(select(OptionType).where(OptionType.option_type_id == option_type_id)).first()
+            if option is None:
+                raise DatabaseError(
+                    message="Option not found",
+                    detail={"option_type_id": option_type_id}
+                )
+            return int(option.option_type_cost)
+        except SQLAlchemyError as e:
+            raise DatabaseError(
+                message="Failed to fetch option cost",
+                detail={"error": str(e)}
+            )
+
+
 option_type_crud = OptionTypeCRUD()

@@ -65,9 +65,9 @@ def seed_data(session: Session) -> None:
 
         # 📌 모듈 유형(Module Type)
         module_types = [
-            ModuleType(module_type_id=1, module_type_name="small", module_type_size="S", module_type_cost=100.0),
-            ModuleType(module_type_id=2, module_type_name="medium", module_type_size="M", module_type_cost=200.0),
-            ModuleType(module_type_id=3, module_type_name="large", module_type_size="L", module_type_cost=300.0)
+            ModuleType(module_type_id=1, module_type_name="small", module_type_size="S", module_type_cost=5000),
+            ModuleType(module_type_id=2, module_type_name="medium", module_type_size="M", module_type_cost=10000),
+            ModuleType(module_type_id=3, module_type_name="large", module_type_size="L", module_type_cost=15000)
         ]
         session.add_all(module_types)
 
@@ -247,7 +247,7 @@ def seed_data(session: Session) -> None:
                 option_type_id=i+1,
                 option_type_name=option_def.name,
                 option_type_size=f"{random.randint(1, 3)}x{random.randint(1, 3)}",
-                option_type_cost=round(random.uniform(10.0, 100.0), 2),
+                option_type_cost=random.randint(1000, 10000),
                 description=option_def.description,
                 option_type_images=fake.image_url(),
                 option_type_features=", ".join(option_def.display_features),
