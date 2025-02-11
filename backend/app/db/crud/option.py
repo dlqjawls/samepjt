@@ -32,7 +32,7 @@ class OptionCRUD(CRUDBase[Option]):
                 detail={"option_id": option_id, "error": "Option ID must be positive"}
             )
 
-        option = self._get_by_field(session, self.model.option_id, "option_id")
+        option = self.get_by_field(session, self.model.option_id, "option_id")
         if not option:
             raise NotFoundError(
                 message="Option not found",

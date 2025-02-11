@@ -52,7 +52,7 @@ class AuthService:
         """
         새 유저 등록
         """
-        if user_crud._get_by_field(session, register_req.id, "user_id"):
+        if user_crud.get_by_field(session, register_req.id, "user_id"):
             raise BadRequestError(
                 message="User ID already exists",
                 detail={

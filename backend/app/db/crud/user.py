@@ -18,7 +18,7 @@ class UserCRUD(CRUDBase[User]):
         Returns:
             Optional[User]: 사용자 객체.
         """
-        return self._get_by_field(session, id, "user_id")
+        return self.get_by_field(session, id, "user_id")
 
     def get_by_email(self, session: Session, email: str) -> Optional[User]:
         """
@@ -31,6 +31,6 @@ class UserCRUD(CRUDBase[User]):
         Returns:
             Optional[User]: 사용자 객체.
         """
-        return self._get_by_field(session, email, "user_email")
+        return self.get_by_field(session, email, "user_email")
 
 user_crud = UserCRUD()

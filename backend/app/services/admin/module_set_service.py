@@ -190,7 +190,7 @@ class ModuleSetService:
     def delete_module_set(session: Session, module_set_id: int, user_pk: int) -> ModuleSetDeleteResponse:
         """모듈 세트 삭제 서비스"""
         # 모듈 세트 존재 여부 확인
-        module_set = module_set_crud._get_by_field(session, module_set_id, "module_set_id")
+        module_set = module_set_crud.get_by_field(session, module_set_id, "module_set_id")
         if not module_set:
             raise NotFoundError(
                 message="Module set not found",

@@ -30,7 +30,7 @@ class ModuleSetCRUD(CRUDBase[ModuleSet]):
           - 모듈 타입의 기본 비용 + 해당 모듈 세트에 포함된 옵션들의 추가 비용 합산
         """
         # 1. 모듈 세트 조회
-        module_set = self._get_by_field(session, module_set_id, "module_set_id")
+        module_set = self.get_by_field(session, module_set_id, "module_set_id")
         if not module_set:
             raise Exception(f"Module set not found for id {module_set_id}")
         

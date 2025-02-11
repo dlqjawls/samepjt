@@ -149,7 +149,7 @@ class OptionTypeService:
     def delete_option_type(session: Session, option_type_id: int, user_pk: int) -> OptionTypeDeleteResponse:
         """옵션 타입 삭제 서비스"""
         # 옵션 타입 존재 여부 확인
-        option_type = option_type_crud._get_by_field(session, option_type_id, "option_type_id")
+        option_type = option_type_crud.get_by_field(session, option_type_id, "option_type_id")
         if not option_type:
             raise NotFoundError(
                 message="Option type not found",

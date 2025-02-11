@@ -18,7 +18,7 @@ class OptionService:
     @staticmethod
     def _check_option_exists(session: Session, option_type_id: int) -> None:
         """옵션 타입 존재 여부 확인"""
-        option = option_type_crud._get_by_field(session, option_type_id, "option_type_id")
+        option = option_type_crud.get_by_field(session, option_type_id, "option_type_id")
         if option is None:
             raise NotFoundError(
                 message="Option type not found",
@@ -101,7 +101,7 @@ class OptionService:
         주어진 옵션 ID에 대해 option_data를 사용해 업데이트를 수행합니다.
         """
         # 올바른 옵션 ID를 사용하여 옵션 존재 여부 확인 (수정 전: option_data를 사용하던 부분 수정)
-        option = option_crud._get_by_field(session, option_id, "option_id")
+        option = option_crud.get_by_field(session, option_id, "option_id")
         if not option:
             raise NotFoundError(
                 message="Option not found",
@@ -123,7 +123,7 @@ class OptionService:
     def delete_option(session: Session, option_id: int, user_pk: int) -> OptionDeleteResponse:
         """옵션 삭제 서비스"""
         # 옵션 존재 여부 확인
-        option = option_crud._get_by_field(session, option_id, "option_id")
+        option = option_crud.get_by_field(session, option_id, "option_id")
         if not option:
             raise NotFoundError(
                 message="Option not found",

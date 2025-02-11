@@ -43,6 +43,6 @@ class RentHistoryCRUD(CRUDBase[RentHistory]):
         return paginated
         
     def get_by_id(self, session: Session, rent_id: int) -> Optional[RentHistory]:
-        return self._get_by_field(session, rent_id, "rent_id")
+        return self.get_by_field(session, rent_id, "rent_id")
 
 rent_history_crud = RentHistoryCRUD()

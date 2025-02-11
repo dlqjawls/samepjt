@@ -121,7 +121,7 @@ class ModuleService:
         주어진 모듈 ID에 대해 module_data를 사용해 업데이트를 수행합니다.
         """
         # 올바른 모듈 ID를 사용하여 모듈 존재 여부 확인 (수정 전: module_data를 사용하던 부분 수정)
-        module = module_crud._get_by_field(session, module_id, "module_id")
+        module = module_crud.get_by_field(session, module_id, "module_id")
         if not module:
             raise NotFoundError(
                 message="Module not found",
@@ -147,7 +147,7 @@ class ModuleService:
     def delete_module(session: Session, module_id: int, user_pk: int) -> ModuleDeleteResponse:
         """모듈 삭제 서비스"""
         # 모듈 존재 여부 확인
-        module = module_crud._get_by_field(session, module_id, "module_id")
+        module = module_crud.get_by_field(session, module_id, "module_id")
         if not module:
             raise NotFoundError(
                 message="Module not found",

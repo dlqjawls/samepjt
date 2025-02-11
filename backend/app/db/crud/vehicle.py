@@ -62,7 +62,7 @@ class VehicleCRUD(CRUDBase[Vehicle]):
         Returns:
             Optional[Vehicle]: 차량 객체.
         """
-        return self._get_by_field(session, id, "vehicle_id")
+        return self.get_by_field(session, id, "vehicle_id")
       
     def get_by_vin(self, session: Session, vin: str) -> Optional[Vehicle]:
         """
@@ -75,7 +75,7 @@ class VehicleCRUD(CRUDBase[Vehicle]):
         Returns:
             Optional[Vehicle]: 차량 객체.
         """
-        return self._get_by_field(session, vin, "vin")
+        return self.get_by_field(session, vin, "vin")
       
     def get_by_vehicle_number(self, session: Session, vehicle_number: str) -> Optional[Vehicle]:
         """
@@ -88,6 +88,6 @@ class VehicleCRUD(CRUDBase[Vehicle]):
         Returns:
             Optional[Vehicle]: 차량 객체.
         """
-        return self._get_by_field(session, vehicle_number, "vehicle_number")
+        return self.get_by_field(session, vehicle_number, "vehicle_number")
       
 vehicle_crud = VehicleCRUD()
