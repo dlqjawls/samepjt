@@ -324,7 +324,7 @@ const ModuleSetManagement = () => {
         </button>
       </div>
 
-      <div className="filters">
+      {/* <div className="filters">
         <label>
           검색
           <input
@@ -334,10 +334,10 @@ const ModuleSetManagement = () => {
             onChange={handleFilterChange}
             placeholder="모듈 세트 이름 검색"
           />
-        </label>
-        {/* 검색 버튼은 필터 입력 변경 시 이미 useEffect로 필터링됨 */}
-        <button onClick={() => setFilters({ ...filters })}>검색</button>
-      </div>
+        </label> */}
+      {/* 검색 버튼은 필터 입력 변경 시 이미 useEffect로 필터링됨 */}
+      {/* <button onClick={() => setFilters({ ...filters })}>검색</button>
+      </div> */}
 
       {error && <p className="error">{error}</p>}
       {loading ? (

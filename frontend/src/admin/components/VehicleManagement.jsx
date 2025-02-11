@@ -373,7 +373,7 @@ function VehicleManagement() {
       </div>
 
       {/* 필터링 섹션 */}
-      <div className="filters">
+      {/* <div className="filters">
         <div className="filter-item">
           <span className="filter-description">상태</span>
           <select
@@ -398,7 +398,7 @@ function VehicleManagement() {
           />
         </div>
         <button onClick={() => fetchVehicles()}>검색</button>
-      </div>
+      </div> */}
 
       {error && <p className="error">{error}</p>}
 
