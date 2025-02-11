@@ -52,7 +52,7 @@ function VehicleManagement() {
 
   // 필터 상태
   const [filters, setFilters] = useState({
-    status: "",
+    item_status_name: "",
     search: "",
     page: 1,
     pageSize: 10,
@@ -90,7 +90,7 @@ function VehicleManagement() {
           Authorization: token ? `Bearer ${token}` : undefined,
         },
         params: {
-          status: filters.status || undefined,
+          item_status_name: filters.item_status_name || undefined,
           search: filters.search || undefined,
           page: filters.page,
           pageSize: filters.pageSize,
@@ -377,8 +377,8 @@ function VehicleManagement() {
         <div className="filter-item">
           <span className="filter-description">상태</span>
           <select
-            name="status"
-            value={filters.status}
+            name="item_status_name"
+            value={filters.item_status_name}
             onChange={handleFilterChange}
           >
             <option value="">전체</option>
@@ -434,20 +434,20 @@ function VehicleManagement() {
                     <td>
                       <span
                         className={`status-badge ${
-                          vehicle.status === "active"
+                          vehicle.item_status_name === "active"
                             ? "status-active"
-                            : vehicle.status === "inactive"
+                            : vehicle.item_status_name === "inactive"
                             ? "status-inactive"
-                            : vehicle.status === "maintenance"
+                            : vehicle.item_status_name === "maintenance"
                             ? "status-maintenance"
                             : ""
                         }`}
                       >
-                        {vehicle.status === "active"
+                        {vehicle.item_status_name === "active"
                           ? "활성화"
-                          : vehicle.status === "inactive"
+                          : vehicle.item_status_name === "inactive"
                           ? "비활성화"
-                          : vehicle.status === "maintenance"
+                          : vehicle.item_status_name === "maintenance"
                           ? "정비 중"
                           : "알 수 없음"}
                       </span>
@@ -522,11 +522,11 @@ function VehicleManagement() {
             </p>
             <p>
               상태:{" "}
-              {selectedVehicle.status === "active"
+              {selectedVehicle.item_status_name === "active"
                 ? "활성화"
-                : selectedVehicle.status === "inactive"
+                : selectedVehicle.item_status_name === "inactive"
                 ? "비활성화"
-                : selectedVehicle.status === "maintenance"
+                : selectedVehicle.item_status_name === "maintenance"
                 ? "정비 중"
                 : "알 수 없음"}
             </p>

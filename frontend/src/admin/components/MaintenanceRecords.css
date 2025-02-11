@@ -1,21 +1,21 @@
-/* src/components/MaintenanceRecords.css */
+/* src/admin/components/MaintenanceRecords.css */
 
-.maintenance-container {
+.maintenance-records {
   padding: 20px;
 }
 
-.maintenance-container .maintenance-header {
+.maintenance-records .maintenance-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.maintenance-container .maintenance-header h1 {
+.maintenance-records .maintenance-header h1 {
   font-size: 2em;
 }
 
-.maintenance-container .add-button {
+.maintenance-records .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
   color: white;
@@ -24,248 +24,160 @@
   border-radius: 4px;
 }
 
-.maintenance-container .add-button:hover {
+.maintenance-records .add-button:hover {
   background-color: #45a049;
 }
 
-.maintenance-container .filters {
+/* 필터 영역 */
+.maintenance-records .filters {
+  display: flex;
+  gap: 20px;
   margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  align-items: center;
 }
 
-.maintenance-container .filters label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
+.maintenance-records .filters label {
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.maintenance-container .filters input,
-.maintenance-container .filters select {
+.maintenance-records .filters input,
+.maintenance-records .filters select {
   padding: 8px;
-  margin-top: 5px;
-  border-radius: 4px;
+  font-size: 16px;
   border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.maintenance-container .filters button {
+.maintenance-records .filters button {
   padding: 10px 20px;
   background-color: #2196f3;
   color: white;
   border: none;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
 }
 
-.maintenance-container .filters button:hover {
-  background-color: #0b7dda;
+.maintenance-records .filters button:hover {
+  background-color: #1976d2;
 }
 
-.maintenance-container .maintenance-table {
+/* 테이블 */
+.maintenance-records .table-wrapper {
+  overflow-x: auto;
+}
+
+.maintenance-records .maintenance-table {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
-  margin-bottom: 20px;
 }
 
-.maintenance-container .maintenance-table th,
-.maintenance-container .maintenance-table td {
-  border: 1px solid #ddd;
+.maintenance-records .maintenance-table th,
+.maintenance-records .maintenance-table td {
   padding: 12px;
-  text-align: center;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
 }
 
-.maintenance-container .maintenance-table th {
+.maintenance-records .maintenance-table th {
   background-color: #f2f2f2;
+  font-size: 16px;
+  text-align: left;
+  padding: 12px;
 }
 
-.maintenance-container .detail-button {
-  padding: 6px 8px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 20px;
+.maintenance-records .maintenance-table td {
+  font-size: 14px;
+  text-align: left;
+  background-color: #ffffff; 
+  padding: 12px;
 }
 
-.maintenance-container .detail-button:hover {
-  background-color: #0b7dda;
-}
-
-.maintenance-container .edit-button {
-  padding: 6px 8px;
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 20px;
-}
-
-.maintenance-container .edit-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.maintenance-container .edit-button:hover:not(:disabled) {
-  background-color: #e68900;
-}
-
-.maintenance-container .delete-button {
-  padding: 6px 8px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 20px;
-}
-
-.maintenance-container .delete-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.maintenance-container .delete-button:hover:not(:disabled) {
-  background-color: #da190b;
-}
-
-.maintenance-container .pagination {
+.maintenance-records .pagination {
+  margin: 20px 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 10px;
+  gap: 20px;
 }
 
-.maintenance-container .pagination button {
-  padding: 8px 16px;
+.maintenance-records .pagination button {
+  padding: 6px 12px;
   background-color: #e7e7e7;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 4px;
 }
 
-.maintenance-container .pagination button:disabled {
+.maintenance-records .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+
+.maintenance-records .pagination button:disabled {
   background-color: #cccccc;
-  cursor: not-allowed;
+  cursor: default;
 }
 
-.maintenance-container .error {
-  color: red;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-/* 모달 내용 스타일링 */
-.maintenance-container .detail-content,
-.maintenance-container .edit-content,
-.maintenance-container .delete-content,
-.maintenance-container .add-content {
-  padding: 20px;
-}
-
-.maintenance-container .detail-content h2,
-.maintenance-container .edit-content h2,
-.maintenance-container .delete-content h2,
-.maintenance-container .add-content h2 {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.maintenance-container .detail-content p,
-.maintenance-container .edit-content p,
-.maintenance-container .delete-content p,
-.maintenance-container .add-content p {
-  margin-bottom: 10px;
-}
-
-.maintenance-container .edit-form,
-.maintenance-container .add-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.maintenance-container .edit-form label,
-.maintenance-container .add-form label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-}
-
-.maintenance-container .edit-form input,
-.maintenance-container .edit-form select,
-.maintenance-container .edit-form textarea,
-.maintenance-container .add-form input,
-.maintenance-container .add-form select,
-.maintenance-container .add-form textarea {
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.maintenance-container .modal-actions {
-  margin-top: 20px;
+/* Modal 스타일 */
+.maintenance-records .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.maintenance-container .save-button {
+.maintenance-records .save-button,
+.maintenance-records .cancel-button {
   padding: 8px 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
+  border: none;
 }
 
-.maintenance-container .save-button:hover {
+.maintenance-records .save-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.maintenance-records .save-button:hover {
   background-color: #45a049;
 }
 
-.maintenance-container .cancel-button {
-  padding: 8px 16px;
-  background-color: #e7e7e7;
-  color: black;
+.maintenance-records .confirm-delete-button {
+  background-color: #f44336;
   border: none;
-  cursor: pointer;
+  color: white;
+}
+
+.maintenance-records .confirm-delete-button:hover {
+  background-color: #da190b;
+}
+
+.maintenance-records .error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.maintenance-records .edit-button {
+  padding: 8px 16px;
+  background-color: #ffc107;
+  color: white;
+  border: none;
   border-radius: 4px;
+  cursor: pointer;
 }
 
-.maintenance-container .cancel-button:hover {
-  background-color: #d5d5d5;
+.maintenance-records .edit-button:hover {
+  background-color: #e0a800;
 }
 
-.maintenance-container .confirm-delete-button {
+.maintenance-records .delete-button {
   padding: 8px 16px;
   background-color: #f44336;
   color: white;
   border: none;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
 }
 
-.maintenance-container .confirm-delete-button:hover {
+.maintenance-records .delete-button:hover {
   background-color: #da190b;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .maintenance-container .filters {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .maintenance-container .maintenance-table th,
-  .maintenance-container .maintenance-table td {
-    padding: 8px;
-  }
-
-  .maintenance-container .detail-content h2,
-  .maintenance-container .edit-content h2,
-  .maintenance-container .delete-content h2,
-  .maintenance-container .add-content h2 {
-    font-size: 1.5em;
-  }
 }
