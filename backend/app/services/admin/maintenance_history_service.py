@@ -70,12 +70,14 @@ class MaintenanceHistoryService:
         Returns:
             MaintenanceHistoryGetResponse: 정비 기록 조회 응답 스키마.
         """
+        # deleted_at이 없는 정비 기록만 조회
+        filters = [MaintenanceHistory.deleted_at == None]
+        
         # 아이템 타입이 없으면 아이템 아이디를 사용할 수 없음
         if itemId is not None and itemType is None:
             raise ConflictError("아이템 타입이 지정되지 않은 상태에서 아이템 아이디를 사용할 수 없습니다.")
         
         # 동적으로 필터를 구성
-        filters = []
         if itemType is not None:
             filters.append(MaintenanceHistory.item_type_id == item_type.get_by_name(session, itemType).item_type_id)
         if itemId is not None:
@@ -90,24 +92,24 @@ class MaintenanceHistoryService:
             total_query = total_query.where(*filters)
         total_items = session.exec(total_query).one()
         
-        records = session.exec(stmt.offset((page - 1) * pageSize).limit(pageSize)).all()
-        
+        histories = session.exec(stmt.offset((page - 1) * pageSize).limit(pageSize)).all()
+
         maintenance_items :List[MaintenanceHistoryItem] = [
           MaintenanceHistoryItem(
-            maintenance_id = cast(int, record.maintenance_id),
-            item_type_name = item_type.get_by_id(session, record.item_type_id).item_type_name,
-            item_id = record.item_id,
-            issue = record.issue,
-            cost = record.cost,
-            maintenance_status_name = maintenance_status.get_by_id(session, record.maintenance_status_id).maintenance_status_name,
-            scheduled_at = record.scheduled_at,
-            completed_at = record.completed_at,
-            created_at = record.created_at,
-            created_by = record.created_by,
-            updated_at = record.updated_at,
-            updated_by = record.updated_by
+            maintenance_id = cast(int, history.maintenance_id),
+            item_type_name = item_type.get_by_id(session, history.item_type_id).item_type_name,
+            item_id = history.item_id,
+            issue = history.issue,
+            cost = history.cost,
+            maintenance_status_name = maintenance_status.get_by_id(session, history.maintenance_status_id).maintenance_status_name,
+            scheduled_at = history.scheduled_at,
+            completed_at = history.completed_at,
+            created_at = history.created_at,
+            created_by = history.created_by,
+            updated_at = history.updated_at,
+            updated_by = history.updated_by
           )
-          for record in records
+          for history in histories
         ]
         total_pages = (total_items + pageSize - 1) // pageSize if total_items else 0
         
@@ -163,7 +165,7 @@ class MaintenanceHistoryService:
             )
 
         # 새 정비 기록 생성 (정비 상태는 기본값 pending => 1)
-        new_record = MaintenanceHistory(
+        new_history = MaintenanceHistory(
             item_type_id = item_type.get_by_name(session, payload.item_type_name).item_type_id,
             item_id=payload.item_id,
             issue=payload.issue,
@@ -177,9 +179,9 @@ class MaintenanceHistoryService:
             updated_by=user_pk
         )
         
-        session.add(new_record)
+        session.add(new_history)
         session.flush()  # 새 레코드를 flush하여 persistent 상태로 만듦
-        session.refresh(new_record)
+        session.refresh(new_history)
         
         # 아이템의 상태 및 정비 날짜 업데이트
         if payload.item_type_name in ("vehicle", "module", "option"):
@@ -191,7 +193,7 @@ class MaintenanceHistoryService:
         session.refresh(item)
         
         return MaintenanceHistoryPostResponse.success(
-            message="Maintenance record created successfully"
+            message="Maintenance history created successfully"
         )
 
     @staticmethod
@@ -216,27 +218,27 @@ class MaintenanceHistoryService:
         """       
                
         # 정비 기록 존재 여부 확인
-        record = session.get(MaintenanceHistory, maintenance_id)
-        if not record:
+        history = session.get(MaintenanceHistory, maintenance_id)
+        if not history:
             raise NotFoundError(
-                message="Maintenance record not found",
+                message="Maintenance history not found",
                 detail={"maintenance_id": maintenance_id}
             )
             
         # 완료된 정비 기록은 수정할 수 없음 (예: status_id == 3)
-        if record.maintenance_status_id == 3:
+        if history.maintenance_status_id == 3:
             raise ConflictError(
-                message="Cannot modify a completed maintenance record",
+                message="Cannot modify a completed maintenance history",
                 detail={"maintenance_id": maintenance_id, "status": "completed"}
             )
         
         # 아이템 존재 여부 검증 (중복 코드 제거: _fetch_item 사용)
-        item = MaintenanceHistoryService._fetch_item(session, record.item_type_id, record.item_id)
+        item = MaintenanceHistoryService._fetch_item(session, history.item_type_id, history.item_id)
 
         if not item:
             raise NotFoundError(
                 message="Item not found",
-                detail={"item_id": record.item_id, "item_type": record.item_type_id}
+                detail={"item_id": history.item_id, "item_type": history.item_type_id}
             )
             
         update_data = payload.dict(exclude_unset=True)
@@ -245,17 +247,17 @@ class MaintenanceHistoryService:
         
         maintenance_history_crud.update(session, maintenance_id, update_data, "maintenance_id")
         
-        # 정비 완료 시 아이템 상태 업데이트
+        # 정비 완료 시 아이템 상태 업데이트   
         if update_data.get("item_status_id") == 3:
             item.item_status_id = 2
-            item.last_maintenance_at = record.completed_at
+            item.last_maintenance_at = history.completed_at
             item.next_maintenance_at = None
             session.add(item)
             session.flush()
             session.refresh(item)
             
         return MaintenanceHistoryPatchResponse.success(
-            message="Maintenance record updated successfully"
+            message="Maintenance history updated successfully"
         )
 
     @staticmethod
@@ -276,23 +278,9 @@ class MaintenanceHistoryService:
         Returns:
             MaintenanceHistoryDeleteResponse: 삭제 결과 응답 스키마.
         """
-        # 정비 기록 존재 여부 확인
-        record = session.get(MaintenanceHistory, maintenance_id)
-        if not record:
-            raise NotFoundError(
-                message="Maintenance record not found",
-                detail={"maintenance_id": maintenance_id}
-            )
         
-        
-        # 소프트 삭제: deleted_at 필드를 현재 시간으로 업데이트 (모델에 deleted_at 필드가 있다고 가정)
-        record.deleted_at = datetime.now()
-        record.updated_at = datetime.now()
-        record.updated_by = user_pk
-        
-        session.add(record)
-        session.refresh(record)
+        maintenance_history_crud.soft_delete(session, maintenance_id, "maintenance_id")
         
         return MaintenanceHistoryDeleteResponse.success(
-            message="Maintenance record deleted successfully"
+            message="Maintenance history deleted successfully"
         ) 

@@ -38,7 +38,7 @@ def test_create_maintenance_history_success(client, session, master_token, clear
     assert response.status_code == 200
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
-    assert data["message"] == "Maintenance record created successfully"
+    assert data["message"] == "Maintenance history created successfully"
 
     # Then: DB에 저장된 데이터 검증
     maintenance_history = session.exec(select(MaintenanceHistory).where(MaintenanceHistory.item_id == maintenance_history_data["item_id"])).first()

@@ -138,7 +138,7 @@ def get_maintenance_histories(
                 "application/json": {
                     "example": {
                         "resultCode": "SUCCESS",
-                        "message": "Maintenance record created successfully"
+                        "message": "Maintenance history created successfully"
                     }
                 }
             }
@@ -206,7 +206,7 @@ def create_maintenance_history(
                 "application/json": {
                     "example": {
                         "resultCode": "SUCCESS",
-                        "message": "Maintenance record updated successfully"
+                        "message": "Maintenance history updated successfully"
                     }
                 }
             }
@@ -229,7 +229,7 @@ def create_maintenance_history(
                 "application/json": {
                     "example": {
                         "resultCode": "FAILURE",
-                        "message": "Maintenance record not found",
+                        "message": "Maintenance history not found",
                         "error_code": "NOT_FOUND"
                     }
                 }
@@ -275,7 +275,7 @@ def update_maintenance_history(
                 "application/json": {
                     "example": {
                         "resultCode": "SUCCESS",
-                        "message": "Maintenance record deleted successfully"
+                        "message": "Maintenance history deleted successfully"
                     }
                 }
             }
@@ -298,7 +298,7 @@ def update_maintenance_history(
                 "application/json": {
                     "example": {
                         "resultCode": "FAILURE",
-                        "message": "Maintenance record not found",
+                        "message": "Maintenance history not found",
                         "error_code": "NOT_FOUND"
                     }
                 }
@@ -319,7 +319,7 @@ def update_maintenance_history(
     }
 )
 def delete_maintenance_history(
-    maintenance_id: int = Path(..., description="정비 기록 ID"),
+    maintenance_id: int = Path(..., description="정비 기록 ID", ge=1),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
 ):

@@ -99,7 +99,7 @@ class MaintenanceHistoryPostResponse(ResponseBase):
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Maintenance record created successfully"
+                "message": "Maintenance history created successfully"
             }
         }
 
@@ -131,7 +131,7 @@ class MaintenanceHistoryPatchResponse(ResponseBase):
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Maintenance record updated successfully"
+                "message": "Maintenance history updated successfully"
             }
         }
 
@@ -140,6 +140,6 @@ class MaintenanceHistoryDeleteResponse(ResponseBase):
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Maintenance record deleted successfully"
+                "message": "Maintenance history deleted successfully"
             }
         } 
