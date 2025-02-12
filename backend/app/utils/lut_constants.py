@@ -79,9 +79,9 @@ class LUTConstants:
     }
 
     MODULE_TYPE_INFO: Dict[ModuleType, Dict[str, Any]] = {
-        ModuleType.SMALL: {"name": "small", "size": "S", "cost": 5000},
-        ModuleType.MEDIUM: {"name": "medium", "size": "M", "cost": 10000},
-        ModuleType.LARGE: {"name": "large", "size": "L", "cost": 15000}
+        ModuleType.SMALL: {"name": "small", "size": "3x3", "cost": 5000},
+        ModuleType.MEDIUM: {"name": "medium", "size": "4x4", "cost": 10000},
+        ModuleType.LARGE: {"name": "large", "size": "5x5", "cost": 15000}
     }
 
     MAINTENANCE_STATUS_NAMES: Dict[MaintenanceStatus, str] = {

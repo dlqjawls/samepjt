@@ -65,9 +65,9 @@ def seed_data(session: Session) -> None:
 
         # 📌 모듈 유형(Module Type)
         module_types = [
-            ModuleType(module_type_id=1, module_type_name="small", module_type_size="S", module_type_cost=5000),
-            ModuleType(module_type_id=2, module_type_name="medium", module_type_size="M", module_type_cost=10000),
-            ModuleType(module_type_id=3, module_type_name="large", module_type_size="L", module_type_cost=15000)
+            ModuleType(module_type_id=1, module_type_name="small", module_type_size="3x3", module_type_cost=5000),
+            ModuleType(module_type_id=2, module_type_name="medium", module_type_size="4x4", module_type_cost=10000),
+            ModuleType(module_type_id=3, module_type_name="large", module_type_size="5x5", module_type_cost=15000)
         ]
         session.add_all(module_types)
 
@@ -247,9 +247,9 @@ def seed_data(session: Session) -> None:
                 option_type_id=i+1,
                 option_type_name=option_def.name,
                 option_type_size=f"{random.randint(1, 3)}x{random.randint(1, 3)}",
-                option_type_cost=random.randint(1000, 10000),
+                option_type_cost=30000,
                 description=option_def.description,
-                option_type_images=fake.image_url(),
+                option_type_images=fake.image_url() + ", " + fake.image_url(),
                 option_type_features=", ".join(option_def.display_features),
                 created_at=base_date,
                 updated_at=base_date,
@@ -297,7 +297,7 @@ def seed_data(session: Session) -> None:
             ModuleSet(
                 module_set_id=i + 1,
                 module_set_name=module_set_def.name,
-                description=fake.text(),
+                description="",
                 module_set_images="https://github.com/user-attachments/assets/caaa16b4-702b-4708-8973-c1ac948c5ef4,https://github.com/user-attachments/assets/edb03e19-1008-49f3-8e6d-208e9f6d478e",
                 module_set_features="",  # 옵션 타입에 기반하여 업데이트될 것임
                 module_type_id=1,
