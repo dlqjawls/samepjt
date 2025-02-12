@@ -248,7 +248,7 @@ class MaintenanceHistoryService:
         maintenance_history_crud.update(session, maintenance_id, update_data, "maintenance_id")
         
         # 정비 완료 시 아이템 상태 업데이트   
-        if update_data.get("item_status_id") == 3:
+        if update_data.get("maintenance_status_id") == 3:
             item.item_status_id = 2
             item.last_maintenance_at = history.completed_at
             item.next_maintenance_at = None
