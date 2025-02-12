@@ -138,10 +138,10 @@ def seed_data(session: Session) -> None:
             ),
             User(
                 user_pk=2,
-                user_id="semiadmin", 
+                user_id="semi", 
                 user_password=hash_password("semi123"),
-                user_email="semiadmin@example.com",
-                user_name="Semi Administrator",
+                user_email="semi@example.com",
+                user_name="Semi",
                 user_phone_num="010-1111-1111",
                 user_address="Busan, Korea",
                 role_id=2,
@@ -165,7 +165,22 @@ def seed_data(session: Session) -> None:
                 updated_at=base_date,
                 updated_by=1,
                 deleted_at=None
-            )
+            ),
+            User(
+                user_pk=4,
+                user_id="master",
+                user_password=hash_password("master123"),
+                user_email="master@example.com",
+                user_name="Master",
+                user_phone_num="010-3333-3333",
+                user_address="Seoul, Korea",
+                role_id=1,
+                created_at=base_date,
+                created_by=1,
+                updated_at=base_date,
+                updated_by=1,
+                deleted_at=None
+            ),
         ]
         session.add_all(dummy_users)
 
