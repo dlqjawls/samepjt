@@ -250,7 +250,7 @@ def create_maintenance_history(
     }
 )
 def update_maintenance_history(
-    maintenance_id: int = Path(..., description="정비 기록 ID"),
+    maintenance_id: int = Path(..., description="정비 기록 ID", ge=1),
     payload: MaintenanceHistoryPatchRequest = Body(...),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))

@@ -279,8 +279,31 @@ class MaintenanceHistoryService:
             MaintenanceHistoryDeleteResponse: 삭제 결과 응답 스키마.
         """
         
+        history = session.get(MaintenanceHistory, maintenance_id)
+        if not history:
+            raise NotFoundError(
+                message="Maintenance history not found",
+                detail={"maintenance_id": maintenance_id}
+            )
+
+        # 정비 기록이 진행 중이면 삭제할 수 없음
+        if history.maintenance_status_id == 2:
+            raise ConflictError(
+                message="Cannot delete a in progress maintenance history",
+                detail={"maintenance_id": maintenance_id, "status": "in progress"}
+            )
+            
+        # 정비 기록 삭제
         maintenance_history_crud.soft_delete(session, maintenance_id, "maintenance_id")
         
+        # 정비 기록 삭제 시 아이템 상태 업데이트
+        item = MaintenanceHistoryService._fetch_item(session, history.item_type_id, history.item_id)
+        if item:
+            item.item_status_id = 2
+            session.add(item)
+            session.flush()
+            session.refresh(item) 
+
         return MaintenanceHistoryDeleteResponse.success(
             message="Maintenance history deleted successfully"
         ) 

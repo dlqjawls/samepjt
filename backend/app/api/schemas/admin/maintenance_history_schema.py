@@ -106,6 +106,8 @@ class MaintenanceHistoryPostResponse(ResponseBase):
 class MaintenanceHistoryPatchRequest(BaseModel):
     maintenance_status_id: Optional[int] = Field(
         None,
+        ge=1,
+        le=3,
         description="정비 상태 ID (1: pending, 2: in_progress, 3: completed)"
     )
     cost: Optional[float] = Field(
