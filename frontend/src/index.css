@@ -50,15 +50,19 @@ footer {
 }
 
 /* 글꼴 설정 */
-body, button{
+body,
+button {
   font-family: "500";
 }
 
-h1, h2 {
+h1,
+h2 {
   font-family: "800";
 }
 
-
-h3, h4, h5, h6 {
+h3,
+h4,
+h5,
+h6 {
   font-family: "700";
 }
