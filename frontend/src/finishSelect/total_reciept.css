@@ -51,7 +51,74 @@
   min-width: 200px; /* 날짜/시간이 표시되는 영역의 최소 너비 설정 */
   white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 설정 */
 }
+.receipt-items {
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  /* overflow: hidden; */
+ 
+}
+.receipt-items:not(.expanded) {
+  max-height: 300px;
+}
 
+.receipt-items.expanded {
+  max-height: none;
+  padding-bottom: 0;
+}
+
+/* 그라데이션 스타일 수정 */
+.receipt-items-gradient {
+  position: absolute;
+  bottom: 50px; /* 더보기 버튼 위에 위치하도록 수정 */
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  pointer-events: none;
+  display: none;
+}
+
+
+/* 더보기 버튼 스타일 수정 */
+.show-more-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+  margin-top: 10px;
+}
+
+.show-more-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.receipt-items-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(transparent, white);
+  pointer-events: none;
+  display: none;
+}
+
+.receipt-items:not(.expanded) .receipt-items-gradient {
+  display: block;
+}
+.receipt-items.expanded .receipt-items-gradient {
+  display: none;
+}
 .receipt-items table {
   width: 100%;
   border-collapse: collapse;
