@@ -103,6 +103,10 @@ const CreditReward = () => {
               <span className="role">Security Guardian</span>
               <p>박수연</p>
             </div>
+            <div className="member-card">
+              <span className="role">Helper</span>
+              <p>유노스</p>
+            </div>
           </div>
         </div>
         <div className="footer-section">
