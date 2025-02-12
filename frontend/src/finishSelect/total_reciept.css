@@ -4,6 +4,7 @@
   padding: 10px;
   width: 100%;
   box-sizing: border-box;
+  align-content: center;
 }
 
 .receipt {
@@ -12,6 +13,7 @@
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  
 }
 
 .receipt-title {
@@ -28,6 +30,28 @@
   font-size: clamp(14px, 4vw, 16px);
 }
 
+.receipt-header p {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  line-height: 1.5;
+  align-items: center;
+}
+
+.receipt-header p span:first-child {
+  min-width: 100px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.receipt-header p span:last-child {
+  text-align: right;
+  flex: 1;
+  padding-left: 20px;
+  min-width: 200px; /* 날짜/시간이 표시되는 영역의 최소 너비 설정 */
+  white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 설정 */
+}
+
 .receipt-items table {
   width: 100%;
   border-collapse: collapse;
@@ -42,14 +66,27 @@
   border-bottom: 1px solid #eee;
   word-break: keep-all;
 }
-
 .receipt-total {
-  margin: 20px 0;
-  padding: 20px 0;
-  border-top: 2px dashed #eee;
-  text-align: center;
-  font-size: clamp(16px, 4.5vw, 18px);
+  margin-top: 20px;
+  padding: 20px;
+  border-top: 2px solid #eee;
+}
+
+.receipt-total p {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 5px 0;
+  font-size: 1.1em;
+}
+
+.receipt-total p:last-child {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid #000;
   font-weight: bold;
+  font-size: 1.2em;
+  color: #000;
 }
 
 .button-group {
@@ -86,4 +123,9 @@
   
   .back-button:hover {
     background-color: #f0f0f0;
+  }
+  @media screen and (max-width: 480px) {
+    .receipt-header p span:last-child {
+      min-width: 150px;
+    }
   }

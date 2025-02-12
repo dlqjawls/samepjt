@@ -73,7 +73,7 @@ function ModuleSetList() {
       
       // 로딩 텍스트 변경을 위한 타이머 설정
       setTimeout(() => setLoadingText("모듈 때려 박는중..."), 2000);
-      setTimeout(() => setLoadingText("모듈 발로 밀어넣는중 ..."), 5000);
+      setTimeout(() => setLoadingText("모듈 발로 밀어넣는중..."), 5000);
       setTimeout(() => setLoadingText("발로 조립 완료!"), 9500);
       
       await new Promise(resolve => setTimeout(resolve, 10000));
