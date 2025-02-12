@@ -64,7 +64,7 @@ const LoginModal = ({ onClose }) => {
         onClose();
         
       } catch (rentError) {
-        console.error("차량 상태 조회 실패:", rentError);
+        console.log("차량 상태 조회 실패:", rentError);
         // 차량 상태 조회 실패해도 로그인은 완료된 상태이므로 계속 진행
         navigate("/");
         onClose();

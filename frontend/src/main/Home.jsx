@@ -42,7 +42,7 @@ function Home() {
   return (
     <div>
       <div className="image-container">
-        <img src="../public/modulecar.jpg" alt="car" className="full-screen-image" onClick={goToRentalPage} />
+        <img src="modulecar.jpg" alt="car" className="full-screen-image" onClick={goToRentalPage} />
         <div className="headline-content">
           <h2>모두가 원하는차</h2>
           <h3>모두카</h3>

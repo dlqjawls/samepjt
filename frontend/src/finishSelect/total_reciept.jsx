@@ -12,6 +12,16 @@ const Total_reciept = () => {
     options: [],
     totalAmount: 0,
   });
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [visibleOptions, setVisibleOptions] = useState(5); // 초기에 보여줄 옵션 수
+  const toggleShowMore = () => {
+    if (isExpanded) {
+      setVisibleOptions(5);
+    } else {
+      setVisibleOptions(receiptDetails.options.length);
+    }
+    setIsExpanded(!isExpanded);
+  };
 
   useEffect(() => {
     const fetchOptionDetails = async () => {
@@ -278,7 +288,8 @@ const Total_reciept = () => {
           </p>
         </div>
 
-        <div className="receipt-items">
+      
+        <div className={`receipt-items ${isExpanded ? 'expanded' : ''}`}>
           <table>
             <thead>
               <tr>
@@ -289,16 +300,25 @@ const Total_reciept = () => {
               </tr>
             </thead>
             <tbody>
-              {receiptDetails.options.map((option) => (
-                <tr key={option.optionTypeId}>
-                  <td>{option.optionTypeName}</td>
-                  <td>{option.quantity}</td>
-                  <td>{option.optionTypeCost.toLocaleString()}원</td>
-                  <td>{option.totalPrice.toLocaleString()}원</td>
-                </tr>
+              {receiptDetails.options
+                .slice(0, visibleOptions)
+                .map((option) => (
+                  <tr key={option.optionTypeId}>
+                    <td>{option.optionTypeName}</td>
+                    <td>{option.quantity}</td>
+                    <td>{option.optionTypeCost.toLocaleString()}원</td>
+                    <td>{option.totalPrice.toLocaleString()}원</td>
+                  </tr>
               ))}
             </tbody>
           </table>
+          <div className="receipt-items-gradient"></div>
+          {receiptDetails.options.length > 5 && (
+            <button className="show-more-button" onClick={toggleShowMore}>
+              {isExpanded ? '접기' : '더보기'} 
+              ({visibleOptions}/{receiptDetails.options.length})
+            </button>
+          )}
         </div>
 
         <div className="receipt-total">

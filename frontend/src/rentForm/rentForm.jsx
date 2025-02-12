@@ -137,7 +137,7 @@ const RentForm = () => {
   return (
     <div className="rent-form-wrapper-unique">
       <div className="map-container-unique">
-        <img src="./public/map.png" alt="지도 이미지" className="map-image-unique" />
+        <img src="map.png" alt="지도 이미지" className="map-image-unique" />
       </div>
 
       <div className="form-container-unique">
