@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 from sqlmodel import Session
 from app.api.schemas.admin.option_type_schema import OptionTypeItem, OptionTypeData, OptionTypeGetResponse, OptionTypeRegisterRequest, OptionTypeRegisterResponse, OptionTypeUpdateRequest, OptionTypeUpdateResponse, OptionTypeDeleteResponse
+from app.core.s3_storage import list_files_by_category, upload_file_generic
 from app.db.crud.option_type import option_type_crud
 from app.db.models.option_type import OptionType
 from app.utils.exceptions import DatabaseError, NotFoundError
@@ -10,6 +11,18 @@ from datetime import datetime
 class OptionTypeService:
     """옵션 타입 서비스"""
     
+    def upload_optiontype_image(file_obj, optiontype_id: int, filename: Optional[str] = None) -> str:
+        """
+        옵션타입 이미지 업로드 함수.
+        저장 경로: optiontype/{optiontype_id}/{filename}
+        """
+        return upload_file_generic(file_obj, "optiontype", optiontype_id, filename=filename, default_ext=".jpg")
+
+    @staticmethod
+    def list_optiontype_images(optiontype_id: int) -> list:
+        """옵션 타입 이미지 목록 조회 함수"""
+        return list_files_by_category("optiontype", optiontype_id)
+      
     @staticmethod 
     def _save_option_type_images(option_type_images: List[str]) -> str:
         """옵션 타입 이미지 저장 후 이미지 경로 문자열 반환

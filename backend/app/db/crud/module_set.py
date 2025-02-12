@@ -1,6 +1,10 @@
+from typing import List
 from sqlmodel import Session, select
 from app.db.models.module_set import ModuleSet
 from app.db.crud.base import CRUDBase
+from app.db.crud.module_set_option_type import module_set_option_type_crud
+from app.db.crud.option_type import option_type_crud
+
 
 class ModuleSetCRUD(CRUDBase[ModuleSet]):
     def __init__(self):
@@ -54,4 +58,19 @@ class ModuleSetCRUD(CRUDBase[ModuleSet]):
         
         return base_cost + option_cost
 
+
+    @staticmethod
+    def get_option_types(session: Session, module_set_id: int) -> List[dict]:
+        """특정 모듈 세트에 포함된 옵션 타입의 id, name, 개수를 dict 형식으로 반환합니다."""
+        option_types = module_set_option_type_crud.get_option_types_by_module_set(session, module_set_id)["items"]
+
+        result = []
+        for module_option in option_types:
+            result.append({
+                "id": module_option.option_type_id,
+                "name": option_type_crud.get_option_name_by_id(session, module_option.option_type_id),
+                "quantity": module_option.option_quantity or 1
+            })
+        return result
+      
 module_set_crud = ModuleSetCRUD()

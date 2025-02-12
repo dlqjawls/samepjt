@@ -1,0 +1,182 @@
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
+import os
+from dotenv import load_dotenv
+import uuid
+from typing import Optional
+from app.utils.exceptions import DatabaseError
+
+load_dotenv()  # .env 파일의 환경변수를 로드합니다.
+
+# AWS S3 자격증명을 환경변수에서 읽어와서 boto3 클라이언트에 직접 전달합니다.
+aws_access_key_id = os.getenv("AWS_S3_ACCESS_KEY_ID")
+aws_secret_access_key = os.getenv("AWS_S3_SECRET_ACCESS_KEY")
+aws_region = os.getenv("AWS_S3_REGION", "ap-northeast-2")
+bucket_name = os.getenv("AWS_S3_BUCKET", "moducar")
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    region_name=aws_region
+)
+
+def upload_file_to_s3(file_obj, bucket_name: str, object_name: str) -> str:
+    """
+    파일 객체를 아마존 S3 버킷에 업로드하고, 파일 URL을 반환합니다.
+
+    Args:
+        file_obj: 업로드할 파일 객체.
+        bucket_name (str): 업로드할 S3 버킷 이름.
+        object_name (str): S3 버킷 내에 저장할 파일 경로 및 파일명.
+
+    Returns:
+        str: 업로드된 파일의 URL.
+    """
+    try:
+        s3_client.upload_fileobj(file_obj, bucket_name, object_name, ExtraArgs={"ACL": "public-read"})
+        # 기본적으로 S3 버킷의 public 접근 설정(정책)에 따라 URL 접근이 가능해야 합니다.
+        url = f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
+        return url
+    except NoCredentialsError:
+        raise DatabaseError(message="AWS 자격 증명이 설정되지 않았습니다.")
+    except ClientError as e:
+        raise DatabaseError(message=f"S3 upload error: {e}")
+
+def list_files_by_prefix(prefix: str) -> list:
+    """
+    지정된 prefix를 기준으로 S3 버킷에서 파일 목록을 조회합니다.
+    파일이 없으면 빈 리스트 []를 반환합니다.
+    
+    Args:
+        prefix (str): 객체 키의 접두사(prefix)
+    
+    Returns:
+        list: 객체 키 리스트
+    """
+    try:
+        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        if 'Contents' in response:
+            return [obj['Key'] for obj in response['Contents']]
+        return []
+    except ClientError as e:
+        raise Exception(f"Failed to list objects: {e}")
+
+def upload_file_generic(file_obj, *path_parts, filename: Optional[str] = None, default_ext: str = ".jpg") -> str:
+    """
+    일반화된 파일 업로드 함수.
+    path_parts를 받아 경로를 구성하고, 파일 이름이 미지정되면 UUID 기반 이름을 생성합니다.
+    
+    Args:
+        file_obj: 업로드할 파일 객체.
+        *path_parts: 경로의 각 구성 요소들.
+        filename (str, optional): 파일 이름.
+        default_ext (str): 기본 확장자.
+        
+    Returns:
+        str: 업로드된 파일의 URL.
+    """
+    if filename is None:
+        original_filename = getattr(file_obj, "filename", None)
+        ext = os.path.splitext(original_filename)[1] if (original_filename and os.path.splitext(original_filename)[1]) else default_ext
+        filename = f"{uuid.uuid4()}{ext}"
+    object_name = "/".join([str(part) for part in path_parts] + [filename])
+    return upload_file_to_s3(file_obj, bucket_name, object_name)
+
+def list_files_by_category(*path_parts) -> list:
+    """
+    일반화된 파일 목록 조회 함수.
+    path_parts를 이용해 prefix를 구성하여 객체 목록을 조회합니다.
+    
+    Returns:
+        list: 객체 키 리스트.
+    """
+    prefix = "/".join([str(part) for part in path_parts]) + "/"
+    return list_files_by_prefix(prefix)
+
+def upload_optiontype_image(file_obj, optiontype_id: int, filename: Optional[str] = None) -> str:
+    """
+    옵션타입 이미지 업로드 함수.
+    저장 경로: optiontype/{optiontype_id}/{filename}
+    
+    Args:
+        file_obj: 업로드할 파일 객체.
+        optiontype_id (int): 옵션 타입의 ID.
+        filename (str, optional): 파일 이름. 미지정시 UUID 기반 이름 생성.
+        
+    Returns:
+        str: 업로드된 이미지의 URL.
+    """
+    return upload_file_generic(file_obj, "optiontype", optiontype_id, filename=filename, default_ext=".jpg")
+
+def list_optiontype_images(optiontype_id: int) -> list:
+    """
+    주어진 옵션타입 ID의 모든 이미지를 조회합니다.
+    없으면 []를 반환합니다.
+    
+    Args:
+        optiontype_id (int): 옵션 타입의 ID.
+        
+    Returns:
+        list: 이미지 파일 경로 리스트.
+    """
+    return list_files_by_category("optiontype", optiontype_id)
+
+def upload_moduletype_image(file_obj, moduletype_id: int, filename: Optional[str] = None) -> str:
+    """
+    모듈타입 이미지 업로드 함수.
+    저장 경로: moduletype/{moduletype_id}/{filename}
+    
+    Args:
+        file_obj: 업로드할 파일 객체.
+        moduletype_id (int): 모듈 타입의 ID.
+        filename (str, optional): 파일 이름. 미지정시 UUID 기반 이름 생성.
+        
+    Returns:
+        str: 업로드된 이미지의 URL.
+    """
+    return upload_file_generic(file_obj, "moduletype", moduletype_id, filename=filename, default_ext=".jpg")
+
+def list_moduletype_images(moduletype_id: int) -> list:
+    """
+    주어진 모듈타입 ID의 모든 이미지를 조회합니다.
+    없으면 []를 반환합니다.
+    
+    Args:
+        moduletype_id (int): 모듈 타입의 ID.
+        
+    Returns:
+        list: 이미지 파일 경로 리스트.
+    """
+    return list_files_by_category("moduletype", moduletype_id)
+
+def upload_rent_video(file_obj, rent_id: int, video_type: str, filename: Optional[str] = None) -> str:
+    """
+    대여 기록에 대한 동영상 업로드 함수.
+    저장 경로: rent/{rent_id}/{video_type}/{filename}
+    video_type 은 예를 들어 "자율주행" 또는 "모듈장착"과 같이 사용합니다.
+    
+    Args:
+        file_obj: 업로드할 파일 객체.
+        rent_id (int): 대여 기록의 ID.
+        video_type (str): 비디오 카테고리 (예: "자율주행", "모듈장착").
+        filename (str, optional): 파일 이름. 미지정시 UUID 기반 이름 생성.
+        
+    Returns:
+        str: 업로드된 동영상의 URL.
+    """
+    return upload_file_generic(file_obj, "rent", rent_id, video_type, filename=filename, default_ext=".mp4")
+
+def list_rent_files(rent_id: int, video_type: str) -> list:
+    """
+    주어진 대여 기록(rent_id)과 비디오 카테고리(video_type)의 모든 파일을 조회합니다.
+    없으면 []를 반환합니다.
+    
+    Args:
+        rent_id (int): 대여 기록의 ID.
+        video_type (str): 비디오 카테고리 (예: "자율주행", "모듈장착").
+        
+    Returns:
+        list: 동영상 파일 경로 리스트.
+    """
+    return list_files_by_category("rent", rent_id, video_type)

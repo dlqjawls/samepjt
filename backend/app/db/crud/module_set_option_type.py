@@ -72,5 +72,14 @@ class ModuleSetOptionTypesCRUD(CRUDBase[ModuleSetOptionTypes]):
         query = select(self.model).where(self.model.option_type_id == option_type_id)
         paginated = self.paginate(session=session, page=page, page_size=page_size, query=query)
         return paginated
+      
+      
+    def delete_by_module_set_id(
+        self,
+        session: Session,
+        module_set_id: int
+    ) -> None:
+        """모듈 세트 ID에 해당하는 모든 옵션 타입 삭제"""
+        session.query(self.model).filter(self.model.module_set_id == module_set_id).delete()  # type: ignore
 
 module_set_option_type_crud = ModuleSetOptionTypesCRUD()
