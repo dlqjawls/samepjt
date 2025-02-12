@@ -240,15 +240,25 @@ const ExistOptionsPage = () => {
         </div>
       ))}
     </div>
-            <div className="search-container">
-              <input
-                type="text"
-                placeholder="옵션 검색"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-            </div>
+    <div className="search-container">
+  <div className="search-input-wrapper">
+    <input
+      type="text"
+      placeholder="옵션 검색"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="search-input"
+    />
+    {searchTerm && (
+      <button
+        className="search-clear-button"
+        onClick={() => setSearchTerm('')}
+      >
+        ×
+      </button>
+    )}
+  </div>
+</div>
             <div className="custom-grid">
               {unselectedOptions
                 .filter((option) => 
