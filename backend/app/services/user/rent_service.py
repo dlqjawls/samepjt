@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Tuple
 import json
-
+import math
 from sqlmodel import Session
 
 from app.db.models.option import Option
@@ -19,6 +19,22 @@ from app.db.crud.lut import module_type as module_type_crud
 from app.db.crud.option_type import option_type_crud
 
 class RentService:
+    # 최소 대여 시간
+    MIN_HOURS = 6
+    # 시간 당 이용료
+    HOURLY_RATE = 10000
+  
+    @staticmethod
+    def calculate_rental_cost(rent_start: datetime, rent_end: datetime) -> int:
+        total_seconds = (rent_end - rent_start).total_seconds()
+        total_hours = total_seconds / 3600
+
+        # 최소 대여 시간 적용
+        billable_hours = max(total_hours, RentService.MIN_HOURS)
+        cost = math.ceil(billable_hours) * RentService.HOURLY_RATE
+        
+        return int(cost)
+
     @staticmethod
     def get_options_for_rent(
         session: Session,
@@ -245,8 +261,8 @@ class RentService:
         # 3. 가격 검증
         module_type_cost = module_type_crud.get_by_id(session, rent_request.moduleTypeId).module_type_cost
         option_cost = sum(option_type_crud.get_option_cost_by_id(session, option.option_type_id) for option in selected_options)
-        # 1시간 당 10000원 이용료 계산  
-        date_cost =  (rent_request.rentEndDate - rent_request.rentStartDate).total_seconds() / 3600 * 10000
+        date_cost = RentService.calculate_rental_cost(rent_request.rentStartDate, rent_request.rentEndDate)
+        
         # 총 비용 검증
         total_cost = module_type_cost + option_cost + date_cost
         if rent_request.cost != total_cost:

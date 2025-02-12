@@ -146,3 +146,26 @@ class CompleteRentResponse(ResponseBase[CompleteRentResponseData]):
                 }
             }
         }
+
+class RentCostRequest(BaseModel):
+    """렌트 비용 계산 요청 모델"""
+    rentStartDate: datetime = Field(..., example="2025-01-15T09:00:00")
+    rentEndDate: datetime = Field(..., example="2025-01-20T18:00:00")
+
+class RentCostResponseData(BaseModel):
+    """렌트 비용 계산 응답 데이터 모델"""
+    cost: int = Field(..., example=50000)
+
+class RentCostResponse(ResponseBase[RentCostResponseData]):
+    """렌트 비용 계산 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Rental cost calculated successfully",
+                "data": {
+                    "cost": 50000
+                }
+            }
+        } 
+

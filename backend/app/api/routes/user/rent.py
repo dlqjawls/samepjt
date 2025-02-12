@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, Query
 from sqlmodel import Session
 from app.core.database import get_session
 from app.services.user.rent_service import RentService
 from app.api.schemas.user import rent_schema
 from app.core.jwt import JWTPayload, jwt_handler
+from datetime import date
 
 router = APIRouter()
 
@@ -371,7 +372,7 @@ async def rent_vehicle(
         }
     }
 )
-async def soft_delete_rent(
+async def cancel_rent(
     rent_id: int = Path(..., description="렌트 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency())
@@ -459,3 +460,19 @@ async def complete_rent(
 ) -> rent_schema.CompleteRentResponse:
     return RentService.complete_rent(session, rent_id, token_data.user_pk)
 
+
+
+
+# 기간별 렌트 비용 계산
+@router.post(
+    "/rent/calculate-duration-cost",
+    summary="🚀 기간별 렌트 비용 계산",
+    description="사용자가 **기간별 렌트 비용을 계산**하는 API입니다.",
+    response_model=rent_schema.RentCostResponse,
+) 
+async def get_rent_cost(
+    rent_request: rent_schema.RentCostRequest,  
+) -> rent_schema.RentCostResponse:
+    cost = RentService.calculate_rental_cost(rent_request.rentStartDate, rent_request.rentEndDate) 
+    rent_cost_data = rent_schema.RentCostResponseData(cost=cost)
+    return rent_schema.RentCostResponse.success(message="Rental cost calculated successfully", data=rent_cost_data)
