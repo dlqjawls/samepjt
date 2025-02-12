@@ -27,15 +27,5 @@ class MeRentInfoService:
             RentHistory.rent_status_id == RentStatus.IN_PROGRESS
         )
         rent_history = session.exec(query).first()
-        if not rent_history:
-            raise NotFoundError(
-                message="진행 중인 렌트 정보가 존재하지 않습니다.",
-                detail={"user_pk": user_pk}
-            )
-        if rent_history.rent_id is None:
-            raise DatabaseError(
-                message="렌트 정보가 존재하지 않습니다.",
-                detail={"rent_id": rent_history.rent_id}
-            )
             
         return MeRentInfo(rent_id=rent_history.rent_id) 
