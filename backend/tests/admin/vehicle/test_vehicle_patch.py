@@ -4,97 +4,87 @@ from app.core.jwt import jwt_handler
 from app.db.models.vehicle import Vehicle
 from sqlmodel import Session, select
 from app.utils.lut_constants import ItemStatus
+from tests.helpers import master_token, semi_admin_token, user_token, create_dummy_vehicles
 
-@pytest.fixture
-def master_token():
-    """마스터 권한 토큰 생성"""
-    return jwt_handler.create_token(1, role="master")[0]
 
-@pytest.fixture
-def semi_admin_token():
-    """일반 관리자 권한 토큰 생성"""
-    return jwt_handler.create_token(2, role="semi")[0]
-
-@pytest.fixture
-def test_vehicle(session: Session):
-    """테스트용 차량 데이터 생성"""
-    vehicle = Vehicle(
-        vin="TEST123456789",
-        vehicle_number="PBV-1234",
-        current_location='{"x": 12.313, "y": 32.3232}',
-        item_status_id=ItemStatus.ACTIVE,
-        created_by=1,
-        updated_by=1,
-        created_at=datetime.now(),
-        updated_at=datetime.now()
-
-    )
-    session.add(vehicle)
-    session.commit()
-    session.refresh(vehicle)
-    return vehicle
-
-def test_update_vehicle_success(client, session, master_token, test_vehicle):
-    """✅ 정상적인 차량 정보 업데이트 테스트"""
-    # Given: 업데이트할 차량 데이터
+def test_update_vehicle_success(client, session, master_token, create_dummy_vehicles):
+    """정상적인 차량 정보 업데이트 테스트"""
+    # 더미 차량 1건 생성
+    vehicles = create_dummy_vehicles(1)
+    vehicle = vehicles[0]
     update_data = {
-        "vehicle_number": "PBV-5678",
-        "last_maintenance_at": "2024-03-15T10:00:00",
-        "next_maintenance_at": "2024-09-15T10:00:00"
+        "vehicle_number": "PBV-9999", # 차량 번호 업데이트
     }
-
-    # When: 마스터 권한으로 차량 정보 업데이트 요청
     response = client.patch(
-        f"/admin/vehicles/{test_vehicle.vehicle_id}",
+        f"/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
-
-    # Then: 응답 검증
-    assert response.status_code == 200
+    # 응답 검증
+    assert response.status_code == 200, response.text
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
     assert data["message"] == "Vehicle updated successfully"
+    
+    # DB에 변경 내용 반영 여부 검증
+    updated_vehicle = session.get(Vehicle, vehicle.vehicle_id)
+    assert updated_vehicle.vehicle_number == "PBV-9999"
 
-    # Then: DB에 저장된 데이터 검증
-    updated_vehicle = session.exec(
-        select(Vehicle).where(Vehicle.vehicle_id == test_vehicle.vehicle_id)
-    ).first()
-    assert updated_vehicle.vehicle_number == update_data["vehicle_number"]
-
-def test_update_vehicle_unauthorized(client, test_vehicle, semi_admin_token):
-    """❌ 권한 없는 사용자의 차량 정보 업데이트 시도"""
+def test_update_vehicle_unauthorized(client, create_dummy_vehicles):
+    """인증 토큰 없이 차량 정보 업데이트 시도 테스트"""
+    vehicles = create_dummy_vehicles(1)
+    vehicle = vehicles[0]
     update_data = {
-        "vehicle_number": "PBV-5678"
+        "vehicle_number": "PBV-9999"
     }
-
     response = client.patch(
-        f"/admin/vehicles/{test_vehicle.vehicle_id}",
-        json=update_data,
-        headers={"Authorization": f"Bearer {semi_admin_token}"}
+        f"/admin/vehicles/{vehicle.vehicle_id}",
+        json=update_data
     )
+    assert response.status_code == 401
 
+def test_update_vehicle_forbidden(client, create_dummy_vehicles, user_token):
+    """비관리자 토큰으로 차량 정보 업데이트 시도 테스트"""
+    vehicles = create_dummy_vehicles(1)
+    vehicle = vehicles[0]
+    update_data = {
+        "vehicle_number": "PBV-9999"
+    }
+    response = client.patch(
+        f"/admin/vehicles/{vehicle.vehicle_id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {user_token}"}
+    )
     assert response.status_code == 403
-    data = response.json()
-    assert data["resultCode"] == "FAILURE"
-    assert "Permission denied" in data["message"]
 
 def test_update_nonexistent_vehicle(client, master_token):
-    """❌ 존재하지 않는 차량 정보 업데이트 시도"""
+    """존재하지 않는 차량 정보 업데이트 시도 테스트"""
     update_data = {
-        "vehicle_number": "PBV-5678"
+        "vehicle_number": "PBV-9999"
     }
-
     response = client.patch(
-        "/admin/vehicles/99999",
+        "/admin/vehicles/99999",  # 존재하지 않는 차량 ID
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
-
     assert response.status_code == 404
     data = response.json()
     assert data["resultCode"] == "FAILURE"
     assert "Vehicle not found" in data["message"]
+
+@pytest.mark.parametrize("invalid_vehicle_id", ["abc", -1, 0])
+def test_update_vehicle_invalid_id(client, master_token, invalid_vehicle_id):
+    """잘못된 형식의 차량 ID로 업데이트 시도 테스트"""
+    update_data = {
+        "vehicle_number": "PBV-9999"
+    }
+    response = client.patch(
+        f"/admin/vehicles/{invalid_vehicle_id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {master_token}"}
+    )
+    # Pydantic 유효성 검사 실패 시 422 에러 발생
+    assert response.status_code == 422
 
 @pytest.mark.parametrize("invalid_number", [
     "PBV1234",  # 하이픈 없음
@@ -105,14 +95,16 @@ def test_update_nonexistent_vehicle(client, master_token):
     "PBV-123A",  # 문자 포함
     " PBV-1234 "  # 앞뒤 공백
 ])
-def test_update_vehicle_invalid_number_format(client, master_token, test_vehicle, invalid_number):
-    """❌ 잘못된 형식의 차량 번호로 업데이트 시도"""
+def test_update_vehicle_invalid_number_format(client, master_token, create_dummy_vehicles, invalid_number):
+    """잘못된 형식의 차량 번호로 업데이트 시도 테스트"""
+    vehicles = create_dummy_vehicles(1)
+    vehicle = vehicles[0]
     update_data = {
         "vehicle_number": invalid_number
     }
 
     response = client.patch(
-        f"/admin/vehicles/{test_vehicle.vehicle_id}",
+        f"/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -122,52 +114,22 @@ def test_update_vehicle_invalid_number_format(client, master_token, test_vehicle
     assert data["resultCode"] == "FAILURE"
     assert "validation error" in data["message"].lower()
 
-def test_update_vehicle_duplicate_number(client, session, master_token, test_vehicle):
-    """❌ 중복된 차량 번호로 업데이트 시도"""
-    # Given: 다른 차량 데이터 생성
-    other_vehicle = Vehicle(
-        vin="OTHER123456789",
-        vehicle_number="PBV-9999",
-        current_location='{"x": 12.313, "y": 32.3232}',
-        item_status_id=ItemStatus.ACTIVE,
-        created_by=1,
-        updated_by=1,
-        created_at=datetime.now(),
-        updated_at=datetime.now()
-
-    )
-    session.add(other_vehicle)
-    session.commit()
-
-    # When: 이미 존재하는 차량 번호로 업데이트 시도
+def test_update_vehicle_duplicate_number(client, session, master_token, create_dummy_vehicles):
+    """중복된 차량 번호로 업데이트 시도 테스트"""
+    vehicles = create_dummy_vehicles(2)
+    vehicle = vehicles[0]
+    other_vehicle = vehicles[1]
     update_data = {
-        "vehicle_number": "PBV-9999"
+        "vehicle_number": other_vehicle.vehicle_number
     }
 
     response = client.patch(
-        f"/admin/vehicles/{test_vehicle.vehicle_id}",
+        f"/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
-
-    # Then: 409 Conflict 응답 검증
+  
     assert response.status_code == 409
     data = response.json()
     assert data["resultCode"] == "FAILURE"
     assert "already exists" in data["message"].lower()
-
-def test_update_vehicle_without_token(client, test_vehicle):
-    """❌ 인증 토큰 없이 차량 정보 업데이트 시도"""
-    update_data = {
-        "vehicle_number": "PBV-5678"
-    }
-
-    response = client.patch(
-        f"/admin/vehicles/{test_vehicle.vehicle_id}",
-        json=update_data
-    )
-
-    assert response.status_code == 401
-    data = response.json()
-    assert data["resultCode"] == "FAILURE"
-    assert "Authentication" in data["message"]

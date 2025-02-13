@@ -44,7 +44,7 @@ def create_dummy_vehicles(session: Session):
                 mileage=1000.0 * (i+1),
                 last_maintenance_at=datetime.now(),
                 next_maintenance_at=datetime.now(),
-                item_status_id=ItemStatus.INACTIVE,
+                item_status_id=ItemStatus.INACTIVE.ID,
                 created_by=1,
                 updated_by=1
             )
@@ -63,7 +63,7 @@ def create_dummy_options(session: Session):
             # JSON 형식의 좌표 문자열 생성
             option = Option(
                 option_type_id=1,
-                item_status_id=ItemStatus.INACTIVE,
+                item_status_id=ItemStatus.INACTIVE.ID, 
                 created_by=1,
                 updated_by=1
             )
@@ -86,7 +86,7 @@ def create_dummy_modules(session: Session):
                 module_nfc_tag_id=f"1A1FF1043E2BC{i}",
                 module_type_id=1,
                 current_location=location,  # JSON 문자열로 저장
-                item_status_id=ItemStatus.INACTIVE,
+                item_status_id=ItemStatus.INACTIVE.ID,
                 created_by=1,
                 updated_by=1
             )
