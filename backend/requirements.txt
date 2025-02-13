@@ -88,7 +88,6 @@ starlette==0.45.3
 style==1.1.0
 tomli==2.2.1
 tomlkit==0.13.2
-types-requests==2.32.0.20241016
 typing_extensions==4.12.2
 ujson==4.3.0
 update==0.0.1
