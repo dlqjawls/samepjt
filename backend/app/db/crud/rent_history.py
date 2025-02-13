@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 from sqlmodel import Session, select
 from app.db.models.rent_history import RentHistory
 from app.db.crud.base import CRUDBase
@@ -14,23 +14,8 @@ class RentHistoryCRUD(CRUDBase[RentHistory]):
         user_pk: int,
         page: int = 1,
         page_size: int = 10
-    ) -> Dict[str, Any]:
-        """사용자별 렌트 기록 조회
-
-        Args:
-            session (Session): DB 세션
-            user_pk (int): 사용자 PK
-            page (int, optional): 페이지 번호. Defaults to 1.
-            page_size (int, optional): 페이지 크기. Defaults to 10.
-
-        Returns:
-            Dict[str, Any]: 렌트 기록 및 페이지네이션 정보
-
-        Raises:
-            ValidationError: 잘못된 사용자 PK
-            NotFoundError: 렌트 기록을 찾을 수 없음
-            DatabaseError: DB 조회 중 오류 발생
-        """
+    ) -> List[RentHistory]:
+        """사용자별 렌트 기록 조회"""
         if user_pk <= 0:
             raise ValidationError(
                 message="Invalid user PK",
@@ -38,9 +23,7 @@ class RentHistoryCRUD(CRUDBase[RentHistory]):
             )
 
         query = select(self.model).where(self.model.user_pk == user_pk)
-        paginated = self.paginate(session=session, page=page, page_size=page_size, query=query)
-
-        return paginated
+        return list(session.exec(query).all())
         
     def get_by_id(self, session: Session, rent_id: int) -> Optional[RentHistory]:
         return self.get_by_field(session, rent_id, "rent_id")
