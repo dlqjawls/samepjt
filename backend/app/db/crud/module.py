@@ -11,21 +11,7 @@ class ModuleCRUD(CRUDBase[Module]):
         super().__init__(Module)    
         
     def get_first_available_module(self, session: Session, item_status_id: int = ItemStatus.INACTIVE.ID) -> Module:
-        """첫 번째 사용 가능한 모듈을 조회합니다.
-
-
-        Args:
-            session (Session): DB 세션
-            item_status_id (int, optional): 사용 가능한 모듈 상태 ID. Defaults to 2 (INACTIVE).
-
-
-        Returns:
-            Module: 첫 번째 사용 가능한 모듈 객체
-
-        Raises:
-            NotFoundError: 사용 가능한 모듈을 찾지 못한 경우
-            DatabaseError: DB 조회 중 오류 발생 시
-        """
+        """첫 번째 사용 가능한 모듈을 조회합니다"""
         try:
             query = select(self.model).where(
                 self.model.item_status_id == item_status_id,
@@ -47,8 +33,10 @@ class ModuleCRUD(CRUDBase[Module]):
 
     def get_by_module_nfc_tag_id(self, session: Session, module_nfc_tag_id: str) -> Optional[Module]:
         """Return the module with the specified NFC tag ID, if exists."""
-        return session.exec(
-            select(self.model).where(self.model.module_nfc_tag_id == module_nfc_tag_id)
-        ).first()
+        return self.get_by_field(session, module_nfc_tag_id, "module_nfc_tag_id")
+        
+    def get_by_id(self, session: Session, id: int) -> Optional[Module]:
+        """Return the module with the specified ID, if exists."""
+        return self.get_by_field(session, id, "module_id")
 
 module_crud = ModuleCRUD()

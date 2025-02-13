@@ -3,14 +3,14 @@ from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.module_service import ModuleService
-from app.api.schemas.admin.module_schema import ModuleDeleteResponse, ModuleRegisterRequest, ModuleRegisterResponse, ModuleResponse, ModuleData, ModuleUpdateRequest, ModuleUpdateResponse
+from app.api.schemas.admin.module_schema import ModuleRegisterRequest, ModuleMessageResponse, ModuleGetResponse, ModuleUpdateRequest
 
 router = APIRouter(
 )
 
 @router.get(
     "/modules",
-    response_model=ModuleResponse,
+    response_model=ModuleGetResponse,
     summary="🧳 모듈 목록 조회",
     description="관리자가 등록된 모듈 목록을 조회하는 API입니다. 모듈 타입 ID를 통한 페이지네이션을 지원합니다.",
     responses={
@@ -61,11 +61,12 @@ def get_modules(
 
 @router.post(
     "/modules",
-    response_model=ModuleRegisterResponse,
+    response_model=ModuleMessageResponse,
     summary="🧳 모듈 등록",
     description="관리자가 새로운 모듈을 등록하는 API입니다.",
+    status_code=201,
     responses={
-        200: {
+        201: {
             "description": "모듈 등록 성공",
             "content": {
                 "application/json": {
@@ -87,7 +88,7 @@ def register_module(
   
 @router.patch(
     "/modules/{module_id}",
-    response_model=ModuleUpdateResponse,
+    response_model=ModuleMessageResponse,
     summary="🧳 모듈 수정",
     description="관리자가 등록된 모듈을 수정하는 API입니다.",
     responses={
@@ -114,7 +115,7 @@ def update_module(
 
 @router.delete(
     "/modules/{module_id}",
-    response_model=ModuleDeleteResponse,
+    response_model=ModuleMessageResponse,
     summary="🧳 모듈 삭제",
     description="관리자가 등록된 모듈을 삭제하는 API입니다.",
     responses={

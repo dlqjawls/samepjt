@@ -18,14 +18,11 @@ class ModuleItem(BaseModel):
     updated_at: datetime = Field(..., example="2025-01-10T12:00:00")
     updated_by: int = Field(..., example=5)
 
-    class Config:
-        orm_mode = True
-
 class ModuleData(BaseModel):
     modules: List[ModuleItem]
     pagination: Pagination
 
-class ModuleResponse(ResponseBase[ModuleData]):
+class ModuleGetResponse(ResponseBase[ModuleData]):
     class Config:
         schema_extra = {
             "example": {
@@ -77,15 +74,6 @@ class ModuleRegisterRequest(BaseModel):
             raise ValueError("module_type_id must be greater than 0")
         return value
 
-class ModuleRegisterResponse(ResponseBase):
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Module registered successfully"
-            }
-        }
-
 class ModuleUpdateRequest(BaseModel):
     module_type_id: int = Field(..., example=2, gt=0)
 
@@ -94,21 +82,12 @@ class ModuleUpdateRequest(BaseModel):
         if value is None or value <= 0:
             raise ValueError("module_type_id must be greater than 0")
         return value
-
-class ModuleUpdateResponse(ResponseBase):
+      
+class ModuleMessageResponse(ResponseBase):
     class Config:
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Module updated successfully"
+                "message": "Module {method} successfully"
             }
         }
-
-class ModuleDeleteResponse(ResponseBase):   
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Module deleted successfully"
-            }
-        } 
