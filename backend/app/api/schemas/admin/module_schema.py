@@ -76,12 +76,6 @@ class ModuleRegisterRequest(BaseModel):
 
 class ModuleUpdateRequest(BaseModel):
     module_type_id: int = Field(..., example=2, gt=0)
-
-    @validator('module_type_id')
-    def validate_module_type_id(cls, value: int) -> int:
-        if value is None or value <= 0:
-            raise ValueError("module_type_id must be greater than 0")
-        return value
       
 class ModuleMessageResponse(ResponseBase):
     class Config:

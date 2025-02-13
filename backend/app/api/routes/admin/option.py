@@ -3,10 +3,9 @@ from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.option_service import OptionService
-from app.api.schemas.admin.option_schema import OptionDeleteResponse, OptionGetResponse, OptionRegisterRequest, OptionRegisterResponse, OptionUpdateRequest, OptionUpdateResponse
+from app.api.schemas.admin.option_schema import OptionGetResponse, OptionRegisterRequest, OptionUpdateRequest, OptionMessageResponse
 
-router = APIRouter(
-)
+router = APIRouter()
 
 @router.get(
     "/options",
@@ -58,7 +57,7 @@ def get_options(
 
 @router.post(
     "/options",
-    response_model=OptionRegisterResponse,
+    response_model=OptionMessageResponse,
     summary="🔧 옵션 등록",
     description="관리자가 새로운 옵션을 등록하는 API입니다.",
     responses={
@@ -82,36 +81,37 @@ def register_option(
 ):
     return OptionService.register_option(session, option_data, token_data.user_pk)
   
-@router.patch(
-    "/options/{option_id}",
-    response_model=OptionUpdateResponse,
-    summary="🔧 옵션 수정",
-    description="관리자가 등록된 옵션을 수정하는 API입니다.",
-    responses={
-        200: {
-            "description": "옵션 수정 성공",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "resultCode": "SUCCESS",
-                        "message": "Option updated successfully"
-                    }
-                }
-            }
-        }
-    }
-)
-def update_option(
-    option_data: OptionUpdateRequest,
-    option_id: int = Path(..., description="수정할 옵션의 ID", gt=0),
-    session: Session = Depends(get_session),
-    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-):
-    return OptionService.update_option(session, option_id, option_data, token_data.user_pk)
+# NOTE: 미사용 (변경할 항목이 없음)
+# @router.patch(
+#     "/options/{option_id}",
+#     response_model=OptionMessageResponse,
+#     summary="🔧 옵션 수정",
+#     description="관리자가 등록된 옵션을 수정하는 API입니다.",
+#     responses={
+#         200: {
+#             "description": "옵션 수정 성공",
+#             "content": {
+#                 "application/json": {
+#                     "example": {
+#                         "resultCode": "SUCCESS",
+#                         "message": "Option updated successfully"
+#                     }
+#                 }
+#             }
+#         }
+#     }
+# )
+# def update_option(
+#     option_data: OptionUpdateRequest,
+#     option_id: int = Path(..., description="수정할 옵션의 ID", gt=0),
+#     session: Session = Depends(get_session),
+#     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+# ):
+#     return OptionService.update_option(session, option_id, option_data, token_data.user_pk)
 
 @router.delete(
     "/options/{option_id}",
-    response_model=OptionDeleteResponse,
+    response_model=OptionMessageResponse,
     summary="🔧 옵션 삭제",
     description="관리자가 등록된 옵션을 삭제하는 API입니다.",
     responses={

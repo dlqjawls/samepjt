@@ -15,9 +15,6 @@ class OptionItem(BaseModel):
     updated_at: datetime = Field(..., example="2025-01-10T12:00:00")
     updated_by: int = Field(..., example=5)
 
-    class Config:
-        orm_mode = True
-
 class OptionData(BaseModel):
     options: List[OptionItem]
     pagination: Pagination
@@ -54,40 +51,16 @@ class OptionGetResponse(ResponseBase[OptionData]):
         
 class OptionRegisterRequest(BaseModel):
     option_type_id: int = Field(..., example=1, gt=0)
-    
-    @validator('option_type_id')
-    def validate_option_type_id(cls, value: int) -> int:
-        if value < 1:
-            raise ValueError("option_type_id must be greater than 0")
-        return value
-
-class OptionRegisterResponse(ResponseBase):
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Option registered successfully"
-            }
-        }
-
+      
+# NOTE: 미사용 (변경할 항목이 없음)
 class OptionUpdateRequest(BaseModel):
-    last_maintenance_at: datetime = Field(..., example="2025-01-10T12:00:00")
-    next_maintenance_at: datetime = Field(..., example="2025-06-10T12:00:00")
-
-class OptionUpdateResponse(ResponseBase):
+    option_type_id: int = Field(..., example=1, gt=0)
+    
+class OptionMessageResponse(ResponseBase):   
     class Config:
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Option updated successfully"
-            }
-        }
-
-class OptionDeleteResponse(ResponseBase):   
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Option deleted successfully"
+                "message": "Option {method} successfully"
             }
         }   
