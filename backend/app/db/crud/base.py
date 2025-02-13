@@ -8,61 +8,29 @@ T = TypeVar("T", bound=SQLModel)
 
 class CRUDBase(Generic[T]):
     def __init__(self, model: Type[T]):
-        """
-        생성자
-
-        Args:
-            model (Type[T]): SQLModel 기반 모델 클래스.
-        """
         self.model = model
 
     def base_query(self) -> Any:
-        """
-        기본 쿼리 생성 (soft delete가 있는 경우에만 필터링).
-
-        Returns:
-            Any: 기본 쿼리.
-        """
+        """기본 쿼리 생성 (soft delete가 있는 경우에만 필터링)."""
         query = select(self.model)
         if hasattr(self.model, "deleted_at"):
             query = query.where(getattr(self.model, "deleted_at").is_(None))
         return query
 
     def get_by_field(self, session: Session, id_value: Any, id_field: str = "id") -> Optional[T]:
-        """
-        주어진 필드와 값을 기준으로 객체를 조회합니다.
-        """
-        try:
-            return session.exec(self.base_query().where(getattr(self.model, id_field) == id_value)).first()
-        except SQLAlchemyError as e:
-            raise DatabaseError(
-                message="Failed to get object by field",
-                detail={"error": str(e)}
-            )
+        """주어진 필드와 값을 기준으로 객체를 조회합니다."""
+        return session.exec(self.base_query().where(getattr(self.model, id_field) == id_value)).first()
+
 
     def save(self, session: Session, obj: T) -> T:
-        """
-        객체를 DB에 저장하고 새 객체로 refresh하여 반환합니다.
-        """
+        """객체를 DB에 저장하고 새 객체로 refresh하여 반환합니다."""
         session.add(obj)
         session.flush()
         session.refresh(obj)
         return obj
 
     def create(self, session: Session, obj_in) -> T:
-        """
-        객체를 생성합니다.
-
-        Args:
-            session (Session): DB 세션.
-            obj_in (Pydantic 모델): 생성할 데이터.
-
-        Raises:
-            DatabaseError: 생성 도중 발생한 오류.
-
-        Returns:
-            T: 생성된 객체.
-        """
+        """객체를 생성합니다."""
         try:
             db_obj = self.model(**obj_in.dict())
             return self.save(session, db_obj)
@@ -74,22 +42,7 @@ class CRUDBase(Generic[T]):
             )
 
     def update(self, session: Session, id_value: Any, obj_in, id_field: str = "id") -> Optional[T]:
-        """
-        객체를 업데이트합니다.
-
-        Args:
-            session (Session): DB 세션.
-            id_value (Any): 업데이트할 객체의 ID 값.
-            obj_in (dict 또는 Pydantic 모델): 업데이트할 데이터.
-            id_field (str, optional): ID 필드명 (기본값: "id").
-
-        Raises:
-            NotFoundError: 객체를 찾지 못한 경우.
-            DatabaseError: 업데이트 도중 발생한 오류.
-
-        Returns:
-            Optional[T]: 업데이트된 객체.
-        """
+        """객체를 업데이트합니다."""
         db_obj = self.get_by_field(session, id_value, id_field)
         if not db_obj:
             raise NotFoundError(f"{self.model.__name__} with {id_field}={id_value} not found")
@@ -100,21 +53,7 @@ class CRUDBase(Generic[T]):
         return self.save(session, db_obj)
 
     def soft_delete(self, session: Session, id_value: Any, id_field: str = "id") -> Optional[T]:
-        """
-        객체를 논리적으로 삭제합니다.
-
-        Args:
-            session (Session): DB 세션.
-            id_value (Any): 삭제할 객체의 ID 값.
-            id_field (str, optional): ID 필드명 (기본값: "id").
-
-        Raises:
-            NotFoundError: 객체를 찾지 못한 경우.
-            DatabaseError: soft delete 기능 미구성 시.
-
-        Returns:
-            Optional[T]: 논리 삭제된 객체.
-        """
+        """객체를 논리적으로 삭제합니다."""
         db_obj = self.get_by_field(session, id_value, id_field)
         if not db_obj:
             raise NotFoundError(f"{self.model.__name__} with {id_field}={id_value} not found")
@@ -127,17 +66,7 @@ class CRUDBase(Generic[T]):
         return self.save(session, db_obj)
 
     def hard_delete(self, session: Session, id_value: Any, id_field: str = "id") -> None:
-        """
-        객체를 영구적으로 삭제합니다.
-
-        Args:
-            session (Session): DB 세션.
-            id_value (Any): 삭제할 객체의 ID 값.
-            id_field (str, optional): ID 필드명 (기본값: "id").
-
-        Raises:
-            NotFoundError: 객체를 찾지 못한 경우.
-        """
+        """객체를 영구적으로 삭제합니다."""
         db_obj = self.get_by_field(session, id_value, id_field)
         if not db_obj:
             raise NotFoundError(f"{self.model.__name__} with {id_field}={id_value} not found")
@@ -145,18 +74,7 @@ class CRUDBase(Generic[T]):
         session.flush()
 
     def paginate(self, session: Session, page: int = 1, page_size: int = 10, query: Any = None) -> Dict[str, Any]:
-        """
-        쿼리 결과를 페이지네이션합니다.
-
-        Args:
-            session (Session): DB 세션.
-            page (int, optional): 페이지 번호.
-            page_size (int, optional): 페이지당 항목 수.
-            query (Any, optional): 커스텀 쿼리 (없으면 기본 쿼리 사용).
-
-        Returns:
-            Dict[str, Any]: 조회된 결과와 페이지네이션 정보.
-        """
+        """쿼리 결과를 페이지네이션합니다."""
         try:
             page = max(page, 1)
             page_size = max(page_size, 1)
@@ -182,15 +100,7 @@ class CRUDBase(Generic[T]):
             )
 
     def count_all(self, session: Session) -> int:
-        """
-        전체 객체 수를 조회합니다.
-
-        Args:
-            session (Session): DB 세션.
-
-        Returns:
-            int: 전체 객체 수.
-        """
+        """전체 객체 수를 조회합니다."""
         base_query = self.base_query()
         count_query = select(func.count()).select_from(base_query.subquery())
         return session.exec(count_query).one()
@@ -207,22 +117,7 @@ class CRUDBase(Generic[T]):
         page_size: int = 10,
         include_deleted: bool = False
     ) -> Dict[str, Any]:
-        """
-        필터링, 정렬, 검색을 적용하여 페이지네이션된 결과를 반환합니다.
-
-        Args:
-            session (Session): DB 세션.
-            filters (Optional[Dict[str, Any]]): 필터 조건.
-            sort_by (Optional[str]): 정렬할 필드명.
-            order (str, optional): 정렬 순서 ("asc" 또는 "desc", 기본: "asc").
-            search (Optional[str]): 검색어.
-            search_fields (Optional[list]): 검색할 필드 목록.
-            page (int, optional): 페이지 번호.
-            page_size (int, optional): 페이지당 항목 수.
-
-        Returns:
-            Dict[str, Any]: 조회 결과와 페이지네이션 정보.
-        """
+        """필터링, 정렬, 검색을 적용하여 페이지네이션된 결과를 반환합니다."""
         # 기본 쿼리 생성
         if include_deleted:
             query = select(self.model)
