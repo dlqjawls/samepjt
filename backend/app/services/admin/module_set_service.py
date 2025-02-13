@@ -74,6 +74,13 @@ class ModuleSetService:
         # 모듈 세트 데이터 리스트 생성
         module_set_items = []
         for module_set in module_sets:
+
+            # 모듈 세트 ID 확인
+            if module_set.module_set_id is None:
+                raise DatabaseError(
+                    message="Module set auto increment ID is not assigned",
+                    detail={"module_set_id": module_set.module_set_id}
+                )
             
             # 모듈 세트 존재 여부 확인
             ModuleSetService._check_module_set_exists(session, module_set.module_set_id)
@@ -227,7 +234,7 @@ class ModuleSetService:
         # 이미지 파일 처리
         if "module_set_images" in update_fields:
             if update_fields["module_set_images"]:
-                processed_images = ModuleSetService._save_module_set_images(update_fields["module_set_images"], module_set.module_set_id)
+                processed_images = ModuleSetService._save_module_set_images(update_fields["module_set_images"], before_module_set.module_set_id)
                 update_fields["module_set_images"] = processed_images
             else:
                 update_fields["module_set_images"] = ""
