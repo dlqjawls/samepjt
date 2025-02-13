@@ -1,24 +1,17 @@
 import boto3
 from botocore.exceptions import NoCredentialsError, ClientError
+from app.core.config import settings
 import os
-from dotenv import load_dotenv
 import uuid
 from typing import Optional
 from app.utils.exceptions import DatabaseError
 
-load_dotenv()  # .env 파일의 환경변수를 로드합니다.
 
-# AWS S3 자격증명을 환경변수에서 읽어와서 boto3 클라이언트에 직접 전달합니다.
-aws_access_key_id = os.getenv("AWS_S3_ACCESS_KEY_ID")
-aws_secret_access_key = os.getenv("AWS_S3_SECRET_ACCESS_KEY")
-aws_region = os.getenv("AWS_S3_REGION", "ap-northeast-2")
-bucket_name = os.getenv("AWS_S3_BUCKET", "moducar")
-
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key,
-    region_name=aws_region
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=settings.aws_access_key_id,
+    aws_secret_access_key=settings.aws_secret_access_key,
+    region_name=settings.aws_region
 )
 
 def upload_file_to_s3(file_obj, bucket_name: str, object_name: str) -> str:
@@ -34,7 +27,7 @@ def upload_file_to_s3(file_obj, bucket_name: str, object_name: str) -> str:
         str: 업로드된 파일의 URL.
     """
     try:
-        s3_client.upload_fileobj(file_obj, bucket_name, object_name, ExtraArgs={"ACL": "public-read"})
+        s3.upload_fileobj(file_obj, bucket_name, object_name, ExtraArgs={"ACL": "public-read"})
         # 기본적으로 S3 버킷의 public 접근 설정(정책)에 따라 URL 접근이 가능해야 합니다.
         url = f"https://{bucket_name}.s3.amazonaws.com/{object_name}"
         return url
@@ -55,7 +48,7 @@ def list_files_by_prefix(prefix: str) -> list:
         list: 객체 키 리스트
     """
     try:
-        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        response = s3.list_objects_v2(Bucket=settings.s3_bucket_name, Prefix=prefix)
         if 'Contents' in response:
             return [obj['Key'] for obj in response['Contents']]
         return []
@@ -81,7 +74,7 @@ def upload_file_generic(file_obj, *path_parts, filename: Optional[str] = None, d
         ext = os.path.splitext(original_filename)[1] if (original_filename and os.path.splitext(original_filename)[1]) else default_ext
         filename = f"{uuid.uuid4()}{ext}"
     object_name = "/".join([str(part) for part in path_parts] + [filename])
-    return upload_file_to_s3(file_obj, bucket_name, object_name)
+    return upload_file_to_s3(file_obj, settings.s3_bucket_name, object_name)
 
 def list_files_by_category(*path_parts) -> list:
     """
@@ -94,33 +87,6 @@ def list_files_by_category(*path_parts) -> list:
     prefix = "/".join([str(part) for part in path_parts]) + "/"
     return list_files_by_prefix(prefix)
 
-def upload_optiontype_image(file_obj, optiontype_id: int, filename: Optional[str] = None) -> str:
-    """
-    옵션타입 이미지 업로드 함수.
-    저장 경로: optiontype/{optiontype_id}/{filename}
-    
-    Args:
-        file_obj: 업로드할 파일 객체.
-        optiontype_id (int): 옵션 타입의 ID.
-        filename (str, optional): 파일 이름. 미지정시 UUID 기반 이름 생성.
-        
-    Returns:
-        str: 업로드된 이미지의 URL.
-    """
-    return upload_file_generic(file_obj, "optiontype", optiontype_id, filename=filename, default_ext=".jpg")
-
-def list_optiontype_images(optiontype_id: int) -> list:
-    """
-    주어진 옵션타입 ID의 모든 이미지를 조회합니다.
-    없으면 []를 반환합니다.
-    
-    Args:
-        optiontype_id (int): 옵션 타입의 ID.
-        
-    Returns:
-        list: 이미지 파일 경로 리스트.
-    """
-    return list_files_by_category("optiontype", optiontype_id)
 
 def upload_moduletype_image(file_obj, moduletype_id: int, filename: Optional[str] = None) -> str:
     """
