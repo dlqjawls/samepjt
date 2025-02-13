@@ -9,19 +9,16 @@ class LookUpTableCRUD(Generic[T]):
         self.model = model
         self.id_field = id_field
         self.name_field = name_field
+        
     def get_all(self, session: Session) -> List[T]:
         return list(session.exec(select(self.model)).all())
 
-    def get_by_id(self, session: Session, id: int) -> T:
+    def get_by_id(self, session: Session, id: int) -> Optional[T]:
         result = session.exec(select(self.model).where(getattr(self.model, self.id_field) == id)).first()
-        if result is None:
-            raise ValueError(f"{self.model.__name__} with id {id} not found")
         return result
       
-    def get_by_name(self, session: Session, name: str) -> T:
+    def get_by_name(self, session: Session, name: str) -> Optional[T]:
         result = session.exec(select(self.model).where(getattr(self.model, self.name_field) == name)).first()
-        if result is None:
-            raise ValueError(f"{self.model.__name__} with name {name} not found")
         return result
 
 
