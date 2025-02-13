@@ -39,7 +39,9 @@ const LoginModal = ({ onClose }) => {
       };
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/login`,
-        encryptedData
+        formData
+        // encryptedData
+
       );
       toast.success("로그인 성공!");
       console.log("로그인 성공:", response.data);
