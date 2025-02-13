@@ -17,7 +17,7 @@ function Dashboard() {
     try {
       const refresh_token = sessionStorage.getItem("refreshToken");
       const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/refresh-token",
+        `${import.meta.env.VITE_API_URL}/auth/refresh-token`,
         {
           refresh_token: refresh_token
         }
@@ -43,7 +43,7 @@ function Dashboard() {
   
       try {
         const response = await axios.delete(
-          `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`,
+          `${import.meta.env.VITE_API_URL}/user/rent/${rent_id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -118,7 +118,7 @@ function Dashboard() {
       try {
         console.log("API 요청 시작");
         const response = await axios.post(
-          `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}/complete`,
+          `${import.meta.env.VITE_API_URL}/user/rent/${rent_id}/complete`,
           {},
           {
             headers: {

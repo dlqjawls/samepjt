@@ -29,7 +29,7 @@ function ModuleSetList() {
       setError(null)
 
       try {
-        const response = await axios.get(API_URL, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/module-sets`, {
           params: { page, page_size: size },
         })
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./RegistrationForm.css";
-
+import { encryptData } from './utils/crypto';
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
     id: "",
@@ -38,6 +38,13 @@ const RegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const encryptedData = {
+      id: encryptData(formData.id),
+      password: encryptData(formData.password),
+      name: encryptData(formData.name),
+      email: encryptData(formData.email),
+      phone: encryptData(formData.phone)
+    };
     setErrors({});
     setApiError(null);
     setSuccessMessage("");
@@ -65,8 +72,8 @@ const RegistrationForm = () => {
 
     try {
       const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/register",
-        formData
+        `${import.meta.env.VITE_API_URL}/auth/register`,
+        encryptedData
       );
 
       if (response.data.resultCode === "SUCCESS") {

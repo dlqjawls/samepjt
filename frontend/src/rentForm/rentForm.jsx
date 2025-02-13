@@ -95,7 +95,7 @@ const RentForm = () => {
   const handleNext = async () => {
     if (validateDates()) {
       try {
-        const response = await axios.post('https://backend-wandering-river-6835.fly.dev/user/rent/calculate-duration-cost', {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/rent/calculate-duration-cost`, {
           rentStartDate: rentStartDate,
           rentEndDate: rentEndDate
         });

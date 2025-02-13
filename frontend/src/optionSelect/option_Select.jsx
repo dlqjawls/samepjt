@@ -51,7 +51,7 @@ const ExistOptionsPage = () => {
   const fetchCompleteOptionData = async () => {
     setLoading(true)
     try {
-      const firstResponse = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types", {
+      const firstResponse = await axios.get(`${import.meta.env.VITE_API_URL}/user/option-types`, {
         params: {
           page: 1,
           page_size: 10,
@@ -63,7 +63,7 @@ const ExistOptionsPage = () => {
       let allOptionTypes = []
 
       for (let page = 1; page <= totalPages; page++) {
-        const response = await axios.get("https://backend-wandering-river-6835.fly.dev/user/option-types", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/option-types`, {
           params: {
             page: page,
             page_size: 10,
