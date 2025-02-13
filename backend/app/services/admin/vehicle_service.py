@@ -2,6 +2,8 @@ from typing import List
 from sqlmodel import Session
 from app.api.schemas.admin.vehicle_schema import VehicleItem, VehiclesData, VehiclesResponse, VehicleCreate, VehicleUpdateRequest, VehicleUpdateResponse, VehicleDeleteResponse
 from app.db.crud.vehicle import vehicle_crud
+from app.db.crud.usage_history import usage_history_crud
+from app.db.crud.maintenance_history import maintenance_history_crud
 from app.api.schemas.common import Coordinate
 from app.db.models.vehicle import Vehicle
 from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
@@ -61,6 +63,8 @@ class VehicleService:
     @staticmethod
     def get_vehicle_list(session: Session, page: int, page_size: int) -> VehiclesResponse:
         "관리자 차량 목록 조회 서비스"
+        
+        # 차량 목록 조회
         paginated_result = vehicle_crud.paginate(session, page, page_size)
         vehicles: List[Vehicle] = paginated_result["items"]
         
@@ -72,6 +76,7 @@ class VehicleService:
             for vehicle in vehicles
         ]
 
+        # 차량 목록 데이터 생성
         vehicles_data = VehiclesData(
             vehicles=vehicle_items,
             pagination=paginated_result["pagination"]
@@ -86,13 +91,13 @@ class VehicleService:
     @handle_transaction
     def create_vehicle(session: Session, vehicle_data: VehicleCreate, user_pk: int) -> VehiclesResponse:
         """차량 등록 서비스"""
-        # 1. VIN 중복 검사
+        # VIN 중복 검사
         VehicleService._check_vin_exists(session, vehicle_data.vin)
 
-        # 2. 차량 번호 중복 검사
+        # 차량 번호 중복 검사
         VehicleService._check_vehicle_number_exists(session, vehicle_data.vehicle_number)
 
-        # 3. 새 차량 생성
+        # 새 차량 생성
         new_vehicle = Vehicle(
             vin=vehicle_data.vin,
             vehicle_number=vehicle_data.vehicle_number,
@@ -114,7 +119,7 @@ class VehicleService:
     @handle_transaction
     def update_vehicle(session: Session, vehicle_data: VehicleUpdateRequest, vehicle_id: int, user_pk: int) -> VehicleUpdateResponse:
         """차량 정보 수정 서비스"""
-        # 1. 차량 존재 여부 확인
+        # 차량 존재 여부 확인
         vehicle = vehicle_crud.get_by_id(session, vehicle_id)
         if not vehicle:
             raise NotFoundError(
@@ -122,16 +127,18 @@ class VehicleService:
                 detail={"vehicle_id": vehicle_id}
             )
 
-        # 2. 차량 번호 중복 검사 (차량 번호가 변경되는 경우에만)
+        # 차량 번호 중복 검사 (차량 번호가 변경되는 경우에만)
         if vehicle_data.vehicle_number and vehicle_data.vehicle_number != vehicle.vehicle_number:
             VehicleService._check_vehicle_number_exists(session, vehicle_data.vehicle_number)
 
-        # 3. 업데이트 데이터 준비 및 실행
+        # 업데이트 데이터 준비
         update_data = vehicle_data.dict(exclude_unset=True)
         update_data["updated_by"] = user_pk
         update_data["updated_at"] = datetime.now()
         
+        # 차량 업데이트
         vehicle_crud.update(session, vehicle_id, update_data, "vehicle_id")
+        
         return VehicleUpdateResponse.success(
             message="Vehicle updated successfully"
         )
@@ -140,6 +147,7 @@ class VehicleService:
     @handle_transaction
     def delete_vehicle(session: Session, vehicle_id: int, user_pk: int) -> VehicleDeleteResponse:
         """차량 삭제 서비스"""
+        
         # 차량 존재 여부 확인
         vehicle = vehicle_crud.get_by_id(session, vehicle_id)
         if not vehicle:
@@ -148,18 +156,20 @@ class VehicleService:
                 detail={"vehicle_id": vehicle_id}
             )
         
-        # 차량이 현재 사용 중(대여 중)인지 UsageHistory 테이블에서 확인 (렌트 기록에는 차량 id가 없음)
-        active_usage = session.scalars(
-            select(UsageHistory).where(
-                UsageHistory.item_id == vehicle_id,
-                UsageHistory.item_type_id == ItemType.VEHICLE,
-                UsageHistory.usage_status_id == UsageStatus.IN_USE
-            )
-        ).first()
-
-        if active_usage:
+        # 차량이 현재 사용 중인지 UsageHistory 테이블에서 확인
+        usage_history_data = usage_history_crud.get_item_usage_history(session, vehicle_id, ItemType.VEHICLE)
+        usage_history_items = usage_history_data.get("items", [])
+        if any(history.usage_status_id == UsageStatus.IN_USE for history in usage_history_items):
             raise ConflictError(
                 message="Vehicle is currently in use and cannot be deleted",
+                detail={"vehicle_id": vehicle_id}
+            )
+            
+        # 차량이 현재 정비 중인지 maintenance_history 테이블에서 확인
+        maintenance_history = maintenance_history_crud.get_by_field(session, vehicle_id, "vehicle_id")
+        if maintenance_history:
+            raise ConflictError(
+                message="Vehicle is currently under maintenance and cannot be deleted",
                 detail={"vehicle_id": vehicle_id}
             )
 
