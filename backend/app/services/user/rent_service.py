@@ -75,7 +75,7 @@ class RentService:
             arrival_location=json.dumps(arrival),
             cost=cost,
             mileage=0,
-            rent_status_id=RentStatus.IN_PROGRESS,
+            rent_status_id=RentStatus.IN_PROGRESS.ID,
             rent_start_date=rent_request.rentStartDate,
             rent_end_date=rent_request.rentEndDate,
             created_at=now,
@@ -112,20 +112,20 @@ class RentService:
         vehicle_crud.update(
             session,
             vehicle.vehicle_id,
-            {"item_status_id": ItemStatus.ACTIVE},
+            {"item_status_id": ItemStatus.ACTIVE.ID},
             id_field="vehicle_id"
         )
         module_crud.update(
             session,
             module.module_id,
-            {"item_status_id": ItemStatus.ACTIVE},
+            {"item_status_id": ItemStatus.ACTIVE.ID},
             id_field="module_id"
         )
         for option in options:
             option_crud.update(
                 session,
                 option.option_id,
-                {"item_status_id": ItemStatus.ACTIVE},
+                {"item_status_id": ItemStatus.ACTIVE.ID},
                 id_field="option_id"
             )
 
@@ -140,20 +140,20 @@ class RentService:
         vehicle_crud.update(
             session,
             vehicle_id,
-            {"item_status_id": ItemStatus.INACTIVE},
+            {"item_status_id": ItemStatus.INACTIVE.ID},
             id_field="vehicle_id"
         )
         module_crud.update(
             session,
             module_id,
-            {"item_status_id": ItemStatus.INACTIVE},
+            {"item_status_id": ItemStatus.INACTIVE.ID},
             id_field="module_id"
         )
         for option_id in option_ids:
             option_crud.update(
                 session,
                 option_id,
-                {"item_status_id": ItemStatus.INACTIVE},
+                {"item_status_id": ItemStatus.INACTIVE.ID},
                 id_field="option_id"
             )
 
@@ -194,7 +194,7 @@ class RentService:
                     "rent_user": rent_history.user_pk
                 }
             )
-        if check_status and rent_history.rent_status_id in [RentStatus.CANCELED, RentStatus.COMPLETED]:
+        if check_status and rent_history.rent_status_id in [RentStatus.CANCELED.ID, RentStatus.COMPLETED.ID]:
             raise ConflictError(
                 message="rent already completed or canceled",
                 detail={
@@ -213,15 +213,15 @@ class RentService:
             (vehicle_id, module_id, option_ids)
         """
         vehicle_id = next(
-            (entry.item_id for entry in usage_entries if entry.item_type_id == ItemType.VEHICLE),
+            (entry.item_id for entry in usage_entries if entry.item_type_id == ItemType.VEHICLE.ID),
             None
         )
         module_id = next(
-            (entry.item_id for entry in usage_entries if entry.item_type_id == ItemType.MODULE),
+            (entry.item_id for entry in usage_entries if entry.item_type_id == ItemType.MODULE.ID),
             None
         )
         option_ids = [
-            entry.item_id for entry in usage_entries if entry.item_type_id == ItemType.OPTION
+            entry.item_id for entry in usage_entries if entry.item_type_id == ItemType.OPTION.ID  
         ]
         if vehicle_id is None:
             raise DatabaseError(
@@ -356,7 +356,7 @@ class RentService:
         rent_history_crud.update(
             session,
             rent_id,
-            obj_in={"rent_status_id": RentStatus.CANCELED},
+            obj_in={"rent_status_id": RentStatus.CANCELED.ID},
             id_field="rent_id"
         )
         return rent_schema.CancelRentResponse(
@@ -444,7 +444,7 @@ class RentService:
             session,
             rent_id,
             obj_in={
-                "rent_status_id": RentStatus.COMPLETED,
+                "rent_status_id": RentStatus.COMPLETED.ID,
                 "mileage": total_mileage,
                 "updated_at": datetime.now()
             },

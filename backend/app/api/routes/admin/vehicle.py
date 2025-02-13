@@ -4,13 +4,13 @@ from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.vehicle_service import VehicleService
-from app.api.schemas.admin.vehicle_schema import VehicleCreate, VehiclesResponse, VehicleUpdateRequest, VehicleUpdateResponse, VehicleDeleteResponse
+from app.api.schemas.admin.vehicle_schema import VehicleCreateRequest, VehicleGetResponse, VehicleUpdateRequest, VehicleMessageResponse
 
 router = APIRouter()
 
 @router.get(
     "/vehicles",
-    response_model=VehiclesResponse,
+    response_model=VehicleGetResponse,
     summary="🚗 차량 목록 조회",
     description="관리자가 등록된 차량 목록을 페이지네이션 방식으로 조회합니다.",
     responses={
@@ -86,11 +86,12 @@ async def get_vehicle_list(
 
 @router.post(
     "/vehicles",
-    response_model=VehiclesResponse,
+    response_model=VehicleGetResponse,
     summary="🚗 차량 등록",
     description="차량 정보를 등록합니다.",
+    status_code=201,
     responses={
-        200: {
+        201: {
             "description": "차량이 성공적으로 등록됨",
             "content": {
                 "application/json": {
@@ -171,15 +172,15 @@ async def get_vehicle_list(
     }
 )
 async def create_vehicle(
-    vehicle_data: VehicleCreate,
+    vehicle_data: VehicleCreateRequest,
     session: Annotated[Session, Depends(get_session)],
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> VehiclesResponse:
+) -> VehicleMessageResponse:
     return VehicleService.create_vehicle(session, vehicle_data, token_data.user_pk)
 
 @router.patch(
     "/vehicles/{vehicle_id}",
-    response_model=VehiclesResponse,
+    response_model=VehicleGetResponse,
     summary="🚗 차량 수정",
     description="차량 정보를 수정합니다.",
     responses={
@@ -232,12 +233,12 @@ async def update_vehicle(
     vehicle_id: int = Path(..., description="차량 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> VehicleUpdateResponse:
+) -> VehicleMessageResponse:
     return VehicleService.update_vehicle(session = session, vehicle_data = vehicle_data, vehicle_id = vehicle_id, user_pk = token_data.user_pk)
 
 @router.delete(
     "/vehicles/{vehicle_id}",
-    response_model=VehicleDeleteResponse,
+    response_model=VehicleMessageResponse,
     summary="🚗 차량 삭제",
     description="차량 정보를 삭제합니다.",
     responses={
@@ -304,7 +305,7 @@ async def delete_vehicle(
     vehicle_id: int = Path(..., description="차량 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> VehicleDeleteResponse:
+) -> VehicleMessageResponse:
     return VehicleService.delete_vehicle(session, vehicle_id, token_data.user_pk)
 
 

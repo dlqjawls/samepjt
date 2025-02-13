@@ -25,7 +25,7 @@ class VehiclesData(BaseModel):
     vehicles: List[VehicleItem]
     pagination: Pagination
 
-class VehiclesResponse(ResponseBase[VehiclesData]):
+class VehicleGetResponse(ResponseBase[VehiclesData]):
     """관리자 차량 목록 조회 응답 모델"""
     class Config:
         schema_extra = {
@@ -59,7 +59,7 @@ class VehiclesResponse(ResponseBase[VehiclesData]):
             }
         }
 
-class VehicleCreate(BaseModel):
+class VehicleCreateRequest(BaseModel):
     """차량 등록 요청 스키마"""
     vin: str = Field(
         ...,
@@ -121,22 +121,12 @@ class VehicleUpdateRequest(BaseModel):
             }
         }
 
-class VehicleUpdateResponse(ResponseBase):
+class VehicleMessageResponse(ResponseBase):
     """관리자 차량 목록 조회 응답 모델"""
     class Config:
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Vehicle data updated successfully",
+                "message": "Vehicle {method} successfully",
             }
-        }
-        
-class VehicleDeleteResponse(ResponseBase):
-    """차량 삭제 응답 모델"""
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Vehicle deleted successfully"
-            } 
         }
