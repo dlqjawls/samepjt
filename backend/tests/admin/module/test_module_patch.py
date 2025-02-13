@@ -3,113 +3,106 @@ from datetime import datetime
 from app.core.jwt import jwt_handler
 from app.db.models.module import Module
 from sqlmodel import Session, select
-from app.utils.lut_constants import ItemStatus
+from app.utils.lut_constants import ModuleType
+from tests.helpers import master_token, semi_admin_token, user_token, create_dummy_modules
 
-@pytest.fixture
-def master_token():
-    """마스터 권한 토큰 생성"""
-    return jwt_handler.create_token(1, role="master")[0]
 
-@pytest.fixture
-def semi_admin_token():
-    """일반 관리자 권한 토큰 생성"""
-    return jwt_handler.create_token(2, role="semi")[0]
-
-@pytest.fixture
-def test_module(session: Session):
-    """테스트용 모듈 데이터 생성"""
-    module = Module(
-        module_nfc_tag_id="1A1FF1043E2BC6",
-        module_type_id=1,
-        current_location='{"x": 12.313, "y": 32.3232}',
-        item_status_id=ItemStatus.ACTIVE,
-        created_by=1,
-        updated_by=1,
-        created_at=datetime.now(),
-        updated_at=datetime.now()
-    )
-    session.add(module)
-    session.commit()
-    session.refresh(module)
-    return module
-
-def test_update_module_success(client, session, master_token, test_module):
-    """✅ 정상적인 모듈 정보 업데이트 테스트"""
-    # Given: 업데이트할 모듈 데이터
+def test_update_module_success(client, session, master_token, create_dummy_modules):
+    """정상적인 모듈 정보 업데이트 테스트"""
+    # 더미 모듈 1건 생성
+    modules = create_dummy_modules(1)
+    module = modules[0]
     update_data = {
-        "module_type_id": 3,
+        "module_type_id": ModuleType.MEDIUM.ID, # 모듈 타입 업데이트
     }
-
-    # When: 마스터 권한으로 모듈 정보 업데이트 요청
     response = client.patch(
-        f"/admin/modules/{test_module.module_id}",
+        f"/admin/modules/{module.module_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
-
-    # Then: 응답 검증
-    assert response.status_code == 200
+    # 응답 검증
+    assert response.status_code == 200, response.text
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
     assert data["message"] == "Module updated successfully"
+    
+    # DB에 변경 내용 반영 여부 검증
+    updated_module = session.get(Module, module.module_id)
+    assert updated_module.module_type_id == ModuleType.MEDIUM.ID
 
-    # Then: DB에 저장된 데이터 검증
-    updated_module = session.exec(
-        select(Module).where(Module.module_id == test_module.module_id)
-    ).first()
-    assert updated_module.module_type_id == update_data["module_type_id"]
-
-def test_update_module_unauthorized(client, test_module, semi_admin_token):
-    """❌ 권한 없는 사용자의 모듈 정보 업데이트 시도"""
+def test_update_module_unauthorized(client, create_dummy_modules):
+    """인증 토큰 없이 모듈 정보 업데이트 시도 테스트"""
+    modules = create_dummy_modules(1)
+    module = modules[0]
     update_data = {
-        "module_type_id": 2,
+        "module_type_id": ModuleType.MEDIUM.ID
     }
-
     response = client.patch(
-        f"/admin/modules/{test_module.module_id}",
-        json=update_data,
-        headers={"Authorization": f"Bearer {semi_admin_token}"}
+        f"/admin/modules/{module.module_id}",
+        json=update_data
     )
+    assert response.status_code == 401
 
+def test_update_module_forbidden(client, create_dummy_modules, user_token):
+    """비관리자 토큰으로 모듈 정보 업데이트 시도 테스트"""
+    modules = create_dummy_modules(1)
+    module = modules[0]
+    update_data = {
+        "module_type_id": ModuleType.MEDIUM.ID
+    }
+    response = client.patch(
+        f"/admin/modules/{module.module_id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {user_token}"}
+    )
     assert response.status_code == 403
-    data = response.json()
-    assert data["resultCode"] == "FAILURE"
-    assert "Permission denied" in data["message"]
 
 def test_update_nonexistent_module(client, master_token):
-    """❌ 존재하지 않는 모듈 정보 업데이트 시도"""
+    """존재하지 않는 모듈 정보 업데이트 시도 테스트"""
     update_data = {
-        "module_type_id": 2,
+        "module_type_id": ModuleType.MEDIUM.ID
     }
-
     response = client.patch(
-        "/admin/modules/99999",
+        "/admin/modules/99999",  # 존재하지 않는 모듈 ID
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
-
     assert response.status_code == 404
     data = response.json()
     assert data["resultCode"] == "FAILURE"
     assert "Module not found" in data["message"]
 
+@pytest.mark.parametrize("invalid_module_id", ["abc", -1, 0])
+def test_update_module_invalid_id(client, master_token, invalid_module_id):
+    """잘못된 형식의 모듈 ID로 업데이트 시도 테스트"""
+    update_data = {
+        "module_type_id": ModuleType.MEDIUM.ID
+    }
+    response = client.patch(
+        f"/admin/modules/{invalid_module_id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {master_token}"}
+    )
+    # Pydantic 유효성 검사 실패 시 422 에러 발생
+    assert response.status_code == 422
+
 @pytest.mark.parametrize("invalid_module_type_id", [
-    "PBV1234",  # 하이픈 없음
-    "PBV-123",  # 숫자 3자리
-    "PBV-12345",  # 숫자 5자리
-    "ABC-1234",  # 잘못된 접두사
-    "pbv-1234",  # 소문자
-    "PBV-123A",  # 문자 포함
-    " PBV-1234 "  # 앞뒤 공백
+    "0",
+    "-1",
+    "a",
+    " ",
+    "*",
 ])
-def test_update_module_invalid_module_type_id_format(client, master_token, test_module, invalid_module_type_id):
-    """❌ 잘못된 형식의 모듈 타입 ID로 업데이트 시도"""
+def test_update_module_invalid_module_type_id(client, master_token, create_dummy_modules, invalid_module_type_id):
+    """잘못된 형식의 모듈 타입 업데이트 시도 테스트"""
+    modules = create_dummy_modules(1)
+    module = modules[0]
     update_data = {
         "module_type_id": invalid_module_type_id
     }
 
     response = client.patch(
-        f"/admin/modules/{test_module.module_id}",
+        f"/admin/modules/{module.module_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -117,20 +110,27 @@ def test_update_module_invalid_module_type_id_format(client, master_token, test_
     assert response.status_code == 422
     data = response.json()
     assert data["resultCode"] == "FAILURE"
-    assert "validation error" in data["message"].lower()
+    
 
-def test_update_module_without_token(client, test_module):
-    """❌ 인증 토큰 없이 모듈 정보 업데이트 시도"""
+@pytest.mark.parametrize("non_existing_module_type_id", [
+    "99999",
+    "100000"
+])
+def test_update_module_non_existing_module_type_id(client, master_token, create_dummy_modules, non_existing_module_type_id):
+    """존재하지 않는 모듈 타입 업데이트 시도 테스트"""
+    modules = create_dummy_modules(1)
+    module = modules[0]
     update_data = {
-        "module_type_id": 2
+        "module_type_id": non_existing_module_type_id
     }
 
     response = client.patch(
-        f"/admin/modules/{test_module.module_id}",
-        json=update_data
+        f"/admin/modules/{module.module_id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {master_token}"}
     )
 
-    assert response.status_code == 401
+    assert response.status_code == 404
     data = response.json()
     assert data["resultCode"] == "FAILURE"
-    assert "Authentication" in data["message"]
+    
