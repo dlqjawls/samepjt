@@ -48,6 +48,9 @@ function VehicleManagement() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // 각 행의 ref들을 저장할 객체
+  const rowRefs = useRef({});
+
   const detailInfoRef = useRef(null);
 
   const token = localStorage.getItem("adminToken");
@@ -101,6 +104,14 @@ function VehicleManagement() {
     setExpandedVehicleId((prev) => (prev === vehicleId ? null : vehicleId));
     // 편집 모드 초기화
     setEditingVehicleId(null);
+    setTimeout(() => {
+      if (rowRefs.current[vehicleId]) {
+        rowRefs.current[vehicleId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
   // 등록 모달 열기 및 닫기
@@ -265,6 +276,7 @@ function VehicleManagement() {
                 vehicles.map((vehicle) => (
                   <React.Fragment key={vehicle.vehicle_id}>
                     <tr
+                      ref={(el) => (rowRefs.current[vehicle.vehicle_id] = el)}
                       className={`main-row ${
                         expandedVehicleId === vehicle.vehicle_id
                           ? "expanded-main-row"

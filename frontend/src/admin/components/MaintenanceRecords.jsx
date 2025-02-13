@@ -1,6 +1,6 @@
 // src/admin/components/MaintenanceRecords.jsx
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import AddModal from "./AddModal";
 import DeleteModal from "./DeleteModal";
@@ -20,6 +20,11 @@ const MaintenanceRecords = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // 각 행의 ref들을 저장할 객체
+  const rowRefs = useRef({});
+
+  const detailInfoRef = useRef(null);
 
   const [formData, setFormData] = useState({
     item_type_name: "",
@@ -105,6 +110,15 @@ const MaintenanceRecords = () => {
   const toggleExpanded = (recordId) => {
     setExpandedRecordId((prev) => (prev === recordId ? null : recordId));
     setEditingRecordId(null);
+    // 해당 행으로 스크롤 이동
+    setTimeout(() => {
+      if (rowRefs.current[recordId]) {
+        rowRefs.current[recordId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
   const openAddModal = () => {
@@ -164,7 +178,7 @@ const MaintenanceRecords = () => {
 
   // 인라인 수정 모드 전환
   const startEditing = (record) => {
-    setEditingRecordId(record.maintenance_id);
+    setSelectedRecord(record);
     setFormData({
       maintenance_status_id: record.maintenance_status_id,
       cost: record.cost,
@@ -172,6 +186,15 @@ const MaintenanceRecords = () => {
       completed_at: record.completed_at,
       issue: record.issue,
     });
+    setEditingRecordId(record.maintenance_id);
+    setTimeout(() => {
+      if (detailInfoRef.current) {
+        detailInfoRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100); // 약간의 딜레이 후 스크롤 호출 (렌더링 완료 후)
   };
 
   // 인라인 수정 API 호출
@@ -272,6 +295,9 @@ const MaintenanceRecords = () => {
                 records.map((record) => (
                   <React.Fragment key={record.maintenance_id}>
                     <tr
+                      ref={(el) =>
+                        (rowRefs.current[record.maintenance_id] = el)
+                      }
                       className={`main-row ${
                         expandedRecordId === record.maintenance_id
                           ? "expanded-main-row"
@@ -305,7 +331,10 @@ const MaintenanceRecords = () => {
                     {expandedRecordId === record.maintenance_id && (
                       <tr className="expanded-row">
                         <td colSpan="6">
-                          <div className="detail-info-container">
+                          <div
+                            className="detail-info-container"
+                            ref={detailInfoRef}
+                          >
                             <div className="detail-info">
                               <div className="detail-item">
                                 <div className="detail-label">정비 기록 ID</div>

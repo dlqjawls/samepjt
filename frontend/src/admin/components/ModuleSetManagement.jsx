@@ -55,6 +55,8 @@ const ModuleSetManagement = () => {
   // 모듈 타입 목록 (추가 정보 용)
   const [moduleTypes, setModuleTypes] = useState([]);
 
+  const rowRefs = useRef({});
+
   // 상세정보 영역 ref (편집 시 스크롤 이동용)
   const detailInfoRef = useRef(null);
 
@@ -144,6 +146,14 @@ const ModuleSetManagement = () => {
     );
     // 인라인 편집 모드 초기화
     setEditingModuleSetId(null);
+    setTimeout(() => {
+      if (rowRefs.current[moduleSetId]) {
+        rowRefs.current[moduleSetId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
   // 등록 모달 열기 및 닫기
@@ -387,6 +397,7 @@ const ModuleSetManagement = () => {
                 paginatedModuleSets.map((set) => (
                   <React.Fragment key={set.module_set_id}>
                     <tr
+                      ref={(el) => (rowRefs.current[set.module_set_id] = el)}
                       className={`main-row ${
                         expandedModuleSetId === set.module_set_id
                           ? "expanded-main-row"

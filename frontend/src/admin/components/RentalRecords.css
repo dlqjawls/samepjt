@@ -42,6 +42,9 @@
 .rental-container .cell-text {
   visibility: visible;
 }
+.rental-container .main-row {
+  cursor: pointer;
+}
 
 .rental-container .expanded-main-row td {
   background-color: #2196f3;

@@ -1,4 +1,4 @@
-/* src/components/OptionType.css */
+/* src/admin/components/OptionType.css */
 
 .option-type-container {
   padding: 20px;
@@ -8,62 +8,30 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   margin-bottom: 20px;
-}
-
-.option-type-container .option-type-header h1 {
-  margin-bottom: 10px;
 }
 
 .option-type-container .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
-  color: white;
+  color: #fff;
   border: none;
+  border-radius: 16px;
   cursor: pointer;
-  border-radius: 4px;
 }
 
 .option-type-container .add-button:hover {
   background-color: #45a049;
 }
 
-.option-type-container .filters {
-  margin: 20px 0;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.option-type-container .filters button {
-  padding: 10px 20px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.option-type-container .filters label {
-  margin-right: 20px;
-  display: flex;
-  align-items: center;
-}
-
-.option-type-container .filters input,
-.option-type-container .filters select {
-  margin-left: 10px;
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.option-type-container .table-wrapper {
+  overflow-x: auto;
 }
 
 .option-type-container .option-type-table {
   min-width: 800px;
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
 }
 
 .option-type-container .option-type-table th,
@@ -74,50 +42,165 @@
 
 .option-type-container .option-type-table th {
   background-color: #f2f2f2;
-  font-size: 16px;
   text-align: left;
-  padding: 12px;
+  font-size: 16px;
 }
 
 .option-type-container .option-type-table td {
   font-size: 14px;
-  text-align: left; /* 텍스트 왼쪽 정렬 */
-  background-color: #ffffff; /* 데이터 배경 흰색 */
-  padding: 12px;
+  background-color: #fff;
 }
 
-.option-type-container .detail-button {
-  padding: 6px 8px;
+.option-type-container .expanded-main-row td {
   background-color: #2196f3;
-  color: white;
+  color: #fff;
+}
+
+.option-type-container .expanded-main-row td:first-child {
+  font-weight: bold;
+  color: #fff;
+}
+
+.option-type-container .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
+}
+
+/* 확장된 상세정보 행 */
+.option-type-container .expanded-row {
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
+}
+
+/* 상세정보 영역 */
+.option-type-container .detail-info-container {
+  padding: 15px;
+}
+
+/* .option-type-container .detail-info {
+  margin-bottom: 15px;
+} */
+
+.option-type-container .detail-item {
+  padding: 8px 0;
+  margin-top: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.option-type-container .detail-item:last-child {
+  border-bottom: none;
+}
+
+.option-type-container .detail-label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.option-type-container .detail-value {
+  display: block;
+  font-size: 14px;
+}
+
+.option-type-container .detail-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.option-type-container .detail-edit-button,
+.option-type-container .detail-delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 19px;
+  margin-left: 2px;
   border: none;
+  border-radius: 18px;
   cursor: pointer;
-  border-radius: 20px;
+  font-size: 16px;
 }
 
-.option-type-container .detail-button:hover {
-  background-color: #0b7dda;
+.option-type-container .detail-save-button,
+.option-type-container .detail-cancel-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
+.option-type-container .detail-edit-button {
+  background-color: #ffc107;
+  color: #fff;
+}
+.option-type-container .detail-edit-button:hover {
+  background-color: #e0a800;
+}
+
+.option-type-container .detail-delete-button {
+  background-color: #f44336;
+  color: #fff;
+}
+.option-type-container .detail-delete-button:hover {
+  background-color: #da190b;
+}
+
+.option-type-container .detail-save-button {
+  background-color: #4caf50;
+  color: #fff;
+}
+.option-type-container .detail-save-button:hover {
+  background-color: #45a049;
+}
+
+.option-type-container .detail-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+}
+.option-type-container .detail-cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+.option-type-container .edit-input {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.option-type-container .main-row {
+  cursor: pointer;
+}
+
+/* 페이지네이션 */
 .option-type-container .pagination {
+  margin: 20px 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 40px;
 }
 
 .option-type-container .pagination button {
-  padding: 5px 10px;
+  padding: 6px 12px;
   margin: 0 10px;
   background-color: #e7e7e7;
   border: none;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.option-type-container .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
 }
 
 .option-type-container .pagination button:disabled {
   background-color: #cccccc;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .option-type-container .error {
@@ -125,105 +208,22 @@
   margin-bottom: 10px;
 }
 
-/* 모달 내용 스타일링 */
-.option-type-container .detail-content,
-.option-type-container .edit-content,
-.option-type-container .delete-content,
-.option-type-container .add-content {
-  padding: 20px;
+/* form-group 스타일 */
+.option-type-container .form-group {
+  margin-bottom: 15px;
 }
 
-.option-type-container .detail-content h2,
-.option-type-container .edit-content h2,
-.option-type-container .delete-content h2,
-.option-type-container .add-content h2 {
-  margin-bottom: 20px;
-}
-
-.option-type-container .detail-content p,
-.option-type-container .edit-content p,
-.option-type-container .delete-content p,
-.option-type-container .add-content p {
-  margin-bottom: 10px;
-}
-
-.option-type-container .edit-form label,
-.option-type-container .add-form label {
+.option-type-container .form-group label {
   display: block;
+  font-size: 16px;
   margin-bottom: 10px;
 }
 
-.option-type-container .edit-form input,
-.option-type-container .edit-form select,
-.option-type-container .edit-form textarea,
-.option-type-container .add-form input,
-.option-type-container .add-form select,
-.option-type-container .add-form textarea {
+.option-type-container .form-group input,
+.option-type-container .form-group textarea {
   width: 100%;
   padding: 8px;
-  margin-top: 5px;
-  box-sizing: border-box;
-}
-
-.option-type-container .modal-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.option-type-container .edit-button,
-.option-type-container .delete-button,
-.option-type-container .save-button,
-.option-type-container .cancel-button,
-.option-type-container .confirm-delete-button {
-  padding: 8px 16px;
-  margin-left: 10px;
-  border: none;
-  cursor: pointer;
+  font-size: 14px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.option-type-container .edit-button {
-  background-color: #ffc107;
-  color: white;
-}
-
-.option-type-container .edit-button:hover {
-  background-color: #e0a800;
-}
-
-.option-type-container .delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-.option-type-container .delete-button:hover {
-  background-color: #da190b;
-}
-
-.option-type-container .save-button {
-  background-color: #4caf50;
-  color: white;
-}
-
-.option-type-container .save-button:hover {
-  background-color: #45a049;
-}
-
-.option-type-container .cancel-button {
-  background-color: #e7e7e7;
-  color: black;
-}
-
-.option-type-container .cancel-button:hover {
-  background-color: #d5d5d5;
-}
-
-.option-type-container .confirm-delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-.option-type-container .confirm-delete-button:hover {
-  background-color: #da190b;
 }

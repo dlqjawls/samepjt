@@ -1,6 +1,6 @@
 // src/admin/components/RentalRecords.jsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
 import "./RentalRecords.css";
@@ -12,6 +12,9 @@ function RentalRecords() {
   const [expandedRentId, setExpandedRentId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // 각 행의 ref들을 저장할 객체
+  const rowRefs = useRef({});
 
   const token = localStorage.getItem("adminToken");
 
@@ -74,6 +77,15 @@ function RentalRecords() {
 
   const toggleExpanded = (rentId) => {
     setExpandedRentId((prev) => (prev === rentId ? null : rentId));
+    // 해당 행으로 스크롤 이동
+    setTimeout(() => {
+      if (rowRefs.current[rentId]) {
+        rowRefs.current[rentId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
   const handlePageChange = (newPage) => {
@@ -108,6 +120,7 @@ function RentalRecords() {
                 rentLogs.map((log) => (
                   <React.Fragment key={log.rent_id}>
                     <tr
+                      ref={(el) => (rowRefs.current[log.rent_id] = el)}
                       className={`main-row ${
                         expandedRentId === log.rent_id
                           ? "expanded-main-row"

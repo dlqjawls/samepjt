@@ -47,6 +47,8 @@ const ModuleManagementList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const rowRefs = useRef({});
+
   // 상세정보 영역 ref (인라인 편집 시 스크롤 이동용)
   const detailInfoRef = useRef(null);
 
@@ -92,6 +94,14 @@ const ModuleManagementList = () => {
   const toggleExpanded = (moduleId) => {
     setExpandedModuleId((prev) => (prev === moduleId ? null : moduleId));
     setEditingModuleId(null); // 토글 시 편집 모드 초기화
+    setTimeout(() => {
+      if (rowRefs.current[moduleId]) {
+        rowRefs.current[moduleId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
   // 등록 모달 열기/닫기
@@ -288,6 +298,7 @@ const ModuleManagementList = () => {
                 modules.map((module) => (
                   <React.Fragment key={module.module_id}>
                     <tr
+                      ref={(el) => (rowRefs.current[module.module_id] = el)}
                       className={`main-row ${
                         expandedModuleId === module.module_id
                           ? "expanded-main-row"
