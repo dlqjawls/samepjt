@@ -4,6 +4,8 @@ from app.api.schemas.admin.option_type_schema import OptionTypeItem, OptionTypeD
 from app.core.s3_storage import list_files_by_category, upload_file_generic
 from app.db.crud.option_type import option_type_crud
 from app.db.models.option_type import OptionType
+from app.db.crud.module_set_option_type import module_set_option_type_crud
+from app.db.crud.option import option_crud
 from app.utils.exceptions import DatabaseError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
@@ -169,6 +171,22 @@ class OptionTypeService:
                 detail={"option_type_id": option_type_id}
             )
 
+        # 연결된 모듈 세트 조회
+        module_sets = module_set_option_type_crud.get_by_field(session, option_type_id, "option_type_id")
+        if module_sets:
+            raise DatabaseError(
+                message="Option type is associated with module sets",
+                detail={"option_type_id": option_type_id}
+            )
+            
+        # 연결된 옵션 조회
+        options = option_crud.get_options_by_type(session, option_type_id)
+        if options:
+            raise DatabaseError(
+                message="Option type is associated with options",
+                detail={"option_type_id": option_type_id}
+            )
+            
         # 옵션 타입 삭제
         option_type_crud.soft_delete(session, option_type_id, "option_type_id")
 
