@@ -1,8 +1,8 @@
 /* src/admin/components/ModuleListManagement.css */
 
-.module-management-list {
+/* .module-management-list {
   padding: 20px;
-}
+} */
 
 .module-management-list .module-management-list-header {
   display: flex;
@@ -11,59 +11,19 @@
   margin-bottom: 20px;
 }
 
-.module-management-list .module-management-list-header h1 {
-  font-size: 2em;
-}
-
 .module-management-list .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
-  color: white;
+  color: #fff;
   border: none;
+  border-radius: 16px;
   cursor: pointer;
-  border-radius: 4px;
 }
 
 .module-management-list .add-button:hover {
   background-color: #45a049;
 }
 
-/* 필터 영역 */
-.module-management-list .filters {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.module-management-list .filters label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-.module-management-list .filters input,
-.module-management-list .filters select {
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.module-management-list .filters button {
-  padding: 10px 20px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.module-management-list .filters button:hover {
-  background-color: #1976d2;
-}
-
-/* 테이블 영역 */
 .module-management-list .table-wrapper {
   overflow-x: auto;
 }
@@ -79,6 +39,8 @@
   padding: 12px;
   border-bottom: 1px solid #ddd;
   text-align: left;
+  font-size: 14px;
+  background-color: #fff;
 }
 
 .module-management-list .module-table th {
@@ -86,49 +48,123 @@
   font-size: 16px;
 }
 
-.module-management-list .module-table td {
-  font-size: 14px;
-  background-color: #ffffff;
+/* 기본 셀 내 텍스트 (토글 전) */
+.module-management-list .cell-text {
+  visibility: visible;
 }
 
-/* 버튼들 */
-.module-management-list .detail-button {
-  padding: 6px 8px;
+/* 토글 확장 시: 확장된 메인 행의 모든 셀 배경을 #2196f3로, 첫 번째 셀 텍스트는 흰색, 나머지는 숨김 */
+.module-management-list .expanded-main-row td {
   background-color: #2196f3;
-  color: white;
+  color: #fff;
+  font-weight: bold;
+}
+.module-management-list .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
+}
+
+/* 확장된 상세정보 행: 전체 영역에 outline 적용 */
+.module-management-list .expanded-row {
+  background-color: #f9f9f9;
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
+}
+
+/* 상세정보 영역 */
+.module-management-list .detail-info-container {
+  padding: 15px;
+}
+
+.module-management-list .detail-info {
+  margin-bottom: 15px;
+}
+
+.module-management-list .detail-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.module-management-list .detail-item:last-child {
+  border-bottom: none;
+}
+
+.module-management-list .detail-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.module-management-list .detail-value {
+  font-size: 14px;
+}
+
+/* 상세정보 영역 액션 버튼 (우측 하단 정렬) */
+.module-management-list .detail-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.module-management-list .detail-edit-button,
+.module-management-list .detail-delete-button,
+.module-management-list .detail-save-button,
+.module-management-list .detail-cancel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 19px;
   border: none;
-  border-radius: 20px;
+  border-radius: 18px;
   cursor: pointer;
+  font-size: 16px;
 }
 
-.module-management-list .detail-button:hover {
-  background-color: #0b7dda;
-}
-
-.module-management-list .edit-button {
-  padding: 8px 10px;
+.module-management-list .detail-edit-button {
   background-color: #ffc107;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
+  color: #fff;
 }
-
-.module-management-list .edit-button:hover {
+.module-management-list .detail-edit-button:hover {
   background-color: #e0a800;
 }
 
-.module-management-list .delete-button {
-  padding: 8px 10px;
+.module-management-list .detail-delete-button {
   background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
+  color: #fff;
+}
+.module-management-list .detail-delete-button:hover {
+  background-color: #da190b;
 }
 
-.module-management-list .delete-button:hover {
-  background-color: #da190b;
+.module-management-list .detail-save-button {
+  background-color: #4caf50;
+  color: #fff;
+}
+.module-management-list .detail-save-button:hover {
+  background-color: #45a049;
+}
+
+.module-management-list .detail-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+}
+.module-management-list .detail-cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+/* 인라인 편집 input 스타일 (필드별 너비는 필요 시 추가 조정) */
+.module-management-list .edit-module-nfc-tag-id,
+.module-management-list .edit-module-type-id {
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+/* 메인 행 일반 스타일 */
+.module-management-list .main-row {
+  cursor: pointer;
 }
 
 /* 페이지네이션 */
@@ -158,62 +194,27 @@
   cursor: default;
 }
 
-/* 에러 메시지 */
 .module-management-list .error {
   color: red;
   margin-bottom: 10px;
 }
 
-/* 모달 내용 스타일 */
-.module-management-list .detail-content,
-.module-management-list .edit-content,
-.module-management-list .delete-content,
-.module-management-list .add-content {
-  padding: 20px;
+/* form-group 스타일 */
+.module-management-list .form-group {
+  margin-bottom: 15px;
 }
 
-.module-management-list .modal-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+.module-management-list .form-group label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
-.module-management-list .save-button {
-  padding: 8px 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
+.module-management-list .form-group input,
+.module-management-list .form-group textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  cursor: pointer;
-}
-
-.module-management-list .save-button:hover {
-  background-color: #45a049;
-}
-
-.module-management-list .cancel-button {
-  padding: 8px 16px;
-  background-color: #e7e7e7;
-  color: black;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.module-management-list .cancel-button:hover {
-  background-color: #d5d5d5;
-}
-
-.module-management-list .confirm-delete-button {
-  padding: 8px 16px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.module-management-list .confirm-delete-button:hover {
-  background-color: #da190b;
 }

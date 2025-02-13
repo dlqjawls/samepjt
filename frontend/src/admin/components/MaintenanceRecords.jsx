@@ -1,8 +1,11 @@
 // src/admin/components/MaintenanceRecords.jsx
+
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import Modal from "./Modal";
-import { MdSearch, MdEdit, MdDelete } from "react-icons/md";
+import AddModal from "./AddModal";
+import DeleteModal from "./DeleteModal";
+import LoadingSpinner from "./LoadingSpinner";
+import { MdEdit, MdDelete } from "react-icons/md";
 import "./MaintenanceRecords.css";
 
 const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
@@ -10,10 +13,22 @@ const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 const MaintenanceRecords = () => {
   const token = localStorage.getItem("adminToken");
 
-  // State to manage the maintenance records, pagination, and error/loading
-  const [maintenanceRecords, setMaintenanceRecords] = useState([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [records, setRecords] = useState([]);
+  const [expandedRecordId, setExpandedRecordId] = useState(null);
+  const [editingRecordId, setEditingRecordId] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    item_type_name: "",
+    item_id: 0,
+    issue: "",
+    cost: 0,
+    scheduled_at: "",
+    completed_at: "",
+  });
 
   const [filters, setFilters] = useState({
     itemType: "vehicle",
@@ -29,18 +44,8 @@ const MaintenanceRecords = () => {
     pageSize: 10,
   });
 
-  const [modalContentType, setModalContentType] = useState("detail");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMaintenanceRecord, setSelectedMaintenanceRecord] =
-    useState(null);
-  const [formData, setFormData] = useState({
-    item_type_name: "",
-    item_id: 0,
-    issue: "",
-    cost: 0,
-    scheduled_at: "",
-    completed_at: "",
-  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchMaintenanceRecords = useCallback(async () => {
     setLoading(true);
@@ -59,7 +64,7 @@ const MaintenanceRecords = () => {
         }
       );
       if (response.data.resultCode === "SUCCESS") {
-        setMaintenanceRecords(response.data.data.maintenance_history);
+        setRecords(response.data.data.maintenance_history);
         setPagination(response.data.data.pagination);
       } else {
         setError("정비 기록을 불러오는 데 실패했습니다.");
@@ -78,11 +83,7 @@ const MaintenanceRecords = () => {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-      page: 1,
-    }));
+    setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
   };
 
   const handlePageChange = (newPage) => {
@@ -100,6 +101,12 @@ const MaintenanceRecords = () => {
     }));
   };
 
+  // 행 토글 (확장/축소)
+  const toggleExpanded = (recordId) => {
+    setExpandedRecordId((prev) => (prev === recordId ? null : recordId));
+    setEditingRecordId(null);
+  };
+
   const openAddModal = () => {
     // Initialize form data for adding a new record
     setFormData({
@@ -111,119 +118,121 @@ const MaintenanceRecords = () => {
       completed_at: "",
       maintenance_status_id: 1,
     });
-    setModalContentType("add"); // Set to "add" instead of "edit"
-    setIsModalOpen(true);
+    setIsAddModalOpen(true);
   };
+  const closeAddModal = () => setIsAddModalOpen(false);
 
-  const openDetailModal = (record) => {
-    setSelectedMaintenanceRecord(record);
-    setModalContentType("detail");
-    setIsModalOpen(true);
-  };
-
-  // The openEditModal function remains for editing existing records
-  const openEditModal = (record) => {
-    setSelectedMaintenanceRecord(record);
-    setFormData({
-      maintenance_status_id: record.maintenance_status_id || 1,
-      cost: record.cost || 0,
-      scheduled_at: record.scheduled_at || "",
-      completed_at: record.completed_at || "",
-      issue: record.issue || "",
-    });
-    setModalContentType("edit"); // Set to "edit" when modifying an existing record
-    setIsModalOpen(true);
-  };
-
-  const openDeleteModal = (record) => {
-    setSelectedMaintenanceRecord(record);
-    setModalContentType("delete");
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setSelectedMaintenanceRecord(null);
-    setModalContentType(null);
-    setIsModalOpen(false);
-  };
-
-  const handleSaveEdit = async () => {
+  // 신규 정비 기록 등록 API 호출
+  const handleSubmitAdd = async () => {
+    if (
+      !formData.item_type_name.trim() ||
+      !formData.item_id ||
+      !formData.issue.trim() ||
+      !formData.cost ||
+      !formData.scheduled_at
+    ) {
+      alert("필수 필드를 모두 입력하세요.");
+      return;
+    }
     setLoading(true);
     setError("");
-
-    const payload = {
-      item_type_name: formData.item_type_name,
-      item_id: formData.item_id,
-      maintenance_status_id: formData.maintenance_status_id,
-      cost: formData.cost,
-      scheduled_at: formData.scheduled_at,
-      completed_at: formData.completed_at,
-      issue: formData.issue,
-    };
-
     try {
-      let response;
-      if (modalContentType === "add") {
-        // Handle adding a new record
-        response = await axios.post(
-          `${BASE_URL}/admin/maintenance-history`,
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } else if (modalContentType === "edit" && selectedMaintenanceRecord) {
-        // Handle editing an existing record
-        response = await axios.patch(
-          `${BASE_URL}/admin/maintenance-history/${selectedMaintenanceRecord.maintenance_id}`,
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-
+      const payload = { ...formData };
+      const response = await axios.post(
+        `${BASE_URL}/admin/maintenance-history`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }
+      );
       if (response.data.resultCode === "SUCCESS") {
-        fetchMaintenanceRecords(); // Refresh the records list
-        closeModal(); // Close the modal
+        await fetchMaintenanceRecords();
+        closeAddModal();
       } else {
-        setError("정비 기록 저장에 실패했습니다.");
+        setError(response.data.message || "정비 기록 등록 실패");
       }
     } catch (err) {
       console.error(err);
-      setError("정비 기록 저장 중 오류가 발생했습니다.");
+      setError("정비 기록 등록 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (!selectedMaintenanceRecord) return;
+  // 인라인 수정 모드 전환
+  const startEditing = (record) => {
+    setEditingRecordId(record.maintenance_id);
+    setFormData({
+      maintenance_status_id: record.maintenance_status_id,
+      cost: record.cost,
+      scheduled_at: record.scheduled_at,
+      completed_at: record.completed_at,
+      issue: record.issue,
+    });
+  };
+
+  // 인라인 수정 API 호출
+  const handleSubmitEdit = async (recordId) => {
+    setLoading(true);
+    setError("");
+    try {
+      const payload = { ...formData };
+      const response = await axios.patch(
+        `${BASE_URL}/admin/maintenance-history/${recordId}`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        await fetchMaintenanceRecords();
+        setEditingRecordId(null);
+      } else {
+        setError(response.data.message || "정비 기록 수정 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("정비 기록 수정 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelEditing = () => {
+    setEditingRecordId(null);
+  };
+
+  // 삭제 모달 열기/닫기
+  const openDeleteModal = (record) => {
+    setSelectedRecord(record);
+    setIsDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
+  // 삭제 API 호출
+  const handleSubmitDelete = async (recordId) => {
     setLoading(true);
     setError("");
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/maintenance-history/${selectedMaintenanceRecord.maintenance_id}`,
+        `${BASE_URL}/admin/maintenance-history/${recordId}`,
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
           },
         }
       );
-
-      console.log(response);
-
       if (response.data.resultCode === "SUCCESS") {
-        fetchMaintenanceRecords();
-        closeModal();
+        await fetchMaintenanceRecords();
+        closeDeleteModal();
       } else {
-        setError("정비 기록 삭제에 실패했습니다.");
+        setError(response.data.message || "정비 기록 삭제 실패");
       }
     } catch (err) {
       console.error(err);
@@ -242,34 +251,9 @@ const MaintenanceRecords = () => {
         </button>
       </div>
 
-      {/* <div className="filters">
-        <label>
-          항목 유형:
-          <select
-            name="itemType"
-            value={filters.itemType}
-            onChange={handleFilterChange}
-          >
-            <option value="vehicle">차량</option>
-            <option value="module">모듈</option>
-            <option value="option">옵션</option>
-          </select>
-        </label>
-        <label>
-          항목 ID:
-          <input
-            type="number"
-            name="itemId"
-            value={filters.itemId}
-            onChange={handleFilterChange}
-          />
-        </label>
-        <button onClick={() => setFilters({ ...filters })}>검색</button>
-      </div> */}
-
       {error && <p className="error">{error}</p>}
       {loading ? (
-        <p>로딩 중...</p>
+        <LoadingSpinner />
       ) : (
         <div className="table-wrapper">
           <table className="maintenance-table">
@@ -280,36 +264,209 @@ const MaintenanceRecords = () => {
                 <th>문제</th>
                 <th>비용</th>
                 <th>정비 상태</th>
-                <th>수정</th>
-                <th>삭제</th>
+                <th>등록 일자</th>
               </tr>
             </thead>
             <tbody>
-              {maintenanceRecords.length > 0 ? (
-                maintenanceRecords.map((record) => (
-                  <tr key={record.maintenance_id}>
-                    <td>{record.maintenance_id}</td>
-                    <td>{record.item_type_name}</td>
-                    <td>{record.issue}</td>
-                    <td>{record.cost.toLocaleString()}</td>
-                    <td>{record.maintenance_status_name}</td>
-                    <td>
-                      <button
-                        className="edit-button"
-                        onClick={() => openEditModal(record)}
-                      >
-                        <MdEdit />
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        className="delete-button"
-                        onClick={() => openDeleteModal(record)}
-                      >
-                        <MdDelete />
-                      </button>
-                    </td>
-                  </tr>
+              {records.length > 0 ? (
+                records.map((record) => (
+                  <React.Fragment key={record.maintenance_id}>
+                    <tr
+                      className={`main-row ${
+                        expandedRecordId === record.maintenance_id
+                          ? "expanded-main-row"
+                          : ""
+                      }`}
+                      onClick={() => toggleExpanded(record.maintenance_id)}
+                    >
+                      <td>{record.maintenance_id}</td>
+                      <td>
+                        <span className="cell-text">
+                          {record.item_type_name}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">{record.issue}</span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {record.cost.toLocaleString()}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {record.maintenance_status_name}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">{record.created_at}</span>
+                      </td>
+                    </tr>
+                    {expandedRecordId === record.maintenance_id && (
+                      <tr className="expanded-row">
+                        <td colSpan="6">
+                          <div className="detail-info-container">
+                            <div className="detail-info">
+                              <div className="detail-item">
+                                <div className="detail-label">정비 기록 ID</div>
+                                <div className="detail-value">
+                                  {record.maintenance_id}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">항목 유형</div>
+                                <div className="detail-value">
+                                  {record.item_type_name}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">고유 ID</div>
+                                <div className="detail-value">
+                                  {record.item_id}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">문제</div>
+                                {editingRecordId === record.maintenance_id ? (
+                                  <input
+                                    type="text"
+                                    name="issue"
+                                    value={formData.issue}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {record.issue}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">비용</div>
+                                {editingRecordId === record.maintenance_id ? (
+                                  <input
+                                    type="number"
+                                    name="cost"
+                                    value={formData.cost}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {record.cost.toLocaleString()}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">정비 상태</div>
+                                {editingRecordId === record.maintenance_id ? (
+                                  <input
+                                    type="number"
+                                    name="maintenance_status_id"
+                                    value={formData.maintenance_status_id}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                    placeholder="이 부분에서는 숫자로 전달해야 함"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {record.maintenance_status_name}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  정비 예정 날짜
+                                </div>
+                                {editingRecordId === record.maintenance_id ? (
+                                  <input
+                                    type="datetime-local"
+                                    name="scheduled_at"
+                                    value={formData.scheduled_at}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {record.scheduled_at}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  정비 완료 날짜
+                                </div>
+                                {editingRecordId === record.maintenance_id ? (
+                                  <input
+                                    type="datetime-local"
+                                    name="completed_at"
+                                    value={formData.completed_at}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {record.completed_at}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">고유 ID</div>
+                                <div className="detail-value">
+                                  {record.item_id}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="detail-actions">
+                              {editingRecordId === record.maintenance_id ? (
+                                <>
+                                  <button
+                                    className="detail-save-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSubmitEdit(record.maintenance_id);
+                                    }}
+                                  >
+                                    저장
+                                  </button>
+                                  <button
+                                    className="detail-cancel-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      cancelEditing();
+                                    }}
+                                  >
+                                    취소
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    className="detail-edit-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      startEditing(record);
+                                    }}
+                                  >
+                                    <MdEdit />
+                                  </button>
+                                  <button
+                                    className="detail-delete-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openDeleteModal(record);
+                                    }}
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))
               ) : (
                 <tr>
@@ -339,155 +496,85 @@ const MaintenanceRecords = () => {
         </button>
       </div>
 
-      {modalContentType && isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={closeModal} title="정비 기록 관리">
-          {modalContentType === "add" && (
-            <div className="edit-content">
-              <h2>정비 기록 등록</h2>
-              <form>
-                <label>
-                  정비 대상:
-                  <input
-                    type="text"
-                    name="item_type_name"
-                    value={formData.item_type_name}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  고유 ID:
-                  <input
-                    type="number"
-                    name="item_id"
-                    value={formData.item_id}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  문제:
-                  <input
-                    type="text"
-                    name="issue"
-                    value={formData.issue}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  비용:
-                  <input
-                    type="number"
-                    name="cost"
-                    value={formData.cost}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  정비 예정 날짜:
-                  <input
-                    type="datetime-local"
-                    name="scheduled_at"
-                    value={formData.scheduled_at}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  정비 완료 날짜:
-                  <input
-                    type="datetime-local"
-                    name="completed_at"
-                    value={formData.completed_at}
-                    onChange={handleFormChange}
-                  />
-                </label>
-              </form>
-              <div className="modal-actions">
-                <button onClick={handleSaveEdit} className="save-button">
-                  등록
-                </button>
-                <button onClick={closeModal} className="cancel-button">
-                  취소
-                </button>
-              </div>
-            </div>
-          )}
-          {modalContentType === "edit" && (
-            <div className="edit-content">
-              <h2>정비 기록 수정</h2>
-              <form>
-                <label>
-                  정비 상태 ID:
-                  <input
-                    type="number"
-                    name="maintenance_status_id"
-                    value={formData.maintenance_status_id}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  비용:
-                  <input
-                    type="number"
-                    name="cost"
-                    value={formData.cost}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  정비 예정 날짜:
-                  <input
-                    type="datetime-local"
-                    name="scheduled_at"
-                    value={formData.scheduled_at}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  정비 완료 날짜:
-                  <input
-                    type="datetime-local"
-                    name="completed_at"
-                    value={formData.completed_at}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  문제:
-                  <input
-                    type="text"
-                    name="issue"
-                    value={formData.issue}
-                    onChange={handleFormChange}
-                  />
-                </label>
-              </form>
-              <div className="modal-actions">
-                <button onClick={handleSaveEdit} className="save-button">
-                  저장
-                </button>
-                <button onClick={closeModal} className="cancel-button">
-                  취소
-                </button>
-              </div>
-            </div>
-          )}
-          {modalContentType === "delete" && selectedMaintenanceRecord && (
-            <div className="delete-content">
-              <h2>정비 기록 삭제 확인</h2>
-              <p>정말 이 정비 기록을 삭제하시겠습니까?</p>
-              <div className="modal-actions">
-                <button
-                  onClick={handleConfirmDelete}
-                  className="confirm-delete-button"
-                >
-                  삭제
-                </button>
-                <button onClick={closeModal} className="cancel-button">
-                  취소
-                </button>
-              </div>
-            </div>
-          )}
-        </Modal>
+      {isAddModalOpen && (
+        <AddModal
+          isOpen={isAddModalOpen}
+          onClose={closeAddModal}
+          onSubmit={handleSubmitAdd}
+          title="신규 정비 기록 등록"
+        >
+          <div className="form-group">
+            <label>정비 대상</label>
+            <input
+              type="text"
+              name="item_type_name"
+              value={formData.item_type_name}
+              onChange={handleFormChange}
+              placeholder="정비 대상 (vehicle, module, option)"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>고유 ID</label>
+            <input
+              type="number"
+              name="item_id"
+              value={formData.item_id}
+              onChange={handleFormChange}
+              placeholder="정비 대상의 고유 ID"
+            />
+          </div>
+          <div className="form-group">
+            <label>문제</label>
+            <input
+              type="text"
+              name="issue"
+              value={formData.issue}
+              onChange={handleFormChange}
+            />
+          </div>
+          <div className="form-group">
+            <label>비용</label>
+            <input
+              type="number"
+              name="cost"
+              value={formData.cost}
+              onChange={handleFormChange}
+            />
+          </div>
+          <div className="form-group">
+            <label>정비 예정 날짜</label>
+            <input
+              type="datetime-local"
+              name="scheduled_at"
+              value={formData.scheduled_at}
+              onChange={handleFormChange}
+            />
+          </div>
+          <div className="form-group">
+            <label>정비 완료 날짜</label>
+            <input
+              type="datetime-local"
+              name="completed_at"
+              value={formData.completed_at}
+              onChange={handleFormChange}
+            />
+          </div>
+        </AddModal>
+      )}
+
+      {isDeleteModalOpen && selectedRecord && (
+        <DeleteModal
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          onDelete={() => handleSubmitDelete(selectedRecord.maintenance_id)}
+          title="정비 기록 삭제 확인"
+          message={
+            selectedRecord
+              ? `${selectedRecord.item_type_name} 정비 기록을 삭제하시겠습니까?`
+              : ""
+          }
+        />
       )}
     </div>
   );

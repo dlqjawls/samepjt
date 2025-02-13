@@ -4,14 +4,14 @@
   padding: 20px;
 }
 
-.vehicle-header {
+.vehicle-container .vehicle-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.add-button {
+.vehicle-container .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
   color: #fff;
@@ -20,97 +20,97 @@
   cursor: pointer;
 }
 
-.add-button:hover {
+.vehicle-container .add-button:hover {
   background-color: #45a049;
 }
 
-.table-wrapper {
+.vehicle-container .table-wrapper {
   overflow-x: auto;
 }
 
-.vehicle-table {
+.vehicle-container .vehicle-table {
   min-width: 800px;
   width: 100%;
   border-collapse: collapse;
 }
 
-.vehicle-table th,
-.vehicle-table td {
+.vehicle-container .vehicle-table th,
+.vehicle-container .vehicle-table td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
 }
 
-.vehicle-table th {
+.vehicle-container .vehicle-table th {
   background-color: #f2f2f2;
   text-align: left;
   font-size: 16px;
 }
 
-.vehicle-table td {
+.vehicle-container .vehicle-table td {
   font-size: 14px;
   background-color: #fff;
 }
 
-.expanded-main-row td {
+.vehicle-container .expanded-main-row td {
   background-color: #2196f3;
   color: #2196f3;
 }
-.expanded-main-row td:first-child {
+.vehicle-container .expanded-main-row td:first-child {
   font-weight: bold;
   color: #fff;
 }
 
-.expanded-row {
+.vehicle-container .expanded-row {
   outline: 3px solid #2196f3;
   outline-offset: -3px;
   padding: 15px;
 }
 
-.expanded-main-row td:not(:first-child) .cell-text {
+.vehicle-container .expanded-main-row td:not(:first-child) .cell-text {
   visibility: hidden;
 }
 
-.detail-info-container {
+.vehicle-container .detail-info-container {
   /* border: 1px solid #2196f3; */
   padding: 15px;
   /* margin-top: 5px; */
 }
 
-/* .detail-info {
+/* .vehicle-container .detail-info {
 } */
 
-.detail-item {
+.vehicle-container .detail-item {
   padding: 8px 0px;
 
-  margin-bottom: 8px;
+  margin-top: 8px;
   border-bottom: 1px solid #ddd;
 }
 
-.detail-item:last-child {
+.vehicle-container .detail-item:last-child {
   border-bottom: none;
 }
 
-.detail-label {
+.vehicle-container .detail-label {
   display: block;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 8px;
 }
 
-.detail-value {
+.vehicle-container .detail-value {
   display: block;
-  font-size: 16px;
+  font-size: 14px;
 }
 
-.detail-actions {
+.vehicle-container .detail-actions {
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;
   gap: 16px;
 }
 
-.detail-edit-button,
-.detail-delete-button {
+.vehicle-container .detail-edit-button,
+.vehicle-container .detail-delete-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,8 +121,8 @@
   cursor: pointer;
   font-size: 16px;
 }
-.detail-save-button,
-.detail-cancel-button {
+.vehicle-container .detail-save-button,
+.vehicle-container .detail-cancel-button {
   padding: 8px 16px;
   border: none;
   border-radius: 16px;
@@ -130,39 +130,39 @@
   font-size: 14px;
 }
 
-.detail-edit-button {
+.vehicle-container .detail-edit-button {
   background-color: #ffc107;
   color: #fff;
 }
-.detail-edit-button:hover {
+.vehicle-container .detail-edit-button:hover {
   background-color: #e0a800;
 }
 
-.detail-delete-button {
+.vehicle-container .detail-delete-button {
   background-color: #f44336;
   color: #fff;
 }
-.detail-delete-button:hover {
+.vehicle-container .detail-delete-button:hover {
   background-color: #da190b;
 }
 
-.detail-save-button {
+.vehicle-container .detail-save-button {
   background-color: #4caf50;
   color: #fff;
 }
-.detail-save-button:hover {
+.vehicle-container .detail-save-button:hover {
   background-color: #45a049;
 }
 
-.detail-cancel-button {
+.vehicle-container .detail-cancel-button {
   background-color: #e7e7e7;
   color: #333;
 }
-.detail-cancel-button:hover {
+.vehicle-container .detail-cancel-button:hover {
   background-color: #d5d5d5;
 }
 
-.edit-vehicle-number {
+.vehicle-container .edit-vehicle-number {
   width: 15%;
   padding: 6px;
   font-size: 14px;
@@ -171,22 +171,22 @@
 }
 
 /* 확장된 상세정보 영역 (expanded-row) */
-.expanded-row {
+.vehicle-container .expanded-row {
   background-color: #f9f9f9;
 }
 
-.main-row {
+.vehicle-container .main-row {
   cursor: pointer;
 }
 
-.pagination {
+.vehicle-container .pagination {
   margin: 20px 0;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.pagination button {
+.vehicle-container .pagination button {
   padding: 6px 12px;
   margin: 0 10px;
   background-color: #e7e7e7;
@@ -196,30 +196,30 @@
   transition: background-color 0.2s;
 }
 
-.pagination button:hover:not(:disabled) {
+.vehicle-container .pagination button:hover:not(:disabled) {
   background-color: #d0d0d0;
 }
 
-.pagination button:disabled {
+.vehicle-container .pagination button:disabled {
   background-color: #cccccc;
   cursor: default;
 }
 
-.error {
+.vehicle-container .error {
   color: red;
   margin-bottom: 10px;
 }
 
 /* form-group 스타일 */
-.form-group {
+.vehicle-container .form-group {
   margin-bottom: 15px;
 }
-.form-group label {
+.vehicle-container .form-group label {
   display: block;
   font-size: 16px;
   margin-bottom: 10px;
 }
-.form-group input {
+.vehicle-container .form-group input {
   width: 100%;
   padding: 8px;
   font-size: 14px;

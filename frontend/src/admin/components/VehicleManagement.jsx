@@ -1,7 +1,8 @@
 // src/admin/components/VehicleManagement.jsx
+
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import AddVehicleModal from "./AddVehicleModal";
+import AddModal from "./AddModal";
 import DeleteModal from "./DeleteModal";
 import "./VehicleManagement.css";
 import { MdEdit, MdDelete } from "react-icons/md";
@@ -20,6 +21,7 @@ function VehicleManagement() {
     vehicle_number: "",
     vin: "",
   });
+
   // 등록 모달 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   // 삭제 모달 상태
@@ -34,12 +36,15 @@ function VehicleManagement() {
     page: 1,
     pageSize: 10,
   });
+
+  // 클라이언트 페이징 계산
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
     pageSize: 10,
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -105,7 +110,7 @@ function VehicleManagement() {
   };
   const closeAddModal = () => setIsAddModalOpen(false);
 
-  // 등록 API 호출
+  // 신규 등록 API 호출
   const handleSubmitAdd = async () => {
     if (!formData.vehicle_number.trim() || !formData.vin.trim()) {
       alert("VIN과 차량 번호는 필수 항목입니다.");
@@ -224,6 +229,7 @@ function VehicleManagement() {
     }
   };
 
+  // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
@@ -464,7 +470,7 @@ function VehicleManagement() {
         </button>
       </div>
 
-      <AddVehicleModal
+      <AddModal
         isOpen={isAddModalOpen}
         onClose={closeAddModal}
         onSubmit={handleSubmitAdd}
@@ -492,7 +498,7 @@ function VehicleManagement() {
             required
           />
         </div>
-      </AddVehicleModal>
+      </AddModal>
 
       <DeleteModal
         isOpen={isDeleteModalOpen}

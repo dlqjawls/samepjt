@@ -1,6 +1,6 @@
 /* src/admin/components/AddVehicleModal.css */
 
-.add-vehicle-modal-overlay {
+.add-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
   z-index: 1000;
 }
 
-.add-vehicle-modal-content {
+.add-modal-content {
   background-color: #fff;
   width: 500px;
   border-radius: 8px;
@@ -21,7 +21,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.add-vehicle-modal-header {
+.add-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,27 +29,27 @@
   padding: 15px 20px;
 }
 
-.add-vehicle-modal-header h2 {
+.add-modal-header h2 {
   margin: 0;
   font-size: 20px;
 }
 
-.add-vehicle-modal-body {
+.add-modal-body {
   padding: 20px;
 }
 
-.add-vehicle-modal-body .form-group {
+.add-modal-body .form-group {
   margin-bottom: 15px;
 }
 
-.add-vehicle-modal-body label {
+.add-modal-body label {
   display: block;
   font-size: 16px;
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-.add-vehicle-modal-body input {
+.add-modal-body input {
   width: 100%;
   padding: 8px;
   font-size: 14px;
@@ -57,14 +57,14 @@
   border-radius: 4px;
 }
 
-.add-vehicle-modal-actions {
+.add-modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   padding: 10px 20px 20px;
 }
 
-.add-vehicle-save-button {
+.add-save-button {
   background-color: #4caf50;
   color: #fff;
   padding: 8px 16px;
@@ -74,11 +74,11 @@
   transition: background-color 0.2s;
 }
 
-.add-vehicle-save-button:hover {
+.add-save-button:hover {
   background-color: #45a049;
 }
 
-.add-vehicle-cancel-button {
+.add-cancel-button {
   background-color: #e7e7e7;
   color: #333;
   padding: 8px 16px;
@@ -88,6 +88,6 @@
   transition: background-color 0.2s;
 }
 
-.add-vehicle-cancel-button:hover {
+.add-cancel-button:hover {
   background-color: #d5d5d5;
 }
