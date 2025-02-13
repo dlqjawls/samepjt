@@ -15,15 +15,14 @@ from app.db.crud.module_set_option_type import module_set_option_type_crud
 class ModuleSetService:
     
     @staticmethod
-    def upload_moduletype_image(file_obj, moduletype_id: int, filename: Optional[str] = None) -> str:
-        """모듈타입 이미지 업로드 함수"""
-        return s3_storage.upload_file_generic(file_obj, "moduletype", moduletype_id, filename=filename, default_ext=".jpg")
+    def _check_module_set_exists(session: Session, module_set_id: int) -> None:
+        """모듈 세트 존재 여부 확인"""
+        if not module_set_crud.get_by_field(session, module_set_id, "module_set_id"):
+            raise NotFoundError(
+                message="Module set not found",
+                detail={"module_set_id": module_set_id}
+            )
 
-    @staticmethod
-    def list_moduletype_images(moduletype_id: int) -> list:
-        """주어진 모듈타입 ID의 모든 이미지를 조회합니다. 없으면 []를 반환합니다."""
-        return s3_storage.list_files_by_category("moduletype", moduletype_id)
-      
     @staticmethod
     def _check_module_type_exists(session: Session, module_type_id: int) -> None:
         """모듈 타입 존재 여부 확인"""
@@ -33,6 +32,25 @@ class ModuleSetService:
                 detail={"module_type_id": module_type_id}
             )
             
+    @staticmethod 
+    def _check_option_type_exists(session: Session, option_type_id: int) -> None:
+        """옵션 타입 존재 여부 확인"""
+        if not module_set_option_type_crud.get_by_field(session, option_type_id, "option_type_id"):
+            raise NotFoundError(
+                message="Option type not found",
+                detail={"option_type_id": option_type_id}
+            )
+    
+    @staticmethod
+    def upload_moduletype_image(file_obj, moduletype_id: int, filename: Optional[str] = None) -> str:
+        """모듈타입 이미지 업로드 함수"""
+        return s3_storage.upload_file_generic(file_obj, "moduletype", moduletype_id, filename=filename, default_ext=".jpg")
+
+    @staticmethod
+    def list_moduletype_images(moduletype_id: int) -> list:
+        """주어진 모듈타입 ID의 모든 이미지를 조회합니다. 없으면 []를 반환합니다."""
+        return s3_storage.list_files_by_category("moduletype", moduletype_id)
+
     @staticmethod
     def _save_module_set_images(module_set_images: List[UploadFile], module_set_id: int) -> str:
         """모듈 세트 이미지 저장 후 이미지 경로 문자열 반환"""
@@ -57,13 +75,9 @@ class ModuleSetService:
         module_set_items = []
         for module_set in module_sets:
             
-            # 모듈 세트 ID 존재 여부 확인
-            if module_set.module_set_id is None:
-                raise DatabaseError(
-                    message="Module set ID is required",
-                    detail={"module_set_id": module_set.module_set_id}
-                ) 
-                
+            # 모듈 세트 존재 여부 확인
+            ModuleSetService._check_module_set_exists(session, module_set.module_set_id)
+            
             # 모듈 타입 존재 여부 확인
             ModuleSetService._check_module_type_exists(session, module_set.module_type_id)
             
@@ -124,6 +138,11 @@ class ModuleSetService:
         
         # 모듈 타입 존재 여부 확인
         ModuleSetService._check_module_type_exists(session, module_set_data.module_type_id)
+        
+        # 옵션 타입 존재 여부 확인
+        if module_set_data.options:
+            for opt in module_set_data.options:
+                ModuleSetService._check_option_type_exists(session, opt.optionTypeId)
 
         # 새로운 모듈 세트를 DB에 먼저 생성 (이미지 빈 문자열로 처리)
         new_module_set: ModuleSet = ModuleSet(
@@ -144,13 +163,24 @@ class ModuleSetService:
             raise DatabaseError(
                 message="Module set auto increment ID is not assigned"
             )
-
+            
+        # 옵션 타입 등록
+        if module_set_data.options:
+            for opt in module_set_data.options:
+                new_option_record = ModuleSetOptionTypes(
+                    module_set_id=new_module_set.module_set_id,
+                    option_type_id=opt.optionTypeId,
+                    option_quantity=opt.quantity,
+                )
+                module_set_option_type_crud.create(session, new_option_record)  
+                
         # 모듈 세트 이미지 첨부가 있는 경우, 새 module_set_id 경로로 이미지를 저장하고, 이미지 URL 리스트를 DB에 업데이트
         if module_set_data.module_set_images:
             processed_images = ModuleSetService._save_module_set_images(module_set_data.module_set_images, new_module_set.module_set_id)
             new_module_set.module_set_images = processed_images
             module_set_crud.update(session, new_module_set.module_set_id, {"module_set_images": processed_images}, id_field="module_set_id")
 
+        
         return ModuleSetRegisterResponse.success(
             message="Module set registered successfully"
         )
@@ -165,9 +195,11 @@ class ModuleSetService:
     ) -> ModuleSetUpdateResponse:
         """모듈 세트 수정"""
         
-        # 모듈 세트 존재 여부 확인
-        module_set = module_set_crud.get_by_field(session, module_set_id, "module_set_id")
-        if not module_set or module_set.module_set_id is None:
+        print(f"update_data: {update_data}")
+        
+        # 기존 모듈 세트 가져오기
+        before_module_set = module_set_crud.get_by_field(session, module_set_id, "module_set_id")
+        if not before_module_set or before_module_set.module_set_id is None:
             raise NotFoundError(
                 message="Module set not found",
                 detail={"module_set_id": module_set_id}
@@ -176,8 +208,15 @@ class ModuleSetService:
         # module_type_id가 업데이트 대상에 포함되었다면 존재 여부 확인
         if update_data.module_type_id is not None:
             ModuleSetService._check_module_type_exists(session, update_data.module_type_id)
+        else:
+            update_data.module_type_id = before_module_set.module_type_id
+            
+        # 옵션 타입 존재 여부 확인
+        if update_data.options:
+            for opt in update_data.options:
+                ModuleSetService._check_option_type_exists(session, opt.optionTypeId)
 
-        # 옵션 데이터는 별도로 추출 (옵션 변경이 있을 경우 모듈세트옵션타입 DB에 반영)
+        # 옵션 타입 데이터 추출
         new_options = update_data.options if update_data.options is not None else None
 
         # 업데이트할 데이터 추출 (옵션 필드는 제외)
@@ -185,26 +224,31 @@ class ModuleSetService:
         if "options" in update_fields:
             del update_fields["options"]
 
-        # 이미지 파일이 제공된 경우 처리: S3 업로드 후 변환된 이미지 경로를 update_fields에 반영
-        if "module_set_images" in update_fields and update_fields["module_set_images"]:
-            processed_images = ModuleSetService._save_module_set_images(update_fields["module_set_images"], module_set.module_set_id)
-            update_fields["module_set_images"] = processed_images
+        # 이미지 파일 처리
+        if "module_set_images" in update_fields:
+            if update_fields["module_set_images"]:
+                processed_images = ModuleSetService._save_module_set_images(update_fields["module_set_images"], module_set.module_set_id)
+                update_fields["module_set_images"] = processed_images
+            else:
+                update_fields["module_set_images"] = ""
 
         # 업데이트 정보 갱신
         update_fields["updated_by"] = user_pk
         update_fields["updated_at"] = datetime.now()
 
+        print(f"update_fields: {update_fields}")
+
         # 모듈 세트 기본 정보 업데이트
-        module_set_crud.update(session, module_set.module_set_id, update_fields, id_field="module_set_id")
+        module_set_crud.update(session, before_module_set.module_set_id, update_fields, id_field="module_set_id")
 
         # 옵션 타입 업데이트: 옵션 데이터가 제공되면 기존 옵션 데이터를 모두 삭제 후 신규 옵션 데이터를 추가
         if new_options is not None:
             # 기존 모듈세트옵션타입 삭제
-            module_set_option_type_crud.delete_by_module_set_id(session, module_set.module_set_id)
+            module_set_option_type_crud.delete_by_module_set_id(session, before_module_set.module_set_id)
             # 새로운 옵션들 추가
             for opt in new_options:
                 new_option_record = ModuleSetOptionTypes(
-                    module_set_id=module_set.module_set_id,
+                    module_set_id=before_module_set.module_set_id,
                     option_type_id=opt.optionTypeId,
                     option_quantity=opt.quantity,
                 )
@@ -219,13 +263,12 @@ class ModuleSetService:
     @handle_transaction
     def delete_module_set(session: Session, module_set_id: int, user_pk: int) -> ModuleSetDeleteResponse:
         """모듈 세트 삭제 서비스"""
+        
         # 모듈 세트 존재 여부 확인
-        module_set = module_set_crud.get_by_field(session, module_set_id, "module_set_id")
-        if not module_set:
-            raise NotFoundError(
-                message="Module set not found",
-                detail={"module_set_id": module_set_id}
-            )
+        ModuleSetService._check_module_set_exists(session, module_set_id)
+
+        # 연결된 옵션 타입 삭제
+        module_set_option_type_crud.delete_by_module_set_id(session, module_set_id)
 
         # 모듈 세트 삭제
         module_set_crud.soft_delete(session, module_set_id, "module_set_id")
