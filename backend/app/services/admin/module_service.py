@@ -9,7 +9,7 @@ from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
 from sqlalchemy import select
-from app.utils.lut_constants import ItemStatus, ItemType, ModuleType, UsageStatus, LUTConstants
+from app.utils.lut_constants import ItemStatus, ItemType, ModuleType, UsageStatus
 from app.db.models.usage_history import UsageHistory
 import json
 
@@ -34,7 +34,7 @@ class ModuleService:
             )
             
     @staticmethod
-    def _convert_module_data(module: Module) -> ModuleItem:
+    def _convert_module_data(session: Session, module: Module) -> ModuleItem:
         """모듈 데이터 변환"""
         if module.module_id is None:
             raise DatabaseError(
@@ -43,8 +43,8 @@ class ModuleService:
             )
             
         # Retrieve module type info and extract the 'name' as a string.
-        module_type_info = LUTConstants.MODULE_TYPE_INFO.get(ModuleType(module.module_type_id), {})
-        module_type_name = module_type_info.get("name", "Unknown") if isinstance(module_type_info, dict) else str(module_type_info)
+        module_type_info = module_type_crud.get_by_id(session, module.module_type_id)
+        module_type_name = module_type_info.module_type_name  
         
         return ModuleItem(
             module_id=module.module_id,
@@ -54,7 +54,7 @@ class ModuleService:
             last_maintenance_at=module.last_maintenance_at,
             next_maintenance_at=module.next_maintenance_at, 
             item_status_id=module.item_status_id,
-            item_status_name=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(module.item_status_id), "Unknown"),
+            item_status_name=ItemStatus.get_name(module.item_status_id),
             created_at=module.created_at,
             created_by=module.created_by,
             updated_at=module.updated_at,
@@ -71,7 +71,7 @@ class ModuleService:
         # 모듈 데이터 변환
         module_items = [
             ModuleItem.parse_obj(
-                ModuleService._convert_module_data(module)
+                ModuleService._convert_module_data(session, module)
             )
             for module in modules
         ]
@@ -158,8 +158,8 @@ class ModuleService:
         active_usage = session.scalars(
             select(UsageHistory).where(
                 UsageHistory.item_id == module_id,
-                UsageHistory.item_type_id == ItemType.MODULE,
-                UsageHistory.usage_status_id == UsageStatus.IN_USE
+                UsageHistory.item_type_id == ItemType.MODULE.ID,
+                UsageHistory.usage_status_id == UsageStatus.IN_USE.ID
             )
         ).first()
 

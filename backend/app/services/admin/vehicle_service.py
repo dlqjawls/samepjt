@@ -10,7 +10,7 @@ from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
 from sqlalchemy import select
-from app.utils.lut_constants import ItemStatus, ItemType, UsageStatus, LUTConstants
+from app.utils.lut_constants import ItemStatus, ItemType, UsageStatus
 from app.db.models.usage_history import UsageHistory
 
 class VehicleService:
@@ -53,7 +53,7 @@ class VehicleService:
             mileage=vehicle.mileage,
             last_maintenance_at=vehicle.last_maintenance_at,
             next_maintenance_at=vehicle.next_maintenance_at, 
-            item_status_name=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(vehicle.item_status_id), "Unknown"),
+            item_status_name= ItemStatus.get_name(vehicle.item_status_id),
             created_at=vehicle.created_at,
             created_by=vehicle.created_by,
             updated_at=vehicle.updated_at,
@@ -157,9 +157,9 @@ class VehicleService:
             )
         
         # 차량이 현재 사용 중인지 UsageHistory 테이블에서 확인
-        usage_history_data = usage_history_crud.get_item_usage_history(session, vehicle_id, ItemType.VEHICLE)
+        usage_history_data = usage_history_crud.get_item_usage_history(session, vehicle_id, ItemType.VEHICLE.ID)
         usage_history_items = usage_history_data.get("items", [])
-        if any(history.usage_status_id == UsageStatus.IN_USE for history in usage_history_items):
+        if any(history.usage_status_id == UsageStatus.IN_USE.ID for history in usage_history_items):
             raise ConflictError(
                 message="Vehicle is currently in use and cannot be deleted",
                 detail={"vehicle_id": vehicle_id}

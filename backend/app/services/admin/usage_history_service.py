@@ -1,18 +1,17 @@
 from sqlmodel import Session, select
 from sqlalchemy import func
 from app.db.models.usage_history import UsageHistory
-from app.db.models.lut import ItemType
+from app.db.models.vehicle import Vehicle
+from app.db.models.module import Module
+from app.db.models.option import Option
+from app.db.crud.lut import usage_status
+from app.utils.lut_constants import ItemType
 from app.api.schemas.admin.usage_history_schema import (
     UsageHistoryGetResponse,
     UsageHistoryData,
     UsageHistoryItem,
     Pagination
 )
-from app.db.models.vehicle import Vehicle
-from app.db.models.module import Module
-from app.db.models.option import Option
-from app.db.crud.lut import usage_status
-from app.utils.lut_constants import LUTConstants 
 
 
 class UsageHistoryService:
@@ -37,14 +36,14 @@ class UsageHistoryService:
 
         if not include_deleted:
             filter_condition = (
-                ((UsageHistory.item_type_id == ItemType.VEHICLE) &
-                 (UsageHistory.item_id.in_(select(Vehicle.vehicle_id)
+                ((UsageHistory.item_type_id == ItemType.VEHICLE.ID) &
+                 (UsageHistory.item_id==(select(Vehicle.vehicle_id)
                                                .where(Vehicle.deleted_at == None)))) |
-                ((UsageHistory.item_type_id == ItemType.MODULE) &
-                 (UsageHistory.item_id.in_(select(Module.module_id)
+                ((UsageHistory.item_type_id == ItemType.MODULE.ID) &
+                 (UsageHistory.item_id==(select(Module.module_id)
                                                .where(Module.deleted_at == None)))) |
-                ((UsageHistory.item_type_id == ItemType.OPTION) &
-                 (UsageHistory.item_id.in_(select(Option.option_id)
+                ((UsageHistory.item_type_id == ItemType.OPTION.ID) &
+                 (UsageHistory.item_id==(select(Option.option_id)
                                                .where(Option.deleted_at == None))))
             )
             count_stmt = select(func.count()).select_from(UsageHistory).where(filter_condition)
@@ -63,7 +62,7 @@ class UsageHistoryService:
                 usage_id=record.usage_id,
                 rent_id=record.rent_id,
                 item_id=record.item_id,
-                item_type_name=LUTConstants.ITEM_TYPE_NAMES.get(record.item_type_id, "Unknown"),
+                item_type_name=ItemType.get_name(record.item_type_id),
                 usage_status_name=usage_status.get_by_id(session, record.usage_status_id).usage_status_name,
                 created_at=record.created_at,
                 updated_at=record.updated_at

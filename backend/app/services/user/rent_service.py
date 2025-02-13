@@ -48,7 +48,7 @@ class RentService:
                 session=session,
                 option_type_id=opt_type.optionTypeId,
                 required_quantity=opt_type.quantity,
-                item_status_id=ItemStatus.INACTIVE
+                item_status_id=ItemStatus.INACTIVE.ID
             )
         ]
 
@@ -348,7 +348,7 @@ class RentService:
             vehicle_id,
             module_id,
             option_ids,
-            UsageStatus.COMPLETED
+            UsageStatus.COMPLETED.ID
         )
         RentService._deactivate_items(session, vehicle_id, module_id, option_ids)
 
@@ -430,7 +430,7 @@ class RentService:
             vehicle_id,
             module_id,
             option_ids,
-            UsageStatus.COMPLETED
+            UsageStatus.COMPLETED.ID
         )
         RentService._deactivate_items(session, vehicle_id, module_id, option_ids)
 

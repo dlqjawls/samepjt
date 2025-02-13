@@ -11,7 +11,7 @@ class VehicleCRUD(CRUDBase[Vehicle]):
     def __init__(self):
         super().__init__(Vehicle)
 
-    def get_first_available_vehicle(self, session: Session, item_status_id: int = ItemStatus.INACTIVE) -> Vehicle:
+    def get_first_available_vehicle(self, session: Session, item_status_id: int = ItemStatus.INACTIVE.ID) -> Vehicle:
         """
         첫 번째 사용 가능한 차량을 조회합니다.
 
@@ -89,5 +89,6 @@ class VehicleCRUD(CRUDBase[Vehicle]):
             Optional[Vehicle]: 차량 객체.
         """
         return self.get_by_field(session, vehicle_number, "vehicle_number")
+      
       
 vehicle_crud = VehicleCRUD()

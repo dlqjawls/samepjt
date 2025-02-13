@@ -1,5 +1,7 @@
 from app.db.models.maintenance_history import MaintenanceHistory
 from app.db.crud.base import CRUDBase
+from sqlmodel import Session, select
+from typing import List
 
 class MaintenanceHistoryCRUD(CRUDBase[MaintenanceHistory]):
     def __init__(self):
@@ -13,6 +15,6 @@ class MaintenanceHistoryCRUD(CRUDBase[MaintenanceHistory]):
                 self.model.item_type_id == item_type_id
             )
         )
-        return session.exec(query).all()  
+        return list(session.exec(query).all())  
 
 maintenance_history_crud = MaintenanceHistoryCRUD()

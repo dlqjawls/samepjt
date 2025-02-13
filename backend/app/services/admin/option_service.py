@@ -9,7 +9,7 @@ from app.utils.exceptions import DatabaseError, ConflictError, NotFoundError
 from app.utils.handle_transaction import handle_transaction
 from datetime import datetime
 from sqlalchemy import select
-from app.utils.lut_constants import ItemStatus, ItemType, UsageStatus, LUTConstants
+from app.utils.lut_constants import ItemStatus, ItemType, UsageStatus
 from app.db.models.usage_history import UsageHistory
 import json
 
@@ -39,7 +39,7 @@ class OptionService:
             option_type_id=option.option_type_id,
             last_maintenance_at=option.last_maintenance_at,
             next_maintenance_at=option.next_maintenance_at, 
-            item_status_name=LUTConstants.ITEM_STATUS_NAMES.get(ItemStatus(option.item_status_id), "Unknown"),
+            item_status_name=ItemStatus.get_name(option.item_status_id),
             created_at=option.created_at,
             created_by=option.created_by,
             updated_at=option.updated_at,
@@ -134,8 +134,8 @@ class OptionService:
         active_usage = session.scalars(
             select(UsageHistory).where(
                 UsageHistory.item_id == option_id,
-                UsageHistory.item_type_id == ItemType.OPTION,
-                UsageHistory.usage_status_id == UsageStatus.IN_USE
+                UsageHistory.item_type_id == ItemType.OPTION.ID,
+                UsageHistory.usage_status_id == UsageStatus.IN_USE.ID
             )
         ).first()
 

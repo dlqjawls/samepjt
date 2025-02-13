@@ -89,7 +89,7 @@ class OptionCRUD(CRUDBase[Option]):
         session: Session,
         option_type_id: int,
         required_quantity: int,
-        item_status_id: int = ItemStatus.INACTIVE
+        item_status_id: int = ItemStatus.INACTIVE.ID
     ) -> List[Option]:
         """특정 옵션 타입에서 사용 가능한 옵션을 조회합니다.
 

@@ -7,7 +7,6 @@ from app.utils.lut_constants import ItemType, UsageStatus
 from app.utils.exceptions import DatabaseError, ValidationError
 
 class UsageHistoryCRUD(CRUDBase[UsageHistory]):
-
     def __init__(self):
         super().__init__(UsageHistory)
           

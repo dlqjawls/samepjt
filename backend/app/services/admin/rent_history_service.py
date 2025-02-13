@@ -8,7 +8,7 @@ from app.db.crud.vehicle import vehicle_crud
 from app.db.crud.option import option_crud
 from app.db.crud.rent_history import rent_history_crud
 from app.api.schemas.admin.rent_history_schema import RentHistoryResponse, RentHistoryData, RentHistoryItem, RentVideoItem, RentVideoData, RentVideoResponse
-from app.utils.lut_constants import ItemType, RentStatus, LUTConstants, VideoType
+from app.utils.lut_constants import ItemType, RentStatus, VideoType
 from datetime import datetime
 from typing import Union, Any, Dict, cast
 
@@ -83,7 +83,7 @@ class RentHistoryService:
             arrival_location=Coordinate.from_str(rent.arrival_location),
             cost=float(rent.cost) if rent.cost else 0.0,
             mileage=float(rent.mileage) if rent.mileage else 0.0,
-            rent_status_name=LUTConstants.RENT_STATUS_NAMES.get(RentStatus(rent.rent_status_id), "unknown"),
+            rent_status_name=RentStatus.get_name(rent.rent_status_id),
             created_at=rent.created_at,
             updated_at=rent.updated_at
         )
