@@ -1,7 +1,6 @@
 from sqlmodel import Session, select
 from app.db.models.rent_history import RentHistory
 from app.utils.lut_constants import RentStatus
-from app.utils.exceptions import DatabaseError, NotFoundError
 from app.api.schemas.user.me_schema import MeRentInfo
 from app.utils.handle_transaction import handle_transaction
 
@@ -27,5 +26,6 @@ class MeRentInfoService:
             RentHistory.rent_status_id == RentStatus.IN_PROGRESS
         )
         rent_history = session.exec(query).first()
-            
-        return MeRentInfo(rent_id=rent_history.rent_id) 
+        
+        rent_id = rent_history.rent_id if rent_history else None
+        return MeRentInfo(rent_id=rent_id) 
