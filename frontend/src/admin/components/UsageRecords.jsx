@@ -1,14 +1,14 @@
-// src/admin/components/RentalRecords.jsx
+// src/admin/components/UsageRecords.jsx
 
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
-import "./RentalRecords.css";
+import "./UsageRecords.css";
 
 const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
-function RentalRecords() {
-  const [rentLogs, setRentLogs] = useState([]);
+function UsageRecords() {
+  const [useLogs, setUseLogs] = useState([]);
   const [expandedRentId, setExpandedRentId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -35,11 +35,11 @@ function RentalRecords() {
   // API 베이스 URL 설정
   const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
-  const fetchRentLogs = async () => {
+  const fetchUseLogs = async () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get(`${BASE_URL}/admin/rent-history`, {
+      const response = await axios.get(`${BASE_URL}/admin/usage-history`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : undefined,
@@ -53,17 +53,17 @@ function RentalRecords() {
       });
 
       if (response.data.resultCode === "SUCCESS") {
-        setRentLogs(response.data.data.rent_history);
+        setUseLogs(response.data.data.usage_history);
         setPagination(response.data.data.pagination);
-        console.log(response.data.data.rent_history);
+        console.log(response.data.data.usage_history);
       } else {
         setError(
-          response.data.message || "대여 로그를 불러오는 데 실패했습니다."
+          response.data.message || "사용 로그를 불러오는 데 실패했습니다."
         );
       }
     } catch (err) {
       console.error(err);
-      setError("대여 로그를 불러오는 중 오류가 발생했습니다.");
+      setError("사용 로그를 불러오는 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -71,16 +71,16 @@ function RentalRecords() {
 
   // 컴포넌트 마운트 및 필터 변경 시 대여 로그 목록 조회
   useEffect(() => {
-    fetchRentLogs();
+    fetchUseLogs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
-  const toggleExpanded = (rentId) => {
-    setExpandedRentId((prev) => (prev === rentId ? null : rentId));
+  const toggleExpanded = (usageId) => {
+    setExpandedRentId((prev) => (prev === usageId ? null : usageId));
     // 해당 행으로 스크롤 이동
     setTimeout(() => {
-      if (rowRefs.current[rentId]) {
-        rowRefs.current[rentId].scrollIntoView({
+      if (rowRefs.current[usageId]) {
+        rowRefs.current[usageId].scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
@@ -93,9 +93,9 @@ function RentalRecords() {
   };
 
   return (
-    <div className="rental-container">
-      <div className="rental-header">
-        <h1>대여 기록 조회</h1>
+    <div className="usage-container">
+      <div className="usage-header">
+        <h1>사용 기록 조회</h1>
       </div>
 
       {/* 대여 로그 목록 테이블 */}
@@ -104,48 +104,54 @@ function RentalRecords() {
         <LoadingSpinner />
       ) : (
         <div className="table-wrapper">
-          <table className="rental-table">
+          <table className="usage-table">
             <thead>
               <tr>
+                <th>사용 ID</th>
                 <th>대여 ID</th>
-                <th>사용자 ID</th>
-                <th>차량 번호</th>
-                <th>옵션 타입</th>
-                <th>대여 상태</th>
-                <th>등록 일자</th>
+                <th>사용된 항목 ID</th>
+                <th>항목 유형</th>
+                <th>사용 상태</th>
+                <th>사용 시작 시간</th>
               </tr>
             </thead>
             <tbody>
-              {rentLogs.length > 0 ? (
-                rentLogs.map((log) => (
+              {useLogs.length > 0 ? (
+                useLogs.map((log) => (
                   <React.Fragment key={log.rent_id}>
                     <tr
-                      ref={(el) => (rowRefs.current[log.rent_id] = el)}
+                      ref={(el) => (rowRefs.current[log.usage_id] = el)}
                       className={`main-row ${
-                        expandedRentId === log.rent_id
+                        expandedRentId === log.usage_id
                           ? "expanded-main-row"
                           : ""
                       }`}
-                      onClick={() => toggleExpanded(log.rent_id)}
+                      onClick={() => toggleExpanded(log.usage_id)}
                     >
-                      <td>{log.rent_id}</td>
+                      <td>{log.usage_id}</td>
                       <td>
-                        <span className="cell-text">{log.user_pk}</span>
+                        <span className="cell-text">{log.rent_id}</span>
                       </td>
                       <td>
-                        <span className="cell-text">{log.vehicle_number}</span>
-                      </td>
-                      <td>
-                        <span className="cell-text">{log.option_types}</span>
+                        <span className="cell-text">{log.item_id}</span>
                       </td>
                       <td>
                         <span className="cell-text">
-                          {log.rent_status_name === "in_progress"
-                            ? "진행 중"
-                            : log.rent_status_name === "completed"
-                            ? "완료됨"
-                            : log.rent_status_name === "canceled"
-                            ? "취소됨"
+                          {log.item_type_name === "vehicle"
+                            ? "차량"
+                            : log.item_type_name === "module"
+                            ? "모듈"
+                            : log.item_type_name === "option"
+                            ? "옵션"
+                            : "알 수 없음"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {log.usage_status_name === "in_use"
+                            ? "사용 중"
+                            : log.usage_status_name === "completed"
+                            ? "사용 완료"
                             : "알 수 없음"}
                         </span>
                       </td>
@@ -155,80 +161,52 @@ function RentalRecords() {
                         </span>
                       </td>
                     </tr>
-                    {expandedRentId === log.rent_id && (
+                    {expandedRentId === log.usage_id && (
                       <tr className="expanded-row">
                         <td colSpan="6">
                           <div className="detail-info-container">
+                            <div className="detail-item">
+                              <div className="detail-label">사용 ID</div>
+                              <div className="detail-value">{log.usage_id}</div>
+                            </div>
                             <div className="detail-item">
                               <div className="detail-label">대여 ID</div>
                               <div className="detail-value">{log.rent_id}</div>
                             </div>
                             <div className="detail-item">
-                              <div className="detail-label">대여한 사용자</div>
-                              <div className="detail-value">{log.user_pk}</div>
+                              <div className="detail-label">사용된 항목 ID</div>
+                              <div className="detail-value">{log.item_id}</div>
                             </div>
                             <div className="detail-item">
-                              <div className="detail-label">
-                                대여한 차량 정보
-                              </div>
+                              <div className="detail-label">항목 유형</div>
                               <div className="detail-value">
-                                {log.vehicle_number}
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <div className="detail-label">
-                                대여한 옵션 타입 목록
-                              </div>
-                              <div className="detail-value">
-                                {log.option_types}
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <div className="detail-label">출발 위치</div>
-                              <div className="detail-value">
-                                {log.departure_location.x},{" "}
-                                {log.departure_location.y}
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <div className="detail-label">도착 위치</div>
-                              <div className="detail-value">
-                                {log.arrival_location.x},{" "}
-                                {log.arrival_location.y}
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <div className="detail-label">대여 요금</div>
-                              <div className="detail-value">
-                                {Number(log.cost).toLocaleString()}원
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <div className="detail-label">주행 거리</div>
-                              <div className="detail-value">
-                                {Number(log.mileage).toLocaleString()} km
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <div className="detail-label">대여 상태</div>
-                              <div className="detail-value">
-                                {log.rent_status_name === "in_progress"
-                                  ? "진행 중"
-                                  : log.rent_status_name === "completed"
-                                  ? "완료됨"
-                                  : log.rent_status_name === "canceled"
-                                  ? "취소됨"
+                                {log.item_type_name === "vehicle"
+                                  ? "차량"
+                                  : log.item_type_name === "module"
+                                  ? "모듈"
+                                  : log.item_type_name === "option"
+                                  ? "옵션"
                                   : "알 수 없음"}
                               </div>
                             </div>
                             <div className="detail-item">
-                              <div className="detail-label">대여 시작 시간</div>
+                              <div className="detail-label">사용 상태</div>
+                              <div className="detail-value">
+                                {log.usage_status_name === "in_use"
+                                  ? "사용 중"
+                                  : log.usage_status_name === "completed"
+                                  ? "사용 완료"
+                                  : "알 수 없음"}
+                              </div>
+                            </div>
+                            <div className="detail-item">
+                              <div className="detail-label">사용 시작 시간</div>
                               <div className="detail-value">
                                 {new Date(log.created_at).toLocaleString()}
                               </div>
                             </div>
                             <div className="detail-item">
-                              <div className="detail-label">최종 업데이트</div>
+                              <div className="detail-label">사용 완료 시간</div>
                               <div className="detail-value">
                                 {new Date(log.updated_at).toLocaleString()}
                               </div>
@@ -241,7 +219,7 @@ function RentalRecords() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7">조회된 대여 로그가 없습니다.</td>
+                  <td colSpan="7">조회된 사용 로그가 없습니다.</td>
                 </tr>
               )}
             </tbody>
@@ -270,4 +248,4 @@ function RentalRecords() {
   );
 }
 
-export default RentalRecords;
+export default UsageRecords;

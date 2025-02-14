@@ -1,0 +1,122 @@
+ /* src/admin/components/UsageRecords.css */
+
+ .usage-container {
+    padding: 20px;
+  }
+  
+  .usage-container .usage-header {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .usage-container .usage-header h1 {
+    font-size: 2em;
+  }
+  
+  .usage-container .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .usage-container .usage-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+  }
+  
+  .usage-container .usage-table th,
+  .usage-container .usage-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    font-size: 14px;
+    background-color: #fff;
+  }
+  
+  .usage-container .usage-table th {
+    background-color: #f2f2f2;
+    font-size: 16px;
+  }
+  
+  .usage-container .cell-text {
+    visibility: visible;
+  }
+  .usage-container .main-row {
+    cursor: pointer;
+  }
+  
+  .usage-container .expanded-main-row td {
+    background-color: #2196f3;
+    color: #fff;
+    font-weight: bold;
+  }
+  .usage-container .expanded-main-row td:not(:first-child) .cell-text {
+    visibility: hidden;
+  }
+  
+  .usage-container .expanded-row {
+    background-color: #f9f9f9;
+    outline: 3px solid #2196f3;
+    outline-offset: -3px;
+    padding: 15px;
+  }
+  
+  .usage-container .detail-info-container {
+    padding: 15px;
+  }
+  
+  .usage-container .detail-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .usage-container .detail-item:last-child {
+    border-bottom: none;
+  }
+  
+  .usage-container .detail-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .usage-container .detail-value {
+    font-size: 14px;
+  }
+  
+  .usage-container .detail-button:hover {
+    background-color: #0b7dda;
+  }
+  
+  .usage-container .pagination {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .usage-container .pagination button {
+    padding: 6px 12px;
+    background-color: #e7e7e7;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .usage-container .pagination button:hover:not(:disabled) {
+    background-color: #d0d0d0;
+  }
+  
+  .usage-container .pagination button:disabled {
+    background-color: #cccccc;
+    cursor: default;
+  }
+  
+  .usage-container .error {
+    color: red;
+    margin-bottom: 10px;
+  }
+  
