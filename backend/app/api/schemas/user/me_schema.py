@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from app.api.schemas.common import ResponseBase
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 class MeRentInfo(BaseModel):
@@ -25,3 +25,27 @@ class MeRentInfoResponse(ResponseBase[MeRentInfo]):
                 }
             }
         } 
+        
+class MeRentHistoryResponse(ResponseBase[List[MeRentInfo]]):
+    """사용자 렌트 이력 조회 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Rent history retrieved successfully",
+                "data": [
+                    {
+                        "rent_id": 1,
+                        "rentStartDate": "2025-01-15T09:00:00",
+                        "rentEndDate": "2025-01-15T10:00:00",
+                        "cost": 100000
+                    },
+                    {
+                    "rent_id": 2,
+                    "rentStartDate": "2025-01-15T09:00:00",
+                    "rentEndDate": "2025-01-15T10:00:00",
+                    "cost": 100000
+                    }
+                ]
+            }
+        }
