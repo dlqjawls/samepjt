@@ -82,14 +82,14 @@ function Sidebar() {
           </li>
           <li>
             <NavLink
-              to="/admin/rental-records"
+              to="/admin/record-management"
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
               aria-label="대여 기록"
             >
               <FaPlusSquare className="nav-icon" />
-              <p className="nav-text">대여 기록</p>
+              <p className="nav-text">기록 조회</p>
             </NavLink>
           </li>
           <li>

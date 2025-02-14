@@ -15,7 +15,7 @@ import Navbar from "./common/navigationBar"
 import VehicleManagement from "./admin/components/VehicleManagement"
 import ModuleManagement from "./admin/components/ModuleManagement"
 import OptionManagement from "./admin/components/OptionManagement"
-import RentalRecords from "./admin/components/RentalRecords"
+import RecordManagement from "./admin/components/RecordManagement";
 import MaintenanceRecords from "./admin/components/MaintenanceRecords"
 import RentForm from "./rentForm/rentForm"
 import Total_reciept from "./finishSelect/total_reciept"
@@ -63,7 +63,7 @@ function App() {
           <Route path="vehicle-management" element={<VehicleManagement />} />
           <Route path="module-management" element={<ModuleManagement />} />
           <Route path="option-management" element={<OptionManagement />} />
-          <Route path="rental-records" element={<RentalRecords />} />
+          <Route path="record-management" element={<RecordManagement />} />
           <Route path="maintenance-records" element={<MaintenanceRecords />} />
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
         </Route>
