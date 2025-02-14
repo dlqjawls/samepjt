@@ -235,7 +235,7 @@ async def update_option_type(
     return OptionTypeService.update_option_type(
         session=session,
         option_type_id=option_type_id,
-        update_data=option_type_data,
+        option_type_data=option_type_data,
         user_pk=token_data.user_pk
     )
 
