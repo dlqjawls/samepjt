@@ -71,7 +71,7 @@ async def get_current_rent_info(
     
 @router.get(
     "/me/rent/history",
-    response_model=MeRentInfoResponse,
+    response_model=MeRentHistoryResponse,
     summary="👀 렌트 이력 조회",
     description="JWT 토큰으로 인증된 사용자의 렌트 이력을 조회합니다.",
     responses={
@@ -91,9 +91,9 @@ async def get_current_rent_info(
                             },
                             {
                                 "rent_id": 2,
-                                "rentStartDate": "2025-01-15T09:00:00",
-                                "rentEndDate": "2025-01-15T10:00:00",
-                                "cost": 100000
+                                "rentStartDate": "2025-02-01T09:00:00",
+                                "rentEndDate": "2025-02-01T11:00:00",
+                                "cost": 200000
                             }
                         ]
                     }
