@@ -1,10 +1,10 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Path
+from fastapi import APIRouter, Depends, Query, Path, UploadFile, File
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.option_type_service import OptionTypeService
-from app.api.schemas.admin.option_type_schema import OptionTypeGetResponse, OptionTypeRegisterRequest, OptionTypeRegisterResponse, OptionTypeUpdateRequest, OptionTypeUpdateResponse, OptionTypeDeleteResponse
+from app.api.schemas.admin.option_type_schema import OptionTypeGetResponse, OptionTypeRegisterRequest, OptionTypeMessageResponse, OptionTypeRemoveImageRequest, OptionTypeUpdateRequest
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ router = APIRouter()
     "/option-types",
     response_model=OptionTypeGetResponse,
     summary="🛠️ 옵션 타입 목록 조회",
-    description="관리자가 등록된 옵션 타입 목록을 페이지네이션 방식으로 조회합니다.",
+    description="등록된 옵션 타입 목록을 페이지네이션 방식으로 조회합니다.",
     responses={
         200: {
             "description": "옵션 타입 목록 조회 성공",
@@ -85,9 +85,9 @@ async def get_option_type_list(
 
 @router.post(
     "/option-types",
-    response_model=OptionTypeRegisterResponse,
+    response_model=OptionTypeMessageResponse,
     summary="🛠️ 옵션 타입 등록",
-    description="관리자가 새로운 옵션 타입을 등록하는 API입니다.",
+    description="새로운 옵션 타입을 등록하는 API입니다.",
     responses={
         200: {
             "description": "옵션 타입이 성공적으로 등록됨",
@@ -173,14 +173,14 @@ async def create_option_type(
     option_type_data: OptionTypeRegisterRequest,
     session: Annotated[Session, Depends(get_session)],
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> OptionTypeRegisterResponse:
+) -> OptionTypeMessageResponse:
     return OptionTypeService.register_option_type(session, option_type_data, token_data.user_pk)
 
 @router.patch(
     "/option-types/{option_type_id}",
-    response_model=OptionTypeUpdateResponse,
+    response_model=OptionTypeMessageResponse,
     summary="🛠️ 옵션 타입 수정",
-    description="관리자가 기존 옵션 타입을 수정하는 API입니다.",
+    description="기존 옵션 타입을 수정하는 API입니다.",
     responses={
         200: {
             "description": "옵션 타입 수정 성공",
@@ -231,7 +231,7 @@ async def update_option_type(
     option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> OptionTypeUpdateResponse:
+) -> OptionTypeMessageResponse:
     return OptionTypeService.update_option_type(
         session=session,
         option_type_id=option_type_id,
@@ -241,9 +241,9 @@ async def update_option_type(
 
 @router.delete(
     "/option-types/{option_type_id}",
-    response_model=OptionTypeDeleteResponse,
+    response_model=OptionTypeMessageResponse,
     summary="🛠️ 옵션 타입 삭제",
-    description="관리자가 기존 옵션 타입을 삭제하는 API입니다.",
+    description="기존 옵션 타입을 삭제하는 API입니다.",
     responses={
         200: {
             "description": "옵션 타입 삭제 성공",
@@ -292,7 +292,62 @@ async def delete_option_type(
     option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> OptionTypeDeleteResponse:
+) -> OptionTypeMessageResponse:
     return OptionTypeService.delete_option_type(session, option_type_id, token_data.user_pk)
 
 
+
+@router.post(
+    "/option-types/{option_type_id}/images",
+    response_model=OptionTypeMessageResponse,
+    summary="🛠️ 옵션 타입 이미지 추가",
+    description="옵션 타입에 이미지를 추가하는 API입니다.",
+    responses={
+        200: {
+            "description": "옵션 타입 이미지 추가 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Option type image added successfully"
+                    }
+                }
+            }
+        }
+    }
+)
+async def add_option_type_image(
+    option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),
+    images: UploadFile = File(...),
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> OptionTypeMessageResponse:
+    return OptionTypeService.add_option_type_image(session, option_type_id, images)    
+
+@router.delete(
+    "/option-types/{option_type_id}/images",
+    response_model=OptionTypeMessageResponse,  
+    summary="🛠️ 옵션 타입 이미지 삭제",
+    description="옵션 타입에 이미지를 삭제하는 API입니다.",
+    responses={
+        200: {
+            "description": "옵션 타입 이미지 삭제 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Option type image removed successfully"  
+                    }
+                }
+            }
+        }
+    }
+)
+async def remove_option_type_image(  
+    request: OptionTypeRemoveImageRequest,
+    option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> OptionTypeMessageResponse:
+    return OptionTypeService.remove_option_type_image(session, option_type_id, request)      
+  
