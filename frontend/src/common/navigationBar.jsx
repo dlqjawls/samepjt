@@ -8,7 +8,7 @@ import Reward from "../main/CreditReward"
 const Navbar = () => {
   const navigate = useNavigate()
   const rent_id = sessionStorage.getItem("rent_id") // rent_id 상태 확인
-
+  const token = sessionStorage.getItem("token")
   const goToHomePage = () => {
     navigate("/")
   }
@@ -39,7 +39,7 @@ const Navbar = () => {
       throw error
     }
   }
-  const goToRentalPage = async () => {
+  const   goToRentalPage = async () => {
     const fetchRentStatus = async (token) => {
       return await axios.get(`${import.meta.env.VITE_API_URL}/user/rent/${rent_id}`, {
         headers: {
@@ -104,6 +104,11 @@ const Navbar = () => {
             {rent_id && ( // rent_id가 있을 때만 버튼 표시
               <button type="button" className="rent-status-button" onClick={goToRentalPage}>
                 대여중인 차량 정보
+              </button>
+            )}
+         {token && ( // 토큰이 있을 때만 마이페이지 버튼 표시
+              <button type="button" className="my-page-button" onClick={() => navigate("/mypage")}>
+                마이페이지
               </button>
             )}
             <LoginButton />
