@@ -128,7 +128,7 @@ class OptionTypeService:
     def update_option_type(
         session: Session,
         option_type_id: int,
-        option_type_data: OptionTypeUpdateRequest,  # OptionTypeUpdateRequest 객체라고 가정
+        option_type_data: OptionTypeUpdateRequest,
         user_pk: int
     ) -> OptionTypeMessageResponse:
         # 기존에 등록된 옵션 타입 객체를 조회합니다.

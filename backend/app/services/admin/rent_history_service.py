@@ -8,9 +8,9 @@ from app.db.crud.vehicle import vehicle_crud
 from app.db.crud.option import option_crud
 from app.db.crud.rent_history import rent_history_crud
 from app.api.schemas.admin.rent_history_schema import RentHistoryResponse, RentHistoryData, RentHistoryItem, RentVideoItem, RentVideoData, RentVideoResponse
-from app.utils.lut_constants import ItemType, RentStatus, VideoType
+from app.utils.lut_constants import ItemType, RentStatus
 from datetime import datetime
-from typing import Union, Any, Dict, cast
+from typing import Any, Dict, cast
 
 
 class RentHistoryService:
@@ -113,21 +113,7 @@ class RentHistoryService:
 
     @staticmethod
     def get_rent_videos(session: Session, rent_id: int, video_type: str) -> RentVideoResponse:
-        """
-        특정 대여(rent_id)에 대한 영상을 조회합니다.
-        
-
-        Args:
-            session (Session): 데이터베이스 세션
-            rent_id (int): 대여 ID
-            video_type (str): 조회할 영상 유형. 가능한 값은 LUTConstants.VIDEO_TYPE_AUTONOMOUS, LUTConstants.VIDEO_TYPE_MODULE_INSTALLATION 입니다.
-        
-        Returns:
-            RentVideoResponse: 조회된 영상 목록을 포함하는 응답 객체.
-            
-        Raises:
-            NotFoundError: 조회된 영상이 없는 경우.
-        """
+        """특정 대여(rent_id)에 대한 영상을 조회합니다."""
         
         # TODO: 클라우드 스토리지와 연동하여 rent_id/video_type 기반의 영상을 실제로 조회하도록 구현합니다.
         dummy_videos = [
