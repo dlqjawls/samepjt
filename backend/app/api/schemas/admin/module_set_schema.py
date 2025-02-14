@@ -12,8 +12,6 @@ class ModuleSetOptionType(BaseModel):
     optionTypeName: Optional[str] = Field(None, alias="option_type_name", example="배터리 팩")
     quantity: int = Field(..., example=2)
 
-    class Config:
-        allow_population_by_field_name = True
 
 class ModuleSetItem(BaseModel):
     module_set_id: int = Field(..., example=101, gt=0)
@@ -28,9 +26,6 @@ class ModuleSetItem(BaseModel):
     created_by: int = Field(..., example=3)
     updated_at: datetime = Field(..., example="2025-06-10T12:00:00")
     updated_by: int = Field(..., example=5)
-
-    class Config:
-        orm_mode = True
 
 class ModuleSetData(BaseModel):
     module_sets: List[ModuleSetItem]
@@ -56,6 +51,13 @@ class ModuleSetGetResponse(ResponseBase[ModuleSetData]):
                             "module_set_features": "배터리 팩, 태양광 패널 포함",
                             "module_type_id": 1,
                             "cost": 1400,
+                            "module_set_option_types": [
+                                {
+                                    "option_type_id": 201,
+                                    "option_type_name": "배터리 팩",
+                                    "quantity": 1
+                                }
+                            ],
                             "created_at": "2025-01-10T12:00:00",
                             "created_by": 3,
                             "updated_at": "2025-01-10T12:00:00",
@@ -75,51 +77,29 @@ class ModuleSetGetResponse(ResponseBase[ModuleSetData]):
 class ModuleSetRegisterRequest(BaseModel):
     module_set_name: str = Field(..., example="캠핑카 모듈 세트")
     description: Optional[str] = Field(None, example="캠핑을 위한 완벽한 모듈 세트")
-    module_set_images: Optional[List[UploadFile]] = Field(
-        None,
-        description="여러 이미지 파일을 첨부해주세요. (multipart/form-data; array of binary files)",
-        example=["(binary file)", "(binary file)"]
-    )
     module_set_features: Optional[str] = Field(None, example="배터리 팩, 태양광 패널")
     module_type_id: int = Field(..., example=1, gt=0, le=3)
-    options: Optional[List[ModuleSetOptionType]] = Field(None, example=[{"option_type_id": 201, "quantity": 1}, {"option_type_id": 202, "quantity": 2}])    
-      
-class ModuleSetRegisterResponse(ResponseBase):
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Module set registered successfully"
-            }
-        }
 
+    
 class ModuleSetUpdateRequest(BaseModel):
-    module_set_name: Optional[str] = Field(None, example="캠핑카 모듈 세트")
-    description: Optional[str] = Field(None, example="캠핑을 위한 완벽한 모듈 세트")
-    module_set_images: Optional[List[UploadFile]] = Field(
-        None,
-        description="여러 이미지 파일을 첨부해주세요. (multipart/form-data; array of binary files)",
-        example=["(binary file)", "(binary file)"]
-    )
-    module_set_features: Optional[str] = Field(None, example="배터리 팩, 태양광 패널")
-    module_type_id: Optional[int] = Field(None, example=1, gt=0, le=3)
-    options: Optional[List[ModuleSetOptionType]] = Field(None, example=[{"option_type_id": 201, "quantity": 1}, {"option_type_id": 202, "quantity": 2}])    
-      
+    module_set_name: Optional[str] = Field(default=None, example="캠핑카 모듈 세트")
+    description: Optional[str] = Field(default=None, example="캠핑을 위한 완벽한 모듈 세트")
+    module_set_features: Optional[str] = Field(default=None, example="배터리 팩, 태양광 패널")
+    module_type_id: Optional[int] = Field(default=None, example=1, gt=0, le=3)
 
-class ModuleSetUpdateResponse(ResponseBase):
+
+class ModuleSetMessageResponse(ResponseBase):   
     class Config:
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Module set updated successfully"
-            }
-        }
-
-class ModuleSetDeleteResponse(ResponseBase):   
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Module set deleted successfully"
+                "message": "Module set {method} successfully"
             }
         } 
+
+class ModuleSetRemoveImageRequest(BaseModel):
+    image_url: str = Field(..., example="https://example.com/images/module-set-101.jpg", description="삭제할 이미지 URL")
+
+class ModuleSetAddOptionRequest(BaseModel):
+    option_type_id: int = Field(..., example=203, gt=0, description="옵션 타입 ID")
+    quantity: int = Field(..., example=1, gt=0, description="옵션 수량")

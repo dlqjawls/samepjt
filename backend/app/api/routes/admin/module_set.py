@@ -1,21 +1,18 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, File, Form, Query, Path, UploadFile
+from fastapi import APIRouter, Depends, File, Query, Path, UploadFile
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.module_set_service import ModuleSetService
-from app.api.schemas.admin.module_set_schema import ModuleSetGetResponse, ModuleSetRegisterRequest, ModuleSetRegisterResponse, ModuleSetUpdateRequest, ModuleSetUpdateResponse, ModuleSetDeleteResponse
-import json
+from app.api.schemas.admin.module_set_schema import ModuleSetGetResponse, ModuleSetRegisterRequest, ModuleSetMessageResponse, ModuleSetUpdateRequest, ModuleSetRemoveImageRequest, ModuleSetAddOptionRequest
 
-from app.utils.exceptions import BadRequestError, ValidationError
 
 router = APIRouter()
 
 @router.get(
     "/module-sets",
     response_model=ModuleSetGetResponse,
-    summary="📦 관리자 모듈 세트 목록 조회",
-    description="관리자가 등록된 모듈 세트 목록을 페이지네이션 방식으로 조회합니다.",
+    summary="📦 모듈 세트 목록 조회",
+    description="등록된 모듈 세트 목록을 페이지네이션 방식으로 조회합니다.",
     responses={
         200: {
             "description": "모듈 세트 목록 조회 성공",
@@ -103,10 +100,10 @@ async def get_module_set_list(
 
 @router.post(
     "/module-sets",
-    response_model=ModuleSetRegisterResponse,
+    response_model=ModuleSetMessageResponse,
     summary="📦 모듈 세트 등록",
     description=(
-        "관리자가 새로운 모듈 세트를 등록하는 API입니다. 여러 이미지를 업로드할 수 있습니다."
+        "새로운 모듈 세트를 등록하는 API입니다. 여러 이미지를 업로드할 수 있습니다."
     ),
     responses={
         200: {
@@ -161,52 +158,17 @@ async def get_module_set_list(
     }
 )
 async def create_module_set(
-    module_set_name: str = Form(..., description="모듈 세트 이름"),
-    description: str = Form(..., description="모듈 세트 설명"),
-    module_type_id: int = Form(..., description="모듈 타입 ID", gt=0, le=3),
-    module_set_features: Optional[str] = Form(None, description="모듈 세트 특징 (선택)"),
-    module_set_images: Optional[List[UploadFile]] = File(
-        None, 
-        description="모듈 세트 이미지 파일 목록. 'Add string item' 버튼을 눌러 여러 파일을 첨부할 수 있습니다."
-    ),
-    options: Optional[str] = Form(
-        None,
-        description=(
-            "모듈 세트 옵션 목록을 JSON 문자열로 전달합니다. 예: "
-            "'[{\"option_type_id\": 201, \"quantity\": 1}, {\"option_type_id\": 202, \"quantity\": 2}]'"
-        )
-    ),
+    register_request: ModuleSetRegisterRequest,
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> ModuleSetRegisterResponse:
-    # JSON 문자열로 넘어온 옵션 필드를 파싱합니다.
-    try:
-        options_list = json.loads(options) if options else []
-    except Exception as e:
-        raise BadRequestError(message="옵션 필드 파싱 실패 : " + str(e))
-
-    # 요청 데이터를 딕셔너리 형태로 정리한 후 Pydantic 모델로 변환
-    request_data = {
-        "module_set_name": module_set_name,
-        "description": description,
-        "module_type_id": module_type_id,
-        "module_set_features": module_set_features,
-        "module_set_images": module_set_images,  # List[UploadFile] 그대로 전달 (서비스 레이어에서 image.file 사용)
-        "options": options_list
-    }
-    try:
-        register_request = ModuleSetRegisterRequest.parse_obj(request_data)
-    except Exception as e:
-        raise ValidationError(message="요청 데이터 검증 실패 : " + str(e))
-    
-    response = ModuleSetService.register_module_set(session, register_request, token_data.user_pk)
-    return response
+) -> ModuleSetMessageResponse:
+    return ModuleSetService.register_module_set(session, register_request, token_data.user_pk)
 
 @router.patch(
     "/module-sets/{module_set_id}",
-    response_model=ModuleSetUpdateResponse,
+    response_model=ModuleSetMessageResponse,
     summary="📦 모듈 세트 수정",
-    description="관리자가 기존 모듈 세트를 수정하는 API입니다.",
+    description="기존 모듈 세트를 수정하는 API입니다.",
     responses={
         200: {
             "description": "모듈 세트가 성공적으로 수정됨",
@@ -253,52 +215,23 @@ async def create_module_set(
     }
 )
 async def update_module_set(
+    request: ModuleSetUpdateRequest,
     module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),
-    module_set_name: Optional[str] = Form(None, description="모듈 세트 이름"),
-    description: Optional[str] = Form(None, description="모듈 세트 설명"),
-    module_type_id: Optional[int] = Form(None, description="모듈 타입 ID", gt=0, le=3),
-    module_set_features: Optional[str] = Form(None, description="모듈 세트 특징 (선택)"),
-    module_set_images: Optional[List[UploadFile]] = File(
-        None, 
-        description="모듈 세트 이미지 파일 목록. 'Add string item' 버튼을 눌러 여러 파일을 첨부할 수 있습니다."
-    ),  
-    options: Optional[str] = Form(
-        None,
-        description=(
-            "모듈 세트 옵션 목록을 JSON 문자열로 전달합니다. 예: "
-            "'[{\"option_type_id\": 201, \"quantity\": 1}, {\"option_type_id\": 202, \"quantity\": 2}]'"
-        ) 
-    ),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-  ) -> ModuleSetUpdateResponse:
-    # JSON 문자열로 넘어온 옵션 필드를 파싱합니다.
-    try:
-        options_list = json.loads(options) if options else []
-    except Exception as e:
-        raise BadRequestError(message="옵션 필드 파싱 실패 : " + str(e))
-
-    # 요청 데이터를 딕셔너리 형태로 정리한 후 Pydantic 모델로 변환
-    request_data = {
-        "module_set_name": module_set_name,
-        "description": description,
-        "module_type_id": module_type_id,
-        "module_set_features": module_set_features,
-        "module_set_images": module_set_images,
-        "options": options_list
-    }
+) -> ModuleSetMessageResponse:
     return ModuleSetService.update_module_set(
-        session=session,
-        module_set_id=module_set_id,
-        update_data=ModuleSetUpdateRequest.parse_obj(request_data),
-        user_pk=token_data.user_pk
+        session,
+        module_set_id,
+        request,
+        token_data.user_pk
     )     
 
 @router.delete(
     "/module-sets/{module_set_id}",
-    response_model=ModuleSetDeleteResponse,
+    response_model=ModuleSetMessageResponse,
     summary="📦 모듈 세트 삭제",
-    description="관리자가 기존 모듈 세트를 삭제하는 API입니다.",
+    description="기존 모듈 세트를 삭제하는 API입니다.",
     responses={
         200: {
             "description": "모듈 세트가 성공적으로 삭제됨",
@@ -347,7 +280,120 @@ async def delete_module_set(
     module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> ModuleSetDeleteResponse:
+) -> ModuleSetMessageResponse:
     return ModuleSetService.delete_module_set(session, module_set_id, token_data.user_pk)
+
+@router.post(
+    "/module-sets/{module_set_id}/images",
+    response_model=ModuleSetMessageResponse,
+    summary="📦 모듈 세트 이미지 추가",
+    description="모듈 세트에 이미지를 추가하는 API입니다.",
+    responses={
+        200: {
+            "description": "모듈 세트 이미지 추가 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Module set image added successfully"
+                    }
+                }
+            }
+        }
+    }
+)
+async def add_module_set_image(
+    module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),
+    images: UploadFile = File(...),
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> ModuleSetMessageResponse:
+    return ModuleSetService.add_module_set_image(session, module_set_id, images)    
+
+@router.delete(
+    "/module-sets/{module_set_id}/images",
+    response_model=ModuleSetMessageResponse,  
+    summary="📦 모듈 세트 이미지 삭제",
+    description="모듈 세트에 이미지를 삭제하는 API입니다.",
+    responses={
+        200: {
+            "description": "모듈 세트 이미지 삭제 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Module set image removed successfully"  
+                    }
+                }
+            }
+        }
+    }
+)
+async def remove_module_set_image(  
+    request: ModuleSetRemoveImageRequest,
+    module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> ModuleSetMessageResponse:
+    return ModuleSetService.remove_module_set_image(session, module_set_id, request)      
+  
+
+@router.post(
+    "/module-sets/{module_set_id}/options",
+    response_model=ModuleSetMessageResponse,
+    summary="📦 모듈 세트 옵션 추가",
+    description="모듈 세트에 옵션을 추가하는 API입니다.",
+    responses={
+        200: {
+            "description": "모듈 세트 옵션 추가 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Module set option added successfully"
+                    }
+                } 
+            }
+        }
+    }
+)
+async def add_module_set_option(
+    request: ModuleSetAddOptionRequest,
+    module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),  
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> ModuleSetMessageResponse:
+    return ModuleSetService.add_module_set_option(session, module_set_id, request)   
+
+
+@router.delete(
+    "/module-sets/{module_set_id}/options/{option_type_id}",
+    response_model=ModuleSetMessageResponse,
+    summary="📦 모듈 세트 옵션 삭제",
+    description="모듈 세트에 옵션을 삭제하는 API입니다.",
+    responses={
+        200: {
+            "description": "모듈 세트 옵션 삭제 성공",
+            "content": {
+                "application/json": { 
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Module set option removed successfully"
+                    }
+                }
+            }
+        }
+    }
+)
+async def remove_module_set_option(
+    module_set_id: int = Path(..., description="모듈 세트 ID (최소 1)", gt=0),
+    option_type_id: int = Path(..., description="옵션 타입 ID (최소 1)", gt=0),  
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> ModuleSetMessageResponse:
+    return ModuleSetService.remove_module_set_option(session, module_set_id, option_type_id)
+
+
+              
 
 
