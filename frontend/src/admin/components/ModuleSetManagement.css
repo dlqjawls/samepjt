@@ -95,6 +95,11 @@ src/admin/components/ModuleSetManagement.css
   font-size: 16px;
 }
 
+.module-set-management .detail-value .module-set-image {
+  width: 40%;
+  border-radius: 20px;
+}
+
 /* 상세정보 액션 영역: 우하단 정렬 */
 .module-set-management .detail-actions {
   margin-top: 10px;

@@ -56,7 +56,10 @@
   visibility: visible;
 }
 
-/* 확장된 메인 행: 전체 셀에 배경 #2196f3 적용, 첫 번째 셀 텍스트는 흰색, 나머지 셀의 텍스트 숨김 */
+.maintenance-records .main-row {
+  cursor: pointer;
+}
+
 .maintenance-records .expanded-main-row td {
   background-color: #2196f3;
   color: #fff;

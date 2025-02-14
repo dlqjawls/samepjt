@@ -406,13 +406,27 @@ const ModuleSetManagement = () => {
                       onClick={() => toggleExpanded(set.module_set_id)}
                     >
                       <td>{set.module_set_id}</td>
-                      <td className="cell-text">{set.module_set_name}</td>
-                      <td className="cell-text">{set.description || "-"}</td>
-                      <td className="cell-text">
-                        {set.module_set_features || "-"}
+                      <td>
+                        <span className="cell-text">{set.module_set_name}</span>
                       </td>
-                      <td className="cell-text">{set.module_type_id || "-"}</td>
-                      <td className="cell-text">{set.price || 0}</td>
+                      <td>
+                        <span className="cell-text">
+                          {set.description || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {set.module_set_features || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {set.module_type_id || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">{set.price || 0}</span>
+                      </td>
                     </tr>
                     {expandedModuleSetId === set.module_set_id && (
                       <tr className="expanded-row">
