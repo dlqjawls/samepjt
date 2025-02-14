@@ -66,19 +66,6 @@
   padding-bottom: 0;
 }
 
-/* 그라데이션 스타일 수정 */
-.receipt-items-gradient {
-  position: absolute;
-  bottom: 50px; /* 더보기 버튼 위에 위치하도록 수정 */
-  left: 0;
-  right: 0;
-  height: 70px;
-  background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
-  pointer-events: none;
-  display: none;
-}
-
-
 /* 더보기 버튼 스타일 수정 */
 .show-more-button {
   width: 100%;
@@ -102,16 +89,6 @@
   color: #333;
 }
 
-.receipt-items-gradient {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50px;
-  background: linear-gradient(transparent, white);
-  pointer-events: none;
-  display: none;
-}
 
 .receipt-items:not(.expanded) .receipt-items-gradient {
   display: block;

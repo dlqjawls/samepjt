@@ -31,7 +31,7 @@ const Total_reciept = () => {
         );
 
         const response = await axios.get(
-          "https://backend-wandering-river-6835.fly.dev/user/option-types",
+          `${import.meta.env.VITE_API_URL}/user/option-types`,
           {
             params: {
               page: 1,
@@ -90,7 +90,7 @@ const Total_reciept = () => {
       }
 
       const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/refresh-token",
+        `${import.meta.env.VITE_API_URL}/auth/refresh-token`,
         {
           refresh_token: refreshToken,
         }
@@ -156,7 +156,7 @@ const Total_reciept = () => {
         console.log(rentData);
         try {
           const response = await axios.post(
-            "https://backend-wandering-river-6835.fly.dev/user/rent",
+            `${import.meta.env.VITE_API_URL}/user/rent`,
             rentData,
             {
               headers: {
@@ -175,7 +175,7 @@ const Total_reciept = () => {
 
             try {
               const rentresponse = await axios.get(
-                `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`,
+                `${import.meta.env.VITE_API_URL}/user/rent/${rent_id}`,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
@@ -202,7 +202,7 @@ const Total_reciept = () => {
             token = await refreshAccessToken();
             // 갱신된 토큰으로 다시 요청
             const response = await axios.post(
-              "https://backend-wandering-river-6835.fly.dev/user/rent",
+              `${import.meta.env.VITE_API_URL}/user/rent`,
               rentData,
               {
                 headers: {
@@ -221,7 +221,7 @@ const Total_reciept = () => {
               // 토큰 갱신 후 rentStatus 조회 추가
               try {
                 const rentresponse = await axios.get(
-                  `https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`,
+                  `${import.meta.env.VITE_API_URL}/user/rent/${rent_id}`,
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,

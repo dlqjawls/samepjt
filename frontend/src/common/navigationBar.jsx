@@ -41,7 +41,7 @@ const Navbar = () => {
   }
   const goToRentalPage = async () => {
     const fetchRentStatus = async (token) => {
-      return await axios.get(`https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`, {
+      return await axios.get(`${import.meta.env.VITE_API_URL}/user/rent/${rent_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

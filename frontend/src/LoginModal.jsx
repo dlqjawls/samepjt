@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-
 import "./LoginModal.css";
+import { encryptData } from './utils/crypto';
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -26,16 +26,22 @@ const LoginModal = ({ onClose }) => {
     navigate("/RegistrationForm");
     onClose();
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
+      const encryptedData = {
+        id: encryptData(formData.id),
+        password: encryptData(formData.password)
+      };
       const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/login",
+        `${import.meta.env.VITE_API_URL}/auth/login`,
         formData
+        // encryptedData
+
       );
       toast.success("로그인 성공!");
       console.log("로그인 성공:", response.data);
@@ -47,7 +53,7 @@ const LoginModal = ({ onClose }) => {
       
       try {
         const rentresponse = await axios.get(
-          "https://backend-wandering-river-6835.fly.dev/user/me/rent/current", 
+          `${import.meta.env.VITE_API_URL}/user/me/rent/current`, 
           {
             headers: {
               Authorization: `Bearer ${token}`,
