@@ -1,4 +1,4 @@
-/* src/components/RentalRecords.css */
+/* src/admin/components/RentalRecords.css */
 
 .rental-container {
   padding: 20px;
@@ -15,139 +15,82 @@
   font-size: 2em;
 }
 
-.rental-container .filters {
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  align-items: center;
-}
-
-.rental-container .filters label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-}
-
-.rental-container .filters input,
-.rental-container .filters select {
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.rental-container .filters button {
-  padding: 10px 20px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.rental-container .filters button:hover {
-  background-color: #45a049;
-}
-
-.rental-container .rental-wrapper {
+.rental-container .table-wrapper {
   overflow-x: auto;
 }
 
 .rental-container .rental-table {
-  min-width: 800px;
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
-  margin-bottom: 20px;
 }
 
 .rental-container .rental-table th,
 .rental-container .rental-table td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 14px;
+  background-color: #fff;
 }
 
 .rental-container .rental-table th {
   background-color: #f2f2f2;
   font-size: 16px;
-  text-align: left;
-  padding: 12px;
 }
 
-.rental-container .rental-table td {
-  font-size: 14px;
-  text-align: left; /* 텍스트 왼쪽 정렬 */
-  background-color: #ffffff; /* 데이터 배경 흰색 */
-  padding: 12px;
+.rental-container .cell-text {
+  visibility: visible;
 }
-
-/* 진행 중 배지 */
-.rental-container .status-in-progress {
-  background-color: #007bff; /* 파란색 */
-  color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-/* 완료됨 배지 */
-.rental-container .status-completed {
-  background-color: #28a745; /* 녹색 */
-  color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-/* 취소됨 배지 */
-.rental-container .status-canceled {
-  background-color: #dc3545; /* 빨간색 */
-  color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-/* 알 수 없음 배지 */
-.rental-container .status-unknown {
-  background-color: #6c757d; /* 회색 */
-  color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.rental-container .detail-button {
-  padding: 6px 8px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
+.rental-container .main-row {
   cursor: pointer;
-  border-radius: 20px;
+}
+
+.rental-container .expanded-main-row td {
+  background-color: #2196f3;
+  color: #fff;
+  font-weight: bold;
+}
+.rental-container .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
+}
+
+.rental-container .expanded-row {
+  background-color: #f9f9f9;
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
+}
+
+.rental-container .detail-info-container {
+  padding: 15px;
+}
+
+.rental-container .detail-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.rental-container .detail-item:last-child {
+  border-bottom: none;
+}
+
+.rental-container .detail-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.rental-container .detail-value {
+  font-size: 14px;
 }
 
 .rental-container .detail-button:hover {
   background-color: #0b7dda;
 }
 
-.rental-container .video-button {
-  padding: 6px 8px;
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 20px;
-}
-
-.rental-container .video-button:hover {
-  background-color: #e68900;
-}
-
 .rental-container .pagination {
+  margin: 20px 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -156,11 +99,10 @@
 
 .rental-container .pagination button {
   padding: 6px 12px;
-  margin: 0 10px;
   background-color: #e7e7e7;
   border: none;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
   transition: background-color 0.2s;
 }
 
@@ -171,90 +113,9 @@
 .rental-container .pagination button:disabled {
   background-color: #cccccc;
   cursor: default;
-  /* cursor: not-allowed; */
 }
 
 .rental-container .error {
   color: red;
-  text-align: center;
   margin-bottom: 10px;
-}
-
-/* 모달 내용 스타일링 */
-.rental-container .detail-content,
-.rental-container .autonomous-video-content,
-.rental-container .module-video-content {
-  padding: 20px;
-}
-
-.rental-container .detail-content h2,
-.rental-container .autonomous-video-content h2,
-.rental-container .module-video-content h2 {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.rental-container .detail-content p,
-.rental-container .autonomous-video-content p,
-.rental-container .module-video-content p {
-  margin-bottom: 10px;
-}
-
-.rental-container .detail-content h3,
-.rental-container .autonomous-video-content h3,
-.rental-container .module-video-content h3 {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.rental-container .detail-content ul,
-.rental-container .autonomous-video-content ul {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-.rental-container .autonomous-log,
-.rental-container .module-video {
-  margin-bottom: 20px;
-}
-
-.rental-container .video-section {
-  margin-bottom: 15px;
-}
-
-.rental-container .video-section p {
-  margin-bottom: 5px;
-}
-
-.rental-container .autonomous-video-content video,
-.rental-container .module-video-content video {
-  width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-}
-
-.rental-container .modal-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .rental-container .filters {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .rental-container .rental-table th,
-  .rental-container .rental-table td {
-    padding: 8px;
-  }
-
-  .rental-container .detail-content h2,
-  .rental-container .autonomous-video-content h2,
-  .rental-container .module-video-content h2 {
-    font-size: 1.5em;
-  }
 }

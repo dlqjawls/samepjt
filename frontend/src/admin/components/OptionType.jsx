@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import Modal from "./Modal";
-import { MdSearch } from "react-icons/md";
+import AddModal from "./AddModal";
+import DeleteModal from "./DeleteModal";
+import LoadingSpinner from "./LoadingSpinner";
+import { MdEdit, MdDelete, MdSearch } from "react-icons/md";
 import "./OptionType.css";
+
+const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
 function OptionTypeManagement() {
   const token = localStorage.getItem("adminToken");
-  const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
-  // 전체 옵션 타입 목록 및 페이지네이션 (백엔드 처리)
+  // 전체 옵션 타입 데이터 및 페이지네이션, 필터, 에러, 로딩 상태
   const [optionTypes, setOptionTypes] = useState([]);
+  const [filters, setFilters] = useState({
+    search: "",
+    page: 1,
+    pageSize: 10,
+  });
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -19,28 +27,30 @@ function OptionTypeManagement() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 프론트엔드 검색 필터 (옵션 타입 이름으로 필터링)
-  const [searchFilter, setSearchFilter] = useState("");
-
-  // 백엔드에서 받은 옵션 타입 목록은 그대로 사용하고,
-  // 프론트엔드에서 검색 필터를 적용하여 화면에 표시할 데이터 계산
-  const [displayOptionTypes, setDisplayOptionTypes] = useState([]);
-
-  // 모달 관련 상태 (modalType: "add", "detail", "edit", "delete")
-  const [modalType, setModalType] = useState(null);
+  // 행 토글 및 인라인 편집 상태
+  const [expandedOptionTypeId, setExpandedOptionTypeId] = useState(null);
+  const [editingOptionTypeId, setEditingOptionTypeId] = useState(null);
   const [selectedOptionType, setSelectedOptionType] = useState(null);
 
-  // 폼 데이터 (등록/수정 시 사용)
+  // 등록 및 수정 폼 데이터
   const [formData, setFormData] = useState({
     option_type_name: "",
     option_type_size: "",
     option_type_cost: "",
     description: "",
-    option_type_images: "", // 콤마로 구분된 URL 문자열 → 배열로 변환
+    option_type_images: "",
     option_type_features: "",
   });
 
-  // 옵션 타입 목록 조회 (GET /admin/option-types)
+  // 등록 모달 및 삭제 모달 상태
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // 각 행의 ref (스크롤 이동용)
+  const rowRefs = useRef({});
+  const detailInfoRef = useRef(null);
+
+  // 옵션 타입 목록 조회 API 호출
   const fetchOptionTypes = async () => {
     setLoading(true);
     setError("");
@@ -51,8 +61,9 @@ function OptionTypeManagement() {
           Authorization: token ? `Bearer ${token}` : undefined,
         },
         params: {
-          page: pagination.currentPage,
-          pageSize: pagination.pageSize,
+          page: filters.page,
+          pageSize: filters.pageSize,
+          search: filters.search || undefined,
         },
       });
       if (response.data.resultCode === "SUCCESS") {
@@ -65,58 +76,42 @@ function OptionTypeManagement() {
       }
     } catch (err) {
       console.error(err);
-      setError("옵션 타입 목록을 불러오는 중 오류가 발생했습니다.");
+      setError(
+        err.response?.data?.message || "옵션 타입 목록 조회 중 오류 발생"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // 컴포넌트 마운트 및 pagination 변경 시 옵션 타입 목록 재조회
   useEffect(() => {
     fetchOptionTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.currentPage, pagination.pageSize]);
-
-  // 프론트엔드 검색 필터 적용
-  useEffect(() => {
-    if (!searchFilter) {
-      setDisplayOptionTypes(optionTypes);
-    } else {
-      const filtered = optionTypes.filter((ot) =>
-        ot.option_type_name.toLowerCase().includes(searchFilter.toLowerCase())
-      );
-      setDisplayOptionTypes(filtered);
-    }
-  }, [searchFilter, optionTypes]);
-
-  // 필터 입력 변경 핸들러
-  const handleSearchChange = (e) => {
-    setSearchFilter(e.target.value);
-  };
-
-  // 페이지 변경 핸들러 (백엔드 페이지네이션)
-  const handlePageChange = (newPage) => {
-    setPagination((prev) => ({
-      ...prev,
-      currentPage: newPage,
-    }));
-  };
+  }, [filters]);
 
   // 폼 입력 변경 핸들러
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 모달 열기 함수들
-  const openDetailModal = (optionType) => {
-    setSelectedOptionType(optionType);
-    setModalType("detail");
+  // 행 토글 (상세보기/인라인 편집 영역 확장 및 스크롤 이동)
+  const toggleExpanded = (optionTypeId) => {
+    setExpandedOptionTypeId((prev) =>
+      prev === optionTypeId ? null : optionTypeId
+    );
+    setEditingOptionTypeId(null);
+    setTimeout(() => {
+      if (rowRefs.current[optionTypeId]) {
+        rowRefs.current[optionTypeId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
+  // 등록 모달 열기/닫기
   const openAddModal = () => {
     setFormData({
       option_type_name: "",
@@ -126,45 +121,19 @@ function OptionTypeManagement() {
       option_type_images: "",
       option_type_features: "",
     });
-    setModalType("add");
+    setIsAddModalOpen(true);
   };
+  const closeAddModal = () => setIsAddModalOpen(false);
 
-  const openEditModal = (optionType) => {
-    setSelectedOptionType(optionType);
-    setFormData({
-      option_type_name: optionType.option_type_name,
-      option_type_size: optionType.option_type_size,
-      option_type_cost: optionType.option_type_cost,
-      description: optionType.description || "",
-      option_type_images: Array.isArray(optionType.option_type_images)
-        ? optionType.option_type_images.join(", ")
-        : optionType.option_type_images || "",
-      option_type_features: optionType.option_type_features || "",
-    });
-    setModalType("edit");
-  };
-
-  const openDeleteModal = (optionType) => {
-    setSelectedOptionType(optionType);
-    setModalType("delete");
-  };
-
-  const closeModal = () => {
-    setModalType(null);
-    setSelectedOptionType(null);
-    setFormData({
-      option_type_name: "",
-      option_type_size: "",
-      option_type_cost: "",
-      description: "",
-      option_type_images: "",
-      option_type_features: "",
-    });
-    setError("");
-  };
-
-  // 신규 옵션 타입 등록 API 호출 (POST /admin/option-types)
-  const handleSaveAdd = async () => {
+  // 신규 옵션 타입 등록 API 호출
+  const handleSubmitAdd = async () => {
+    if (
+      !formData.option_type_name.trim() ||
+      !formData.option_type_cost.trim()
+    ) {
+      alert("옵션 타입 이름과 기본 가격은 필수 항목입니다.");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -174,7 +143,7 @@ function OptionTypeManagement() {
         option_type_cost: Number(formData.option_type_cost),
         description: formData.description,
         option_type_images: formData.option_type_images
-          ? formData.option_type_images.split(";;;").map((url) => url.trim())
+          ? formData.option_type_images.split(",").map((url) => url.trim())
           : [],
         option_type_features: formData.option_type_features,
       };
@@ -189,22 +158,45 @@ function OptionTypeManagement() {
         }
       );
       if (response.data.resultCode === "SUCCESS") {
-        fetchOptionTypes();
-        closeModal();
+        await fetchOptionTypes();
+        closeAddModal();
       } else {
         setError(response.data.message || "옵션 타입 등록에 실패했습니다.");
       }
     } catch (err) {
       console.error(err);
-      setError("옵션 타입 등록 중 오류가 발생했습니다.");
+      setError(err.response?.data?.message || "옵션 타입 등록 중 오류 발생");
     } finally {
       setLoading(false);
     }
   };
 
-  // 옵션 타입 수정 API 호출 (PATCH /admin/option-types/{option_type_id})
-  const handleSaveEdit = async () => {
-    if (!selectedOptionType) return;
+  // 인라인 수정 모드 전환: 행의 상세정보 영역에서 "수정" 버튼 클릭 시
+  const startEditing = (optionType) => {
+    setSelectedOptionType(optionType);
+    setFormData({
+      option_type_name: optionType.option_type_name,
+      option_type_size: optionType.option_type_size,
+      option_type_cost: optionType.option_type_cost.toString(),
+      description: optionType.description || "",
+      option_type_images: Array.isArray(optionType.option_type_images)
+        ? optionType.option_type_images.join(", ")
+        : optionType.option_type_images || "",
+      option_type_features: optionType.option_type_features || "",
+    });
+    setEditingOptionTypeId(optionType.option_type_id);
+    setTimeout(() => {
+      if (rowRefs.current[optionType.option_type_id]) {
+        rowRefs.current[optionType.option_type_id].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
+  };
+
+  // 인라인 수정 API 호출
+  const handleSubmitEdit = async (optionTypeId) => {
     setLoading(true);
     setError("");
     try {
@@ -219,7 +211,7 @@ function OptionTypeManagement() {
         option_type_features: formData.option_type_features,
       };
       const response = await axios.patch(
-        `${BASE_URL}/admin/option-types/${selectedOptionType.option_type_id}`,
+        `${BASE_URL}/admin/option-types/${optionTypeId}`,
         payload,
         {
           headers: {
@@ -229,27 +221,35 @@ function OptionTypeManagement() {
         }
       );
       if (response.data.resultCode === "SUCCESS") {
-        fetchOptionTypes();
-        closeModal();
+        await fetchOptionTypes();
+        setEditingOptionTypeId(null);
       } else {
         setError(response.data.message || "옵션 타입 수정에 실패했습니다.");
       }
     } catch (err) {
       console.error(err);
-      setError("옵션 타입 수정 중 오류가 발생했습니다.");
+      setError(err.response?.data?.message || "옵션 타입 수정 중 오류 발생");
     } finally {
       setLoading(false);
     }
   };
 
-  // 옵션 타입 삭제 API 호출 (DELETE /admin/option-types/{option_type_id})
-  const handleConfirmDelete = async () => {
-    if (!selectedOptionType) return;
+  const cancelEditing = () => {
+    setEditingOptionTypeId(null);
+  };
+
+  // 삭제 모달 열기/닫기 및 삭제 API 호출
+  const openDeleteModal = (optionType) => {
+    setSelectedOptionType(optionType);
+    setIsDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => setIsDeleteModalOpen(false);
+  const handleSubmitDelete = async (optionTypeId) => {
     setLoading(true);
     setError("");
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/option-types/${selectedOptionType.option_type_id}`,
+        `${BASE_URL}/admin/option-types/${optionTypeId}`,
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
@@ -257,49 +257,38 @@ function OptionTypeManagement() {
         }
       );
       if (response.data.resultCode === "SUCCESS") {
-        fetchOptionTypes();
-        closeModal();
+        await fetchOptionTypes();
+        closeDeleteModal();
       } else {
         setError(response.data.message || "옵션 타입 삭제에 실패했습니다.");
       }
     } catch (err) {
       console.error(err);
-      setError("옵션 타입 삭제 중 오류가 발생했습니다.");
+      setError(err.response?.data?.message || "옵션 타입 삭제 중 오류 발생");
     } finally {
       setLoading(false);
     }
   };
 
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({ ...prev, page: newPage }));
+  };
+
   return (
     <div className="option-type-container">
       <div className="option-type-header">
-        <h1>옵션 타입</h1>
+        <h1>옵션 타입 관리</h1>
         <button className="add-button" onClick={openAddModal}>
           옵션 타입 등록
         </button>
       </div>
 
-      {/* 필터링 섹션: 옵션 타입 이름으로 검색 */}
-      {/* <div className="filters">
-        <label>
-          검색
-          <input
-            type="text"
-            name="search"
-            value={searchFilter}
-            onChange={handleSearchChange}
-            placeholder="옵션 타입 이름 검색"
-          />
-        </label>
-        <button onClick={() => setSearchFilter(searchFilter)}>검색</button>
-      </div> */}
-
+      {error && <p className="error">{error}</p>}
       {loading ? (
-        <p>로딩 중...</p>
-      ) : error ? (
-        <p className="error">{error}</p>
+        <LoadingSpinner />
       ) : (
-        <>
+        <div className="table-wrapper">
           <table className="option-type-table">
             <thead>
               <tr>
@@ -312,39 +301,226 @@ function OptionTypeManagement() {
                 <th>주요 기능</th>
                 <th>등록 일자</th>
                 <th>수정 일자</th>
-                <th>상세 보기</th>
               </tr>
             </thead>
             <tbody>
               {optionTypes.length > 0 ? (
-                // 백엔드에서 반환된 옵션 타입 목록 중, 프론트엔드 검색 필터를 적용합니다.
-                optionTypes
-                  .filter((ot) =>
-                    ot.option_type_name
-                      .toLowerCase()
-                      .includes(searchFilter.toLowerCase())
-                  )
-                  .map((ot) => (
-                    <tr key={ot.option_type_id}>
+                optionTypes.map((ot) => (
+                  <React.Fragment key={ot.option_type_id}>
+                    <tr
+                      ref={(el) => (rowRefs.current[ot.option_type_id] = el)}
+                      className={`main-row ${
+                        expandedOptionTypeId === ot.option_type_id
+                          ? "expanded-main-row"
+                          : ""
+                      }`}
+                      onClick={() => toggleExpanded(ot.option_type_id)}
+                    >
                       <td>{ot.option_type_id}</td>
-                      <td>{ot.option_type_name}</td>
-                      <td>{ot.option_type_size}</td>
-                      <td>{ot.option_type_cost.toLocaleString()}</td>
-                      <td>{ot.description}</td>
-                      <td>{ot.option_type_images}</td>
-                      <td>{ot.option_type_features}</td>
-                      <td>{new Date(ot.created_at).toLocaleString()}</td>
-                      <td>{new Date(ot.updated_at).toLocaleString()}</td>
                       <td>
-                        <button
-                          className="detail-button"
-                          onClick={() => openDetailModal(ot)}
-                        >
-                          <MdSearch />
-                        </button>
+                        <span className="cell-text">{ot.option_type_name}</span>
+                      </td>
+                      <td>
+                        <span className="cell-text">{ot.option_type_size}</span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {Number(ot.option_type_cost).toLocaleString()}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">{ot.description}</span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {ot.option_type_images}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {ot.option_type_features}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {new Date(ot.created_at).toLocaleString()}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {new Date(ot.updated_at).toLocaleString()}
+                        </span>
                       </td>
                     </tr>
-                  ))
+                    {expandedOptionTypeId === ot.option_type_id && (
+                      <tr className="expanded-row">
+                        <td colSpan="10">
+                          <div
+                            className="detail-info-container"
+                            ref={detailInfoRef}
+                          >
+                            <div className="detail-info">
+                              <div className="detail-item">
+                                <div className="detail-label">옵션 타입 ID</div>
+                                <div className="detail-value">
+                                  {ot.option_type_id}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  옵션 타입 이름
+                                </div>
+                                {editingOptionTypeId === ot.option_type_id ? (
+                                  <input
+                                    type="text"
+                                    name="option_type_name"
+                                    value={formData.option_type_name}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {ot.option_type_name}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  옵션 타입 크기
+                                </div>
+                                {editingOptionTypeId === ot.option_type_id ? (
+                                  <input
+                                    type="text"
+                                    name="option_type_size"
+                                    value={formData.option_type_size}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {ot.option_type_size}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  옵션 기본 가격
+                                </div>
+                                {editingOptionTypeId === ot.option_type_id ? (
+                                  <input
+                                    type="number"
+                                    name="option_type_cost"
+                                    value={formData.option_type_cost}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {Number(
+                                      ot.option_type_cost
+                                    ).toLocaleString()}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">설명</div>
+                                {editingOptionTypeId === ot.option_type_id ? (
+                                  <textarea
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {ot.description}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">이미지 URL</div>
+                                {editingOptionTypeId === ot.option_type_id ? (
+                                  <input
+                                    type="text"
+                                    name="option_type_images"
+                                    value={formData.option_type_images}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {ot.option_type_images}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">주요 기능</div>
+                                {editingOptionTypeId === ot.option_type_id ? (
+                                  <input
+                                    type="text"
+                                    name="option_type_features"
+                                    value={formData.option_type_features}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {ot.option_type_features}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="detail-actions">
+                              {editingOptionTypeId === ot.option_type_id ? (
+                                <>
+                                  <button
+                                    className="detail-save-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSubmitEdit(ot.option_type_id);
+                                    }}
+                                  >
+                                    저장
+                                  </button>
+                                  <button
+                                    className="detail-cancel-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      cancelEditing();
+                                    }}
+                                  >
+                                    취소
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    className="detail-edit-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      startEditing(ot);
+                                    }}
+                                  >
+                                    <MdEdit />
+                                  </button>
+                                  <button
+                                    className="detail-delete-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openDeleteModal(ot);
+                                    }}
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))
               ) : (
                 <tr>
                   <td colSpan="10">조회된 옵션 타입이 없습니다.</td>
@@ -369,224 +545,89 @@ function OptionTypeManagement() {
               다음
             </button>
           </div>
-        </>
+        </div>
       )}
+      <AddModal
+        isOpen={isAddModalOpen}
+        onClose={closeAddModal}
+        onSubmit={handleSubmitAdd}
+        title="신규 옵션 타입 등록"
+      >
+        <div className="form-group">
+          <label>옵션 타입 이름</label>
+          <input
+            type="text"
+            name="option_type_name"
+            placeholder="예: Option A"
+            value={formData.option_type_name}
+            onChange={handleFormChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>옵션 타입 크기</label>
+          <input
+            type="text"
+            name="option_type_size"
+            placeholder="예: Small"
+            value={formData.option_type_size}
+            onChange={handleFormChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>옵션 기본 가격</label>
+          <input
+            type="number"
+            name="option_type_cost"
+            placeholder="예: 1000"
+            value={formData.option_type_cost}
+            onChange={handleFormChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>설명</label>
+          <textarea
+            name="description"
+            placeholder="옵션 타입에 대한 설명"
+            value={formData.description}
+            onChange={handleFormChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>이미지 URL 목록 (콤마로 구분)</label>
+          <input
+            type="text"
+            name="option_type_images"
+            placeholder="URL1, URL2"
+            value={formData.option_type_images}
+            onChange={handleFormChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>주요 기능</label>
+          <input
+            type="text"
+            name="option_type_features"
+            placeholder="예: 기능1, 기능2"
+            value={formData.option_type_features}
+            onChange={handleFormChange}
+          />
+        </div>
+      </AddModal>
 
-      {/* 모달 */}
-      <Modal isOpen={modalType !== null} onClose={closeModal}>
-        {/* 상세 정보 모달 */}
-        {modalType === "detail" && selectedOptionType && (
-          <div className="detail-content">
-            <h2>옵션 타입 상세 정보</h2>
-            <p>옵션 타입 ID: {selectedOptionType.option_type_id}</p>
-            <p>옵션 타입 이름: {selectedOptionType.option_type_name}</p>
-            <p>옵션 타입 크기: {selectedOptionType.option_type_size}</p>
-            <p>
-              옵션 기본 가격:{" "}
-              {selectedOptionType.option_type_cost.toLocaleString()}
-            </p>
-            <p>설명: {selectedOptionType.description}</p>
-            <p>이미지 URL: {selectedOptionType.option_type_images}</p>
-            <p>주요 기능: {selectedOptionType.option_type_features}</p>
-            <p>
-              등록 일자:{" "}
-              {new Date(selectedOptionType.created_at).toLocaleString()}
-            </p>
-            <p>
-              수정 일자:{" "}
-              {new Date(selectedOptionType.updated_at).toLocaleString()}
-            </p>
-            <div className="modal-actions">
-              <button
-                onClick={() => openEditModal(selectedOptionType)}
-                className="edit-button"
-              >
-                수정
-              </button>
-              <button
-                onClick={() => openDeleteModal(selectedOptionType)}
-                className="delete-button"
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 수정 모달 */}
-        {modalType === "edit" && selectedOptionType && (
-          <div className="edit-content">
-            <h2>옵션 타입 수정</h2>
-            <form className="edit-form">
-              <label>
-                옵션 타입 이름:
-                <input
-                  type="text"
-                  name="option_type_name"
-                  value={formData.option_type_name}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                옵션 타입 크기:
-                <input
-                  type="text"
-                  name="option_type_size"
-                  value={formData.option_type_size}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                옵션 기본 가격:
-                <input
-                  type="number"
-                  name="option_type_cost"
-                  value={formData.option_type_cost}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                설명:
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                이미지 URL 목록 (콤마로 구분):
-                <input
-                  type="text"
-                  name="option_type_images"
-                  value={formData.option_type_images}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                주요 기능:
-                <input
-                  type="text"
-                  name="option_type_features"
-                  value={formData.option_type_features}
-                  onChange={handleFormChange}
-                />
-              </label>
-            </form>
-            <div className="modal-actions">
-              <button
-                onClick={handleSaveEdit}
-                className="save-button"
-                disabled={loading}
-              >
-                저장
-              </button>
-              <button onClick={closeModal} className="cancel-button">
-                취소
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 삭제 확인 모달 */}
-        {modalType === "delete" && selectedOptionType && (
-          <div className="delete-content">
-            <h2>옵션 타입 삭제 확인</h2>
-            <p>정말로 이 옵션 타입을 삭제하시겠습니까?</p>
-            <div className="modal-actions">
-              <button
-                onClick={handleConfirmDelete}
-                className="confirm-delete-button"
-                disabled={loading}
-              >
-                삭제
-              </button>
-              <button onClick={closeModal} className="cancel-button">
-                취소
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 신규 등록 모달 */}
-        {modalType === "add" && (
-          <div className="add-content">
-            <h2>신규 옵션 타입 등록</h2>
-            <form className="add-form">
-              <label>
-                옵션 타입 이름:
-                <input
-                  type="text"
-                  name="option_type_name"
-                  value={formData.option_type_name}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                옵션 타입 크기:
-                <input
-                  type="text"
-                  name="option_type_size"
-                  value={formData.option_type_size}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                옵션 기본 가격:
-                <input
-                  type="number"
-                  name="option_type_cost"
-                  value={formData.option_type_cost}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                설명:
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                이미지 URL 목록 (콤마로 구분):
-                <input
-                  type="text"
-                  name="option_type_images"
-                  value={formData.option_type_images}
-                  onChange={handleFormChange}
-                />
-              </label>
-              <label>
-                주요 기능:
-                <input
-                  type="text"
-                  name="option_type_features"
-                  value={formData.option_type_features}
-                  onChange={handleFormChange}
-                />
-              </label>
-            </form>
-            <div className="modal-actions">
-              <button
-                onClick={handleSaveAdd}
-                className="save-button"
-                disabled={loading}
-              >
-                등록
-              </button>
-              <button onClick={closeModal} className="cancel-button">
-                취소
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={() => handleSubmitDelete(selectedOptionType.option_type_id)}
+        title="옵션 타입 삭제 확인"
+        message={
+          selectedOptionType
+            ? `${selectedOptionType.option_type_name} 옵션 타입을 삭제하시겠습니까?`
+            : ""
+        }
+      />
     </div>
   );
 }

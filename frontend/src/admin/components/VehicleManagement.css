@@ -8,47 +8,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .vehicle-container .add-button {
   padding: 10px 20px;
   background-color: #4caf50;
-  color: white;
+  color: #fff;
   border: none;
+  border-radius: 16px;
   cursor: pointer;
-  border-radius: 4px;
 }
 
 .vehicle-container .add-button:hover {
   background-color: #45a049;
-}
-
-.vehicle-container .filters {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.vehicle-container .filter-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.vehicle-container .filter-description {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-/* select와 input에 동일한 높이와 패딩 설정 */
-.vehicle-container .filters select,
-.vehicle-container .filters input {
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
 }
 
 .vehicle-container .table-wrapper {
@@ -69,66 +42,141 @@
 
 .vehicle-container .vehicle-table th {
   background-color: #f2f2f2;
-  font-size: 16px;
   text-align: left;
-  padding: 12px;
-  /* border: 1px solid #ddd; */
+  font-size: 16px;
 }
 
 .vehicle-container .vehicle-table td {
   font-size: 14px;
-  text-align: left; /* 텍스트 왼쪽 정렬 */
-  background-color: #ffffff; /* 데이터 배경 흰색 */
-  padding: 12px;
+  background-color: #fff;
 }
 
-.vehicle-table .status-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  font-size: 13px;
+.vehicle-container .expanded-main-row td {
+  background-color: #2196f3;
+  color: #2196f3;
+}
+.vehicle-container .expanded-main-row td:first-child {
   font-weight: bold;
-  border-radius: 4px;
   color: #fff;
 }
 
-/* 활성화: 연한 초록 배경, 텍스트는 원래 초록색 */
-.vehicle-table .status-active {
-  background-color: #c3e6cb; /* 연한 초록색 */
-  color: #28a745; /* 기존 초록색 */
+.vehicle-container .expanded-row {
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
 }
 
-/* 비활성화: 연한 빨강/분홍 배경, 텍스트는 원래 빨강색 */
-.vehicle-table .status-inactive {
-  background-color: #f5c6cb; /* 연한 빨강/분홍색 */
-  color: #dc3545; /* 기존 빨강색 */
+.vehicle-container .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
 }
 
-/* 정비 중: 연한 주황 배경, 텍스트는 원래 주황색 */
-.vehicle-table .status-maintenance {
-  background-color: #ffe5b4; /* 연한 주황색 */
-  color: #fd7e14; /* 기존 주황색 */
+.vehicle-container .detail-info-container {
+  /* border: 1px solid #2196f3; */
+  padding: 15px;
+  /* margin-top: 5px; */
 }
 
-.vehicle-container .detail-button {
-  padding: 6px 8px;
-  background-color: #2196f3;
-  color: white;
+/* .vehicle-container .detail-info {
+} */
+
+.vehicle-container .detail-item {
+  padding: 8px 0px;
+
+  margin-top: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.vehicle-container .detail-item:last-child {
+  border-bottom: none;
+}
+
+.vehicle-container .detail-label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.vehicle-container .detail-value {
+  display: block;
+  font-size: 14px;
+}
+
+.vehicle-container .detail-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.vehicle-container .detail-edit-button,
+.vehicle-container .detail-delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 19px;
+  margin-left: 2px;
   border: none;
+  border-radius: 18px;
   cursor: pointer;
-  border-radius: 20px;
+  font-size: 16px;
+}
+.vehicle-container .detail-save-button,
+.vehicle-container .detail-cancel-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-.vehicle-container .filters button {
-  padding: 10px 20px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  cursor: pointer;
+.vehicle-container .detail-edit-button {
+  background-color: #ffc107;
+  color: #fff;
+}
+.vehicle-container .detail-edit-button:hover {
+  background-color: #e0a800;
+}
+
+.vehicle-container .detail-delete-button {
+  background-color: #f44336;
+  color: #fff;
+}
+.vehicle-container .detail-delete-button:hover {
+  background-color: #da190b;
+}
+
+.vehicle-container .detail-save-button {
+  background-color: #4caf50;
+  color: #fff;
+}
+.vehicle-container .detail-save-button:hover {
+  background-color: #45a049;
+}
+
+.vehicle-container .detail-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+}
+.vehicle-container .detail-cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+.vehicle-container .edit-vehicle-number {
+  width: 15%;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
   border-radius: 4px;
 }
 
-.vehicle-container .detail-button:hover {
-  background-color: #0b7dda;
+/* 확장된 상세정보 영역 (expanded-row) */
+.vehicle-container .expanded-row {
+  background-color: #f9f9f9;
+}
+
+.vehicle-container .main-row {
+  cursor: pointer;
 }
 
 .vehicle-container .pagination {
@@ -143,8 +191,8 @@
   margin: 0 10px;
   background-color: #e7e7e7;
   border: none;
-  cursor: pointer;
   border-radius: 4px;
+  cursor: pointer;
   transition: background-color 0.2s;
 }
 
@@ -162,73 +210,19 @@
   margin-bottom: 10px;
 }
 
-/* 모달 내용 스타일링 */
-.vehicle-container .detail-content,
-.vehicle-container .edit-content,
-.vehicle-container .delete-content,
-.add-content {
-  padding: 20px;
+/* form-group 스타일 */
+.vehicle-container .form-group {
+  margin-bottom: 15px;
 }
-
-.vehicle-container .modal-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+.vehicle-container .form-group label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
-
-.vehicle-container .edit-button,
-.vehicle-container .delete-button,
-.vehicle-container .save-button,
-.vehicle-container .cancel-button,
-.vehicle-container .confirm-delete-button {
-  padding: 8px 16px;
-  margin-left: 10px;
-  border: none;
-  cursor: pointer;
+.vehicle-container .form-group input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.vehicle-container .edit-button {
-  background-color: #ffc107;
-  color: white;
-}
-
-.vehicle-container .edit-button:hover {
-  background-color: #e0a800;
-}
-
-.vehicle-container .delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-.vehicle-container .delete-button:hover {
-  background-color: #da190b;
-}
-
-.vehicle-container .save-button {
-  background-color: #4caf50;
-  color: white;
-}
-
-.vehicle-container .save-button:hover {
-  background-color: #45a049;
-}
-
-.vehicle-container .cancel-button {
-  background-color: #e7e7e7;
-  color: black;
-}
-
-.vehicle-container .cancel-button:hover {
-  background-color: #d5d5d5;
-}
-
-.vehicle-container .confirm-delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-.vehicle-container .confirm-delete-button:hover {
-  background-color: #da190b;
 }

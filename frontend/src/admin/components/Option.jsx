@@ -1,16 +1,17 @@
-// src/components/Option.jsx
-import React, { useState, useEffect } from "react";
+// src/admin/components/Option.jsx
+
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
-import Modal from "./Modal";
-import { MdSearch } from "react-icons/md";
+import AddModal from "./AddModal";
+import DeleteModal from "./DeleteModal";
+import LoadingSpinner from "./LoadingSpinner";
+import { MdEdit, MdDelete } from "react-icons/md";
 import "./Option.css";
 
 function Option() {
   const token = localStorage.getItem("adminToken");
   const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
-  // 전체 옵션 데이터를 백엔드에서 받아와 저장 (전체 데이터)
-  const [allOptions, setAllOptions] = useState([]);
   // 화면에 표시할 옵션 데이터 (필터링 및 클라이언트 단 페이지네이션 적용)
   const [options, setOptions] = useState([]);
   // 페이지네이션 상태 (클라이언트 단 계산)
@@ -25,6 +26,25 @@ function Option() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // 토글(확장) 및 인라인 편집 상태
+  const [expandedOptionId, setExpandedOptionId] = useState(null);
+  const [editingOptionId, setEditingOptionId] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  // 등록 모달 상태
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  // 삭제 모달 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // 인라인 편집 폼 데이터
+  const [formData, setFormData] = useState({
+    option_type_id: "",
+  });
+
+  // 각 행의 ref들을 저장 (스크롤 이동용)
+  const rowRefs = useRef({});
+  const detailInfoRef = useRef(null);
+
   // 필터 상태 (검색어와 상태)
   const [filters, setFilters] = useState({
     search: "",
@@ -34,18 +54,7 @@ function Option() {
     pageSize: 10,
   });
 
-  // 모달 관련 상태
-  // modalType: "add", "detail", "edit", "delete"
-  const [modalType, setModalType] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(null);
-  // Add 모달: 신규 등록 시 option_type_id만 입력받음
-  const [formData, setFormData] = useState({
-    option_type_id: "",
-  });
-
-  // 전체 옵션 데이터를 API로부터 가져오기
-  // (전체 데이터를 받아오기 위해 페이지네이션 파라미터는 보내지 않거나 매우 큰 pageSize를 사용)
-  const fetchAllOptions = async () => {
+  const fetchOptions = async () => {
     setLoading(true);
     setError("");
     try {
@@ -54,15 +63,16 @@ function Option() {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : undefined,
         },
-        // 백엔드에서 전체 데이터를 반환하도록 pageSize를 크게 설정하거나,
-        // 혹은 필터 파라미터 없이 호출 (API 구현에 따라 조정)
         params: {
-          page: 1,
-          pageSize: 1000,
+          page: filters.page,
+          pageSize: filters.pageSize,
+          search: filters.search || undefined,
+          status: filters.status || undefined,
         },
       });
       if (response.data.resultCode === "SUCCESS") {
-        setAllOptions(response.data.data.options);
+        setOptions(response.data.data.options);
+        setPagination(response.data.data.pagination);
       } else {
         setError(
           response.data.message || "옵션 목록을 불러오는 데 실패했습니다."
@@ -78,46 +88,9 @@ function Option() {
 
   // 전체 옵션 데이터를 처음 받아옴
   useEffect(() => {
-    fetchAllOptions();
+    fetchOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // 전체 옵션 데이터와 필터(검색어, 상태)를 기준으로 필터링 및 클라이언트 단 페이지네이션 계산
-  useEffect(() => {
-    let filtered = allOptions;
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      // 여기서는 옵션 타입 ID를 문자열로 검색합니다.
-      filtered = filtered.filter((option) =>
-        String(option.option_type_id).toLowerCase().includes(searchLower)
-      );
-    }
-    if (filters.status) {
-      filtered = filtered.filter((option) => option.status === filters.status);
-    }
-    const total = filtered.length;
-    const totalPages = Math.ceil(total / filters.pageSize) || 1;
-    setPagination({
-      currentPage: filters.page,
-      totalPages: totalPages,
-      totalItems: total,
-      pageSize: filters.pageSize,
-    });
-    const startIndex = (filters.page - 1) * filters.pageSize;
-    const paginated = filtered.slice(startIndex, startIndex + filters.pageSize);
-    setOptions(paginated);
-  }, [filters, allOptions]);
-
-  // 필터 입력 변경 핸들러
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-      // 검색어나 상태 변경 시 첫 페이지로 리셋
-      ...(name === "search" || name === "status" ? { page: 1 } : {}),
-    }));
-  };
+  }, [filters]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -136,39 +109,47 @@ function Option() {
     }));
   };
 
-  // 모달 열기 함수
-  const openDetailModal = (option) => {
-    setSelectedOption(option);
-    setModalType("detail");
+  // 행 토글 (상세보기 및 인라인 편집 영역 확장/축소)
+  const toggleExpanded = (optionId) => {
+    setExpandedOptionId((prev) => (prev === optionId ? null : optionId));
+    setEditingOptionId(null);
+    setTimeout(() => {
+      if (rowRefs.current[optionId]) {
+        rowRefs.current[optionId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
-  // 신규 옵션 등록 모달 (Add)
-  // 등록 시에는 option_type_id만 입력받음 (기본 상태는 inactive로 등록)
+  // 인라인 편집 모드 전환
+  const startEditing = (option) => {
+    setSelectedOption(option);
+    setFormData({ option_type_id: option.option_type_id.toString() });
+    setEditingOptionId(option.option_id);
+    setTimeout(() => {
+      if (rowRefs.current[option.option_id]) {
+        rowRefs.current[option.option_id].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
+  };
+
+  const cancelEditing = () => {
+    setEditingOptionId(null);
+  };
+
   const openAddModal = () => {
     setFormData({ option_type_id: "" });
-    setModalType("add");
+    setIsAddModalOpen("add");
   };
+  const closeAddModal = () => setIsAddModalOpen(false);
 
-  // 옵션 삭제 모달 (Delete)
-  const openDeleteModal = (option) => {
-    setSelectedOption(option);
-    setModalType("delete");
-  };
-
-  const closeModal = () => {
-    setModalType(null);
-    setSelectedOption(null);
-    setFormData({
-      option_type_id: "",
-      status: "",
-      last_maintenance_at: "",
-      next_maintenance_at: "",
-    });
-    setError("");
-  };
-
-  // 신규 옵션 등록 API 호출 (POST /admin/options)
-  const handleSaveAdd = async () => {
+  // 신규 옵션 등록 API 호출
+  const handleSubmitAdd = async () => {
     setLoading(true);
     setError("");
     try {
@@ -181,8 +162,8 @@ function Option() {
       });
       if (response.data.resultCode === "SUCCESS") {
         // 전체 옵션 데이터를 새로 받아옴
-        fetchAllOptions();
-        closeModal();
+        await fetchOptions();
+        closeAddModal();
       } else {
         setError(response.data.message || "옵션 등록에 실패했습니다.");
       }
@@ -194,14 +175,52 @@ function Option() {
     }
   };
 
-  // 옵션 삭제 API 호출 (DELETE /admin/options/{option_id})
-  const handleConfirmDelete = async () => {
-    if (!selectedOption) return;
+  // 인라인 수정 API 호출 (현재는 쓰지 않는다.)
+  // const handleSubmitEdit = async (optionId) => {
+  //   setLoading(true);
+  //   setError("");
+  //   try {
+  //     const payload = {
+  //       option_type_id: Number(formData.option_type_id),
+  //     };
+  //     const response = await axios.patch(
+  //       `${BASE_URL}/admin/options/${optionId}`,
+  //       payload,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: token ? `Bearer ${token}` : undefined,
+  //         },
+  //       }
+  //     );
+  //     if (response.data.resultCode === "SUCCESS") {
+  //       await fetchOptions();
+  //       setEditingOptionId(null);
+  //     } else {
+  //       setError(response.data.message || "옵션 수정 실패");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     setError("옵션 수정 중 오류 발생");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // 삭제 모달 열기
+  const openDeleteModal = (vehicle) => {
+    setSelectedOption(vehicle);
+    setIsDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
+  // 삭제 API 호출
+  const handleSubmitDelete = async (optionId) => {
     setLoading(true);
     setError("");
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/options/${selectedOption.option_id}`,
+        `${BASE_URL}/admin/options/${optionId}`,
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
@@ -209,14 +228,14 @@ function Option() {
         }
       );
       if (response.data.resultCode === "SUCCESS") {
-        fetchAllOptions();
-        closeModal();
+        await fetchOptions();
+        closeDeleteModal();
       } else {
-        setError(response.data.message || "옵션 삭제에 실패했습니다.");
+        setError(response.data.message || "옵션 삭제 실패");
       }
     } catch (err) {
       console.error(err);
-      setError("옵션 삭제 중 오류가 발생했습니다.");
+      setError("옵션 삭제 중 오류 발생");
     } finally {
       setLoading(false);
     }
@@ -230,41 +249,12 @@ function Option() {
           옵션 등록
         </button>
       </div>
-
-      {/* 필터링 섹션 */}
-      {/* <div className="filters">
-        <label>
-          검색
-          <input
-            type="text"
-            name="search"
-            value={filters.search}
-            onChange={handleFilterChange}
-            placeholder="옵션 타입 ID 검색"
-          />
-        </label>
-        <label>
-          상태
-          <select
-            name="status"
-            value={filters.status}
-            onChange={handleFilterChange}
-          >
-            <option value="">전체</option>
-            <option value="active">활성화</option>
-            <option value="inactive">비활성화</option>
-            <option value="maintenance">정비 중</option>
-          </select>
-        </label>
-        <button onClick={() => setFilters({ ...filters })}>검색</button>
-      </div> */}
-
       {/* 옵션 목록 테이블 */}
+      {error && <p className="error">{error}</p>}
       {loading ? (
-        <p>로딩 중...</p>
+        <LoadingSpinner />
       ) : (
-        <>
-          {error && <p className="error">{error}</p>}
+        <div className="table-wrapper">
           <table className="option-table">
             <thead>
               <tr>
@@ -275,37 +265,196 @@ function Option() {
                 <th>예정된 다음 정비 일자</th>
                 <th>등록 일자</th>
                 <th>수정 일자</th>
-                <th>상세 보기</th>
               </tr>
             </thead>
             <tbody>
               {options.length > 0 ? (
                 options.map((option) => (
-                  <tr key={option.option_id}>
-                    <td>{option.option_id}</td>
-                    <td>{option.option_type_id}</td>
-                    <td>{option.status}</td>
-                    <td>
-                      {option.last_maintenance_at
-                        ? new Date(option.last_maintenance_at).toLocaleString()
-                        : "-"}
-                    </td>
-                    <td>
-                      {option.next_maintenance_at
-                        ? new Date(option.next_maintenance_at).toLocaleString()
-                        : "-"}
-                    </td>
-                    <td>{new Date(option.created_at).toLocaleString()}</td>
-                    <td>{new Date(option.updated_at).toLocaleString()}</td>
-                    <td>
-                      <button
-                        className="detail-button"
-                        onClick={() => openDetailModal(option)}
-                      >
-                        <MdSearch />
-                      </button>
-                    </td>
-                  </tr>
+                  <React.Fragment key={option.option_id}>
+                    <tr
+                      ref={(el) => (rowRefs.current[option.option_id] = el)}
+                      className={`main-row ${
+                        expandedOptionId === option.option_id
+                          ? "expanded-main-row"
+                          : ""
+                      }`}
+                      onClick={() => toggleExpanded(option.option_id)}
+                    >
+                      <td>
+                        <span className="cell-text">{option.option_id}</span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {option.option_type_id}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">{option.status}</span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {option.last_maintenance_at
+                            ? new Date(
+                                option.last_maintenance_at
+                              ).toLocaleString()
+                            : "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {option.next_maintenance_at
+                            ? new Date(
+                                option.next_maintenance_at
+                              ).toLocaleString()
+                            : "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {new Date(option.created_at).toLocaleString()}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {new Date(option.updated_at).toLocaleString()}
+                        </span>
+                      </td>
+                    </tr>
+                    {expandedOptionId === option.option_id && (
+                      <tr className="expanded-row">
+                        <td colSpan="8">
+                          <div
+                            className="detail-info-container"
+                            ref={detailInfoRef}
+                          >
+                            <div className="detail-info">
+                              <div className="detail-item">
+                                <div className="detail-label">옵션 ID</div>
+                                <div className="detail-value">
+                                  {option.option_id}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">옵션 타입 ID</div>
+                                {editingOptionId === option.option_id ? (
+                                  <input
+                                    type="number"
+                                    name="option_type_id"
+                                    value={formData.option_type_id}
+                                    onChange={handleFormChange}
+                                    className="option-container__edit-input"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {option.option_type_id}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">상태</div>
+                                <div className="detail-value">
+                                  {option.item_status_name}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  마지막 정비 일자
+                                </div>
+                                <div className="detail-value">
+                                  {option.last_maintenance_at
+                                    ? new Date(
+                                        option.last_maintenance_at
+                                      ).toLocaleString()
+                                    : "미정"}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  다음 정비 일자
+                                </div>
+                                <div className="detail-value">
+                                  {option.next_maintenance_at
+                                    ? new Date(
+                                        option.next_maintenance_at
+                                      ).toLocaleString()
+                                    : "미정"}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">등록 일자</div>
+                                <div className="detail-value">
+                                  {new Date(option.created_at).toLocaleString()}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">등록자</div>
+                                <div className="detail-value">
+                                  {option.created_by}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">수정 일자</div>
+                                <div className="detail-value">
+                                  {new Date(option.updated_at).toLocaleString()}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">수정자</div>
+                                <div className="detail-value">
+                                  {option.updated_by}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="detail-actions">
+                              {editingOptionId === option.option_id ? (
+                                <>
+                                  <button
+                                    className="detail-save-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSubmitEdit(option.option_id);
+                                    }}
+                                  >
+                                    저장
+                                  </button>
+                                  <button
+                                    className="detail-cancel-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      cancelEditing();
+                                    }}
+                                  >
+                                    취소
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  {/* <button
+                                    className="detail-edit-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      startEditing(option);
+                                    }}
+                                  >
+                                    <MdEdit />
+                                  </button> */}
+                                  <button
+                                    className="detail-delete-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openDeleteModal(option);
+                                    }}
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))
               ) : (
                 <tr>
@@ -314,116 +463,54 @@ function Option() {
               )}
             </tbody>
           </table>
-          {/* 백엔드에서 페이지네이션 정보를 반환한다고 가정 */}
-          <div className="pagination">
-            <button
-              onClick={() => handlePageChange(pagination.currentPage - 1)}
-              disabled={pagination.currentPage === 1}
-            >
-              이전
-            </button>
-            <span>
-              {pagination.currentPage} / {pagination.totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(pagination.currentPage + 1)}
-              disabled={pagination.currentPage === pagination.totalPages}
-            >
-              다음
-            </button>
-          </div>
-        </>
+        </div>
       )}
+      <div className="pagination">
+        <button
+          onClick={() => handlePageChange(filters.page - 1)}
+          disabled={filters.page === 1}
+        >
+          이전
+        </button>
+        <span>
+          {filters.page} / {pagination.totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(filters.page + 1)}
+          disabled={filters.page === pagination.totalPages}
+        >
+          다음
+        </button>
+      </div>
+      <AddModal
+        isOpen={isAddModalOpen}
+        onClose={closeAddModal}
+        onSubmit={handleSubmitAdd}
+        title="신규 옵션 등록"
+      >
+        <div className="form-group">
+          <label>옵션 타입 ID</label>
+          <input
+            type="number"
+            name="option_type_id"
+            value={formData.option_type_id}
+            onChange={handleFormChange}
+            required
+          />
+        </div>
+      </AddModal>
 
-      {/* 모달 */}
-      <Modal isOpen={modalType !== null} onClose={closeModal}>
-        {/* 상세 정보 모달 */}
-        {modalType === "detail" && selectedOption && (
-          <div className="detail-content">
-            <h2>옵션 상세 정보</h2>
-            <p>옵션 ID: {selectedOption.option_id}</p>
-            <p>옵션 타입 ID: {selectedOption.option_type_id}</p>
-            <p>상태: {selectedOption.status}</p>
-            <p>
-              마지막 정비 일자:{" "}
-              {selectedOption.last_maintenance_at
-                ? new Date(selectedOption.last_maintenance_at).toLocaleString()
-                : "-"}
-            </p>
-            <p>
-              예정된 다음 정비 일자:{" "}
-              {selectedOption.next_maintenance_at
-                ? new Date(selectedOption.next_maintenance_at).toLocaleString()
-                : "-"}
-            </p>
-            <p>
-              등록 일자: {new Date(selectedOption.created_at).toLocaleString()}
-            </p>
-            <p>
-              수정 일자: {new Date(selectedOption.updated_at).toLocaleString()}
-            </p>
-            <div className="modal-actions">
-              <button
-                onClick={() => openDeleteModal(selectedOption)}
-                className="delete-button"
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 삭제 확인 모달 */}
-        {modalType === "delete" && selectedOption && (
-          <div className="delete-content">
-            <h2>옵션 삭제 확인</h2>
-            <p>정말로 이 옵션을 삭제하시겠습니까?</p>
-            <div className="modal-actions">
-              <button
-                onClick={handleConfirmDelete}
-                className="confirm-delete-button"
-                disabled={loading}
-              >
-                삭제
-              </button>
-              <button onClick={closeModal} className="cancel-button">
-                취소
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 신규 등록 모달 */}
-        {modalType === "add" && (
-          <div className="add-content">
-            <h2>신규 옵션 등록</h2>
-            <form className="add-form">
-              <label>
-                옵션 타입 ID:
-                <input
-                  type="number"
-                  name="option_type_id"
-                  value={formData.option_type_id}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-            </form>
-            <div className="modal-actions">
-              <button
-                onClick={handleSaveAdd}
-                className="save-button"
-                disabled={loading}
-              >
-                등록
-              </button>
-              <button onClick={closeModal} className="cancel-button">
-                취소
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={() => handleSubmitDelete(selectedOption.option_id)}
+        title="옵션 삭제 확인"
+        message={
+          selectedOption
+            ? `${selectedOption.option_id} 옵션을 삭제하시겠습니까?`
+            : ""
+        }
+      />
     </div>
   );
 }

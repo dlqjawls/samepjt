@@ -1,21 +1,38 @@
 // src/admin/components/ModuleSetManagement.jsx
-import React, { useState, useEffect, useCallback } from "react";
+
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
-import Modal from "./Modal";
-import { MdSearch, MdEdit, MdDelete } from "react-icons/md";
+import AddModal from "./AddModal";
+import DeleteModal from "./DeleteModal";
+import { MdEdit, MdDelete } from "react-icons/md";
 import "./ModuleSetManagement.css";
+import LoadingSpinner from "./LoadingSpinner";
 
 const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
 const ModuleSetManagement = () => {
-  const token = localStorage.getItem("adminToken");
-
   // 전체 모듈 세트 데이터와 필터링된 데이터 상태
-  const [allModuleSets, setAllModuleSets] = useState([]);
-  const [filteredModuleSets, setFilteredModuleSets] = useState([]);
+  const [moduleSets, setModuleSets] = useState([]);
+  // 확장(토글)된 행의 module_set_id
+  const [expandedModuleSetId, setExpandedModuleSetId] = useState(null);
+  // 선택된 모듈 세트(삭제 등에서 사용)
+  const [selectedModuleSet, setSelectedModuleSet] = useState(null);
+  // 등록 및 수정 폼 데이터
+  const [formData, setFormData] = useState({
+    module_set_name: "",
+    description: "",
+    module_set_images: "",
+    module_set_features: "",
+    module_type_id: "",
+    options: "[]",
+  });
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  // 등록 모달 상태
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  // 삭제 모달 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // 편집 모드 여부 (인라인 편집)
+  const [editingModuleSetId, setEditingModuleSetId] = useState(null);
 
   // 필터 관련 상태 (검색어, 페이지, 페이지당 항목수)
   const [filters, setFilters] = useState({
@@ -32,22 +49,20 @@ const ModuleSetManagement = () => {
     pageSize: 10,
   });
 
-  // 모달 관련 상태
-  // modalContentType: "detail" | "edit" | "delete" | "add"
-  const [modalContentType, setModalContentType] = useState("detail");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedModuleSet, setSelectedModuleSet] = useState(null);
-  const [formData, setFormData] = useState({
-    module_set_name: "",
-    description: "",
-    module_set_images: "", // 콤마로 구분된 문자열 → 배열로 변환하여 전송
-    module_set_features: "",
-    module_type_id: "",
-    options: "[]", // 등록 시 옵션을 JSON 문자열로 입력 (수정 시에는 사용하지 않음)
-  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  // 모듈 타입 목록 (추가 정보 용)
   const [moduleTypes, setModuleTypes] = useState([]);
 
+  const rowRefs = useRef({});
+
+  // 상세정보 영역 ref (편집 시 스크롤 이동용)
+  const detailInfoRef = useRef(null);
+
+  const token = localStorage.getItem("adminToken");
+
+  //모듈 셋트 조회 API 호출
   const fetchModuleSets = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -60,7 +75,8 @@ const ModuleSetManagement = () => {
       });
       if (response.data.resultCode === "SUCCESS") {
         const modulesData = response.data.data.module_sets;
-        setAllModuleSets(modulesData);
+        setModuleSets(modulesData);
+        setPagination(response.data.data.pagination);
       } else {
         setError(
           response.data.message || "모듈 세트 목록을 불러오는 데 실패했습니다."
@@ -68,11 +84,18 @@ const ModuleSetManagement = () => {
       }
     } catch (err) {
       console.error(err);
-      setError("모듈 세트 목록을 불러오는 중 오류가 발생했습니다.");
+      setError(
+        err.response?.data?.message ||
+          "모듈 세트 목록을 불러오는 중 오류가 발생했습니다."
+      );
     } finally {
       setLoading(false);
     }
   }, [token]);
+
+  useEffect(() => {
+    fetchModuleSets();
+  }, [fetchModuleSets]);
 
   // 모듈 타입 목록 조회 함수
   const fetchModuleTypes = async () => {
@@ -93,39 +116,10 @@ const ModuleSetManagement = () => {
     }
   };
 
-  useEffect(() => {
-    fetchModuleSets();
-  }, [fetchModuleSets]);
-
   // 컴포넌트가 마운트될 때 모듈 타입 목록도 조회
   useEffect(() => {
     fetchModuleTypes();
   });
-
-  // 필터(검색어 등)를 적용하여 전체 데이터에서 필터링
-  useEffect(() => {
-    let result = allModuleSets;
-    if (filters.moduleSetSearch) {
-      const searchLower = filters.moduleSetSearch.toLowerCase();
-      result = result.filter((moduleSet) =>
-        moduleSet.module_set_name.toLowerCase().includes(searchLower)
-      );
-    }
-    setFilteredModuleSets(result);
-    // 필터링된 데이터의 길이를 기준으로 페이징 정보 업데이트
-    setPagination({
-      currentPage: filters.moduleSetPage,
-      totalItems: result.length,
-      pageSize: filters.moduleSetPageSize,
-      totalPages: Math.ceil(result.length / filters.moduleSetPageSize),
-    });
-  }, [filters, allModuleSets]);
-
-  // 현재 페이지에 해당하는 데이터
-  const paginatedModuleSets = filteredModuleSets.slice(
-    (filters.moduleSetPage - 1) * filters.moduleSetPageSize,
-    filters.moduleSetPage * filters.moduleSetPageSize
-  );
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -136,13 +130,7 @@ const ModuleSetManagement = () => {
     }));
   };
 
-  const handlePageChange = (newPage) => {
-    setFilters((prev) => ({
-      ...prev,
-      moduleSetPage: newPage,
-    }));
-  };
-
+  // 폼 입력 변경 핸들러
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -151,35 +139,24 @@ const ModuleSetManagement = () => {
     }));
   };
 
-  // 모달 열기 함수들
-  const openDetailModal = (moduleSet) => {
-    setSelectedModuleSet(moduleSet);
-    setModalContentType("detail");
-    setIsModalOpen(true);
+  // 토글(확장) 핸들러
+  const toggleExpanded = (moduleSetId) => {
+    setExpandedModuleSetId((prev) =>
+      prev === moduleSetId ? null : moduleSetId
+    );
+    // 인라인 편집 모드 초기화
+    setEditingModuleSetId(null);
+    setTimeout(() => {
+      if (rowRefs.current[moduleSetId]) {
+        rowRefs.current[moduleSetId].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
   };
 
-  const openEditModal = (moduleSet) => {
-    setSelectedModuleSet(moduleSet);
-    setFormData({
-      module_set_name: moduleSet.module_set_name,
-      description: moduleSet.description || "",
-      module_set_images: Array.isArray(moduleSet.module_set_images)
-        ? moduleSet.module_set_images.join(", ")
-        : moduleSet.module_set_images || "",
-      module_set_features: moduleSet.module_set_features || "",
-      module_type_id: moduleSet.module_type_id || "",
-      options: "[]",
-    });
-    setModalContentType("edit");
-    setIsModalOpen(true);
-  };
-
-  const openDeleteModal = (moduleSet) => {
-    setSelectedModuleSet(moduleSet);
-    setModalContentType("delete");
-    setIsModalOpen(true);
-  };
-
+  // 등록 모달 열기 및 닫기
   const openAddModal = () => {
     setFormData({
       module_set_name: "",
@@ -189,43 +166,37 @@ const ModuleSetManagement = () => {
       module_type_id: "",
       options: "[]",
     });
-    setModalContentType("add");
-    setIsModalOpen(true);
+    setIsAddModalOpen(true);
   };
-
-  const closeModal = () => {
-    setSelectedModuleSet(null);
-    setModalContentType(null);
-    setIsModalOpen(false);
-  };
-
-  // 등록/수정 시 payload 구성 함수 (수정 시 옵션은 보내지 않음)
-  const buildPayload = () => {
-    const payload = {
-      module_set_name: formData.module_set_name,
-      description: formData.description,
-      module_set_images: formData.module_set_images
-        ? formData.module_set_images.split(",").map((s) => s.trim())
-        : [],
-      module_set_features: formData.module_set_features,
-      module_type_id: Number(formData.module_type_id),
-    };
-    if (modalContentType === "add") {
-      try {
-        payload.options = JSON.parse(formData.options);
-      } catch (e) {
-        payload.options = [];
-      }
-    }
-    return payload;
-  };
+  const closeAddModal = () => setIsAddModalOpen(false);
 
   // 신규 모듈 세트 등록 API 호출
-  const handleSaveAdd = async () => {
+  const handleSubmitAdd = async () => {
+    // <!> options[].option_type_id, options[].quantity가 추가되어야 한다.
+    if (!formData.module_set_name.trim() || !formData.module_type_id.trim()) {
+      alert("모듈 세트 이름과 모듈 타입 아이디는 필수 항목입니다.");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
-      const payload = buildPayload();
+      const optionsPayload = (() => {
+        try {
+          return JSON.parse(formData.options);
+        } catch (e) {
+          return [];
+        }
+      })();
+      const payload = {
+        module_set_name: formData.module_set_name,
+        description: formData.description,
+        module_set_images: formData.module_set_images
+          ? formData.module_set_images.split(",").map((s) => s.trim())
+          : [],
+        module_set_features: formData.module_set_features,
+        module_type_id: Number(formData.module_type_id),
+        options: optionsPayload,
+      };
       const response = await axios.post(
         `${BASE_URL}/admin/module-sets`,
         payload,
@@ -238,7 +209,7 @@ const ModuleSetManagement = () => {
       );
       if (response.data.resultCode === "SUCCESS") {
         fetchModuleSets();
-        closeModal();
+        closeAddModal();
       } else {
         setError(
           response.data.message || "모듈 세트를 등록하는 데 실패했습니다."
@@ -246,21 +217,55 @@ const ModuleSetManagement = () => {
       }
     } catch (err) {
       console.error(err);
-      setError("모듈 세트를 등록하는 중 오류가 발생했습니다.");
+      setError(
+        err.response?.data?.message ||
+          "모듈 세트를 등록하는 중 오류가 발생했습니다."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // 모듈 세트 수정 API 호출
-  const handleSaveEdit = async () => {
-    if (!selectedModuleSet) return;
+  // 인라인 수정 모드 전환: 상세 정보 영역에서 "수정" 버튼 클릭 시 호출됨
+  const startEditing = (moduleSet) => {
+    setSelectedModuleSet(moduleSet);
+    setFormData({
+      module_set_name: moduleSet.module_set_name,
+      description: moduleSet.description,
+      module_set_images: Array.isArray(moduleSet.module_set_images)
+        ? moduleSet.module_set_images.join(", ")
+        : moduleSet.module_set_images || "",
+      module_set_features: moduleSet.module_set_features,
+      module_type_id: Number(moduleSet.module_type_id),
+      options: "[]",
+    });
+    setEditingModuleSetId(moduleSet.module_set_id);
+    setTimeout(() => {
+      if (detailInfoRef.current) {
+        detailInfoRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100); // 약간의 딜레이 후 스크롤 호출 (렌더링 완료 후)
+  };
+
+  // 인라인 수정을 위한 수정 API 호출
+  const handleSubmitEdit = async (moduleSetId) => {
     setLoading(true);
     setError("");
     try {
-      const payload = buildPayload();
+      const payload = {
+        module_set_name: formData.module_set_name,
+        description: formData.description,
+        module_set_images: formData.module_set_images
+          ? formData.module_set_images.split(",").map((s) => s.trim())
+          : [],
+        module_set_features: formData.module_set_features,
+        module_type_id: Number(formData.module_type_id),
+      };
       const response = await axios.patch(
-        `${BASE_URL}/admin/module-sets/${selectedModuleSet.module_set_id}`,
+        `${BASE_URL}/admin/module-sets/${moduleSetId}`,
         payload,
         {
           headers: {
@@ -271,7 +276,7 @@ const ModuleSetManagement = () => {
       );
       if (response.data.resultCode === "SUCCESS") {
         fetchModuleSets();
-        closeModal();
+        setEditingModuleSetId(null);
       } else {
         setError(
           response.data.message || "모듈 세트 정보를 수정하는 데 실패했습니다."
@@ -285,23 +290,34 @@ const ModuleSetManagement = () => {
     }
   };
 
-  // 모듈 세트 삭제 API 호출
-  const handleConfirmDelete = async () => {
-    if (!selectedModuleSet) return;
+  // 인라인 수정 취소
+  const cancelEditing = () => {
+    setEditingModuleSetId(null);
+  };
+
+  // 삭제 모달 열기
+  const openDeleteModal = (moduleSet) => {
+    setSelectedModuleSet(moduleSet);
+    setIsDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
+  // 삭제 API 호출
+  const handleSubmitDelete = async (moduleSetId) => {
     setLoading(true);
     setError("");
     try {
       const response = await axios.delete(
-        `${BASE_URL}/admin/module-sets/${selectedModuleSet.module_set_id}`,
+        `${BASE_URL}/admin/module-sets/${moduleSetId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: token ? `Bearer ${token}` : undefined,
           },
         }
       );
       if (response.data.resultCode === "SUCCESS") {
-        fetchModuleSets();
-        closeModal();
+        await fetchModuleSets();
+        closeDeleteModal();
       } else {
         setError(
           response.data.message || "모듈 세트를 삭제하는 데 실패했습니다."
@@ -309,11 +325,32 @@ const ModuleSetManagement = () => {
       }
     } catch (err) {
       console.error(err);
-      setError("모듈 세트를 삭제하는 중 오류가 발생했습니다.");
+      setError(
+        err.response?.data?.message ||
+          "모듈 세트를 삭제하는 중 오류가 발생했습니다."
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({ ...prev, moduleSetPage: newPage }));
+  };
+
+  // 필터링 적용: 간단히 모듈 세트 이름으로 필터링
+  const filteredModuleSets = moduleSets.filter((ms) =>
+    filters.moduleSetSearch
+      ? ms.module_set_name
+          .toLowerCase()
+          .includes(filters.moduleSetSearch.toLowerCase())
+      : true
+  );
+  const paginatedModuleSets = filteredModuleSets.slice(
+    (filters.moduleSetPage - 1) * filters.moduleSetPageSize,
+    filters.moduleSetPage * filters.moduleSetPageSize
+  );
 
   return (
     <div className="module-set-management">
@@ -341,7 +378,7 @@ const ModuleSetManagement = () => {
 
       {error && <p className="error">{error}</p>}
       {loading ? (
-        <p>로딩 중...</p>
+        <LoadingSpinner />
       ) : (
         <div className="table-wrapper">
           <table className="module-set-table">
@@ -350,63 +387,194 @@ const ModuleSetManagement = () => {
                 <th>모듈 세트 ID</th>
                 <th>모듈 세트 이름</th>
                 <th>설명</th>
-                <th>이미지</th>
-                <th>상세보기</th>
                 <th>특징</th>
                 <th>모듈 타입 ID</th>
-                <th>수정</th>
-                <th>삭제</th>
+                <th>가격</th>
               </tr>
             </thead>
             <tbody>
               {paginatedModuleSets.length > 0 ? (
                 paginatedModuleSets.map((set) => (
-                  <tr key={set.module_set_id}>
-                    <td>{set.module_set_id}</td>
-                    <td>{set.module_set_name}</td>
-                    <td>{set.description}</td>
-                    <td>
-                      {set.module_set_images ? (
-                        <img
-                          src={
-                            Array.isArray(set.module_set_images)
-                              ? set.module_set_images[0]
-                              : set.module_set_images
-                          }
-                          alt={set.module_set_name}
-                          className="module-set-image"
-                        />
-                      ) : (
-                        "이미지 없음"
-                      )}
-                    </td>
-                    <td>
-                      <button
-                        className="detail-button"
-                        onClick={() => openDetailModal(set)}
-                      >
-                        <MdSearch />
-                      </button>
-                    </td>
-                    <td>{set.module_set_features || "-"}</td>
-                    <td>{set.module_type_id || "-"}</td>
-                    <td>
-                      <button
-                        className="edit-button"
-                        onClick={() => openEditModal(set)}
-                      >
-                        <MdEdit />
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        className="delete-button"
-                        onClick={() => openDeleteModal(set)}
-                      >
-                        <MdDelete />
-                      </button>
-                    </td>
-                  </tr>
+                  <React.Fragment key={set.module_set_id}>
+                    <tr
+                      ref={(el) => (rowRefs.current[set.module_set_id] = el)}
+                      className={`main-row ${
+                        expandedModuleSetId === set.module_set_id
+                          ? "expanded-main-row"
+                          : ""
+                      }`}
+                      onClick={() => toggleExpanded(set.module_set_id)}
+                    >
+                      <td>{set.module_set_id}</td>
+                      <td>
+                        <span className="cell-text">{set.module_set_name}</span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {set.description || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {set.module_set_features || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">
+                          {set.module_type_id || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cell-text">{set.price || 0}</span>
+                      </td>
+                    </tr>
+                    {expandedModuleSetId === set.module_set_id && (
+                      <tr className="expanded-row">
+                        <td colSpan="6">
+                          <div
+                            className="detail-info-container"
+                            ref={detailInfoRef}
+                          >
+                            <div className="detail-info">
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  모듈 세트 이름
+                                </div>
+                                {editingModuleSetId === set.module_set_id ? (
+                                  <input
+                                    type="text"
+                                    name="module_set_name"
+                                    value={formData.module_set_name}
+                                    onChange={handleFormChange}
+                                    className="edit-module-set-name"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {set.module_set_name}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">설명</div>
+                                {editingModuleSetId === set.module_set_id ? (
+                                  <textarea
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleFormChange}
+                                    className="edit-description"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {set.description}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  모듈 세트 이미지
+                                </div>
+                                <div className="detail-value">
+                                  {set.module_set_images &&
+                                  Array.isArray(set.module_set_images) ? (
+                                    <img
+                                      src={set.module_set_images[0]}
+                                      alt={set.module_set_name}
+                                      className="module-set-image"
+                                    />
+                                  ) : (
+                                    set.module_set_images || "이미지 없음"
+                                  )}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">특징</div>
+                                {editingModuleSetId === set.module_set_id ? (
+                                  <input
+                                    type="text"
+                                    name="module_set_features"
+                                    value={formData.module_set_features}
+                                    onChange={handleFormChange}
+                                    className="edit-module-set-features"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {set.module_set_features}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">모듈 타입 ID</div>
+                                {editingModuleSetId === set.module_set_id ? (
+                                  <input
+                                    type="number"
+                                    name="module_type_id"
+                                    value={formData.module_type_id}
+                                    onChange={handleFormChange}
+                                    className="edit-module-type-id"
+                                  />
+                                ) : (
+                                  <div className="detail-value">
+                                    {set.module_type_id}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">가격</div>
+                                <div className="detail-value">
+                                  {set.cost ? set.cost : 0}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="detail-actions">
+                              {editingModuleSetId === set.module_set_id ? (
+                                <>
+                                  <button
+                                    className="detail-save-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSubmitEdit(set.module_set_id);
+                                    }}
+                                  >
+                                    저장
+                                  </button>
+                                  <button
+                                    className="detail-cancel-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      cancelEditing();
+                                    }}
+                                  >
+                                    취소
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    className="detail-edit-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      startEditing(set);
+                                    }}
+                                  >
+                                    <MdEdit />
+                                  </button>
+                                  <button
+                                    className="detail-delete-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openDeleteModal(set);
+                                    }}
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))
               ) : (
                 <tr>
@@ -435,259 +603,85 @@ const ModuleSetManagement = () => {
         </button>
       </div>
 
-      {modalContentType && isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={closeModal} title="모듈 세트 관리">
-          {modalContentType === "detail" && selectedModuleSet && (
-            <div className="detail-content">
-              <h2>모듈 세트 상세 정보</h2>
-              <p>
-                <strong>모듈 세트 이름:</strong>{" "}
-                {selectedModuleSet.module_set_name}
-              </p>
-              <p>
-                <strong>설명:</strong> {selectedModuleSet.description}
-              </p>
-              <p>
-                <strong>특징:</strong> {selectedModuleSet.module_set_features}
-              </p>
-              <p>
-                <strong>모듈 타입 ID:</strong>{" "}
-                {selectedModuleSet.module_type_id}
-              </p>
-              <div className="modal-actions">
-                <button
-                  onClick={() => openEditModal(selectedModuleSet)}
-                  className="edit-button"
-                >
-                  수정
-                </button>
-                <button
-                  onClick={() => openDeleteModal(selectedModuleSet)}
-                  className="delete-button"
-                >
-                  삭제
-                </button>
-                <button onClick={closeModal} className="cancel-button">
-                  닫기
-                </button>
-              </div>
-            </div>
-          )}
-          {modalContentType === "add" && (
-            <div className="add-content">
-              <h2>모듈 세트 등록</h2>
-              <form className="add-form">
-                <label>
-                  모듈 세트 이름:
-                  <input
-                    type="text"
-                    name="module_set_name"
-                    value={formData.module_set_name}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  설명:
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  모듈 세트 이미지 (콤마로 구분):
-                  <input
-                    type="text"
-                    name="module_set_images"
-                    value={formData.module_set_images}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  모듈 세트 특징:
-                  <input
-                    type="text"
-                    name="module_set_features"
-                    value={formData.module_set_features}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  모듈 타입 ID:
-                  <input
-                    type="number"
-                    name="module_type_id"
-                    value={formData.module_type_id}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  옵션 (JSON 형식):
-                  <textarea
-                    name="options"
-                    value={formData.options}
-                    onChange={handleFormChange}
-                    placeholder='[{"option_type_id":201,"quantity":1}]'
-                  />
-                </label>
-              </form>
-              {/* 모듈 타입 조회 표 추가 */}
-              <h3>모듈 타입 목록</h3>
-              <table className="module-type-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>이름</th>
-                    <th>크기</th>
-                    <th>비용</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {moduleTypes.length > 0 ? (
-                    moduleTypes.map((mt) => (
-                      <tr key={mt.module_type_id}>
-                        <td>{mt.module_type_id}</td>
-                        <td>{mt.module_type_name}</td>
-                        <td>{mt.module_type_size}</td>
-                        <td>{mt.module_type_cost.toLocaleString()}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="4">모듈 타입이 없습니다.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-              <div className="modal-actions">
-                <button
-                  onClick={handleSaveAdd}
-                  className="save-button"
-                  disabled={loading}
-                >
-                  등록
-                </button>
-                <button onClick={closeModal} className="cancel-button">
-                  취소
-                </button>
-              </div>
-            </div>
-          )}
-          {modalContentType === "edit" && selectedModuleSet && (
-            <div className="edit-content">
-              <h2>모듈 세트 수정</h2>
-              <form className="edit-form">
-                <label>
-                  모듈 세트 이름:
-                  <input
-                    type="text"
-                    name="module_set_name"
-                    value={formData.module_set_name}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  설명:
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  모듈 세트 이미지 (콤마로 구분):
-                  <input
-                    type="text"
-                    name="module_set_images"
-                    value={formData.module_set_images}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  모듈 세트 특징:
-                  <input
-                    type="text"
-                    name="module_set_features"
-                    value={formData.module_set_features}
-                    onChange={handleFormChange}
-                  />
-                </label>
-                <label>
-                  모듈 타입 ID:
-                  <input
-                    type="number"
-                    name="module_type_id"
-                    value={formData.module_type_id}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-              </form>
-              {/* 모듈 타입 조회 표 추가 */}
-              <h3>모듈 타입 목록</h3>
-              <table className="module-type-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>이름</th>
-                    <th>크기</th>
-                    <th>비용</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {moduleTypes.length > 0 ? (
-                    moduleTypes.map((mt) => (
-                      <tr key={mt.module_type_id}>
-                        <td>{mt.module_type_id}</td>
-                        <td>{mt.module_type_name}</td>
-                        <td>{mt.module_type_size}</td>
-                        <td>{mt.module_type_cost.toLocaleString()}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="4">모듈 타입이 없습니다.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-              <div className="modal-actions">
-                <button
-                  onClick={handleSaveEdit}
-                  className="save-button"
-                  disabled={loading}
-                >
-                  저장
-                </button>
-                <button onClick={closeModal} className="cancel-button">
-                  취소
-                </button>
-              </div>
-            </div>
-          )}
-          {modalContentType === "delete" && selectedModuleSet && (
-            <div className="delete-content">
-              <h2>모듈 세트 삭제 확인</h2>
-              <p>정말 이 모듈 세트를 삭제하시겠습니까?</p>
-              <div className="modal-actions">
-                <button
-                  onClick={handleConfirmDelete}
-                  className="confirm-delete-button"
-                  disabled={loading}
-                >
-                  삭제
-                </button>
-                <button onClick={closeModal} className="cancel-button">
-                  취소
-                </button>
-              </div>
-            </div>
-          )}
-        </Modal>
-      )}
+      <AddModal
+        isOpen={isAddModalOpen}
+        onClose={closeAddModal}
+        onSubmit={handleSubmitAdd}
+        title="신규 모듈 세트 등록"
+      >
+        <div className="form-group">
+          <label>모듈 세트 이름</label>
+          <input
+            type="text"
+            name="module_set_name"
+            placeholder="예: 모듈 세트 A"
+            value={formData.module_set_name}
+            onChange={handleFormChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>설명</label>
+          <textarea
+            name="description"
+            placeholder="모듈 세트에 대한 설명"
+            value={formData.description}
+            onChange={handleFormChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>모듈 세트 이미지 (콤마로 구분)</label>
+          <input
+            type="text"
+            name="module_set_images"
+            placeholder="이미지 URL1, 이미지 URL2"
+            value={formData.module_set_images}
+            onChange={handleFormChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>모듈 세트 특징</label>
+          <input
+            type="text"
+            name="module_set_features"
+            placeholder="예: 기능1, 기능2"
+            value={formData.module_set_features}
+            onChange={handleFormChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>모듈 타입 ID</label>
+          <input
+            type="number"
+            name="module_type_id"
+            placeholder="예: 1"
+            value={formData.module_type_id}
+            onChange={handleFormChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>옵션 (JSON 형식)</label>
+          <textarea
+            name="options"
+            placeholder='예: [{"option_type_id":201,"quantity":1}]'
+            value={formData.options}
+            onChange={handleFormChange}
+          />
+        </div>
+      </AddModal>
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={() => handleSubmitDelete(selectedModuleSet.module_set_id)}
+        title="모듈 세트 삭제 확인"
+        message={
+          selectedModuleSet
+            ? `${selectedModuleSet.module_set_name} 모듈 세트를 삭제하시겠습니까?`
+            : ""
+        }
+      />
     </div>
   );
 };
