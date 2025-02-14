@@ -43,7 +43,7 @@ def test_create_maintenance_history_success(client, session, master_token, clear
     # Then: DB에 저장된 데이터 검증
     maintenance_history = session.exec(select(MaintenanceHistory).where(MaintenanceHistory.item_id == maintenance_history_data["item_id"])).first()
     assert maintenance_history is not None
-    assert maintenance_history.item_type_id == ItemType.VEHICLE
+    assert maintenance_history.item_type_id == ItemType.VEHICLE.ID
     assert maintenance_history.issue == maintenance_history_data["issue"]
     assert maintenance_history.cost == maintenance_history_data["cost"]
     assert maintenance_history.maintenance_status_id == 1
