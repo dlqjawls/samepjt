@@ -2,7 +2,6 @@ from typing import Any, Dict, Optional, List
 from sqlmodel import Session, select
 from app.db.models.rent_history import RentHistory
 from app.db.crud.base import CRUDBase
-from app.utils.exceptions import ValidationError
 
 class RentHistoryCRUD(CRUDBase[RentHistory]):
     def __init__(self):
@@ -12,17 +11,13 @@ class RentHistoryCRUD(CRUDBase[RentHistory]):
         self,
         session: Session,
         user_pk: int,
-        page: int = 1,
-        page_size: int = 10
+        rent_status_id: Optional[int] = None
     ) -> List[RentHistory]:
         """사용자별 렌트 기록 조회"""
-        if user_pk <= 0:
-            raise ValidationError(
-                message="Invalid user PK",
-                detail={"user_pk": user_pk, "error": "User PK must be positive"}
-            )
-
-        query = select(self.model).where(self.model.user_pk == user_pk)
+        query = select(self.model).where(
+            self.model.user_pk == user_pk,
+            self.model.rent_status_id == rent_status_id if rent_status_id else True
+        )
         return list(session.exec(query).all())
         
     def get_by_id(self, session: Session, rent_id: int) -> Optional[RentHistory]:

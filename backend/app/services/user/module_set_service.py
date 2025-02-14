@@ -20,9 +20,7 @@ class ModuleSetService:
     @staticmethod
     def get_option_types(session: Session, module_set_id: int) -> List[module_set_schema.ModuleSetOptionType]:
         """ ✅ 특정 모듈 세트에 속한 옵션 타입 조회 및 변환 """
-        option_types: List[ModuleSetOptionTypes] = module_set_option_type_crud.get_option_types_by_module_set(
-            session, module_set_id
-        )["items"]
+        option_types: List[ModuleSetOptionTypes] = module_set_option_type_crud.get_option_types_by_module_set(session, module_set_id)
 
         module_set_option_types = []
         for module_option in option_types:
