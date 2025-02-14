@@ -38,7 +38,7 @@ def test_create_option_success(client, session, master_token, clear_options):
     option = session.exec(select(Option).where(Option.option_type_id == option_data["option_type_id"])).first()
     assert option is not None
     assert option.option_type_id == option_data["option_type_id"]
-    assert option.item_status_id == ItemStatus.INACTIVE
+    assert option.item_status_id == ItemStatus.INACTIVE.ID
 
 
 @pytest.mark.parametrize("invalid_option_type_id", [

@@ -13,7 +13,7 @@ def test_module_set(session: Session):
     module_set = ModuleSet(
         module_set_name="Test Module Set",
         description="Test Description",
-        module_set_images="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...",
+        module_set_images="",
         module_set_features="Feature1, Feature2",
         module_type_id=1,
         created_by=1,

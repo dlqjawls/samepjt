@@ -6,7 +6,7 @@ from faker import Faker
 
 fake = Faker()
 
-from tests.helpers import master_token, semi_admin_token, test_base64_img
+from tests.helpers import master_token, semi_admin_token
 
 
 @pytest.fixture
@@ -21,7 +21,9 @@ def test_create_option_type_success(client, session, master_token, clear_option_
     option_type_data = {
         "option_type_name": "TEST_OPTION_TYPE",
         "option_type_size": "1x1",
-        "option_type_cost": 10000
+        "option_type_cost": 10000,
+        "option_type_description": "TEST_OPTION_TYPE_DESCRIPTION",
+        "option_type_features": "TEST_OPTION_TYPE_FEATURES"
     }
 
     # When: 마스터 권한으로 옵션 등록 요청
@@ -50,7 +52,9 @@ def test_create_option_type_unauthorized(client):
     option_type_data = {
         "option_type_name": "TEST_OPTION_TYPE",
         "option_type_size": "1x1",
-        "option_type_cost": 10000
+        "option_type_cost": 10000,
+        "option_type_description": "TEST_OPTION_TYPE_DESCRIPTION",
+        "option_type_features": "TEST_OPTION_TYPE_FEATURES"
     } 
     response = client.post("/admin/option-types", json=option_type_data)
     assert response.status_code == 401
@@ -60,7 +64,9 @@ def test_create_option_type_forbidden(client, semi_admin_token):
     option_type_data = {
         "option_type_name": "TEST_OPTION_TYPE",
         "option_type_size": "1x1",
-        "option_type_cost": 10000
+        "option_type_cost": 10000,
+        "option_type_description": "TEST_OPTION_TYPE_DESCRIPTION",
+        "option_type_features": "TEST_OPTION_TYPE_FEATURES"
     }
     response = client.post(
         "/admin/option-types",
@@ -71,10 +77,11 @@ def test_create_option_type_forbidden(client, semi_admin_token):
 
 
 @pytest.mark.parametrize("invalid_option_type_data", [
-    {},
-    {"option_type_name": "TEST_OPTION_TYPE", "option_type_size": "1x1"},
-    {"option_type_name": "TEST_OPTION_TYPE", "option_type_cost": 10000},
-    {"option_type_size": "1x1", "option_type_cost": 10000},
+    {"option_type_name": "TEST_OPTION_TYPE"},
+    {"option_type_size": "1x1"},
+    {"option_type_cost": 10000},
+    {"option_type_description": "TEST_OPTION_TYPE_DESCRIPTION"},
+    {"option_type_features": "TEST_OPTION_TYPE_FEATURES"},
 ])
 def test_create_option_type_missing_fields(client, master_token, invalid_option_type_data):
     """❌ 필수 필드 누락 테스트"""
@@ -92,7 +99,9 @@ def test_create_multiple_option_types_success(client, session, master_token, cle
     option_types_data = [
         {"option_type_name": f"TEST_OPTION_TYPE_{i}",
         "option_type_size": "1x1",
-        "option_type_cost": 10000}
+        "option_type_cost": 10000,
+        "option_type_description": "TEST_OPTION_TYPE_DESCRIPTION",
+        "option_type_features": "TEST_OPTION_TYPE_FEATURES"}
         for i in range(1, 4)
     ]
 

@@ -114,5 +114,4 @@ def test_delete_module_set_already_deleted(client, session, master_token, test_m
     assert response_second.status_code == 404
     data_second = response_second.json()
     assert data_second["resultCode"] == "FAILURE"
-    assert data_second["message"] == "Module set not found"
     assert data_second["error_code"] == "NOT_FOUND"

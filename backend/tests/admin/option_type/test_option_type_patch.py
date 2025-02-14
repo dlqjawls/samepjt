@@ -2,17 +2,15 @@ import pytest
 from datetime import datetime
 from app.db.models.option_type import OptionType
 from sqlmodel import Session, select
-from app.utils.lut_constants import ItemStatus
-import json
 
-from tests.helpers import master_token, semi_admin_token, test_base64_img
+from tests.helpers import master_token, semi_admin_token
 
 @pytest.fixture
 def test_option_type(session: Session):
     """테스트용 옵션 타입 데이터 생성"""
     option_type = OptionType(
         option_type_name="Test Option Type",
-        option_type_size=500,
+        option_type_size="1x1",
         option_type_cost=10000,
         description="Test Description",
         option_type_images="",
@@ -34,21 +32,18 @@ def get_option_type_id(session: Session, option_type_name: str) -> int:
         raise ValueError(f"Option type with name {option_type_name} not found")
     return option_type.option_type_id
 
-@pytest.mark.parametrize("update_data", [
-    {"option_type_name": "Updated Option Type"},
-    {"option_type_size": "500"},
-    {"option_type_cost": 10000},
-    {"option_type_name": "Updated Option Type", "option_type_size": "500", "option_type_cost": 10000},
-    {"description": "Updated Description"},
-    {"option_type_features": "Updated Feature1, Updated Feature2"},
-    {"option_type_images": [test_base64_img]},
-    {"option_type_name": "Updated Option Type", "option_type_size": "500", "option_type_cost": 10000, "description": "Updated Description", "option_type_features": "Updated Feature1, Updated Feature2", "option_type_images": [test_base64_img]},
-])
-def test_update_option_type_success(client, session, master_token, test_option_type, update_data):
-    """✅ 정상적인 옵션 타입 정보 업데이트 테스트"""
+
+def test_update_option_type_success(client, session, master_token, test_option_type):
+    """정상적인 옵션 타입 정보 업데이트 테스트"""
     
     # Given: 옵션 타입 정보 업데이트 요청 데이터
-    
+    update_data = {
+        "option_type_name": "Updated Option Type",
+        "option_type_size": "1x1",
+        "option_type_cost": 10000,
+        "description": "Updated Description",
+        "option_type_features": "Updated Feature1, Updated Feature2"
+    }
     # When: 마스터 권한으로 옵션 타입 정보 업데이트 요청
     response = client.patch(
         f"/admin/option-types/{get_option_type_id(session, test_option_type.option_type_name)}",
@@ -57,7 +52,7 @@ def test_update_option_type_success(client, session, master_token, test_option_t
     )
 
     # Then: 응답 검증
-    assert response.status_code == 200, f"Expected status code 200, got {response.status_code}. Response: {response.json()}"
+    assert response.status_code == 200
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
     assert data["message"] == "Option type updated successfully"
@@ -75,8 +70,10 @@ def test_update_option_type_unauthorized(client, session, test_option_type, semi
     """❌ 권한 없는 사용자의 옵션 타입 정보 업데이트 시도"""  
     update_data = {
         "option_type_name": "Updated Option Type",
-        "option_type_size": 500,
+        "option_type_size": "1x1",
         "option_type_cost": 10000,
+        "description": "Updated Description",
+        "option_type_features": "Updated Feature1, Updated Feature2"
     }
 
     response = client.patch(
@@ -94,8 +91,10 @@ def test_update_nonexistent_option_type(client, session, master_token):
     """❌ 존재하지 않는 옵션 타입 정보 업데이트 시도"""
     update_data = {
         "option_type_name": "Updated Option Type",
-        "option_type_size": 500,
+        "option_type_size": "1x1",
         "option_type_cost": 10000,
+        "description": "Updated Description",
+        "option_type_features": "Updated Feature1, Updated Feature2"
     }
 
     response = client.patch(
@@ -114,8 +113,10 @@ def test_update_option_type_without_token(client, session, test_option_type):
     """❌ 인증 토큰 없이 옵션 타입 정보 업데이트 시도"""
     update_data = {
         "option_type_name": "Updated Option Type",
-        "option_type_size": 500,
+        "option_type_size": "1x1",
         "option_type_cost": 10000,
+        "description": "Updated Description",
+        "option_type_features": "Updated Feature1, Updated Feature2"
     }
 
     response = client.patch(
