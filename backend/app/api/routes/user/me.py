@@ -69,3 +69,41 @@ async def get_current_rent_info(
         message="Current rent info retrieved successfully",
         data=me_rent_info
     ) 
+    
+    
+@router.get(
+    "/me/rent/history",
+    response_model=MeRentInfoResponse,
+    summary="👀 렌트 이력 조회",
+    description="JWT 토큰으로 인증된 사용자의 렌트 이력을 조회합니다.",
+    responses={
+        200: {
+            "description": "렌트 이력 조회 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Rent history retrieved successfully",
+                        "data": [
+                            {
+                                "rent_id": 1,
+                                "rentStartDate": "2025-01-15T09:00:00",
+                                "rentEndDate": "2025-01-15T10:00:00",
+                                "cost": 100000
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+)
+async def get_rent_history(
+    session: Session = Depends(get_session),  
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency())
+):
+    me_rent_info = MeRentInfoService.get_rent_history(session, token_data.user_pk)
+    return MeRentInfoResponse.success(
+        message="Rent history retrieved successfully",
+        data=me_rent_info
+    ) 
