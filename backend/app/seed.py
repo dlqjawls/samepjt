@@ -188,7 +188,7 @@ def seed_data(session: Session) -> None:
         dummy_vehicles = [
             Vehicle(
                 vehicle_id=i,
-                vin=fake.uuid4(),
+                vin= f"PBVVINNUMBER0000{i}",  # 17자리 VIN 생성
                 vehicle_number=f"PBV-0000{i}",
                 current_location=json.dumps({"x": 0, "y": 0}),
                 mileage=0,

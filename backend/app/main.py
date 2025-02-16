@@ -11,7 +11,10 @@ from app.core.middleware import setup_middlewares
 from app.api.routes import api_router
 
 from app.utils.exceptions import  get_exception_handlers 
+# Python in app/main.py
+from app.websocket import websocket  # 이미 존재하는 다른 라우터와 함께
 
+# 라우터 등록 (예: prefix '/chat' 사용)
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
@@ -44,5 +47,8 @@ def create_app() -> FastAPI:
 
     # 라우터 등록
     app.include_router(api_router)
-
+    
+    # WebSocket 라우터 등록
+    app.include_router(websocket.router, prefix="/chat")
+    
     return app
