@@ -349,7 +349,9 @@ const MaintenanceRecords = () => {
                                 </div>
                               </div>
                               <div className="detail-item">
-                                <div className="detail-label">고유 ID</div>
+                                <div className="detail-label">
+                                  정비 대상의 고유 ID
+                                </div>
                                 <div className="detail-value">
                                   {record.item_id}
                                 </div>
@@ -544,7 +546,7 @@ const MaintenanceRecords = () => {
             />
           </div>
           <div className="form-group">
-            <label>고유 ID</label>
+            <label>정비 대상의 고유 ID</label>
             <input
               type="number"
               name="item_id"

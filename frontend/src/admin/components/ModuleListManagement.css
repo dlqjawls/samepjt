@@ -218,3 +218,35 @@
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+.module-management-list .form-group select,
+.module-management-list .edit-module-type-id {
+  width: 50%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  /* appearance: none; */
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none; */
+}
+
+/* select 요소 오른쪽에 기본 화살표 아이콘 숨길 수 있다.*/
+.module-management-list .form-group select::-ms-expand {
+  display: none;
+}
+
+/* 선택 영역에 hover 효과 */
+.module-management-list .form-group select:hover,
+.module-management-list .edit-module-type-id:hover {
+  border-color: #999;
+}
+
+/* 선택 영역 포커스 스타일 */
+.module-management-list .form-group select:focus,
+.module-management-list .edit-module-type-id:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
