@@ -1,4 +1,5 @@
 // src/admin/components/ModuleSetManagement.jsx
+// 수정 중........
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
@@ -23,6 +24,7 @@ const ModuleSetManagement = () => {
     description: "",
     module_set_images: "",
     module_set_features: "",
+    // 아래는 편집 모드에서만 사용된다.
     module_type_id: "",
     options: "[]",
   });
@@ -52,8 +54,17 @@ const ModuleSetManagement = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 모듈 타입 목록 (추가 정보 용)
+  // 모듈 타입 목록
   const [moduleTypes, setModuleTypes] = useState([]);
+  // 옵션 타입 목록
+  const [optionTypes, setOptionTypes] = useState([]);
+  // 편집 모드에서 추가할 이미지 파일
+  const [newImage, setNewImage] = useState(null);
+  // 편집 모드에서 추가할 옵션 정보
+  const [newOption, setNewOption] = useState({
+    option_type_id: "",
+    quantity: "",
+  });
 
   const rowRefs = useRef({});
 
@@ -71,6 +82,10 @@ const ModuleSetManagement = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page: filters.moduleSetPage,
+          pageSize: filters.moduleSetPageSize,
         },
       });
       if (response.data.resultCode === "SUCCESS") {
@@ -91,7 +106,7 @@ const ModuleSetManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, filters.moduleSetPage, filters.moduleSetPageSize]);
 
   useEffect(() => {
     fetchModuleSets();
@@ -120,6 +135,32 @@ const ModuleSetManagement = () => {
   useEffect(() => {
     fetchModuleTypes();
   });
+
+  // 옵션 타입 목록 조회
+  const fetchOptionTypes = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/admin/option-types?page=1&pageSize=100`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        setOptionTypes(response.data.data.option_types);
+      } else {
+        console.error("옵션 타입 목록 불러오기 실패:", response.data.message);
+      }
+    } catch (err) {
+      console.error("옵션 타입 목록 조회 중 오류:", err);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    fetchOptionTypes();
+  }, [fetchOptionTypes]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -161,10 +202,8 @@ const ModuleSetManagement = () => {
     setFormData({
       module_set_name: "",
       description: "",
-      module_set_images: "",
       module_set_features: "",
       module_type_id: "",
-      options: "[]",
     });
     setIsAddModalOpen(true);
   };
@@ -172,7 +211,6 @@ const ModuleSetManagement = () => {
 
   // 신규 모듈 세트 등록 API 호출
   const handleSubmitAdd = async () => {
-    // <!> options[].option_type_id, options[].quantity가 추가되어야 한다.
     if (!formData.module_set_name.trim() || !formData.module_type_id.trim()) {
       alert("모듈 세트 이름과 모듈 타입 아이디는 필수 항목입니다.");
       return;
@@ -190,12 +228,8 @@ const ModuleSetManagement = () => {
       const payload = {
         module_set_name: formData.module_set_name,
         description: formData.description,
-        module_set_images: formData.module_set_images
-          ? formData.module_set_images.split(",").map((s) => s.trim())
-          : [],
         module_set_features: formData.module_set_features,
         module_type_id: Number(formData.module_type_id),
-        options: optionsPayload,
       };
       const response = await axios.post(
         `${BASE_URL}/admin/module-sets`,
@@ -232,11 +266,11 @@ const ModuleSetManagement = () => {
     setFormData({
       module_set_name: moduleSet.module_set_name,
       description: moduleSet.description,
+      module_set_features: moduleSet.module_set_features,
+      module_type_id: Number(moduleSet.module_type_id),
       module_set_images: Array.isArray(moduleSet.module_set_images)
         ? moduleSet.module_set_images.join(", ")
         : moduleSet.module_set_images || "",
-      module_set_features: moduleSet.module_set_features,
-      module_type_id: Number(moduleSet.module_type_id),
       options: "[]",
     });
     setEditingModuleSetId(moduleSet.module_set_id);
@@ -258,12 +292,21 @@ const ModuleSetManagement = () => {
       const payload = {
         module_set_name: formData.module_set_name,
         description: formData.description,
-        module_set_images: formData.module_set_images
-          ? formData.module_set_images.split(",").map((s) => s.trim())
-          : [],
         module_set_features: formData.module_set_features,
         module_type_id: Number(formData.module_type_id),
       };
+      if (formData.module_set_images.trim()) {
+        payload.module_set_images = formData.module_set_images
+          .split(",")
+          .map((s) => s.trim());
+      }
+      if (formData.options.trim() && formData.options !== "[]") {
+        try {
+          payload.options = JSON.parse(formData.options);
+        } catch (e) {
+          payload.options = [];
+        }
+      }
       const response = await axios.patch(
         `${BASE_URL}/admin/module-sets/${moduleSetId}`,
         payload,
@@ -287,6 +330,117 @@ const ModuleSetManagement = () => {
       setError("모듈 세트 정보를 수정하는 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewImage(e.target.files[0]);
+    }
+  };
+
+  const handleAddImage = async (moduleSetId) => {
+    if (!newImage) {
+      alert("이미지 파일을 선택하세요.");
+      return;
+    }
+    const formDataImage = new FormData();
+    formDataImage.append("images", newImage);
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/admin/module-sets/${moduleSetId}/images`,
+        formDataImage,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        fetchModuleSets();
+        setNewImage(null);
+      } else {
+        alert(response.data.message || "이미지 추가 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("이미지 추가 중 오류 발생");
+    }
+  };
+
+  const handleDeleteImage = async (moduleSetId, imageUrl) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/admin/module-sets/${moduleSetId}/images`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          data: { image_url: imageUrl },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        fetchModuleSets();
+      } else {
+        alert(response.data.message || "이미지 삭제 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("이미지 삭제 중 오류 발생");
+    }
+  };
+
+  const handleAddOption = async (moduleSetId) => {
+    if (!newOption.option_type_id || !newOption.quantity) {
+      alert("옵션 타입과 수량을 입력하세요.");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/admin/module-sets/${moduleSetId}/options`,
+        {
+          option_type_id: Number(newOption.option_type_id),
+          quantity: Number(newOption.quantity),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        fetchModuleSets();
+        setNewOption({ option_type_id: "", quantity: "" });
+      } else {
+        alert(response.data.message || "옵션 추가 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("옵션 추가 중 오류 발생");
+    }
+  };
+
+  const handleDeleteOption = async (moduleSetId, optionTypeId) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/admin/module-sets/${moduleSetId}/options/${optionTypeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        fetchModuleSets();
+      } else {
+        alert(response.data.message || "옵션 삭제 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("옵션 삭제 중 오류 발생");
     }
   };
 
@@ -388,13 +542,13 @@ const ModuleSetManagement = () => {
                 <th>모듈 세트 이름</th>
                 <th>설명</th>
                 <th>특징</th>
-                <th>모듈 타입 ID</th>
+                <th>모듈 타입 정보</th>
                 <th>가격</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedModuleSets.length > 0 ? (
-                paginatedModuleSets.map((set) => (
+              {moduleSets.length > 0 ? (
+                moduleSets.map((set) => (
                   <React.Fragment key={set.module_set_id}>
                     <tr
                       ref={(el) => (rowRefs.current[set.module_set_id] = el)}
@@ -411,17 +565,24 @@ const ModuleSetManagement = () => {
                       </td>
                       <td>
                         <span className="cell-text">
-                          {set.description || "-"}
+                          {set.description || "설명 없음"}
                         </span>
                       </td>
                       <td>
                         <span className="cell-text">
-                          {set.module_set_features || "-"}
+                          {set.module_set_features || "특징 없음"}
                         </span>
                       </td>
                       <td>
                         <span className="cell-text">
-                          {set.module_type_id || "-"}
+                          {(() => {
+                            const mt = moduleTypes.find(
+                              (m) => m.module_type_id === set.module_type_id
+                            );
+                            return mt
+                              ? `${mt.module_type_name} (크기: ${mt.module_type_size}, ${mt.module_type_cost}원)`
+                              : set.module_type_id;
+                          })()}
                         </span>
                       </td>
                       <td>
@@ -436,6 +597,13 @@ const ModuleSetManagement = () => {
                             ref={detailInfoRef}
                           >
                             <div className="detail-info">
+                              {/* 기본 상세 정보 */}
+                              <div className="detail-item">
+                                <div className="detail-label">모듈 세트 ID</div>
+                                <div className="detail-value">
+                                  {set.module_set_id}
+                                </div>
+                              </div>
                               <div className="detail-item">
                                 <div className="detail-label">
                                   모듈 세트 이름
@@ -465,7 +633,7 @@ const ModuleSetManagement = () => {
                                   />
                                 ) : (
                                   <div className="detail-value">
-                                    {set.description}
+                                    {set.description || "설명 없음"}
                                   </div>
                                 )}
                               </div>
@@ -475,17 +643,153 @@ const ModuleSetManagement = () => {
                                 </div>
                                 <div className="detail-value">
                                   {set.module_set_images &&
-                                  Array.isArray(set.module_set_images) ? (
+                                  Array.isArray(set.module_set_images) &&
+                                  set.module_set_images.length > 0 ? (
                                     <img
                                       src={set.module_set_images[0]}
                                       alt={set.module_set_name}
                                       className="module-set-image"
                                     />
                                   ) : (
-                                    set.module_set_images || "이미지 없음"
+                                    "이미지 없음"
                                   )}
                                 </div>
+                                {editingModuleSetId === set.module_set_id && (
+                                  <div className="edit-section">
+                                    <h3>이미지 관리</h3>
+                                    <div className="image-list">
+                                      {set.module_set_images &&
+                                      Array.isArray(set.module_set_images) &&
+                                      set.module_set_images.length > 0 ? (
+                                        set.module_set_images.map(
+                                          (imgUrl, idx) => (
+                                            <div
+                                              key={idx}
+                                              className="image-item"
+                                            >
+                                              <img
+                                                src={imgUrl}
+                                                alt={`이미지 ${idx}`}
+                                                className="module-set-image-thumb"
+                                              />
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleDeleteImage(
+                                                    set.module_set_id,
+                                                    imgUrl
+                                                  );
+                                                }}
+                                              >
+                                                삭제
+                                              </button>
+                                            </div>
+                                          )
+                                        )
+                                      ) : (
+                                        <p>등록된 이미지가 없습니다.</p>
+                                      )}
+                                    </div>
+                                    <div className="add-image">
+                                      <input
+                                        type="file"
+                                        onChange={handleImageChange}
+                                      />
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAddImage(set.module_set_id);
+                                        }}
+                                      >
+                                        이미지 추가
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
+
+                              <div className="detail-item">
+                                <div className="detail-label">
+                                  모듈 세트에 포함된 옵션
+                                </div>
+                                <div className="detail-value">
+                                  <div className="option-list">
+                                    {set.module_set_option_types &&
+                                    set.module_set_option_types.length > 0 ? (
+                                      set.module_set_option_types.map((opt) => (
+                                        <div
+                                          key={opt.option_type_id}
+                                          className="option-item"
+                                        >
+                                          <span>
+                                            {opt.option_type_name} (수량:{" "}
+                                            {opt.quantity})
+                                          </span>
+                                          {editingModuleSetId ===
+                                            set.module_set_id && (
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteOption(
+                                                  set.module_set_id,
+                                                  opt.option_type_id
+                                                );
+                                              }}
+                                            >
+                                              삭제
+                                            </button>
+                                          )}
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <p>등록된 옵션이 없습니다.</p>
+                                    )}
+                                  </div>
+                                </div>
+                                {editingModuleSetId === set.module_set_id && (
+                                  <div className="add-option">
+                                    <select
+                                      value={newOption.option_type_id}
+                                      onChange={(e) =>
+                                        setNewOption((prev) => ({
+                                          ...prev,
+                                          option_type_id: e.target.value,
+                                        }))
+                                      }
+                                    >
+                                      <option value="">옵션 타입 선택</option>
+                                      {optionTypes.map((opt) => (
+                                        <option
+                                          key={opt.option_type_id}
+                                          value={opt.option_type_id}
+                                        >
+                                          {opt.option_type_name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    <input
+                                      type="number"
+                                      placeholder="수량"
+                                      value={newOption.quantity}
+                                      onChange={(e) =>
+                                        setNewOption((prev) => ({
+                                          ...prev,
+                                          quantity: e.target.value,
+                                        }))
+                                      }
+                                    />
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAddOption(set.module_set_id);
+                                      }}
+                                    >
+                                      옵션 추가
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+
                               <div className="detail-item">
                                 <div className="detail-label">특징</div>
                                 {editingModuleSetId === set.module_set_id ? (
@@ -498,33 +802,54 @@ const ModuleSetManagement = () => {
                                   />
                                 ) : (
                                   <div className="detail-value">
-                                    {set.module_set_features}
+                                    {set.module_set_features || "특징 없음"}
                                   </div>
                                 )}
                               </div>
                               <div className="detail-item">
-                                <div className="detail-label">모듈 타입 ID</div>
+                                <div className="detail-label">모듈 타입</div>
                                 {editingModuleSetId === set.module_set_id ? (
-                                  <input
-                                    type="number"
+                                  <select
                                     name="module_type_id"
                                     value={formData.module_type_id}
                                     onChange={handleFormChange}
                                     className="edit-module-type-id"
-                                  />
+                                  >
+                                    <option value="">선택하세요</option>
+                                    {moduleTypes.map((mt) => (
+                                      <option
+                                        key={mt.module_type_id}
+                                        value={mt.module_type_id}
+                                      >
+                                        {mt.module_type_name} (크기:{" "}
+                                        {mt.module_type_size},{" "}
+                                        {mt.module_type_cost}원)
+                                      </option>
+                                    ))}
+                                  </select>
                                 ) : (
                                   <div className="detail-value">
-                                    {set.module_type_id}
+                                    {(() => {
+                                      const mt = moduleTypes.find(
+                                        (m) =>
+                                          m.module_type_id ===
+                                          set.module_type_id
+                                      );
+                                      return mt
+                                        ? `${mt.module_type_name} (크기: ${mt.module_type_size}, ${mt.module_type_cost}원)`
+                                        : set.module_type_id;
+                                    })()}
                                   </div>
                                 )}
                               </div>
                               <div className="detail-item">
                                 <div className="detail-label">가격</div>
                                 <div className="detail-value">
-                                  {set.cost ? set.cost : 0}
+                                  {set.price ? set.price : 0}
                                 </div>
                               </div>
                             </div>
+
                             <div className="detail-actions">
                               {editingModuleSetId === set.module_set_id ? (
                                 <>
@@ -630,16 +955,6 @@ const ModuleSetManagement = () => {
           />
         </div>
         <div className="form-group">
-          <label>모듈 세트 이미지 (콤마로 구분)</label>
-          <input
-            type="text"
-            name="module_set_images"
-            placeholder="이미지 URL1, 이미지 URL2"
-            value={formData.module_set_images}
-            onChange={handleFormChange}
-          />
-        </div>
-        <div className="form-group">
           <label>모듈 세트 특징</label>
           <input
             type="text"
@@ -650,24 +965,21 @@ const ModuleSetManagement = () => {
           />
         </div>
         <div className="form-group">
-          <label>모듈 타입 ID</label>
-          <input
-            type="number"
+          <label>모듈 타입</label>
+          <select
             name="module_type_id"
-            placeholder="예: 1"
             value={formData.module_type_id}
             onChange={handleFormChange}
             required
-          />
-        </div>
-        <div className="form-group">
-          <label>옵션 (JSON 형식)</label>
-          <textarea
-            name="options"
-            placeholder='예: [{"option_type_id":201,"quantity":1}]'
-            value={formData.options}
-            onChange={handleFormChange}
-          />
+          >
+            <option value="">선택하세요</option>
+            {moduleTypes.map((mt) => (
+              <option key={mt.module_type_id} value={mt.module_type_id}>
+                {mt.module_type_name} ({mt.module_type_size},{" "}
+                {mt.module_type_cost})
+              </option>
+            ))}
+          </select>
         </div>
       </AddModal>
 

@@ -1,6 +1,4 @@
-src/admin/components/ModuleSetManagement.css
-
-.module-set-management {
+src/admin/components/ModuleSetManagement.css .module-set-management {
   padding: 20px;
 }
 
@@ -219,4 +217,71 @@ src/admin/components/ModuleSetManagement.css
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.module-set-management .form-group select,
+.module-set-management .edit-module-type-id {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.module-set-management .edit-section {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.module-set-management .image-list,
+.module-set-management .option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.module-set-management .image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.module-set-management .module-set-image-thumb {
+  width: 100px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.module-set-management .option-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.module-set-management .add-image,
+.module-set-management .add-option {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.module-set-management .add-image button,
+.module-set-management .add-option button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #4caf50;
+  color: #fff;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.module-set-management .add-image button:hover,
+.module-set-management .add-option button:hover {
+  background-color: #45a049;
 }

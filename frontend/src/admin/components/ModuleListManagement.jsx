@@ -319,7 +319,13 @@ const ModuleManagementList = () => {
                       </td>
                       <td>
                         <span className="cell-text">
-                          {module.item_status_name}
+                          {module.item_status_name === "active"
+                            ? "활성화"
+                            : module.item_status_name === "inactive"
+                            ? "비활성화"
+                            : module.item_status_name === "maintenance"
+                            ? "정비 중"
+                            : "알 수 없음"}
                         </span>
                       </td>
                       <td>
@@ -359,18 +365,41 @@ const ModuleManagementList = () => {
                                 </div>
                               </div>
                               <div className="detail-item">
-                                <div className="detail-label">모듈 타입 ID</div>
+                                <div className="detail-label">모듈 타입</div>
                                 {editingModuleId === module.module_id ? (
-                                  <input
-                                    type="number"
+                                  <select
                                     name="module_type_id"
                                     value={formData.module_type_id}
                                     onChange={handleFormChange}
                                     className="edit-module-type-id"
-                                  />
+                                  >
+                                    <option value="">선택하세요</option>
+                                    {moduleTypes &&
+                                      moduleTypes.map((mt) => (
+                                        <option
+                                          key={mt.module_type_id}
+                                          value={mt.module_type_id}
+                                        >
+                                          {mt.module_type_name} (크기:{" "}
+                                          {mt.module_type_size},{" "}
+                                          {mt.module_type_cost}원)
+                                        </option>
+                                      ))}
+                                  </select>
                                 ) : (
                                   <div className="detail-value">
-                                    {module.module_type_id}
+                                    {(() => {
+                                      const mt = moduleTypes
+                                        ? moduleTypes.find(
+                                            (m) =>
+                                              m.module_type_id ===
+                                              module.module_type_id
+                                          )
+                                        : null;
+                                      return mt
+                                        ? `${mt.module_type_name} (크기: ${mt.module_type_size}, ${mt.module_type_cost}원)`
+                                        : module.module_type_id;
+                                    })()}
                                   </div>
                                 )}
                               </div>
@@ -405,7 +434,13 @@ const ModuleManagementList = () => {
                               <div className="detail-item">
                                 <div className="detail-label">모듈 상태</div>
                                 <div className="detail-value">
-                                  {module.item_status_name}
+                                  {module.item_status_name === "active"
+                                    ? "활성화"
+                                    : module.item_status_name === "inactive"
+                                    ? "비활성화"
+                                    : module.item_status_name === "maintenance"
+                                    ? "정비 중"
+                                    : "알 수 없음"}
                                 </div>
                               </div>
                               <div className="detail-item">
@@ -523,22 +558,29 @@ const ModuleManagementList = () => {
           <input
             type="text"
             name="module_nfc_tag_id"
-            placeholder="예: ABC123"
+            placeholder="예: 13F5F34F10911A"
             value={formData.module_nfc_tag_id}
             onChange={handleFormChange}
             required
           />
         </div>
         <div className="form-group">
-          <label>모듈 타입 ID</label>
-          <input
-            type="number"
+          <label>모듈 타입</label>
+          <select
             name="module_type_id"
-            placeholder="예: 1"
             value={formData.module_type_id}
             onChange={handleFormChange}
             required
-          />
+          >
+            <option value="">선택하세요</option>
+            {moduleTypes &&
+              moduleTypes.map((mt) => (
+                <option key={mt.module_type_id} value={mt.module_type_id}>
+                  {mt.module_type_name} (크기: {mt.module_type_size},{" "}
+                  {mt.module_type_cost})
+                </option>
+              ))}
+          </select>
         </div>
       </AddModal>
 

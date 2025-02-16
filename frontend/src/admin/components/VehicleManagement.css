@@ -163,14 +163,13 @@
 }
 
 .vehicle-container .edit-vehicle-number {
-  width: 15%;
+  width: 5rem;
   padding: 6px;
   font-size: 14px;
   border: 1px solid #aaa;
   border-radius: 4px;
 }
 
-/* 확장된 상세정보 영역 (expanded-row) */
 .vehicle-container .expanded-row {
   background-color: #f9f9f9;
 }
@@ -210,9 +209,8 @@
   margin-bottom: 10px;
 }
 
-/* form-group 스타일 */
 .vehicle-container .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 .vehicle-container .form-group label {
   display: block;
@@ -220,9 +218,49 @@
   margin-bottom: 10px;
 }
 .vehicle-container .form-group input {
-  width: 100%;
+  width: 50%;
   padding: 8px;
-  font-size: 14px;
+  margin-bottom: 4px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+/* 입력폼 내 검증 피드백 공통 스타일 */
+.vehicle-container .form-group .validation-feedback {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 14px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.vehicle-container .form-group .validation-feedback.grey {
+  color: #9e9e9e;
+}
+
+.vehicle-container .form-group .validation-feedback.green {
+  color: #4caf50;
+}
+
+.vehicle-container .form-group .validation-feedback.red {
+  color: #f44336;
+}
+
+.vehicle-container .form-group .validation-feedback .icon {
+  font-size: 14px;
+  cursor: default;
+  margin-left: 0;
+}
+
+.vehicle-container .form-group .validation-feedback.grey .icon {
+  color: #9e9e9e;
+}
+.vehicle-container .form-group .validation-feedback.green .icon {
+  color: #4caf50;
+}
+.vehicle-container .form-group .validation-feedback.red .icon {
+  color: #f44336;
 }

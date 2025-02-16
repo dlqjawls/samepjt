@@ -50,6 +50,9 @@ function OptionTypeManagement() {
   const rowRefs = useRef({});
   const detailInfoRef = useRef(null);
 
+  // 새 이미지 파일 상태 (편집 모드에서 이미지 추가 시 사용)
+  const [newOptionImage, setNewOptionImage] = useState(null);
+
   // 옵션 타입 목록 조회 API 호출
   const fetchOptionTypes = async () => {
     setLoading(true);
@@ -118,7 +121,6 @@ function OptionTypeManagement() {
       option_type_size: "",
       option_type_cost: "",
       description: "",
-      option_type_images: "",
       option_type_features: "",
     });
     setIsAddModalOpen(true);
@@ -142,9 +144,6 @@ function OptionTypeManagement() {
         option_type_size: formData.option_type_size,
         option_type_cost: Number(formData.option_type_cost),
         description: formData.description,
-        option_type_images: formData.option_type_images
-          ? formData.option_type_images.split(",").map((url) => url.trim())
-          : [],
         option_type_features: formData.option_type_features,
       };
       const response = await axios.post(
@@ -270,6 +269,65 @@ function OptionTypeManagement() {
     }
   };
 
+  const handleOptionImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewOptionImage(e.target.files[0]);
+    }
+  };
+
+  const handleAddOptionTypeImage = async (optionTypeId) => {
+    if (!newOptionImage) {
+      alert("이미지 파일을 선택하세요.");
+      return;
+    }
+    const formDataImage = new FormData();
+    formDataImage.append("images", newOptionImage);
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/admin/option-types/${optionTypeId}/images`,
+        formDataImage,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        await fetchOptionTypes();
+        setNewOptionImage(null);
+      } else {
+        alert(response.data.message || "옵션 타입 이미지 추가 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("옵션 타입 이미지 추가 중 오류 발생");
+    }
+  };
+
+  const handleDeleteOptionTypeImage = async (optionTypeId, imageUrl) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/admin/option-types/${optionTypeId}/images`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+          data: { image_url: imageUrl },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        await fetchOptionTypes();
+      } else {
+        alert(response.data.message || "옵션 타입 이미지 삭제 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("옵션 타입 이미지 삭제 중 오류 발생");
+    }
+  };
+
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
@@ -297,7 +355,6 @@ function OptionTypeManagement() {
                 <th>옵션 타입 크기</th>
                 <th>옵션 기본 가격</th>
                 <th>설명</th>
-                <th>이미지 URL</th>
                 <th>주요 기능</th>
                 <th>등록 일자</th>
                 <th>수정 일자</th>
@@ -330,11 +387,6 @@ function OptionTypeManagement() {
                       </td>
                       <td>
                         <span className="cell-text">{ot.description}</span>
-                      </td>
-                      <td>
-                        <span className="cell-text">
-                          {ot.option_type_images}
-                        </span>
                       </td>
                       <td>
                         <span className="cell-text">
@@ -438,20 +490,59 @@ function OptionTypeManagement() {
                                 )}
                               </div>
                               <div className="detail-item">
-                                <div className="detail-label">이미지 URL</div>
-                                {editingOptionTypeId === ot.option_type_id ? (
-                                  <input
-                                    type="text"
-                                    name="option_type_images"
-                                    value={formData.option_type_images}
-                                    onChange={handleFormChange}
-                                    className="edit-input"
-                                  />
-                                ) : (
-                                  <div className="detail-value">
-                                    {ot.option_type_images}
-                                  </div>
-                                )}
+                                <div className="detail-label">
+                                  옵션 타입 이미지
+                                </div>
+                                <div className="detail-value">
+                                  {ot.option_type_images &&
+                                  Array.isArray(ot.option_type_images) &&
+                                  ot.option_type_images.length > 0
+                                    ? ot.option_type_images.map(
+                                        (imgUrl, idx) => (
+                                          <div key={idx} className="image-item">
+                                            <img
+                                              src={imgUrl}
+                                              alt={`옵션 이미지 ${idx}`}
+                                              className="option-type-image-thumb"
+                                            />
+                                            {editingOptionTypeId ===
+                                              ot.option_type_id && (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleDeleteOptionTypeImage(
+                                                    ot.option_type_id,
+                                                    imgUrl
+                                                  );
+                                                }}
+                                              >
+                                                삭제
+                                              </button>
+                                            )}
+                                          </div>
+                                        )
+                                      )
+                                    : "이미지 없음"}
+                                  {editingOptionTypeId ===
+                                    ot.option_type_id && (
+                                    <div className="add-image">
+                                      <input
+                                        type="file"
+                                        onChange={handleOptionImageChange}
+                                      />
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAddOptionTypeImage(
+                                            ot.option_type_id
+                                          );
+                                        }}
+                                      >
+                                        이미지 추가
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                               <div className="detail-item">
                                 <div className="detail-label">주요 기능</div>
@@ -468,6 +559,30 @@ function OptionTypeManagement() {
                                     {ot.option_type_features}
                                   </div>
                                 )}
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">등록 일시</div>
+                                <div className="detail-value">
+                                  {ot.created_at}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">등록자</div>
+                                <div className="detail-value">
+                                  {ot.created_by}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">수정 일시</div>
+                                <div className="detail-value">
+                                  {ot.updated_at}
+                                </div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="detail-label">수정자</div>
+                                <div className="detail-value">
+                                  {ot.updated_by}
+                                </div>
                               </div>
                             </div>
                             <div className="detail-actions">
@@ -592,16 +707,6 @@ function OptionTypeManagement() {
             name="description"
             placeholder="옵션 타입에 대한 설명"
             value={formData.description}
-            onChange={handleFormChange}
-          />
-        </div>
-        <div className="form-group">
-          <label>이미지 URL 목록 (콤마로 구분)</label>
-          <input
-            type="text"
-            name="option_type_images"
-            placeholder="URL1, URL2"
-            value={formData.option_type_images}
             onChange={handleFormChange}
           />
         </div>

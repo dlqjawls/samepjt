@@ -45,6 +45,9 @@ function Option() {
   const rowRefs = useRef({});
   const detailInfoRef = useRef(null);
 
+  // 옵션 타입 목록
+  const [optionTypes, setOptionTypes] = useState([]);
+
   // 필터 상태 (검색어와 상태)
   const [filters, setFilters] = useState({
     search: "",
@@ -91,6 +94,32 @@ function Option() {
     fetchOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+
+  // 옵션 타입 목록 조회
+  const fetchOptionTypes = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/admin/option-types?page=1&pageSize=100`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.resultCode === "SUCCESS") {
+        setOptionTypes(response.data.data.option_types);
+      } else {
+        console.error("옵션 타입 목록 불러오기 실패:", response.data.message);
+      }
+    } catch (err) {
+      console.error("옵션 타입 목록 조회 중 오류:", err);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    fetchOptionTypes();
+  }, [fetchOptionTypes]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -262,7 +291,7 @@ function Option() {
                 <th>옵션 타입 ID</th>
                 <th>상태</th>
                 <th>마지막 정비 일자</th>
-                <th>예정된 다음 정비 일자</th>
+                <th>다음 정비 일자</th>
                 <th>등록 일자</th>
                 <th>수정 일자</th>
               </tr>
@@ -289,7 +318,15 @@ function Option() {
                         </span>
                       </td>
                       <td>
-                        <span className="cell-text">{option.status}</span>
+                        <span className="cell-text">
+                          {option.item_status_name === "active"
+                            ? "활성화"
+                            : option.item_status_name === "inactive"
+                            ? "비활성화"
+                            : option.item_status_name === "maintenance"
+                            ? "정비 중"
+                            : "알 수 없음"}
+                        </span>
                       </td>
                       <td>
                         <span className="cell-text">
@@ -297,7 +334,7 @@ function Option() {
                             ? new Date(
                                 option.last_maintenance_at
                               ).toLocaleString()
-                            : "-"}
+                            : "미정"}
                         </span>
                       </td>
                       <td>
@@ -306,7 +343,7 @@ function Option() {
                             ? new Date(
                                 option.next_maintenance_at
                               ).toLocaleString()
-                            : "-"}
+                            : "미정"}
                         </span>
                       </td>
                       <td>
@@ -353,7 +390,13 @@ function Option() {
                               <div className="detail-item">
                                 <div className="detail-label">상태</div>
                                 <div className="detail-value">
-                                  {option.item_status_name}
+                                  {option.item_status_name === "active"
+                                    ? "활성화"
+                                    : option.item_status_name === "inactive"
+                                    ? "비활성화"
+                                    : option.item_status_name === "maintenance"
+                                    ? "정비 중"
+                                    : "알 수 없음"}
                                 </div>
                               </div>
                               <div className="detail-item">
@@ -412,7 +455,7 @@ function Option() {
                                     className="detail-save-button"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      handleSubmitEdit(option.option_id);
+                                      // handleSubmitEdit(option.option_id);
                                     }}
                                   >
                                     저장
@@ -489,14 +532,21 @@ function Option() {
         title="신규 옵션 등록"
       >
         <div className="form-group">
-          <label>옵션 타입 ID</label>
-          <input
-            type="number"
+          <label>옵션 타입</label>
+          <select
             name="option_type_id"
             value={formData.option_type_id}
             onChange={handleFormChange}
             required
-          />
+          >
+            <option value="">옵션 타입 선택</option>
+            {optionTypes &&
+              optionTypes.map((opt) => (
+                <option key={opt.option_type_id} value={opt.option_type_id}>
+                  {opt.option_type_name}
+                </option>
+              ))}
+          </select>
         </div>
       </AddModal>
 

@@ -6,6 +6,7 @@ import AddModal from "./AddModal";
 import DeleteModal from "./DeleteModal";
 import "./VehicleManagement.css";
 import { MdEdit, MdDelete } from "react-icons/md";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
 
 const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
@@ -96,6 +97,8 @@ function VehicleManagement() {
   // 폼 입력 변경 핸들러
   const handleFormChange = (e) => {
     const { name, value } = e.target;
+    // 대문자로 변환 (VIN 같은 경우)
+    const newValue = name === "vin" ? value.toUpperCase() : value;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -120,6 +123,18 @@ function VehicleManagement() {
     setIsAddModalOpen(true);
   };
   const closeAddModal = () => setIsAddModalOpen(false);
+
+  // 차량번호 형식 검증 함수: 예시로 "PBV-1234" 형식
+  const validateVehicleNumber = (vehicle_number) => {
+    const vehicleNumberRegex = /^PBV-\d{4}$/;
+    return vehicleNumberRegex.test(vehicle_number);
+  };
+
+  // VIN 형식 검증 함수: 예시로 15자리의 영문 대문자와 숫자 (예: "ABC123456789XYZ")
+  const validateVin = (vin) => {
+    const vinRegex = /^[A-Z0-9]{15}$/;
+    return vinRegex.test(vin);
+  };
 
   // 신규 등록 API 호출
   const handleSubmitAdd = async () => {
@@ -290,7 +305,13 @@ function VehicleManagement() {
                       </td>
                       <td>
                         <span className="cell-text">
-                          {vehicle.item_status_name}
+                          {vehicle.item_status_name === "active"
+                            ? "활성화"
+                            : vehicle.item_status_name === "inactive"
+                            ? "비활성화"
+                            : vehicle.item_status_name === "maintenance"
+                            ? "정비 중"
+                            : "알 수 없음"}
                         </span>
                       </td>
                       <td>
@@ -349,7 +370,13 @@ function VehicleManagement() {
                               <div className="detail-item">
                                 <div className="detail-label">상태</div>
                                 <div className="detail-value">
-                                  {vehicle.item_status_name}
+                                  {vehicle.item_status_name === "active"
+                                    ? "활성화"
+                                    : vehicle.item_status_name === "inactive"
+                                    ? "비활성화"
+                                    : vehicle.item_status_name === "maintenance"
+                                    ? "정비 중"
+                                    : "알 수 없음"}
                                 </div>
                               </div>
                               <div className="detail-item">
@@ -498,6 +525,23 @@ function VehicleManagement() {
             onChange={handleFormChange}
             required
           />
+          {/* 차량번호 입력 검증 아이콘 및 설명 */}
+          {formData.vehicle_number === "" ? (
+            <div className="validation-feedback grey">
+              <FaCheckCircle className="icon" />
+              <span>PBV-0000 형식</span>
+            </div>
+          ) : validateVehicleNumber(formData.vehicle_number) ? (
+            <div className="validation-feedback green">
+              <FaCheckCircle className="icon" />
+              <span>PBV-0000 형식</span>
+            </div>
+          ) : (
+            <div className="validation-feedback red">
+              <FaTimesCircle className="icon" />
+              <span>PBV-0000 형식</span>
+            </div>
+          )}
         </div>
         <div className="form-group">
           <label>차대번호 (VIN)</label>
@@ -509,6 +553,23 @@ function VehicleManagement() {
             onChange={handleFormChange}
             required
           />
+          {/* VIN 입력 검증 아이콘 및 설명 */}
+          {formData.vin === "" ? (
+            <div className="validation-feedback grey">
+              <FaCheckCircle className="icon" />
+              <span>15자리의 대문자와 숫자로 구성</span>
+            </div>
+          ) : validateVin(formData.vin) ? (
+            <div className="validation-feedback green">
+              <FaCheckCircle className="icon" />
+              <span>15자리의 대문자와 숫자로 구성</span>
+            </div>
+          ) : (
+            <div className="validation-feedback red">
+              <FaTimesCircle className="icon" />
+              <span>15자리의 대문자와 숫자로 구성</span>
+            </div>
+          )}
         </div>
       </AddModal>
 

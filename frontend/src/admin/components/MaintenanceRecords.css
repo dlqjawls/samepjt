@@ -217,3 +217,29 @@
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+.maintenance-records .form-group select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  /* appearance: none; */
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none; */
+}
+
+.maintenance-records .form-group select::-ms-expand {
+  display: none;
+}
+
+.maintenance-records .form-group select:hover {
+  border-color: #999;
+}
+
+.maintenance-records .form-group select:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
