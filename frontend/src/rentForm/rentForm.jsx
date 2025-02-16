@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import "./rentForm.css"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
@@ -7,6 +7,10 @@ const RentForm = () => {
   const [rentStartDate, setRentStartDate] = useState("")
   const [rentEndDate, setRentEndDate] = useState("")
   const [error, setError] = useState("")
+  const [startLocation, setStartLocation] = useState(null)
+  const [endLocation, setEndLocation] = useState(null)
+  const mapRef = useRef(null)
+  const kakaoMap = useRef(null)
   const navigate = useNavigate()
 
   // 날짜 포맷팅 함수
@@ -19,25 +23,85 @@ const RentForm = () => {
     return `${year}-${month}-${day}T${hours}:${minutes}:00`
   }
 
-  // 초기 시간 설정 (현재 시간 + 5분)
+  // 초기 시간 설정
   const setInitialDates = () => {
     const now = new Date()
     now.setMinutes(now.getMinutes() + 5)
-    const formattedStartDate = formatDate(now)
-    setRentStartDate(formattedStartDate)
+    setRentStartDate(formatDate(now))
 
-    // 반납 시간 설정 (시작 시간 + 6시간)
     const endDate = new Date(now)
     endDate.setHours(endDate.getHours() + 6)
-    const formattedEndDate = formatDate(endDate)
-    setRentEndDate(formattedEndDate)
+    setRentEndDate(formatDate(endDate))
   }
 
   useEffect(() => {
+    const container = mapRef.current
+    const options = {
+      center: new window.kakao.maps.LatLng(35.20531681938283, 126.81157398442527),
+      level: 3,
+    }
+
+    const map = new window.kakao.maps.Map(container, options)
+    kakaoMap.current = map
+
+    // 마커 이미지 설정
+    const startMarkerImage = new window.kakao.maps.MarkerImage("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png", new window.kakao.maps.Size(50, 45), {
+      offset: new window.kakao.maps.Point(15, 43),
+    })
+
+    const endMarkerImage = new window.kakao.maps.MarkerImage("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png", new window.kakao.maps.Size(50, 45), {
+      offset: new window.kakao.maps.Point(15, 43),
+    })
+
+    // 고정 출발 지점 마커 생성
+    const startMarker = new window.kakao.maps.Marker({
+      position: options.center,
+      map: map,
+      image: startMarkerImage,
+      title: "출발지",
+    })
+    setStartLocation({ marker: startMarker, latlng: options.center })
+
+    // 도착지점 선택 이벤트
+    const handleMapClick = (mouseEvent) => {
+      const latlng = mouseEvent.latLng
+
+      // 기존 도착 마커 제거
+      if (endLocation && endLocation.marker) {
+        endLocation.marker.setMap(null)
+      }
+
+      // 새로운 도착 마커 생성
+      const marker = new window.kakao.maps.Marker({
+        position: latlng,
+        map: map,
+        image: endMarkerImage,
+        title: "도착지",
+      })
+
+      setEndLocation({ marker, latlng })
+    }
+
+    const clickListener = window.kakao.maps.event.addListener(map, "click", handleMapClick)
+
     setInitialDates()
+
+    // cleanup
+    return () => {
+      window.kakao.maps.event.removeListener(clickListener)
+      if (endLocation && endLocation.marker) {
+        endLocation.marker.setMap(null)
+      }
+    }
   }, [])
 
+  // 날짜 유효성 검사
   const validateDates = () => {
+    if (!endLocation) {
+      setError("도착 위치를 선택해주세요.")
+      return false
+    }
+
     const start = new Date(rentStartDate)
     const end = new Date(rentEndDate)
     const now = new Date()
@@ -67,12 +131,18 @@ const RentForm = () => {
     setError("")
     return true
   }
-
+  const preview = () => {
+    const selectedOptionData = JSON.parse(sessionStorage.getItem("selectedOptionData") || "{}")
+    navigate("/option_select", {
+      state: {
+        existingOptions: selectedOptionData.selectedOptions || [],
+      },
+    })
+  }
   const handleStartDateChange = (e) => {
     const startDate = new Date(e.target.value)
     setRentStartDate(formatDate(startDate))
-    
-    // 시작 시간 변경 시 반납 시간도 자동으로 +6시간 설정
+
     const endDate = new Date(startDate)
     endDate.setHours(endDate.getHours() + 6)
     setRentEndDate(formatDate(endDate))
@@ -97,47 +167,58 @@ const RentForm = () => {
       try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/rent/calculate-duration-cost`, {
           rentStartDate: rentStartDate,
-          rentEndDate: rentEndDate
-        });
-  
-        if (response.data.resultCode === 'SUCCESS') {
+          rentEndDate: rentEndDate,
+          startLocation: {
+            lat: startLocation.latlng.getLat(),
+            lng: startLocation.latlng.getLng(),
+          },
+          endLocation: {
+            lat: endLocation.latlng.getLat(),
+            lng: endLocation.latlng.getLng(),
+          },
+        })
+
+        if (response.data.resultCode === "SUCCESS") {
           sessionStorage.setItem(
-            "rentDates",
+            "rentInfo",
             JSON.stringify({
               startDate: rentStartDate,
               endDate: rentEndDate,
+              startLocation: {
+                lat: startLocation.latlng.getLat(),
+                lng: startLocation.latlng.getLng(),
+              },
+              endLocation: {
+                lat: endLocation.latlng.getLat(),
+                lng: endLocation.latlng.getLng(),
+              },
             })
-          );
-          sessionStorage.setItem("date_Cost", response.data.data.cost);
-          navigate("/total_reciept");
+          )
+          sessionStorage.setItem("date_Cost", response.data.data.cost)
+          navigate("/total_reciept")
         } else {
-          setError('비용 계산 중 오류가 발생했습니다.');
+          setError("비용 계산 중 오류가 발생했습니다.")
         }
       } catch (error) {
-        console.error('API 호출 중 오류:', error);
-        setError('비용 계산 중 오류가 발생했습니다. 다시 시도해주세요.');
+        console.error("API 호출 중 오류:", error)
+        setError("비용 계산 중 오류가 발생했습니다. 다시 시도해주세요.")
       }
     }
   }
 
-  const preview = () => {
-    const selectedOptionData = JSON.parse(sessionStorage.getItem("selectedOptionData") || "{}")
-    navigate("/option_select", {
-      state: {
-        existingOptions: selectedOptionData.selectedOptions || [],
-      },
-    })
-  }
-
   const handleReset = () => {
-    setInitialDates() // 현재 시간 기준으로 초기화
+    if (endLocation && endLocation.marker) {
+      endLocation.marker.setMap(null)
+      setEndLocation(null)
+    }
+    setInitialDates()
     setError("")
   }
 
   return (
     <div className="rent-form-wrapper-unique">
       <div className="map-container-unique">
-        <img src="map.png" alt="지도 이미지" className="map-image-unique" />
+        <div ref={mapRef} style={{ width: "100%", height: "400px" }} />
       </div>
 
       <div className="form-container-unique">
@@ -146,27 +227,36 @@ const RentForm = () => {
           {error && <div className="error-message-unique">{error}</div>}
 
           <form>
+            <div className="form-group-unique location-group">
+              <h4>선택된 위치</h4>
+              {startLocation && (
+                <div className="location-info-form start">
+                  <span>📍 출발지:</span>
+                  <p>
+                    {startLocation.latlng.getLat().toFixed(6)}, {startLocation.latlng.getLng().toFixed(6)}
+                  </p>
+                </div>
+              )}
+              {endLocation ? (
+                <div className="location-info-form end">
+                  <span>🏁 도착지:</span>
+                  <p>
+                    {endLocation.latlng.getLat().toFixed(6)}, {endLocation.latlng.getLng().toFixed(6)}
+                  </p>
+                </div>
+              ) : (
+                <p className="location-warning">도착 위치를 지도에서 선택해주세요</p>
+              )}
+            </div>
+
             <div className="form-group-unique">
               <label htmlFor="rentStartDate">대여 시작일시</label>
-              <input 
-                type="datetime-local" 
-                id="rentStartDate" 
-                value={rentStartDate} 
-                onChange={handleStartDateChange} 
-                className="form-input-unique" 
-              />
+              <input type="datetime-local" id="rentStartDate" value={rentStartDate} onChange={handleStartDateChange} className="form-input-unique" />
             </div>
 
             <div className="form-group-unique">
               <label htmlFor="rentEndDate">반납 일시</label>
-              <input
-                type="datetime-local"
-                id="rentEndDate"
-                value={rentEndDate}
-                onChange={handleEndDateChange}
-                className="form-input-unique"
-                min={rentStartDate}
-              />
+              <input type="datetime-local" id="rentEndDate" value={rentEndDate} onChange={handleEndDateChange} className="form-input-unique" min={rentStartDate} />
             </div>
           </form>
         </div>

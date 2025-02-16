@@ -1,8 +1,8 @@
 /* 전체 레이아웃 */
 .rent-form-wrapper-unique {
   display: flex;
-  flex-direction: row; /* 왼쪽에 지도, 오른쪽에 폼 */
-  height: 100vh; /* 화면 전체 높이 */
+  flex-direction: row;
+  min-height: 100vh;
   padding: 20px;
   gap: 20px;
   box-sizing: border-box;
@@ -10,9 +10,17 @@
 
 /* 지도 컨테이너 */
 .map-container-unique {
-  flex: 2; /* 지도 영역이 더 크게 보이도록 설정 */
+  flex: 1;
+  max-width: 800px;
+  height: fit-content;
+  margin: 0 auto;
 }
-
+.location-info {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
 .map-image-unique {
   width: 100%;
   height: 100%;
@@ -91,6 +99,92 @@
 
 .next-button-unique:hover {
   background-color: gray;
+}
+.location-group {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.location-group h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.location-info-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.location-info-form span {
+  font-weight: bold;
+}
+
+.location-info-form.start {
+  color: #e74c3c;
+}
+
+.location-info-form.end {
+  color: #3498db;
+}
+
+.location-warning {
+  color: #e74c3c;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.location-info-form p {
+  margin: 0;
+  font-family: monospace;
+}
+@media (max-width: 768px) {
+  .rent-form-wrapper-unique {
+    flex-direction: column;
+    padding: 10px;
+    height: auto;
+    gap: 10px;
+  }
+
+  .map-container-unique {
+    width: 100%;
+    height: 300px; /* 모바일에서 지도 높이 고정 */
+    margin-bottom: 10px;
+  }
+
+  /* 지도 내부 div 크기 조절 */
+  .map-container-unique > div {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .form-container-unique {
+    width: 100%;
+    margin: 0;
+    padding: 15px;
+  }
+
+  .location-info {
+    margin-top: 5px;
+    font-size: 14px;
+  }
+}
+
+/* 더 작은 화면 대응 */
+@media (max-width: 480px) {
+  .map-container-unique {
+    height: 250px;
+  }
+
+  .form-container-unique {
+    padding: 10px;
+  }
 }
 
 @media (max-width: 768px) {
