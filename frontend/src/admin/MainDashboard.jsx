@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DashboardCard from "./DashboardCard";
 import "./MainDashboard.css";
 import {
@@ -16,85 +16,136 @@ import {
   Line,
   ResponsiveContainer,
 } from "recharts";
+import axios from "axios";
 
 function MainDashboard() {
-  // Dummy Data
-  const dummyData = {
-    stats: {
-      todayRentals: 64,
-      ongoingRentals: 32,
-      dueReturns: 16,
-      todayReturns: 8,
-    },
-    salesChartData: [
-      { date: "2025-01-01", sales: 100 },
-      { date: "2025-01-02", sales: 120 },
-      { date: "2025-01-03", sales: 90 },
-      { date: "2025-01-04", sales: 150 },
-      { date: "2025-01-05", sales: 200 },
-      { date: "2025-01-06", sales: 170 },
-      { date: "2025-01-07", sales: 130 },
-    ],
-    maintenanceData: [
-      { month: "Jan", cost: 500 },
-      { month: "Feb", cost: 700 },
-      { month: "Mar", cost: 400 },
-      { month: "Apr", cost: 900 },
-      { month: "May", cost: 600 },
-      { month: "Jun", cost: 800 },
-    ],
-    moduleOptionPopularityData: [
-      { name: "Module A", count: 120 },
-      { name: "Module B", count: 90 },
-      { name: "Module C", count: 150 },
-      { name: "Option X", count: 200 },
-      { name: "Option Y", count: 110 },
-    ],
-    vehiclesStatusData: [
-      { name: "Active", value: 80 },
-      { name: "Inactive", value: 10 },
-      { name: "Maintenance", value: 10 },
-    ],
-    modulesStatusData: [
-      { name: "Active", value: 50 },
-      { name: "Inactive", value: 20 },
-      { name: "Maintenance", value: 30 },
-    ],
-    optionsStatusData: [
-      { name: "Active", value: 70 },
-      { name: "Inactive", value: 15 },
-      { name: "Maintenance", value: 15 },
-    ],
-  };
+  const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
+  const token = localStorage.getItem("adminToken");
 
-  // 색상 배열 (PieChart용)
+  const [todayRented, setTodayRented] = useState(0);
+  const [currentlyRenting, setCurrentlyRenting] = useState(0);
+  const [todayExpectedReturn, setTodayExpectedReturn] = useState(0);
+  const [todayReturned, setTodayReturned] = useState(0);
+
+  const [vehiclesStatusData, setVehiclesStatusData] = useState([]);
+  const [modulesStatusData, setModulesStatusData] = useState([]);
+  const [optionsStatusData, setOptionsStatusData] = useState([]);
+
+  const [rentalCounts, setRentalCounts] = useState([]);
+  const [maintenanceCosts, setMaintenanceCosts] = useState([]);
+
+  // PieChart용 색상 배열
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
+
+  useEffect(() => {
+    const fetchVehicleStats = async () => {
+      try {
+        const [
+          todayRentedRes,
+          currentlyRentingRes,
+          expectedReturnRes,
+          todayReturnedRes,
+        ] = await Promise.all([
+          axios.get(`${BASE_URL}/admin/dashboard/vehicles/today-rented-count`, {
+            headers: { Authorization: token ? `Bearer ${token}` : undefined },
+          }),
+          axios.get(
+            `${BASE_URL}/admin/dashboard/vehicles/currently-renting-count`,
+            {
+              headers: { Authorization: token ? `Bearer ${token}` : undefined },
+            }
+          ),
+          axios.get(
+            `${BASE_URL}/admin/dashboard/vehicles/today-expected-return-count`,
+            {
+              headers: { Authorization: token ? `Bearer ${token}` : undefined },
+            }
+          ),
+          // 지금은 오늘 반납된 차량 수 API가 없으므로 비워둠
+          Promise.resolve({ data: { data: 0 } }),
+        ]);
+        setTodayRented(todayRentedRes.data.data);
+        setCurrentlyRenting(currentlyRentingRes.data.data);
+        setTodayExpectedReturn(expectedReturnRes.data.data);
+        setTodayReturned(todayReturnedRes.data.data);
+      } catch (error) {
+        console.error("차량 통계 조회 오류:", error);
+      }
+    };
+
+    const fetchStatusCharts = async () => {
+      try {
+        const vehiclesRes = await axios.get(
+          `${BASE_URL}/admin/dashboard/vehicles/state-chart`,
+          {
+            headers: { Authorization: token ? `Bearer ${token}` : undefined },
+          }
+        );
+        const modulesRes = await axios.get(
+          `${BASE_URL}/admin/dashboard/modules/state-chart`,
+          {
+            headers: { Authorization: token ? `Bearer ${token}` : undefined },
+          }
+        );
+        const optionsRes = await axios.get(
+          `${BASE_URL}/admin/dashboard/options/state-chart`,
+          {
+            headers: { Authorization: token ? `Bearer ${token}` : undefined },
+          }
+        );
+        setVehiclesStatusData(vehiclesRes.data.data);
+        setModulesStatusData(modulesRes.data.data);
+        setOptionsStatusData(optionsRes.data.data);
+      } catch (error) {
+        console.error("상태 차트 데이터 조회 오류:", error);
+      }
+    };
+
+    const fetchRentalCounts = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/dashboard/sales/rental-counts`,
+          {
+            headers: { Authorization: token ? `Bearer ${token}` : undefined },
+          }
+        );
+        setRentalCounts(response.data.data);
+      } catch (error) {
+        console.error("월별 대여 건수 조회 오류:", error);
+      }
+    };
+
+    const fetchMaintenanceCosts = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/dashboard/sales/maintenance-cost`,
+          {
+            headers: { Authorization: token ? `Bearer ${token}` : undefined },
+          }
+        );
+        setMaintenanceCosts(response.data.data);
+      } catch (error) {
+        console.error("월별 정비 비용 조회 오류:", error);
+      }
+    };
+
+    fetchVehicleStats();
+    fetchStatusCharts();
+    fetchRentalCounts();
+    fetchMaintenanceCosts();
+  }, [token]);
 
   return (
     <div className="main-dashboard">
       <h1>대시보드</h1>
 
-      {/* 1. Stats Cards */}
       <div className="dashboard-grid">
-        <DashboardCard
-          title="오늘 대여된 차량"
-          value={dummyData.stats.todayRentals}
-        />
-        <DashboardCard
-          title="대여 중인 차량"
-          value={dummyData.stats.ongoingRentals}
-        />
-        <DashboardCard
-          title="오늘 반납될 차량"
-          value={dummyData.stats.dueReturns}
-        />
-        <DashboardCard
-          title="오늘 반납된 차량"
-          value={dummyData.stats.todayReturns}
-        />
+        <DashboardCard title="오늘 대여된 차량" value={todayRented} />
+        <DashboardCard title="대여 중인 차량" value={currentlyRenting} />
+        <DashboardCard title="오늘 반납될 차량" value={todayExpectedReturn} />
+        <DashboardCard title="오늘 반납된 차량" value={todayReturned} />
       </div>
 
-      {/* 2. Fleet Utilization & 상태 분포 */}
       <div className="section">
         <h2>상태 차트</h2>
         <div className="fleet-utilization">
@@ -102,89 +153,143 @@ function MainDashboard() {
             <h4>차량</h4>
             <PieChart width={250} height={250}>
               <Pie
-                data={dummyData.vehiclesStatusData}
+                data={vehiclesStatusData}
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
                 fill="#8884d8"
-                dataKey="value"
+                dataKey="count"
                 label
               >
-                {dummyData.vehiclesStatusData.map((entry, index) => (
+                {vehiclesStatusData.map((entry, index) => (
                   <Cell
                     key={`cell-veh-${index}`}
                     fill={COLORS[index % COLORS.length]}
                   />
                 ))}
               </Pie>
-              <Tooltip />
-              <Legend />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="custom-tooltip">
+                        <p>{`${payload[0].payload.state}: ${payload[0].value}`}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Legend
+                payload={vehiclesStatusData.map((entry, index) => ({
+                  id: entry.state,
+                  value: entry.state,
+                  type: "square",
+                  color: COLORS[index % COLORS.length],
+                }))}
+              />
             </PieChart>
           </div>
           <div className="pie-chart-container">
             <h4>모듈</h4>
             <PieChart width={250} height={250}>
               <Pie
-                data={dummyData.modulesStatusData}
+                data={modulesStatusData}
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
                 fill="#8884d8"
-                dataKey="value"
+                dataKey="count"
                 label
               >
-                {dummyData.modulesStatusData.map((entry, index) => (
+                {modulesStatusData.map((entry, index) => (
                   <Cell
                     key={`cell-mod-${index}`}
                     fill={COLORS[index % COLORS.length]}
                   />
                 ))}
               </Pie>
-              <Tooltip />
-              <Legend />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="custom-tooltip">
+                        <p>{`${payload[0].payload.state}: ${payload[0].value}`}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Legend
+                payload={modulesStatusData.map((entry, index) => ({
+                  id: entry.state,
+                  value: entry.state,
+                  type: "square",
+                  color: COLORS[index % COLORS.length],
+                }))}
+              />
             </PieChart>
           </div>
           <div className="pie-chart-container">
             <h4>옵션</h4>
             <PieChart width={250} height={250}>
               <Pie
-                data={dummyData.optionsStatusData}
+                data={optionsStatusData}
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
                 fill="#8884d8"
-                dataKey="value"
+                dataKey="count"
                 label
               >
-                {dummyData.optionsStatusData.map((entry, index) => (
+                {optionsStatusData.map((entry, index) => (
                   <Cell
                     key={`cell-opt-${index}`}
                     fill={COLORS[index % COLORS.length]}
                   />
                 ))}
               </Pie>
-              <Tooltip />
-              <Legend />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="custom-tooltip">
+                        <p>{`${payload[0].payload.state}: ${payload[0].value}`}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Legend
+                payload={optionsStatusData.map((entry, index) => ({
+                  id: entry.state,
+                  value: entry.state,
+                  type: "square",
+                  color: COLORS[index % COLORS.length],
+                }))}
+              />
             </PieChart>
           </div>
         </div>
       </div>
-      {/* 3. Sales Statistics */}
+
       <div className="section">
         <h2>판매 통계</h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
-            data={dummyData.salesChartData}
+            data={rentalCounts}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
+            <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
             <Legend />
             <Line
               type="monotone"
-              dataKey="sales"
+              dataKey="count"
               stroke="#239edb"
               activeDot={{ r: 8 }}
             />
@@ -193,12 +298,11 @@ function MainDashboard() {
       </div>
 
       <div className="section-container">
-        {/* 4. Maintenance History & Cost Analysis */}
         <div className="section">
           <h2>정비 비용 그래프</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
-              data={dummyData.maintenanceData}
+              data={maintenanceCosts}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -211,23 +315,22 @@ function MainDashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* 5. Module & Option Popularity */}
-        <div className="section">
-          <h2>모듈 및 옵션 선호도</h2>
+        {/* <div className="section">
+          <h2>옵션 선호도</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
-              data={dummyData.moduleOptionPopularityData}
+              data={dummySalesChartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="count" fill="#8884d8" />
+              <Bar dataKey="sales" fill="#8884d8" />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </div> */}
       </div>
     </div>
   );
