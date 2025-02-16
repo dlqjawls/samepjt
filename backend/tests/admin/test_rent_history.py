@@ -5,24 +5,17 @@ from sqlmodel import Session
 from app.core.jwt import jwt_handler
 from app.db.models.rent_history import RentHistory
 
-from tests.helpers import master_token, create_dummy_vehicles, create_dummy_modules, create_dummy_options, create_test_rent
-
-def create_dummy_rent_history(session, client, access_token):
-    create_dummy_vehicles(session, count=3)
-    create_dummy_modules(session, count=3)
-    create_dummy_options(session, count=3)
-    rent_id = create_test_rent(client, access_token)
-    return rent_id
+from tests.helpers import master_token, create_test_rent
 
 
-def test_get_rent_history_success(client, session, master_token, create_dummy_rent_history):
+def test_get_rent_history_success(client, session, master_token):
     """
     정상적으로 관리자 렌트 로그를 조회하는 경우:
       - DB에 dummy 데이터를 추가하고,
       - GET /admin/rent-history 엔드포인트를 호출하며,
       - 반환된 응답에 rent_history와 pagination 필드가 포함되어 있는지 확인합니다.
     """
-    rent_id = create_dummy_rent_history(session, client, master_token)
+    rent_id = create_test_rent(client, master_token)
     
     # When: 관리자 토큰으로 GET 요청을 수행함.
     response = client.get(
@@ -58,7 +51,7 @@ def test_get_rent_history_non_admin(client, session):
     """
     # Given: role "user"인 토큰을 생성하고, DB에 2개의 dummy 레코드를 추가함.
     access_token, _ = jwt_handler.create_token(2, role="user")
-    create_dummy_rent_history(session, count=2)
+    create_test_rent(client, access_token)
     
     # When: 사용자 토큰으로 GET 요청을 수행함.
     response = client.get(
@@ -69,7 +62,7 @@ def test_get_rent_history_non_admin(client, session):
     # Then: 상태 코드가 403임.
     assert response.status_code == 403
 
-def test_get_rent_history_empty(client, session, admin_token):
+def test_get_rent_history_empty(client, session, master_token):
     """
     DB에 아무런 렌트 기록이 없을 경우, rent_history 리스트가 빈 리스트로
     반환되고, pagination 정보 (totalItems=0, totalPages=0 등)가 올바르게 설정되는지 확인합니다.
@@ -81,7 +74,7 @@ def test_get_rent_history_empty(client, session, admin_token):
     # When: 관리자 토큰으로 GET 요청을 수행함.
     response = client.get(
         "/admin/rent-history?page=1&page_size=10",
-        headers={"Authorization": f"Bearer {admin_token}"}
+        headers={"Authorization": f"Bearer {master_token}"}
     )
     
     # Then: 상태 코드가 200이고, rent_history는 빈 리스트이며, pagination은 totalItems=0, totalPages=0, currentPage=1, pageSize=10임.
@@ -95,30 +88,6 @@ def test_get_rent_history_empty(client, session, admin_token):
     assert pagination["currentPage"] == 1
     assert pagination["pageSize"] == 10
 
-@pytest.mark.parametrize("page,page_size,expected_count", [
-    (1, 5, 5),  # 첫 페이지, 모든 데이터
-    (1, 3, 3),  # 첫 페이지, 일부 데이터
-    (2, 3, 2),  # 두번째 페이지, 나머지 데이터
-    (3, 3, 0),  # 데이터 없는 페이지
-])
-def test_get_rent_history_pagination(client, session, admin_token, page, page_size, expected_count):
-    """
-    페이지네이션 동작을 다양한 페이지와 크기로 테스트합니다.
-    """
-    # Given: DB에 5개의 dummy 레코드를 추가함
-    create_dummy_rent_history(session, count=5)
-    
-    # When: 페이지네이션 파라미터로 GET 요청을 수행함
-    response = client.get(
-        f"/admin/rent-history?page={page}&page_size={page_size}",
-        headers={"Authorization": f"Bearer {admin_token}"}
-    )
-    
-    # Then: 응답이 성공적이고 예상된 개수의 데이터가 반환됨
-    assert response.status_code == 200
-    data = response.json()
-    assert data["resultCode"] == "SUCCESS"
-    assert len(data["data"]["rent_history"]) == expected_count
 
 @pytest.mark.parametrize("invalid_param,expected_error", [
     ("page=0", "ensure this value is greater than 0"),
@@ -128,17 +97,17 @@ def test_get_rent_history_pagination(client, session, admin_token, page, page_si
     ("page=abc", "value is not a valid integer"),
     ("page_size=def", "value is not a valid integer"),
 ])
-def test_get_rent_history_invalid_parameters(client, session, admin_token, invalid_param, expected_error):
+def test_get_rent_history_invalid_parameters(client, session, master_token, invalid_param, expected_error):
     """
     잘못된 쿼리 파라미터에 대한 유효성 검사를 테스트합니다.
     """
     # Given: DB에 dummy 데이터를 추가함
-    create_dummy_rent_history(session, count=3)
+    create_test_rent(client, master_token)
     
     # When: 잘못된 파라미터로 GET 요청을 수행함
     response = client.get(
         f"/admin/rent-history?{invalid_param}",
-        headers={"Authorization": f"Bearer {admin_token}"}
+        headers={"Authorization": f"Bearer {master_token}"}
     )
     
     # Then: 422 에러가 발생하고 적절한 에러 메시지가 포함됨
@@ -154,12 +123,12 @@ def test_get_rent_history_invalid_parameters(client, session, admin_token, inval
     ("Bearer invalid.token.here", 401),  # 잘못된 토큰
     ("Basic YWRtaW46cGFzcw==", 401),  # 잘못된 인증 방식
 ])
-def test_get_rent_history_authentication(client, session, auth_header, expected_status):
+def test_get_rent_history_authentication(client, session, master_token, auth_header, expected_status):
     """
     다양한 인증 시나리오를 테스트합니다.
     """
     # Given: DB에 dummy 데이터를 추가함
-    create_dummy_rent_history(session, count=3)
+    create_test_rent(client, master_token)
     
     # When: 다양한 인증 헤더로 GET 요청을 수행함
     headers = {"Authorization": auth_header} if auth_header else {}

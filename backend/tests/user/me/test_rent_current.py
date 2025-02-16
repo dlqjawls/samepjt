@@ -32,7 +32,7 @@ def test_get_current_rent_success(client, non_admin_token, current_rent_id):
 
 def test_get_current_rent_not_found(client):
     """
-    현재 진행 중인 렌트가 없을 경우 404 응답을 검증합니다.
+    현재 진행 중인 렌트가 없을 경우 빈 리스트를 반환합니다.
     """
     access_token = register_and_login(client, "testuser2", "test1234")
 
@@ -40,10 +40,10 @@ def test_get_current_rent_not_found(client):
         "/user/me/rent/current",
         headers={"Authorization": f"Bearer {access_token}"}
     )
-    assert response.status_code == 404
+    assert response.status_code == 200
     data = response.json()
-    assert data["resultCode"] == "FAILURE"
-    assert "진행 중인 렌트 정보가 존재하지 않습니다" in data["message"]
+    assert data["resultCode"] == "SUCCESS"
+    assert data["data"]["rent_id"] == None
 
 def test_get_current_rent_without_token(client):
     """
@@ -67,7 +67,7 @@ def test_current_rent_flow(client, non_admin_token):
     """
     통합 테스트:
     1. 렌트 신청 후 현재 진행 중인 렌트 조회 시 올바른 rent_id를 반환 (200)
-    2. 렌트를 완료하면, 진행 중 렌트 조회 시 404를 반환
+    2. 렌트를 완료하면, 진행 중 렌트 조회 시 빈 리스트를 반환 (200)
     3. 재신청 후, 진행 중 렌트 조회 시 새 rent_id 반환 (200)
     """
     # 1. 렌트 신청 → 현재 진행 중인 렌트 조회
@@ -81,7 +81,7 @@ def test_current_rent_flow(client, non_admin_token):
     assert data["resultCode"] == "SUCCESS"
     assert data["data"]["rent_id"] == rent_id1
 
-    # 2. 렌트 완료 → 진행 중 렌트 조회 시 404 반환
+    # 2. 렌트 완료 → 진행 중 렌트 조회 시 빈 리스트 반환
     response = client.post(
         f"/user/rent/{rent_id1}/complete",
         headers={"Authorization": f"Bearer {non_admin_token}"}
@@ -94,10 +94,10 @@ def test_current_rent_flow(client, non_admin_token):
         "/user/me/rent/current",
         headers={"Authorization": f"Bearer {non_admin_token}"}
     )
-    assert response.status_code == 404
+    assert response.status_code == 200
     data = response.json()
-    assert data["resultCode"] == "FAILURE"
-    assert "진행 중인 렌트 정보가 존재하지 않습니다" in data["message"]
+    assert data["resultCode"] == "SUCCESS"
+    assert data["data"]["rent_id"] == None
 
     # 3. 재렌트 신청 → 진행 중 렌트 조회 시 새 rent_id 반환
     rent_id2 = create_test_rent(client, non_admin_token)

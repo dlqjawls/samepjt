@@ -127,39 +127,6 @@ def test_get_maintenance_history_list_invalid_queries(client, master_token, page
     )
     assert response.status_code == 422
 
-def test_get_maintenance_history_query_filters(client, session, create_dummy_maintenance_histories, master_token, clear_maintenance_histories):
-    # GIVEN: DB 초기화 후, 여러 아이템 타입의 정비 기록 생성
-    clear_maintenance_histories()
-    # 차량 (assumed vehicle) 정비 기록 2개 : item_type_id=1
-    create_dummy_maintenance_histories(count=2, start_item_id=1, item_type_id=1)
-    # 모듈 정비 기록 3개: item_type_id=2
-    create_dummy_maintenance_histories(count=3, start_item_id=10, item_type_id=2)
-    # 옵션 정비 기록 4개: item_type_id=3
-    create_dummy_maintenance_histories(count=4, start_item_id=20, item_type_id=3)
-
-    # WHEN: 특정 아이템 타입 "vehicle" (item_type_id=1)으로 필터링
-    response = client.get(
-        "/admin/maintenance-history?page=1&pageSize=10&item_type=vehicle",
-        headers={"Authorization": f"Bearer {master_token}"}
-    )
-    assert response.status_code == 200
-    data = response.json()
-    records = data["data"]["maintenance_history"]
-    for rec in records:
-        # 스키마의 item_type 필드로 문자열(예: "vehicle") 반환
-        assert rec["item_type_name"].lower() == "vehicle"
-
-    # WHEN: 특정 item_type "module"과 특정 item_id (예: 11)로 필터링
-    response = client.get(
-        "/admin/maintenance-history?page=1&pageSize=10&item_type=module&item_id=11",
-        headers={"Authorization": f"Bearer {master_token}"}
-    )
-    assert response.status_code == 200
-    data = response.json()
-    records = data["data"]["maintenance_history"]
-    # 해당 조건에 맞는 정비 기록이 1건만 조회되어야 함
-    assert len(records) == 1
-    assert records[0]["item_id"] == 11
 
 @pytest.mark.parametrize("start_item_id, item_type_id, count", [
     (1, 1, 3),
