@@ -33,6 +33,7 @@ const MaintenanceRecords = () => {
     cost: 0,
     scheduled_at: "",
     completed_at: "",
+    maintenance_status_id: "",
   });
 
   const [filters, setFilters] = useState({
@@ -48,6 +49,8 @@ const MaintenanceRecords = () => {
     totalItems: 0,
     pageSize: 10,
   });
+
+  const [maintenanceStatuses, setMaintenanceStatuses] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -86,6 +89,37 @@ const MaintenanceRecords = () => {
     fetchMaintenanceRecords();
   }, [fetchMaintenanceRecords]);
 
+  // 정비 상태 목록 조회
+  const fetchMaintenanceStatuses = useCallback(async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/maintenance-status`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.resultCode === "SUCCESS") {
+        setMaintenanceStatuses(response.data.data.maintenance_statuses);
+      } else {
+        console.error("정비 상태 목록 조회 실패:", response.data.message);
+      }
+    } catch (err) {
+      console.error("정비 상태 목록 조회 중 오류:", err);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    fetchMaintenanceStatuses();
+  }, [fetchMaintenanceStatuses]);
+
+  // 정비 예정 날짜 기본값 (현재 시각 + 1시간)
+  useEffect(() => {
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    const localISOTime = now.toISOString().slice(0, 16);
+    setFormData((prev) => ({ ...prev, scheduled_at: localISOTime }));
+  }, []);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
@@ -122,15 +156,18 @@ const MaintenanceRecords = () => {
   };
 
   const openAddModal = () => {
-    // Initialize form data for adding a new record
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    const localISOTime = now.toISOString().slice(0, 16);
+
     setFormData({
-      item_type_name: "",
+      item_type_name: "vehicle",
       item_id: 0,
       issue: "",
       cost: 0,
-      scheduled_at: "",
+      scheduled_at: localISOTime,
       completed_at: "",
-      maintenance_status_id: 1,
+      maintenance_status_id: "",
     });
     setIsAddModalOpen(true);
   };
@@ -344,9 +381,22 @@ const MaintenanceRecords = () => {
                               </div>
                               <div className="detail-item">
                                 <div className="detail-label">항목 유형</div>
-                                <div className="detail-value">
-                                  {record.item_type_name}
-                                </div>
+                                {editingRecordId === record.maintenance_id ? (
+                                  <select
+                                    name="item_type_name"
+                                    value={formData.item_type_name}
+                                    onChange={handleFormChange}
+                                    className="edit-input"
+                                  >
+                                    <option value="vehicle">vehicle</option>
+                                    <option value="module">module</option>
+                                    <option value="option">option</option>
+                                  </select>
+                                ) : (
+                                  <div className="detail-value">
+                                    {record.item_type_name}
+                                  </div>
+                                )}
                               </div>
                               <div className="detail-item">
                                 <div className="detail-label">
@@ -391,14 +441,22 @@ const MaintenanceRecords = () => {
                               <div className="detail-item">
                                 <div className="detail-label">정비 상태</div>
                                 {editingRecordId === record.maintenance_id ? (
-                                  <input
-                                    type="number"
+                                  <select
                                     name="maintenance_status_id"
                                     value={formData.maintenance_status_id}
                                     onChange={handleFormChange}
                                     className="edit-input"
-                                    placeholder="이 부분에서는 숫자로 전달해야 함"
-                                  />
+                                  >
+                                    <option value="">선택하세요</option>
+                                    {maintenanceStatuses.map((ms) => (
+                                      <option
+                                        key={ms.maintenance_status_id}
+                                        value={ms.maintenance_status_id}
+                                      >
+                                        {ms.maintenance_status_name}
+                                      </option>
+                                    ))}
+                                  </select>
                                 ) : (
                                   <div className="detail-value">
                                     {record.maintenance_status_name}
@@ -536,14 +594,16 @@ const MaintenanceRecords = () => {
         >
           <div className="form-group">
             <label>정비 대상</label>
-            <input
-              type="text"
+            <select
               name="item_type_name"
               value={formData.item_type_name}
               onChange={handleFormChange}
-              placeholder="정비 대상 (vehicle, module, option)"
               required
-            />
+            >
+              <option value="vehicle">vehicle</option>
+              <option value="module">module</option>
+              <option value="option">option</option>
+            </select>
           </div>
           <div className="form-group">
             <label>정비 대상의 고유 ID</label>
