@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
+import ModuleInstallVideoModal from "./ModuleInstallVideoModal";
+import AutonomousVideoModal from "./AutonomousVideoModal";
 import "./RentalRecords.css";
 
 const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
@@ -10,6 +12,7 @@ const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 function RentalRecords() {
   const [rentLogs, setRentLogs] = useState([]);
   const [expandedRentId, setExpandedRentId] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,6 +20,10 @@ function RentalRecords() {
   const rowRefs = useRef({});
 
   const token = localStorage.getItem("adminToken");
+
+  const [isModuleVideoModalOpen, setIsModuleVideoModalOpen] = useState(false);
+  const [isAutonomousVideoModalOpen, setIsAutonomousVideoModalOpen] =
+    useState(false);
 
   // 필터 및 페이지네이션 상태 (필요에 따라 확장 가능)
   const [filters, setFilters] = useState({
@@ -87,6 +94,18 @@ function RentalRecords() {
       }
     }, 100);
   };
+
+  const openModuleVideoModal = (rentId) => {
+    setSelectedRecord(rentId);
+    setIsModuleVideoModalOpen(true);
+  };
+  const closeModuleVideoModal = () => setIsModuleVideoModalOpen(false);
+
+  const openAutonomousVideoModal = (rentId) => {
+    setSelectedRecord(rentId);
+    setIsAutonomousVideoModalOpen(true);
+  };
+  const closeAutonomousVideoModal = () => setIsAutonomousVideoModalOpen(false);
 
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
@@ -184,6 +203,27 @@ function RentalRecords() {
                               </div>
                             </div>
                             <div className="detail-item">
+                              <div className="detail-label">영상</div>
+                              <div className="detail-value">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openModuleVideoModal(log.rent_id);
+                                  }}
+                                >
+                                  모듈 설치 영상
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openAutonomousVideoModal(log.rent_id);
+                                  }}
+                                >
+                                  자율 주행 영상
+                                </button>
+                              </div>
+                            </div>
+                            <div className="detail-item">
                               <div className="detail-label">출발 위치</div>
                               <div className="detail-value">
                                 {log.departure_location.x},{" "}
@@ -266,6 +306,20 @@ function RentalRecords() {
           다음
         </button>
       </div>
+
+      {isModuleVideoModalOpen && (
+        <ModuleInstallVideoModal
+          rentId={selectedRecord}
+          onClose={closeModuleVideoModal}
+        />
+      )}
+
+      {isAutonomousVideoModalOpen && (
+        <AutonomousVideoModal
+          rentId={selectedRecord}
+          onClose={closeAutonomousVideoModal}
+        />
+      )}
     </div>
   );
 }
