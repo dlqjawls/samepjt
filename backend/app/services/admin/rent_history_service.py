@@ -54,9 +54,9 @@ class RentHistoryService:
         option_type_ids: list[str] = []
         
         for entry in usage_entries:
-            if entry.item_type_id == ItemType.VEHICLE:
+            if entry.item_type_id == ItemType.VEHICLE.ID:
                 vehicle_number = RentHistoryService._validate_vehicle(session, entry.item_id)
-            elif entry.item_type_id == ItemType.OPTION:
+            elif entry.item_type_id == ItemType.OPTION.ID:
                 option_type_id = RentHistoryService._validate_option(entry.item_id, session)
                 option_type_ids.append(option_type_id)
 
