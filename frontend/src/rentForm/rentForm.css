@@ -113,17 +113,15 @@
 }
 
 .location-info-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 4px;
-  background-color: white;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
 }
 
 .location-info-form span {
   font-weight: bold;
+  margin-right: 10px;
 }
 
 .location-info-form.start {
@@ -141,8 +139,9 @@
 }
 
 .location-info-form p {
-  margin: 0;
-  font-family: monospace;
+  margin: 5px 0;
+  word-break: keep-all;
+  line-height: 1.4;
 }
 @media (max-width: 768px) {
   .rent-form-wrapper-unique {

@@ -15,15 +15,15 @@ import Navbar from "./common/navigationBar"
 import VehicleManagement from "./admin/components/VehicleManagement"
 import ModuleManagement from "./admin/components/ModuleManagement"
 import OptionManagement from "./admin/components/OptionManagement"
-import RecordManagement from "./admin/components/RecordManagement";
+import RecordManagement from "./admin/components/RecordManagement"
 import MaintenanceRecords from "./admin/components/MaintenanceRecords"
 import RentForm from "./rentForm/rentForm"
 import Total_reciept from "./finishSelect/total_reciept"
-import UserLayout from "./user/UserLayout"   
+import UserLayout from "./user/UserLayout"
 import Dashboard from "./RentStatus/Dashboard"
 import { ToastContainer } from "react-toastify"
 import { AdminAuthProvider } from "./admin/context/AdminAuthProvider"
-
+import LoadingStatus from "./RentStatus/LoadingStatus"
 function App() {
   return (
     <Router>
@@ -39,6 +39,7 @@ function App() {
           <Route path="rentForm" element={<RentForm />}></Route>
           <Route path="total_reciept" element={<Total_reciept />}></Route>
           <Route path="car_status" element={<Dashboard />}></Route>
+          <Route path="/loading-status" element={<LoadingStatus />} />
         </Route>
 
         {/* 관리자 로그인 */}
