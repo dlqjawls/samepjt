@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Path
 from sqlmodel import Session
-from app.services.admin.rent_history_service import RentHistoryService
+from app.services.admin.rent_history_service import RentHistoryService 
 from app.core.database import get_session
-from app.api.schemas.admin.rent_history_schema import RentHistoryResponse
+from app.api.schemas.admin.rent_history_schema import RentHistoryResponse, RentVideoResponse
 from app.core.jwt import JWTPayload, jwt_handler
 
 router = APIRouter()
@@ -10,11 +10,11 @@ router = APIRouter()
 @router.get(
     "/rent-history",
     response_model=RentHistoryResponse,
-    summary="🚗 관리자 대여 로그 조회",
+    summary="🚀 대여 로그 조회",
     description="관리자가 시스템에 등록된 모든 대여 로그 목록을 페이지네이션 방식으로 조회합니다.",
     responses={
         200: {
-            "description": "✅ 대여 로그 조회 성공",
+            "description": "대여 로그 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -23,17 +23,23 @@ router = APIRouter()
                         "data": {
                             "rentHistory": [
                                 {
-                                    "rentId": 1,
-                                    "userPk": 1,
-                                    "vehicleNumber": "1234567890",
-                                    "optionTypes": "옵션1,옵션2",
-                                    "departureLocation": "위치1",
-                                    "arrivalLocation": "위치2",
-                                    "cost": 100000,
-                                    "mileage": 10000,
-                                    "status": "in_progress",
-                                    "createdAt": "2024-01-01T00:00:00Z",
-                                    "updatedAt": "2024-01-01T00:00:00Z"
+                                    "rent_id": 1,
+                                    "user_pk": 1,
+                                    "vehicle_number": "PBV-00001",
+                                    "option_types": "",
+                                    "departure_location": {
+                                      "x": 11.512,
+                                      "y": 30.4531
+                                    },
+                                    "arrival_location": {
+                                      "x": 12.313,
+                                      "y": 32.3232
+                                    },
+                                    "cost": 500,
+                                    "mileage": 0,
+                                    "rent_status_name": "in_progress",
+                                    "created_at": "2025-02-11T02:30:24.614775",
+                                    "updated_at": "2025-02-11T02:30:24.614775"
                                 }
                             ],
                             "pagination": {
@@ -110,3 +116,80 @@ async def get_rent_history(
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
 ):
     return RentHistoryService.get_rent_history(session, page, page_size)
+
+
+@router.get(
+    "/rent-history/{rent_id}/module-install-videos", 
+    response_model=RentVideoResponse, 
+    summary="🚀 모듈 설치 영상 조회",
+    description="렌트 히스토리 모듈 설치 영상을 조회합니다.",
+    responses={
+        200: {
+            "description": "모듈 설치 영상 조회 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Videos retrieved successfully",
+                        "data": {
+                            "videos": [
+                                {
+                                    "video_id": 501,
+                                    "rent_id": 101,
+                                    "video_type": "module installation",
+                                    "video_url": "https://example.com/videos/501.mp4",
+                                    "recorded_at": "2025-02-01T10:00:00"
+                                } 
+                            ]
+                        }
+                    }
+                }
+            }
+        } 
+    }
+)
+def get_module_install_videos(  
+    session: Session = Depends(get_session),
+    rent_id: int = Path(..., description="대여 ID"),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
+):
+    return RentHistoryService.get_rent_videos(session, rent_id, "module installation") 
+
+
+
+@router.get(
+    "/rent-history/{rent_id}/autonomous-videos", 
+    response_model=RentVideoResponse, 
+    summary="🚀 자율주행 영상 조회",
+    description="렌트 히스토리 자율주행 영상을 조회합니다.",
+    responses={
+        200: {
+            "description": "자율주행 영상 조회 성공",
+              "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "Videos retrieved successfully",
+                        "data": {
+                            "videos": [
+                                {
+                                    "video_id": 502,
+                                    "rent_id": 101,
+                                    "video_type": "autonomous driving",
+                                    "video_url": "https://example.com/videos/502.mp4",
+                                    "recorded_at": "2025-02-01T10:00:00"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+def get_autonomous_videos(
+    session: Session = Depends(get_session),
+    rent_id: int = Path(..., description="대여 ID"),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
+):
+    return RentHistoryService.get_rent_videos(session, rent_id, "autonomous driving") 

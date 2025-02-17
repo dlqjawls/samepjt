@@ -8,7 +8,7 @@ class Module(SQLModel, table=True):
 
     module_id: Optional[int] = Field(default=None, primary_key=True)
     module_nfc_tag_id: str = Field(unique=True, nullable=False, max_length=50, description="Module NFC Tag ID")
-    module_type: int = Field(foreign_key="lut_module_type.module_type_id", nullable=False, description="Module type")
+    module_type_id: int = Field(foreign_key="lut_module_type.module_type_id", nullable=False, description="Module type")
 
     last_maintenance_at: Optional[datetime] = Field(
         sa_column=Column(DateTime, nullable=True), description="Last maintenance date"
@@ -18,7 +18,7 @@ class Module(SQLModel, table=True):
     )
 
     current_location: str = Field(nullable=False, max_length=255, description="Current module location")
-    status_id: int = Field(foreign_key="lut_item_status.item_status_id", nullable=False, description="Module status")
+    item_status_id: int = Field(foreign_key="lut_item_status.item_status_id", nullable=False, description="Module status")
 
     created_at: datetime = Field(
         sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))

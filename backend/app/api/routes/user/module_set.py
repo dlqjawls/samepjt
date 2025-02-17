@@ -8,12 +8,12 @@ router = APIRouter()
 
 @router.get(
     "/module-sets",
-    summary="🛠️ 모듈 세트 목록 조회",
+    summary="📦 모듈 세트 목록 조회",
     description="사용자가 선택 가능한 모듈 세트 목록을 조회합니다. **페이지네이션을 지원합니다.**",
     response_model=ModuleSetsResponse,
     responses={
         200: {
-            "description": "✅ 모듈 세트 목록 조회 성공",
+            "description": "모듈 세트 목록 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -27,6 +27,10 @@ router = APIRouter()
                                     "description": "캠핑에 최적화된 모듈 세트입니다.",
                                     "basePrice": 2500.0,
                                     "imgUrls": ["https://example.com/module1.jpg"],
+                                    "moduleTypeId":3,
+                                    "moduleTypeName":"large",
+                                    "moduleTypeSize":"3x3",
+                                    "moduleTypeCost":5000,
                                     "moduleSetOptionTypes": [
                                         {
                                             "optionTypeId": 101,
@@ -109,14 +113,8 @@ router = APIRouter()
     }
 )
 async def get_module_sets(
-    page: int = Query(1, description="📄 페이지 번호 (최소 1)", gt=0), 
-    page_size: int = Query(10, description="📄 페이지 크기 (기본값: 10, 최소 1)", gt=0),
+    page: int = Query(1, description="페이지 번호 (최소 1)", gt=0), 
+    page_size: int = Query(10, description="페이지 크기 (기본값: 10, 최소 1)", gt=0),
     session: Session = Depends(get_session)
 ):
-    """
-    🔍 **모듈 세트 목록 조회 API**
-    - 사용자가 선택할 수 있는 모듈 세트 목록을 가져옵니다.
-    - **페이지네이션 기능을 포함하여 조회 가능**
-    - **존재하는 모듈 세트가 없을 경우 404 반환**
-    """
     return ModuleSetService.get_all_module_sets(session, page, page_size)

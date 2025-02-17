@@ -13,9 +13,10 @@ class VehicleItem(BaseModel):
     mileage: float = Field(..., example=12000.5)
     last_maintenance_at: Optional[datetime] = Field(None, example="2025-01-10T12:00:00")
     next_maintenance_at: Optional[datetime] = Field(None, example="2025-06-10T12:00:00")
-    status: str = Field(..., example="Active")
+    item_status_name: str = Field(..., example="Active")
     created_at: datetime = Field(..., example="2024-05-01T08:30:00")
     created_by: int = Field(..., example=3)
+
     updated_at: datetime = Field(..., example="2025-01-10T12:00:00")
     updated_by: int = Field(..., example=5)
 
@@ -24,7 +25,7 @@ class VehiclesData(BaseModel):
     vehicles: List[VehicleItem]
     pagination: Pagination
 
-class VehiclesResponse(ResponseBase[VehiclesData]):
+class VehicleGetResponse(ResponseBase[VehiclesData]):
     """관리자 차량 목록 조회 응답 모델"""
     class Config:
         schema_extra = {
@@ -41,7 +42,7 @@ class VehiclesResponse(ResponseBase[VehiclesData]):
                             "mileage": 12000.5,
                             "last_maintenance_at": "2025-01-10T12:00:00",
                             "next_maintenance_at": "2025-06-10T12:00:00",
-                            "status": "Active",
+                            "item_status_name": "Active",
                             "created_at": "2024-05-01T08:30:00",
                             "created_by": 3,
                             "updated_at": "2025-01-10T12:00:00",
@@ -58,7 +59,7 @@ class VehiclesResponse(ResponseBase[VehiclesData]):
             }
         }
 
-class VehicleCreate(BaseModel):
+class VehicleCreateRequest(BaseModel):
     """차량 등록 요청 스키마"""
     vin: str = Field(
         ...,
@@ -120,22 +121,12 @@ class VehicleUpdateRequest(BaseModel):
             }
         }
 
-class VehicleUpdateResponse(ResponseBase):
+class VehicleMessageResponse(ResponseBase):
     """관리자 차량 목록 조회 응답 모델"""
     class Config:
         schema_extra = {
             "example": {
                 "resultCode": "SUCCESS",
-                "message": "Vehicle data updated successfully",
+                "message": "Vehicle {method} successfully",
             }
-        }
-        
-class VehicleDeleteResponse(ResponseBase):
-    """차량 삭제 응답 모델"""
-    class Config:
-        schema_extra = {
-            "example": {
-                "resultCode": "SUCCESS",
-                "message": "Vehicle deleted successfully"
-            } 
         }

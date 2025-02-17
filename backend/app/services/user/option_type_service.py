@@ -1,10 +1,12 @@
 from sqlmodel import Session
 from typing import List
 from app.db.models.option_type import OptionType 
-from app.db.crud.option_type import option_types_crud
+from app.db.crud.option_type import option_type_crud
 from app.api.schemas.user import option_type_schema
 from app.utils.exceptions import NotFoundError, ValidationError
 from app.utils.handle_transaction import handle_transaction
+from app.db.crud.option import option_crud
+from app.utils.lut_constants import ItemStatus
 
 class OptionTypeServiceUtils:
 
@@ -70,14 +72,14 @@ class OptionTypeService:
     def get_all_option_types(session: Session, page: int = 1, page_size: int = 10) -> option_type_schema.OptionTypesResponse:
         """ ✅ 옵션 타입 목록 조회 (페이지네이션 적용) """
         
-        paginated_result = option_types_crud.paginate(session, page, page_size)
+        paginated_result = option_type_crud.paginate(session, page, page_size)
         option_types: List[OptionType] = paginated_result["items"]
 
 
         option_types_data = [
             OptionTypeServiceUtils.convert_to_schema(
                 opt_type,
-                option_types_crud.get_option_counts_by_type(session).get(opt_type.option_type_id, 0)
+                len(option_crud.get_available_options_by_type(session, opt_type.option_type_id, ItemStatus.INACTIVE.ID))
             )
             for opt_type in option_types
         ]
@@ -101,7 +103,7 @@ class OptionTypeService:
                 detail={"option_type_id": option_type_id}
             )
         
-        option_type = option_types_crud._get_by_field(session, option_type_id, "option_type_id")
+        option_type = option_type_crud.get_by_field(session, option_type_id, "option_type_id")
         if option_type is None:
             raise NotFoundError(
                 message="Option type not found",    
@@ -110,7 +112,7 @@ class OptionTypeService:
             
         option_type_data = OptionTypeServiceUtils.convert_to_schema(
             option_type,
-            option_types_crud.get_option_counts_by_type(session).get(option_type.option_type_id, 0)
+            len(option_crud.get_available_options_by_type(session, option_type.option_type_id, ItemStatus.INACTIVE.ID))
         )
 
         return option_type_schema.OptionTypesResponse(

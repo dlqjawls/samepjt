@@ -1,114 +1,33 @@
-import json
 import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session
 
 from app.core.jwt import jwt_handler
 from app.db.models.rent_history import RentHistory
-from app.db.models.vehicle import Vehicle
-from app.db.models.usage_history import UsageHistory
-from app.db.models.option import Option
-from app.utils.lut_constants import RentStatus, ItemStatus, ItemType
+
+from tests.helpers import master_token, create_dummy_vehicles, create_dummy_modules, create_dummy_options, create_test_rent
+
+def create_dummy_rent_history(session, client, access_token):
+    create_dummy_vehicles(session, count=3)
+    create_dummy_modules(session, count=3)
+    create_dummy_options(session, count=3)
+    rent_id = create_test_rent(client, access_token)
+    return rent_id
 
 
-@pytest.fixture
-def admin_token():
-    # JWTHandler의 create_token()은 (access_token, refresh_token)을 반환합니다.
-    access_token, _ = jwt_handler.create_token(1, role="master")
-    return access_token
-
-def create_dummy_rent_history(session: Session, count: int = 5):
-    """
-    DB에 dummy 렌트 기록을 추가하는 헬퍼 함수.
-    각 레코드에는 기본 필드 값이 포함됩니다.
-    """
-    try:
-        now = datetime.now()
-        location = json.dumps({"x": 12.313, "y": 32.3232})
-        # 먼저 차량과 옵션을 생성
-        vehicle = Vehicle(
-            vin="TEST123",
-            vehicle_number="TEST123",
-            current_location=location,
-            status_id=ItemStatus.ACTIVE,
-            created_by=1,
-            updated_by=1,
-            created_at=now,
-            updated_at=now
-
-        )
-        session.add(vehicle)
-        
-        option = Option(
-            option_type_id=1,
-            status_id=ItemStatus.ACTIVE,
-            created_by=1,
-            updated_by=1,
-            created_at=now,
-            updated_at=now
-
-        )
-        session.add(option)
-        session.flush()
-
-        # 렌트 히스토리 생성
-        dummy_records = []
-        for i in range(count):
-            rent = RentHistory(
-                user_pk=i + 1,
-                departure_location=location,
-                arrival_location=location,
-                cost=100.0 * (i + 1),
-                mileage=10.0 * (i + 1),
-                status_id=RentStatus.COMPLETED,
-                created_at=now - timedelta(days=i),
-                updated_at=now - timedelta(days=i)
-
-            )
-            session.add(rent)
-            session.flush()
-
-            # 사용 기록 생성
-            usage_vehicle = UsageHistory(
-                rent_id=rent.rent_id,
-                item_id=vehicle.vehicle_id,
-                item_type_id=ItemType.VEHICLE,
-                status_id=1  # in_use
-            )
-
-            session.add(usage_vehicle)
-
-            usage_option = UsageHistory(
-                rent_id=rent.rent_id,
-                item_id=option.option_id,
-                item_type_id=ItemType.OPTION,
-                status_id=1  # in_use
-            )
-            session.add(usage_option)
-            
-            dummy_records.append(rent)
-            
-        session.commit()
-        return dummy_records
-        
-    except Exception as e:
-        session.rollback()
-        raise e
-
-def test_get_rent_history_success(client, session, admin_token):
+def test_get_rent_history_success(client, session, master_token, create_dummy_rent_history):
     """
     정상적으로 관리자 렌트 로그를 조회하는 경우:
       - DB에 dummy 데이터를 추가하고,
       - GET /admin/rent-history 엔드포인트를 호출하며,
       - 반환된 응답에 rent_history와 pagination 필드가 포함되어 있는지 확인합니다.
     """
-    # Given: DB에 3개의 dummy 레코드를 추가함.
-    create_dummy_rent_history(session, count=3)
+    rent_id = create_dummy_rent_history(session, client, master_token)
     
     # When: 관리자 토큰으로 GET 요청을 수행함.
     response = client.get(
         "/admin/rent-history?page=1&page_size=10",
-        headers={"Authorization": f"Bearer {admin_token}"}
+        headers={"Authorization": f"Bearer {master_token}"}
     )
     
     # Then: 응답 상태 코드가 200이고, 결과 코드와 데이터 구조가 올바름.

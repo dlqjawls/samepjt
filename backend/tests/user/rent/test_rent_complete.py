@@ -75,7 +75,7 @@ def test_complete_already_completed_rent(client):
     assert response.status_code == 409
     data = response.json()
     assert data["resultCode"] == "FAILURE"
-    assert "already completed" in data["message"].lower()
+    assert "rent already completed or canceled" in data["message"].lower()
 
 # ⚠️ 취소된 렌트 완료 시도
 def test_complete_canceled_rent(client):

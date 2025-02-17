@@ -65,9 +65,9 @@ def seed_data(session: Session) -> None:
 
         # 📌 모듈 유형(Module Type)
         module_types = [
-            ModuleType(module_type_id=1, module_type_name="small", module_type_size="S", module_type_cost=100.0),
-            ModuleType(module_type_id=2, module_type_name="medium", module_type_size="M", module_type_cost=200.0),
-            ModuleType(module_type_id=3, module_type_name="large", module_type_size="L", module_type_cost=300.0)
+            ModuleType(module_type_id=1, module_type_name="small", module_type_size="3x3", module_type_cost=5000),
+            ModuleType(module_type_id=2, module_type_name="medium", module_type_size="4x4", module_type_cost=10000),
+            ModuleType(module_type_id=3, module_type_name="large", module_type_size="5x5", module_type_cost=15000)
         ]
         session.add_all(module_types)
 
@@ -103,10 +103,10 @@ def seed_data(session: Session) -> None:
 
         # 📌 결제 상태(Payment Status)
         payment_statuses = [
-            PaymentStatus(payment_status_id=1, payment_status_name="pending", payment_type_id=1),
-            PaymentStatus(payment_status_id=2, payment_status_name="completed", payment_type_id=1),
-            PaymentStatus(payment_status_id=3, payment_status_name="failed", payment_type_id=1),
-            PaymentStatus(payment_status_id=4, payment_status_name="refunded", payment_type_id=2)
+            PaymentStatus(payment_status_id=1, payment_status_name="pending"),
+            PaymentStatus(payment_status_id=2, payment_status_name="completed"),
+            PaymentStatus(payment_status_id=3, payment_status_name="failed"),
+            PaymentStatus(payment_status_id=4, payment_status_name="refunded")
         ]
         session.add_all(payment_statuses)
 
@@ -138,10 +138,10 @@ def seed_data(session: Session) -> None:
             ),
             User(
                 user_pk=2,
-                user_id="semiadmin", 
+                user_id="semi", 
                 user_password=hash_password("semi123"),
-                user_email="semiadmin@example.com",
-                user_name="Semi Administrator",
+                user_email="semi@example.com",
+                user_name="Semi",
                 user_phone_num="010-1111-1111",
                 user_address="Busan, Korea",
                 role_id=2,
@@ -165,7 +165,22 @@ def seed_data(session: Session) -> None:
                 updated_at=base_date,
                 updated_by=1,
                 deleted_at=None
-            )
+            ),
+            User(
+                user_pk=4,
+                user_id="master",
+                user_password=hash_password("master123"),
+                user_email="master@example.com",
+                user_name="Master",
+                user_phone_num="010-3333-3333",
+                user_address="Seoul, Korea",
+                role_id=1,
+                created_at=base_date,
+                created_by=1,
+                updated_at=base_date,
+                updated_by=1,
+                deleted_at=None
+            ),
         ]
         session.add_all(dummy_users)
 
@@ -173,13 +188,13 @@ def seed_data(session: Session) -> None:
         dummy_vehicles = [
             Vehicle(
                 vehicle_id=i,
-                vin=fake.uuid4(),
+                vin=f"PBVVINNUMBER0000{i}",
                 vehicle_number=f"PBV-0000{i}",
                 current_location=json.dumps({"x": 0, "y": 0}),
                 mileage=0,
                 last_maintenance_at=base_date,
                 next_maintenance_at=None,
-                status_id=2,
+                item_status_id=2,
                 created_at=base_date,
                 created_by=1,
                 updated_at=base_date,
@@ -193,10 +208,10 @@ def seed_data(session: Session) -> None:
         # 📌 모듈 데이터 삽입
         dummy_modules = [
             Module(
-                module_id=i + 1,
-                module_nfc_tag_id=fake.uuid4(),
-                module_type=1,
-                status_id=2,
+                module_id=i,
+                module_nfc_tag_id=fake.hexify(text='^^^^^^^^^^^^^^', upper=True),  # 14자리 16진수 생성 (7바이트)
+                module_type_id=1,
+                item_status_id=2,
                 last_maintenance_at=base_date,
                 next_maintenance_at=base_date,
                 current_location=json.dumps({"x": 0, "y": 0}),
@@ -244,12 +259,12 @@ def seed_data(session: Session) -> None:
 
         dummy_option_types = [
             OptionType(
-                option_type_id=i + 1,
+                option_type_id=i+1,
                 option_type_name=option_def.name,
                 option_type_size=f"{random.randint(1, 3)}x{random.randint(1, 3)}",
-                option_type_cost=round(random.uniform(10.0, 100.0), 2),
+                option_type_cost=30000,
                 description=option_def.description,
-                option_type_images=fake.image_url(),
+                option_type_images=fake.image_url() + ", " + fake.image_url(),
                 option_type_features=", ".join(option_def.display_features),
                 created_at=base_date,
                 updated_at=base_date,
@@ -269,7 +284,7 @@ def seed_data(session: Session) -> None:
                 option = Option(
                     option_id=current_id,
                     option_type_id=option_type.option_type_id,
-                    status_id=2,
+                    item_status_id=2,
                     created_at=base_date,
                     updated_at=base_date,
                     created_by=1,
@@ -297,8 +312,8 @@ def seed_data(session: Session) -> None:
             ModuleSet(
                 module_set_id=i + 1,
                 module_set_name=module_set_def.name,
-                description=fake.text(),
-                module_set_images=fake.image_url(),
+                description="",
+                module_set_images="https://github.com/user-attachments/assets/caaa16b4-702b-4708-8973-c1ac948c5ef4,https://github.com/user-attachments/assets/edb03e19-1008-49f3-8e6d-208e9f6d478e",
                 module_set_features="",  # 옵션 타입에 기반하여 업데이트될 것임
                 module_type_id=1,
                 created_at=base_date,
@@ -324,7 +339,6 @@ def seed_data(session: Session) -> None:
                     option_type_id = option_type_name_to_id[option_type_name]
                     dummy_module_set_option_types.append(
                         ModuleSetOptionTypes(
-                            module_set_option_type_id=current_id,
                             module_set_id=module_set_id,
                             option_type_id=option_type_id,
                             option_quantity=1

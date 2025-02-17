@@ -14,8 +14,8 @@ class MaintenanceHistory(SQLModel, table=True):
     issue: str = Field(nullable=False, description="Maintenance issue details")
     cost: float = Field(nullable=False, description="Maintenance cost (>= 0)")
 
-    status_id: int = Field(foreign_key="lut_maintenance_status.maintenance_status_id", nullable=False, description="Maintenance status")
-    scheduled_at: Optional[datetime] = Field(default=None, description="Scheduled maintenance date")
+    maintenance_status_id: int = Field(foreign_key="lut_maintenance_status.maintenance_status_id", nullable=False, description="Maintenance status")
+    scheduled_at: datetime = Field(default=None, description="Scheduled maintenance date")
     completed_at: Optional[datetime] = Field(default=None, description="Completion date")
 
     created_at: datetime = Field(

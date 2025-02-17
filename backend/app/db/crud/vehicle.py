@@ -11,13 +11,14 @@ class VehicleCRUD(CRUDBase[Vehicle]):
     def __init__(self):
         super().__init__(Vehicle)
 
-    def get_first_available_vehicle(self, session: Session, status_id: int = ItemStatus.INACTIVE) -> Vehicle:
+    def get_first_available_vehicle(self, session: Session, item_status_id: int = ItemStatus.INACTIVE.ID) -> Vehicle:
         """
         첫 번째 사용 가능한 차량을 조회합니다.
 
         Args:
             session (Session): 데이터베이스 세션.
-            status_id (int): 차량 상태 ID (기본값: 2, INACTIVE).
+            item_status_id (int): 차량 상태 ID (기본값: 2, INACTIVE).
+
 
         Returns:
             Vehicle: 사용 가능한 차량 객체.
@@ -29,16 +30,17 @@ class VehicleCRUD(CRUDBase[Vehicle]):
             vehicle = session.exec(
                 select(self.model)
                 .where(
-                    self.model.status_id == status_id,
+                    self.model.item_status_id == item_status_id,
                     self.model.deleted_at == None
                 )
                 .limit(1)
+
             ).first()
 
             if not vehicle:
                 raise NotFoundError(
                     message="No available vehicle found",
-                    detail={"status_id": status_id, "error": "모든 차량이 사용 중입니다."}
+                    detail={"item_status_id": item_status_id, "error": "모든 차량이 사용 중입니다."}
                 )
 
             return vehicle
@@ -60,7 +62,7 @@ class VehicleCRUD(CRUDBase[Vehicle]):
         Returns:
             Optional[Vehicle]: 차량 객체.
         """
-        return self._get_by_field(session, id, "vehicle_id")
+        return self.get_by_field(session, id, "vehicle_id")
       
     def get_by_vin(self, session: Session, vin: str) -> Optional[Vehicle]:
         """
@@ -73,7 +75,7 @@ class VehicleCRUD(CRUDBase[Vehicle]):
         Returns:
             Optional[Vehicle]: 차량 객체.
         """
-        return self._get_by_field(session, vin, "vin")
+        return self.get_by_field(session, vin, "vin")
       
     def get_by_vehicle_number(self, session: Session, vehicle_number: str) -> Optional[Vehicle]:
         """
@@ -86,6 +88,7 @@ class VehicleCRUD(CRUDBase[Vehicle]):
         Returns:
             Optional[Vehicle]: 차량 객체.
         """
-        return self._get_by_field(session, vehicle_number, "vehicle_number")
+        return self.get_by_field(session, vehicle_number, "vehicle_number")
+      
       
 vehicle_crud = VehicleCRUD()

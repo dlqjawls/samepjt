@@ -11,12 +11,14 @@ class SelectedOptionType(BaseModel):
 
 class RentRequest(BaseModel):
     """렌트 요청 모델"""
-    selectedOptionTypes: List[SelectedOptionType] = Field([], example=[
+    selectedOptionTypes: List[SelectedOptionType] = Field(..., example=[
         {"optionTypeId": 1, "quantity": 1},
         {"optionTypeId": 2, "quantity": 1}
     ])
     autonomousArrivalPoint: Coordinate = Field(..., example={"x": 12.313, "y": 32.3232})
     autonomousDeparturePoint: Coordinate = Field(..., example={"x": 11.512, "y": 30.4531})
+    moduleTypeId: int = Field(..., example=1, gt=0)
+    cost: int = Field(..., example=500, gt=0)
     rentStartDate: datetime = Field(..., example="2025-01-15T09:00:00")
     rentEndDate: datetime = Field(..., example="2025-01-20T18:00:00")
 
@@ -144,3 +146,26 @@ class CompleteRentResponse(ResponseBase[CompleteRentResponseData]):
                 }
             }
         }
+
+class RentCostRequest(BaseModel):
+    """렌트 비용 계산 요청 모델"""
+    rentStartDate: datetime = Field(..., example="2025-01-15T09:00:00")
+    rentEndDate: datetime = Field(..., example="2025-01-20T18:00:00")
+
+class RentCostResponseData(BaseModel):
+    """렌트 비용 계산 응답 데이터 모델"""
+    cost: int = Field(..., example=50000)
+
+class RentCostResponse(ResponseBase[RentCostResponseData]):
+    """렌트 비용 계산 응답 모델"""
+    class Config:
+        schema_extra = {
+            "example": {
+                "resultCode": "SUCCESS",
+                "message": "Rental cost calculated successfully",
+                "data": {
+                    "cost": 50000
+                }
+            }
+        } 
+

@@ -15,8 +15,11 @@ class RentHistory(SQLModel, table=True):
     cost: float = Field(nullable=False, description="Total rental cost (>= 0)")
     mileage: float = Field(default=0, nullable=False, description="Total mileage during rental")
     
-    status_id: int = Field(foreign_key="lut_rent_status.rent_status_id", nullable=False, description="Rental status")
-
+    rent_start_date: datetime = Field(nullable=True, description="Rental start date")
+    rent_end_date: datetime = Field(nullable=True, description="Rental end date")
+    
+    rent_status_id: int = Field(foreign_key="lut_rent_status.rent_status_id", nullable=False, description="Rental status")
+    
     created_at: datetime = Field(
         sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     )

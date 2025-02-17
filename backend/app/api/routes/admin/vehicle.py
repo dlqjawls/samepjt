@@ -1,21 +1,21 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Path, HTTPException
+from fastapi import APIRouter, Depends, Query, Path
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.jwt import JWTPayload, jwt_handler
 from app.services.admin.vehicle_service import VehicleService
-from app.api.schemas.admin.vehicle_schema import VehicleCreate, VehiclesResponse, VehicleUpdateRequest, VehicleUpdateResponse, VehicleDeleteResponse
+from app.api.schemas.admin.vehicle_schema import VehicleCreateRequest, VehicleGetResponse, VehicleUpdateRequest, VehicleMessageResponse
 
 router = APIRouter()
 
 @router.get(
     "/vehicles",
-    response_model=VehiclesResponse,
-    summary="🚗 관리자 차량 목록 조회",
+    response_model=VehicleGetResponse,
+    summary="🚗 차량 목록 조회",
     description="관리자가 등록된 차량 목록을 페이지네이션 방식으로 조회합니다.",
     responses={
         200: {
-            "description": "✅ 차량 목록 조회 성공",
+            "description": "차량 목록 조회 성공",
             "content": {
                 "application/json": {
                     "example": {
@@ -50,7 +50,7 @@ router = APIRouter()
             }
         },
         401: {
-            "description": "❌ 인증 실패",
+            "description": "인증 실패",
             "content": {
                 "application/json": {
                     "example": {
@@ -86,7 +86,9 @@ async def get_vehicle_list(
 
 @router.post(
     "/vehicles",
-    response_model=VehiclesResponse,
+    response_model=VehicleGetResponse,
+    summary="🚗 차량 등록",
+    description="차량 정보를 등록합니다.",
     status_code=201,
     responses={
         201: {
@@ -170,34 +172,17 @@ async def get_vehicle_list(
     }
 )
 async def create_vehicle(
-    vehicle_data: VehicleCreate,
+    vehicle_data: VehicleCreateRequest,
     session: Annotated[Session, Depends(get_session)],
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> VehiclesResponse:
-    """
-    차량 등록 API
-
-    Args:
-    - vehicle_data: 차량 등록 정보
-        - vin (str): 차량 식별 번호 (Vehicle Identification Number)
-        - vehicle_number (str): 차량 번호판 (예: "PBV-1234")
-
-    Returns:
-    - VehiclesResponse: 차량 등록 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 403 FORBIDDEN: 권한 없음 (master 권한 필요)
-    - 409 CONFLICT: 차대번호 또는 차량 번호 중복
-    - 422 VALIDATION_ERROR: 유효하지 않은 입력값
-    """
+) -> VehicleMessageResponse:
     return VehicleService.create_vehicle(session, vehicle_data, token_data.user_pk)
 
 @router.patch(
     "/vehicles/{vehicle_id}",
-    response_model=VehiclesResponse,
+    response_model=VehicleGetResponse,
+    summary="🚗 차량 수정",
+    description="차량 정보를 수정합니다.",
     responses={
         200: {
             "description": "차량이 성공적으로 수정됨",
@@ -245,34 +230,17 @@ async def create_vehicle(
 )
 async def update_vehicle(
     vehicle_data: VehicleUpdateRequest,
-    vehicle_id: int = Path(..., description="🚗 차량 ID (최소 1)", gt=0),
+    vehicle_id: int = Path(..., description="차량 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> VehicleUpdateResponse:
-    """
-    차량 수정 API
-
-    Args:
-    - vehicle_data: 차량 등록 정보
-        - vin (str): 차량 식별 번호 (Vehicle Identification Number)
-        - vehicle_number (str): 차량 번호판 (예: "PBV-1234")
-
-    Returns:
-    - VehiclesResponse: 차량 등록 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 401 UNAUTHORIZED: 인증 실패
-    - 403 FORBIDDEN: 권한 없음 (master 권한 필요)
-    - 409 CONFLICT: 차대번호 또는 차량 번호 중복
-    - 422 VALIDATION_ERROR: 유효하지 않은 입력값
-    """
+) -> VehicleMessageResponse:
     return VehicleService.update_vehicle(session = session, vehicle_data = vehicle_data, vehicle_id = vehicle_id, user_pk = token_data.user_pk)
 
 @router.delete(
     "/vehicles/{vehicle_id}",
-    response_model=VehicleDeleteResponse,
+    response_model=VehicleMessageResponse,
+    summary="🚗 차량 삭제",
+    description="차량 정보를 삭제합니다.",
     responses={
         200: {
             "description": "차량이 성공적으로 삭제됨",
@@ -334,26 +302,10 @@ async def update_vehicle(
     }
 )
 async def delete_vehicle(
-    vehicle_id: int = Path(..., description="🚗 차량 ID (최소 1)", gt=0),
+    vehicle_id: int = Path(..., description="차량 ID (최소 1)", gt=0),
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
-) -> VehicleDeleteResponse:
-    """
-    차량 삭제 API
-
-    Args:
-    - vehicle_id: 삭제할 차량의 고유 ID
-
-    Returns:
-    - VehicleDeleteResponse: 차량 삭제 결과
-        - resultCode (str): 처리 결과 코드
-        - message (str): 처리 결과 메시지
-
-    Raises:
-    - 400 BAD_REQUEST: 차량이 대여 중으로 삭제 불가
-    - 401 UNAUTHORIZED: 인증 실패
-    - 404 NOT_FOUND: 존재하지 않는 차량 ID
-    """
+) -> VehicleMessageResponse:
     return VehicleService.delete_vehicle(session, vehicle_id, token_data.user_pk)
 
 

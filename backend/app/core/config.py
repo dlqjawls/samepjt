@@ -33,6 +33,11 @@ class Settings(BaseSettings):
 
     ROLE_ENCRYPTION_KEY: str
     
+    aws_access_key_id: str = Field(..., env="AWS_S3_ACCESS_KEY_ID")
+    aws_secret_access_key: str = Field(..., env="AWS_S3_SECRET_ACCESS_KEY")
+    aws_region: str = Field(..., env="AWS_S3_REGION")
+    s3_bucket_name: str = Field(..., env="AWS_S3_BUCKET")
+
     @validator("UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "JWT_SECRET_KEY")
     def validate_required_env(cls, v: str, field: str) -> str:
         """필수 환경 변수 검증"""
@@ -107,7 +112,11 @@ try:
         UPSTASH_REDIS_REST_URL=os.getenv("UPSTASH_REDIS_REST_URL", ""),
         UPSTASH_REDIS_REST_TOKEN=os.getenv("UPSTASH_REDIS_REST_TOKEN", ""),
         JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY", ""),
-        ROLE_ENCRYPTION_KEY=os.getenv("ROLE_ENCRYPTION_KEY", "")
+        ROLE_ENCRYPTION_KEY=os.getenv("ROLE_ENCRYPTION_KEY", ""),
+        aws_access_key_id=os.getenv("AWS_S3_ACCESS_KEY_ID", ""),
+        aws_secret_access_key=os.getenv("AWS_S3_SECRET_ACCESS_KEY", ""),
+        aws_region=os.getenv("AWS_S3_REGION", ""),
+        s3_bucket_name=os.getenv("AWS_S3_BUCKET", "")
     )
 
     # 로깅 설정

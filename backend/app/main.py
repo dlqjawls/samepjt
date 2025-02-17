@@ -11,17 +11,18 @@ from app.core.middleware import setup_middlewares
 from app.api.routes import api_router
 
 from app.utils.exceptions import  get_exception_handlers 
+from app.websocket import websocket
 
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # [선택] SQLite DB 파일 삭제
-    # if settings.DATABASE_URL.startswith("sqlite:///"):
-    #     db_path = settings.DATABASE_URL.replace("sqlite:///", "")
-    #     if os.path.exists(db_path):
-    #         logger.info(f"🗑  이전 DB 파일 삭제: {db_path}")
-    #         os.remove(db_path)
+    if settings.DATABASE_URL.startswith("sqlite:///"):
+        db_path = settings.DATABASE_URL.replace("sqlite:///", "")
+        if os.path.exists(db_path):
+            logger.info(f"🗑  이전 DB 파일 삭제: {db_path}")
+            os.remove(db_path)
     
     # DB 초기화
     await initialize_database()
@@ -44,5 +45,8 @@ def create_app() -> FastAPI:
 
     # 라우터 등록
     app.include_router(api_router)
-
+    
+    # WebSocket 라우터 등록
+    app.include_router(websocket.router, prefix="/api/socket")
+    
     return app

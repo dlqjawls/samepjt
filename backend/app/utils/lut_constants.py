@@ -1,114 +1,178 @@
-# LUT 값을 상수로 미리 정의
-from enum import IntEnum
-from typing import Any, Dict
+from typing import Dict, ClassVar
 
-class Role(IntEnum):
-    MASTER = 1
-    SEMI = 2
-    USER = 3
+class BaseConstant:
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
 
-class ItemType(IntEnum):
-    VEHICLE = 1
-    MODULE = 2
-    OPTION = 3
+    @classmethod
+    def _initialize_mappings(cls) -> None:
+        """Initialize ID-NAME mappings from nested classes"""
+        for attr_name in dir(cls):
+            attr = getattr(cls, attr_name)
+            if isinstance(attr, type) and hasattr(attr, 'ID') and hasattr(attr, 'NAME'):
+                cls._ID_TO_NAME[attr.ID] = attr.NAME
+                cls._NAME_TO_ID[attr.NAME] = attr.ID
 
-class ItemStatus(IntEnum):
-    ACTIVE = 1
-    INACTIVE = 2
-    MAINTENANCE = 3
+    @classmethod
+    def get_name(cls, id: int) -> str:
+        if not cls._ID_TO_NAME:
+            cls._initialize_mappings()
+        return cls._ID_TO_NAME[id]
 
-class RentStatus(IntEnum):
-    IN_PROGRESS = 1
-    COMPLETED = 2
-    CANCELED = 3
+    @classmethod
+    def get_id(cls, name: str) -> int:
+        if not cls._NAME_TO_ID:
+            cls._initialize_mappings()
+        return cls._NAME_TO_ID[name]
 
-class ModuleType(IntEnum):
-    SMALL = 1
-    MEDIUM = 2
-    LARGE = 3
-
-class MaintenanceStatus(IntEnum):
-    PENDING = 1
-    IN_PROGRESS = 2
-    COMPLETED = 3
-
-class UsageStatus(IntEnum):
-    IN_USE = 1
-    COMPLETED = 2
-
-class VideoType(IntEnum):
-    MODULE = 1
-    AUTONOMOUS_DRIVING = 2
-
-class PaymentStatus(IntEnum):
-    PENDING = 1
-    COMPLETED = 2
-    FAILED = 3
-    REFUNDED = 4
-
-class PaymentMethod(IntEnum):
-    CREDIT_CARD = 1
-    BANK_TRANSFER = 2
-    PAYPAL = 3
-
-class LUTConstants:
-    """LUT 상수들을 관리하는 클래스입니다."""
+class Role(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class MASTER:
+        ID = 1
+        NAME = "master"
     
-    ROLE_NAMES: Dict[Role, str] = {
-        Role.MASTER: "master",
-        Role.SEMI: "semi",
-        Role.USER: "user"
-    }
+    class SEMI:
+        ID = 2
+        NAME = "semi"
+    
+    class USER:
+        ID = 3
+        NAME = "user"
 
-    ITEM_TYPE_NAMES: Dict[ItemType, str] = {
-        ItemType.VEHICLE: "vehicle",
-        ItemType.MODULE: "module",
-        ItemType.OPTION: "option"
-    }
+class ItemType(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class VEHICLE:
+        ID = 1
+        NAME = "vehicle"
+    
+    class MODULE:
+        ID = 2
+        NAME = "module"
+    
+    class OPTION:
+        ID = 3
+        NAME = "option"
 
-    ITEM_STATUS_NAMES: Dict[ItemStatus, str] = {
-        ItemStatus.ACTIVE: "active",
-        ItemStatus.INACTIVE: "inactive",
-        ItemStatus.MAINTENANCE: "maintenance"
-    }
+class ItemStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class ACTIVE:
+        ID = 1
+        NAME = "active"
+    
+    class INACTIVE:
+        ID = 2
+        NAME = "inactive"
+    
+    class MAINTENANCE:
+        ID = 3
+        NAME = "maintenance"
 
-    RENT_STATUS_NAMES: Dict[RentStatus, str] = {
-        RentStatus.IN_PROGRESS: "in_progress",
-        RentStatus.COMPLETED: "completed",
-        RentStatus.CANCELED: "canceled"
-    }
+class RentStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class IN_PROGRESS:
+        ID = 1
+        NAME = "in_progress"
+    
+    class COMPLETED:
+        ID = 2
+        NAME = "completed"
+    
+    class CANCELED:
+        ID = 3
+        NAME = "canceled"
 
-    MODULE_TYPE_INFO: Dict[ModuleType, Dict[str, Any]] = {
-        ModuleType.SMALL: {"name": "small", "size": "S", "cost": 100.0},
-        ModuleType.MEDIUM: {"name": "medium", "size": "M", "cost": 200.0},
-        ModuleType.LARGE: {"name": "large", "size": "L", "cost": 300.0}
-    }
+class ModuleType(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class SMALL:
+        ID = 1
+        NAME = "small"
+        SIZE = "3x3"
+        COST = 5000
+    
+    class MEDIUM:
+        ID = 2
+        NAME = "medium"
+        SIZE = "4x4"
+        COST = 10000
+    
+    class LARGE:
+        ID = 3
+        NAME = "large"
+        SIZE = "5x5"
+        COST = 15000
 
-    MAINTENANCE_STATUS_NAMES: Dict[MaintenanceStatus, str] = {
-        MaintenanceStatus.PENDING: "pending",
-        MaintenanceStatus.IN_PROGRESS: "in_progress",
-        MaintenanceStatus.COMPLETED: "completed"
-    }
+class MaintenanceStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class PENDING:
+        ID = 1
+        NAME = "pending"
+    
+    class IN_PROGRESS:
+        ID = 2
+        NAME = "in_progress"
+    
+    class COMPLETED:
+        ID = 3
+        NAME = "completed"
 
-    USAGE_STATUS_NAMES: Dict[UsageStatus, str] = {
-        UsageStatus.IN_USE: "in_use",
-        UsageStatus.COMPLETED: "completed"
-    }
+class UsageStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class IN_USE:
+        ID = 1
+        NAME = "in_use"
+    
+    class COMPLETED:
+        ID = 2
+        NAME = "completed"
 
-    VIDEO_TYPE_NAMES: Dict[VideoType, str] = {
-        VideoType.MODULE: "module",
-        VideoType.AUTONOMOUS_DRIVING: "autonomous driving"
-    }
+class VideoType(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class MODULE:
+        ID = 1
+        NAME = "module"
+    
+    class AUTONOMOUS_DRIVING:
+        ID = 2
+        NAME = "autonomous_driving"
 
-    PAYMENT_STATUS_NAMES: Dict[PaymentStatus, str] = {
-        PaymentStatus.PENDING: "pending",
-        PaymentStatus.COMPLETED: "completed",
-        PaymentStatus.FAILED: "failed",
-        PaymentStatus.REFUNDED: "refunded"
-    }
+class PaymentStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class PENDING:
+        ID = 1
+        NAME = "pending"
+    
+    class COMPLETED:
+        ID = 2
+        NAME = "completed"
+    
+    class FAILED:
+        ID = 3
+        NAME = "failed"
+    
+    class REFUNDED:
+        ID = 4
+        NAME = "refunded"
 
-    PAYMENT_METHOD_NAMES: Dict[PaymentMethod, str] = {
-        PaymentMethod.CREDIT_CARD: "credit_card",
-        PaymentMethod.BANK_TRANSFER: "bank_transfer",
-        PaymentMethod.PAYPAL: "paypal"
-    } 
+class PaymentMethod(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class CREDIT_CARD:
+        ID = 1
+        NAME = "credit_card"
+    
+    class BANK_TRANSFER:
+        ID = 2
+        NAME = "bank_transfer"
+    
+    class PAYPAL:
+        ID = 3
+        NAME = "paypal"

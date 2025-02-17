@@ -11,7 +11,7 @@ class UsageHistory(SQLModel, table=True):
     item_id: int = Field(nullable=False, description="ID of the used item")
     item_type_id: int = Field(foreign_key="lut_item_type.item_type_id", nullable=False, description="Item Type ID")
     
-    status_id: int = Field(foreign_key="lut_usage_status.usage_status_id", nullable=False, description="Usage status")
+    usage_status_id: int = Field(foreign_key="lut_usage_status.usage_status_id", nullable=False, description="Usage status")
 
     created_at: datetime = Field(
         sa_column=Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
