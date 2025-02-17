@@ -59,12 +59,6 @@ class RentHistoryService:
             elif entry.item_type_id == ItemType.OPTION:
                 option_type_id = RentHistoryService._validate_option(entry.item_id, session)
                 option_type_ids.append(option_type_id)
-
-        if not vehicle_number:
-            raise DatabaseError(
-                message="Vehicle information is required",
-                detail={"rent_id": rent_id}
-            )
                     
         return vehicle_number, option_type_ids
 
