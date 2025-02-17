@@ -49,6 +49,6 @@ def create_app() -> FastAPI:
     app.include_router(api_router)
     
     # WebSocket 라우터 등록
-    app.include_router(websocket.router, prefix="/chat")
+    app.include_router(websocket.router, prefix="/api/socket")
     
     return app
