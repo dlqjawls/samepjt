@@ -26,6 +26,8 @@ class BaseConstant:
         return cls._NAME_TO_ID[name]
 
 class Role(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class MASTER:
         ID = 1
         NAME = "master"
@@ -39,6 +41,8 @@ class Role(BaseConstant):
         NAME = "user"
 
 class ItemType(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class VEHICLE:
         ID = 1
         NAME = "vehicle"
@@ -52,6 +56,8 @@ class ItemType(BaseConstant):
         NAME = "option"
 
 class ItemStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class ACTIVE:
         ID = 1
         NAME = "active"
@@ -65,6 +71,8 @@ class ItemStatus(BaseConstant):
         NAME = "maintenance"
 
 class RentStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class IN_PROGRESS:
         ID = 1
         NAME = "in_progress"
@@ -78,6 +86,8 @@ class RentStatus(BaseConstant):
         NAME = "canceled"
 
 class ModuleType(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class SMALL:
         ID = 1
         NAME = "small"
@@ -97,6 +107,8 @@ class ModuleType(BaseConstant):
         COST = 15000
 
 class MaintenanceStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class PENDING:
         ID = 1
         NAME = "pending"
@@ -110,6 +122,8 @@ class MaintenanceStatus(BaseConstant):
         NAME = "completed"
 
 class UsageStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class IN_USE:
         ID = 1
         NAME = "in_use"
@@ -119,6 +133,8 @@ class UsageStatus(BaseConstant):
         NAME = "completed"
 
 class VideoType(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class MODULE:
         ID = 1
         NAME = "module"
@@ -128,6 +144,8 @@ class VideoType(BaseConstant):
         NAME = "autonomous_driving"
 
 class PaymentStatus(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class PENDING:
         ID = 1
         NAME = "pending"
@@ -145,6 +163,8 @@ class PaymentStatus(BaseConstant):
         NAME = "refunded"
 
 class PaymentMethod(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
     class CREDIT_CARD:
         ID = 1
         NAME = "credit_card"
