@@ -6,7 +6,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { MdEdit, MdDelete, MdSearch } from "react-icons/md";
 import "./OptionType.css";
 
-const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function OptionTypeManagement() {
   const token = localStorage.getItem("adminToken");

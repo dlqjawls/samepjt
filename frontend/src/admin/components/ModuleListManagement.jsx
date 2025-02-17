@@ -7,7 +7,7 @@ import { MdEdit, MdDelete } from "react-icons/md";
 import "./ModuleListManagement.css";
 import LoadingSpinner from "./LoadingSpinner";
 
-const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const ModuleManagementList = () => {
   // 모듈 데이터 상태

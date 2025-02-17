@@ -7,7 +7,7 @@ import ModuleInstallVideoModal from "./ModuleInstallVideoModal";
 import AutonomousVideoModal from "./AutonomousVideoModal";
 import "./RentalRecords.css";
 
-const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function RentalRecords() {
   const [rentLogs, setRentLogs] = useState([]);
@@ -38,9 +38,6 @@ function RentalRecords() {
     totalItems: 0,
     pageSize: 10,
   });
-
-  // API 베이스 URL 설정
-  const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
   const fetchRentLogs = async () => {
     setLoading(true);

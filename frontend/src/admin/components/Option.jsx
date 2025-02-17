@@ -8,9 +8,10 @@ import LoadingSpinner from "./LoadingSpinner";
 import { MdEdit, MdDelete } from "react-icons/md";
 import "./Option.css";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 function Option() {
   const token = localStorage.getItem("adminToken");
-  const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
   // 화면에 표시할 옵션 데이터 (필터링 및 클라이언트 단 페이지네이션 적용)
   const [options, setOptions] = useState([]);
