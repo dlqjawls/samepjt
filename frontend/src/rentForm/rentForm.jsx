@@ -27,11 +27,13 @@ const RentForm = () => {
   const setInitialDates = () => {
     const now = new Date()
     now.setMinutes(now.getMinutes() + 5)
-    setRentStartDate(formatDate(now))
+    const formattedStartDate = formatDate(now)
+    setRentStartDate(formattedStartDate)
 
     const endDate = new Date(now)
     endDate.setHours(endDate.getHours() + 6)
-    setRentEndDate(formatDate(endDate))
+    const formattedEndDate = formatDate(endDate)
+    setRentEndDate(formattedEndDate)
   }
 
   useEffect(() => {
@@ -88,7 +90,9 @@ const RentForm = () => {
 
     // cleanup
     return () => {
-      window.kakao.maps.event.removeListener(clickListener)
+      if (clickListener) {
+        window.kakao.maps.event.removeListener(clickListener)
+      }
       if (endLocation && endLocation.marker) {
         endLocation.marker.setMap(null)
       }
@@ -167,31 +171,16 @@ const RentForm = () => {
       try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/rent/calculate-duration-cost`, {
           rentStartDate: rentStartDate,
-          rentEndDate: rentEndDate,
-          startLocation: {
-            lat: startLocation.latlng.getLat(),
-            lng: startLocation.latlng.getLng(),
-          },
-          endLocation: {
-            lat: endLocation.latlng.getLat(),
-            lng: endLocation.latlng.getLng(),
-          },
+          rentEndDate: rentEndDate
+         
         })
 
         if (response.data.resultCode === "SUCCESS") {
           sessionStorage.setItem(
-            "rentInfo",
+            "rentDates",
             JSON.stringify({
               startDate: rentStartDate,
               endDate: rentEndDate,
-              startLocation: {
-                lat: startLocation.latlng.getLat(),
-                lng: startLocation.latlng.getLng(),
-              },
-              endLocation: {
-                lat: endLocation.latlng.getLat(),
-                lng: endLocation.latlng.getLng(),
-              },
             })
           )
           sessionStorage.setItem("date_Cost", response.data.data.cost)
