@@ -150,13 +150,13 @@ def create_valid_rent_request(
 
     return {
         "selectedOptionTypes": [
+            {"optionTypeId": 1, "quantity": 1},
+            {"optionTypeId": 2, "quantity": 1}
         ],
         "autonomousArrivalPoint": {"x": 12.313, "y": 32.3232},
         "autonomousDeparturePoint": {"x": 11.512, "y": 30.4531},
         "rentStartDate": start_date.isoformat(),
-        "rentEndDate": end_date.isoformat(),
-        "moduleTypeId": 1,
-        "cost": 255000,
+        "rentEndDate": end_date.isoformat()
     }
 
 def create_test_rent(client: TestClient, access_token: str) -> int:

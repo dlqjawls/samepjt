@@ -10,7 +10,7 @@ from tests.helpers import master_token, semi_admin_token, user_token, create_dum
 def test_update_module_success(client, session, master_token, create_dummy_modules):
     """정상적인 모듈 정보 업데이트 테스트"""
     # 더미 모듈 1건 생성
-    modules = create_dummy_modules()
+    modules = create_dummy_modules(1)
     module = modules[0]
     update_data = {
         "module_type_id": ModuleType.MEDIUM.ID, # 모듈 타입 업데이트
@@ -32,7 +32,7 @@ def test_update_module_success(client, session, master_token, create_dummy_modul
 
 def test_update_module_unauthorized(client, create_dummy_modules):
     """인증 토큰 없이 모듈 정보 업데이트 시도 테스트"""
-    modules = create_dummy_modules()
+    modules = create_dummy_modules(1)
     module = modules[0]
     update_data = {
         "module_type_id": ModuleType.MEDIUM.ID
@@ -45,7 +45,7 @@ def test_update_module_unauthorized(client, create_dummy_modules):
 
 def test_update_module_forbidden(client, create_dummy_modules, user_token):
     """비관리자 토큰으로 모듈 정보 업데이트 시도 테스트"""
-    modules = create_dummy_modules()
+    modules = create_dummy_modules(1)
     module = modules[0]
     update_data = {
         "module_type_id": ModuleType.MEDIUM.ID
@@ -95,7 +95,7 @@ def test_update_module_invalid_id(client, master_token, invalid_module_id):
 ])
 def test_update_module_invalid_module_type_id(client, master_token, create_dummy_modules, invalid_module_type_id):
     """잘못된 형식의 모듈 타입 업데이트 시도 테스트"""
-    modules = create_dummy_modules()
+    modules = create_dummy_modules(1)
     module = modules[0]
     update_data = {
         "module_type_id": invalid_module_type_id
@@ -118,7 +118,7 @@ def test_update_module_invalid_module_type_id(client, master_token, create_dummy
 ])
 def test_update_module_non_existing_module_type_id(client, master_token, create_dummy_modules, non_existing_module_type_id):
     """존재하지 않는 모듈 타입 업데이트 시도 테스트"""
-    modules = create_dummy_modules()
+    modules = create_dummy_modules(1)
     module = modules[0]
     update_data = {
         "module_type_id": non_existing_module_type_id
