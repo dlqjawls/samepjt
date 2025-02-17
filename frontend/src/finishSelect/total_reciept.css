@@ -13,7 +13,6 @@
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  
 }
 
 .receipt-title {
@@ -55,7 +54,6 @@
   position: relative;
   transition: all 0.3s ease-in-out;
   /* overflow: hidden; */
- 
 }
 .receipt-items:not(.expanded) {
   max-height: 300px;
@@ -76,19 +74,18 @@
   cursor: pointer;
   font-size: 14px;
   color: #666;
-  position: absolute;
+  position: relative;
   bottom: 0;
   left: 0;
   z-index: 10;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-  margin-top: 10px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+  /* margin-top: 10px; */
 }
 
 .show-more-button:hover {
   background-color: #f0f0f0;
   color: #333;
 }
-
 
 .receipt-items:not(.expanded) .receipt-items-gradient {
   display: block;
@@ -99,7 +96,7 @@
 .receipt-items table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
+  /* margin: 20px 0; */
   font-size: clamp(12px, 3.5vw, 16px);
 }
 
@@ -150,26 +147,26 @@
   border: none;
   white-space: nowrap;
 }
-  .payment-button {
-    background-color: #000000;
-    color: white;
+.payment-button {
+  background-color: #000000;
+  color: white;
+}
+
+.back-button {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+}
+
+.payment-button:hover {
+  background-color: #333333;
+}
+
+.back-button:hover {
+  background-color: #f0f0f0;
+}
+@media screen and (max-width: 480px) {
+  .receipt-header p span:last-child {
+    min-width: 150px;
   }
-  
-  .back-button {
-    background-color: #ffffff;
-    color: #000000;
-    border: 1px solid #000000;
-  }
-  
-  .payment-button:hover {
-    background-color: #333333;
-  }
-  
-  .back-button:hover {
-    background-color: #f0f0f0;
-  }
-  @media screen and (max-width: 480px) {
-    .receipt-header p span:last-child {
-      min-width: 150px;
-    }
-  }
+}

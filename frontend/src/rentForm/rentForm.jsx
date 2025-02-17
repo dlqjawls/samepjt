@@ -9,11 +9,15 @@ const RentForm = () => {
   const [error, setError] = useState("")
   const [startLocation, setStartLocation] = useState(null)
   const [endLocation, setEndLocation] = useState(null)
+  const [startAddress, setStartAddress] = useState("")
+  const [endAddress, setEndAddress] = useState("")
+
   const mapRef = useRef(null)
   const kakaoMap = useRef(null)
   const navigate = useNavigate()
+  const geocoder = useRef(null)
+  const endMarkerRef = useRef(null)
 
-  // 날짜 포맷팅 함수
   const formatDate = (date) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, "0")
@@ -23,7 +27,6 @@ const RentForm = () => {
     return `${year}-${month}-${day}T${hours}:${minutes}:00`
   }
 
-  // 초기 시간 설정
   const setInitialDates = () => {
     const now = new Date()
     now.setMinutes(now.getMinutes() + 5)
@@ -45,6 +48,7 @@ const RentForm = () => {
 
     const map = new window.kakao.maps.Map(container, options)
     kakaoMap.current = map
+    geocoder.current = new window.kakao.maps.services.Geocoder()
 
     // 마커 이미지 설정
     const startMarkerImage = new window.kakao.maps.MarkerImage("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/red_b.png", new window.kakao.maps.Size(50, 45), {
@@ -55,50 +59,66 @@ const RentForm = () => {
       offset: new window.kakao.maps.Point(15, 43),
     })
 
-    // 고정 출발 지점 마커 생성
+    // 출발지 마커 생성
     const startMarker = new window.kakao.maps.Marker({
       position: options.center,
       map: map,
       image: startMarkerImage,
       title: "출발지",
     })
-    setStartLocation({ marker: startMarker, latlng: options.center })
 
-    // 도착지점 선택 이벤트
+    // 도착지 마커 생성
+    const endMarker = new window.kakao.maps.Marker({
+      image: endMarkerImage,
+    })
+    endMarkerRef.current = endMarker
+
+    // 출발지 정보 설정
+    geocoder.current.coord2Address(options.center.getLng(), options.center.getLat(), (result, status) => {
+      if (status === window.kakao.maps.services.Status.OK) {
+        setStartAddress(result[0].address.address_name)
+        setStartLocation({ marker: startMarker, latlng: options.center })
+      }
+    })
+    let clickListener = null
+    // 지도 클릭 이벤트
     const handleMapClick = (mouseEvent) => {
       const latlng = mouseEvent.latLng
 
-      // 기존 도착 마커 제거
-      if (endLocation && endLocation.marker) {
-        endLocation.marker.setMap(null)
-      }
+      endMarker.setPosition(latlng)
+      endMarker.setMap(map)
 
-      // 새로운 도착 마커 생성
-      const marker = new window.kakao.maps.Marker({
-        position: latlng,
-        map: map,
-        image: endMarkerImage,
-        title: "도착지",
+      geocoder.current.coord2Address(latlng.getLng(), latlng.getLat(), (result, status) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          const addr = result[0].address.address_name
+          setEndAddress(addr)
+          setEndLocation({ marker: endMarker, latlng })
+        }
       })
-
-      setEndLocation({ marker, latlng })
     }
 
-    const clickListener = window.kakao.maps.event.addListener(map, "click", handleMapClick)
+    if (map && window.kakao && window.kakao.maps) {
+      clickListener = window.kakao.maps.event.addListener(map, "click", handleMapClick)
+    }
 
     setInitialDates()
 
-    // cleanup
     return () => {
-      if (clickListener) {
-        window.kakao.maps.event.removeListener(clickListener)
-      }
-      if (endLocation && endLocation.marker) {
-        endLocation.marker.setMap(null)
+      try {
+        if (clickListener) {
+          window.kakao.maps.event.removeListener(clickListener)
+        }
+        if (startMarker) {
+          startMarker.setMap(null)
+        }
+        if (endMarkerRef.current) {
+          endMarkerRef.current.setMap(null)
+        }
+      } catch (error) {
+        console.error("Cleanup error:", error)
       }
     }
   }, [])
-
   // 날짜 유효성 검사
   const validateDates = () => {
     if (!endLocation) {
@@ -171,8 +191,7 @@ const RentForm = () => {
       try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/rent/calculate-duration-cost`, {
           rentStartDate: rentStartDate,
-          rentEndDate: rentEndDate
-         
+          rentEndDate: rentEndDate,
         })
 
         if (response.data.resultCode === "SUCCESS") {
@@ -183,8 +202,8 @@ const RentForm = () => {
               endDate: rentEndDate,
             })
           )
-          console.log("Saved rent dates:", JSON.parse(sessionStorage.getItem("rentDates")));
-          
+          console.log("Saved rent dates:", JSON.parse(sessionStorage.getItem("rentDates")))
+
           sessionStorage.setItem("date_Cost", response.data.data.cost)
           navigate("/total_reciept")
         } else {
@@ -223,17 +242,19 @@ const RentForm = () => {
               {startLocation && (
                 <div className="location-info-form start">
                   <span>📍 출발지:</span>
-                  <p>
+                  <p>{startAddress}</p>
+                  {/* <p>
                     {startLocation.latlng.getLat().toFixed(6)}, {startLocation.latlng.getLng().toFixed(6)}
-                  </p>
+                  </p> */}
                 </div>
               )}
               {endLocation ? (
                 <div className="location-info-form end">
                   <span>🏁 도착지:</span>
-                  <p>
+                  <p>{endAddress}</p>
+                  {/* <p>
                     {endLocation.latlng.getLat().toFixed(6)}, {endLocation.latlng.getLng().toFixed(6)}
-                  </p>
+                  </p> */}
                 </div>
               ) : (
                 <p className="location-warning">도착 위치를 지도에서 선택해주세요</p>
