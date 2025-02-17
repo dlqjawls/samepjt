@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import { AdminAuthContext } from "./context/AdminAuthContext";
 
 const AdminLogin = () => {
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
   const [formData, setFormData] = useState({
     id: "",
     password: "",
@@ -32,7 +34,7 @@ const AdminLogin = () => {
 
     try {
       const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/admin/login",
+        `${BASE_URL}/auth/admin/login`,
         formData,
         {
           headers: {

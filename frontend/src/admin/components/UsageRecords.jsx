@@ -5,7 +5,7 @@ import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
 import "./UsageRecords.css";
 
-const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function UsageRecords() {
   const [useLogs, setUseLogs] = useState([]);
@@ -31,9 +31,6 @@ function UsageRecords() {
     totalItems: 0,
     pageSize: 10,
   });
-
-  // API 베이스 URL 설정
-  const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
 
   const fetchUseLogs = async () => {
     setLoading(true);

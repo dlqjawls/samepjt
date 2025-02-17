@@ -9,7 +9,7 @@ import { MdEdit, MdDelete } from "react-icons/md";
 import "./ModuleSetManagement.css";
 import LoadingSpinner from "./LoadingSpinner";
 
-const BASE_URL = "https://backend-wandering-river-6835.fly.dev";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const ModuleSetManagement = () => {
   // 전체 모듈 세트 데이터와 필터링된 데이터 상태
