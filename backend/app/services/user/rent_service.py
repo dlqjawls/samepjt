@@ -17,6 +17,8 @@ from app.db.crud.usage_history import usage_history_crud
 from app.utils.lut_constants import ItemType, ItemStatus, RentStatus, UsageStatus
 from app.db.crud.lut import module_type as module_type_crud
 from app.db.crud.option_type import option_type_crud
+from app.core.redis import redis_handler
+from app.websocket.websocket import WebSocketService
 
 class RentService:
     # 최소 대여 시간
@@ -244,9 +246,15 @@ class RentService:
         user_pk: int
     ) -> rent_schema.RentResponse:
         """새로운 렌트 프로세스를 생성합니다."""
-        # 1. 차량 및 모듈 가용성 검증
+        # 차량 및 모듈 가용성 검증
         vehicle = vehicle_crud.get_first_available_vehicle(session)
         module = module_crud.get_first_available_module(session)
+        
+        # 차량 연결 상태 검증
+        vehicle_key = f"vehicle:{vehicle.vin}"
+        vehicle_status = redis_handler.get(vehicle_key)
+        if vehicle_status != "connected":
+            raise ConflictError(message="차량이 네트워크에 연결되지 않았습니다.")
         
         # 2. 선택된 옵션들을 검증 및 조회
         selected_options : List[Option] = []
@@ -318,7 +326,9 @@ class RentService:
             module_id=module.module_id,
             option_ids=option_ids
         )
-
+        
+        WebSocketService.trigger_send_rent_request_message(vehicle.vin, rent_history.rent_id, module.module_nfc_tag_id)
+        
         return rent_schema.RentResponse(
             data=rent_schema.RentResponseData(
                 rent_id=rent_history.rent_id,
@@ -359,6 +369,11 @@ class RentService:
             obj_in={"rent_status_id": RentStatus.CANCELED.ID},
             id_field="rent_id"
         )
+        
+        vehicle = vehicle_crud.get_by_id(session, vehicle_id)
+        module = module_crud.get_by_id(session, module_id)
+        WebSocketService.trigger_send_return_message(vehicle.vin, rent_id, module.module_nfc_tag_id)
+        
         return rent_schema.CancelRentResponse(
             message="Rent canceled successfully",
             data=rent_schema.CancelRentResponseData(
@@ -450,7 +465,11 @@ class RentService:
             },
             id_field="rent_id"
         )
-
+        
+        vehicle = vehicle_crud.get_by_id(session, vehicle_id)
+        module = module_crud.get_by_id(session, module_id)
+        WebSocketService.trigger_send_return_message(vehicle.vin, rent_id, module.module_nfc_tag_id)
+        
         return rent_schema.CompleteRentResponse(
             message="Rental completed successfully",
             data=rent_schema.CompleteRentResponseData(
