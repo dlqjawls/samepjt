@@ -260,7 +260,7 @@ const Total_reciept = () => {
   return (
     <div className="receipt-container">
       <div className="receipt">
-        <h2 className="receipt-title">렌트카 옵션 영수증</h2>
+        <h2 className="receipt-title">모듀카 옵션 영수증</h2>
         <div className="receipt-header">
           <p>
             <span>주문 일자:</span>

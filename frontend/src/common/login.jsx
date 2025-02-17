@@ -31,7 +31,7 @@ const LoginButton = () => {
       }
 
       const response = await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/refresh-token",
+        `${import.meta.env.VITE_API_URL}/auth/refresh-token`,
         {
           refresh_token: refreshToken
         }
@@ -56,7 +56,7 @@ const LoginButton = () => {
   const handleLogout = async () => {
     const makeLogoutRequest = async (token) => {
       return await axios.post(
-        "https://backend-wandering-river-6835.fly.dev/auth/logout",
+        `${import.meta.env.VITE_API_URL}/auth/logout`,
         {},  // request body
         {
           headers: {

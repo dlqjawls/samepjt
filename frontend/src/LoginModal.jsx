@@ -32,6 +32,7 @@ const LoginModal = ({ onClose }) => {
     setIsLoading(true)
     setError("")
 
+    sessionStorage.setItem("id", formData.id)
     try {
       const encryptedData = {
         id: encryptData(formData.id),
