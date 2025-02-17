@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import LoginModal from "../LoginModal"
-import { useNavigate } from "react-router-dom"
+import { Meta, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toast } from "react-toastify"
 import "./Home.css"
@@ -19,7 +19,7 @@ function Home() {
           return
         }
 
-        const response = await axios.get(`https://backend-wandering-river-6835.fly.dev/user/rent/${rent_id}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/rent/${rent_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

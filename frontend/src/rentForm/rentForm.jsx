@@ -183,6 +183,8 @@ const RentForm = () => {
               endDate: rentEndDate,
             })
           )
+          console.log("Saved rent dates:", JSON.parse(sessionStorage.getItem("rentDates")));
+          
           sessionStorage.setItem("date_Cost", response.data.data.cost)
           navigate("/total_reciept")
         } else {

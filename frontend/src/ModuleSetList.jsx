@@ -97,7 +97,7 @@ function ModuleSetList() {
             {moduleSets.map((moduleSet) => (
               <div key={moduleSet.moduleSetId} className="module-card" onClick={() => handleSelectModule(moduleSet)}>
                 <img src={moduleSet.imgUrls[0]} alt={moduleSet.moduleSetName} />
-
+                {/* <img src="./예시.png" alt="" /> */}
                 <h4>{moduleSet.moduleSetName}</h4>
               </div>
             ))}
@@ -117,7 +117,7 @@ function ModuleSetList() {
 
             <div className="module-set-modal-body">
               <img src={selectedModule.imgUrls[0]} alt={`${selectedModule.moduleSetName} - 이미지 ${currentImageIndex + 1}`} />
-
+           
               <div className="module-modal-details">
                 <div className="module-modal-description">
                   <h3>상세 설명</h3>
