@@ -86,7 +86,10 @@ class DashboardService:
             .group_by("year_month")
         )
         results = session.exec(query).all()  
-        monthly_counts = [{"date": f"{int(year_month)}", "count": count} for year_month, count in results]
+        monthly_counts = [
+            {"month": f"{int(year_month.split('-')[1])}월", "count": count}
+            for year_month, count in results
+        ]
         return monthly_counts
 
     @staticmethod
