@@ -5,7 +5,7 @@ from app.db.models.vehicle import Vehicle
 from app.db.models.module import Module
 from app.db.models.option import Option
 from app.db.crud.lut import usage_status
-from app.utils.lut_constants import ItemType
+from app.utils.lut_constants import ItemType, UsageStatus
 from app.api.schemas.admin.usage_history_schema import (
     UsageHistoryGetResponse,
     UsageHistoryData,
@@ -63,7 +63,7 @@ class UsageHistoryService:
                 rent_id=record.rent_id,
                 item_id=record.item_id,
                 item_type_name=ItemType.get_name(record.item_type_id),
-                usage_status_name=usage_status.get_by_id(session, record.usage_status_id).usage_status_name,
+                usage_status_name=UsageStatus.get_name(record.usage_status_id),
                 created_at=record.created_at,
                 updated_at=record.updated_at
             )
