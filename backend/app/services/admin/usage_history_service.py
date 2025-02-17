@@ -9,8 +9,9 @@ from app.api.schemas.admin.usage_history_schema import (
 
 
 class UsageHistoryService:
+  
     @staticmethod
-    def get_usage_history(session: Session, page: int, page_size: int,) -> UsageHistoryGetResponse:
+    def get_usage_history(session: Session, page: int, page_size: int) -> UsageHistoryGetResponse:
         """사용 이력 데이터를 조회합니다."""
 
         query_result = usage_history_crud.get_list(session, page=page, page_size=page_size, include_deleted=True)

@@ -109,3 +109,6 @@ class DashboardService:
         results = session.exec(query).all()  # results: 리스트 형태 [(year_month, cost), ...]
         monthly_costs = [{"month": year_month, "cost": cost} for year_month, cost in results]
         return monthly_costs
+      
+      # 오늘 반납된 차량 조회 API가 없는 것을 확인
+      # 옵션 선호도 API가 없는 것을 확인

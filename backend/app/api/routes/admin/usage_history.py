@@ -61,4 +61,4 @@ def get_usage_history(
     session: Session = Depends(get_session),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
 ):
-    return UsageHistoryService.get_usage_history(session, page, page_size, include_deleted = True)
+    return UsageHistoryService.get_usage_history(session, page, page_size)
