@@ -8,9 +8,9 @@ const LoadingStatus = () => {
 
   useEffect(() => {
     // 각 단계별 타이밍 설정
-    const timer1 = setTimeout(() => setCurrentStep(2), 2000); // 2초 후 출발 단계
-    const timer2 = setTimeout(() => setCurrentStep(3), 4000); // 4초 후 도착 단계
-    const timer3 = setTimeout(() => navigate("/dashboard"), 6000); // 6초 후 대시보드로 이동
+    const timer1 = setTimeout(() => setCurrentStep(2), 13000); // 2초 후 출발 단계
+    const timer2 = setTimeout(() => setCurrentStep(3), 25000); // 4초 후 도착 단계
+    const timer3 = setTimeout(() => navigate("/dashboard"), 30000); // 6초 후 대시보드로 이동
 
     return () => {
       clearTimeout(timer1);
@@ -34,9 +34,15 @@ const LoadingStatus = () => {
         </div>
         <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
           <div className="step-circle">3</div>
-          <div className="step-label">도착</div>
-          {currentStep === 3 && <div className="loading-animation"></div>}
-        </div>
+          <div className="step-label">
+    {currentStep === 3 ? (
+      <span className="arrival-text">차량 도착!</span>
+    ) : (
+      "차량 도착"
+    )}
+  </div>
+  {currentStep === 3 && <div className="loading-animation"></div>}
+</div>
       </div>
     </div>
   );

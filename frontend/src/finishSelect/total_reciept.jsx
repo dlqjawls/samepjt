@@ -204,7 +204,8 @@ const Total_reciept = () => {
                 if (rentresponse.data.resultCode === "SUCCESS") {
                   console.log("차량 상태 조회 완료:", rentresponse.data)
                   sessionStorage.setItem("rentStatus", JSON.stringify(rentresponse.data.data))
-                  navigate("/car_status")
+                  // navigate("/car_status")
+                  navigate("/loading-status")
                 }
               } catch (error) {
                 console.error("차량 상태 조회 중 오류:", error)
@@ -217,7 +218,8 @@ const Total_reciept = () => {
         }
       } catch (error) {
         console.error("결제 처리 중 오류:", error)
-
+        
+        navigate("/loading-status")
         toast.error("차량이 모두 예약중입니다. 다른 시간대를 선택해주세요.")
       }
     }
