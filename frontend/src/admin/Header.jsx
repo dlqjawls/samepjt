@@ -5,12 +5,16 @@ import "./Header.css";
 import accountCircle from "../assets/account_circle.svg";
 import { AdminAuthContext } from "./context/AdminAuthContext";
 import { TbDatabaseSearch } from "react-icons/tb";
+// 반드시 이 형식으로 라이브러리를 불러와야 한다.
+import { jwtDecode } from "jwt-decode";
 
 function Header() {
   const navigate = useNavigate();
-  const { admin, logoutAdmin } = useContext(AdminAuthContext);
+  const { admin, logoutAdmin, accessToken, refreshTokens } =
+    useContext(AdminAuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const profileRef = useRef(null);
+  const [timeLeft, setTimeLeft] = useState(null);
 
   const handleLogout = () => {
     logoutAdmin();
@@ -20,6 +24,53 @@ function Header() {
   const toggleDropdown = (e) => {
     e.stopPropagation();
     setShowDropdown((prev) => !prev);
+  };
+
+  const calculateTimeLeft = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      // console.log("디코딩된 토큰:", decoded);
+      if (!decoded.exp) {
+        console.error("토큰에 exp 클레임이 없습니다.");
+        return 0;
+      }
+      const expiryTime = decoded.exp * 1000;
+      const currentTime = Date.now();
+      const remaining = expiryTime - currentTime;
+      return remaining > 0 ? remaining : 0;
+    } catch (error) {
+      console.error("토큰 디코딩 오류:", error);
+      return 0;
+    }
+  };
+
+  useEffect(() => {
+    if (accessToken) {
+      const intervalId = setInterval(() => {
+        setTimeLeft(calculateTimeLeft(accessToken));
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [accessToken]);
+
+  const formatTime = (milliseconds) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
+      2,
+      "0"
+    );
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+    return `${minutes}분 ${seconds}초`;
+    // return `${hours}시간 ${minutes}분 ${seconds}초`;
+  };
+
+  const handleManualRefresh = async () => {
+    try {
+      await refreshTokens();
+    } catch (error) {
+      console.error("수동 토큰 갱신 실패:", error);
+    }
   };
 
   useEffect(() => {
@@ -42,6 +93,21 @@ function Header() {
         <button className="total-search-button">
           <TbDatabaseSearch />
         </button> */}
+      </div>
+      <div className="header-left">
+        {accessToken && (
+          <button
+            className="token-refresh-button"
+            onClick={handleManualRefresh}
+          >
+            시간 연장
+          </button>
+        )}
+        {accessToken && (
+          <div className="token-expiry">
+            {timeLeft !== null ? formatTime(timeLeft) : ""}
+          </div>
+        )}
       </div>
 
       {/* 우측 아이콘/프로필 */}
