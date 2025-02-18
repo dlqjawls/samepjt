@@ -7,6 +7,7 @@ import asyncio
 from enum import Enum
 from io import BytesIO
 from typing import Dict, Any
+from app.core import s3_storage
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
@@ -15,7 +16,6 @@ from app.core.redis import redis_handler
 
 router = APIRouter()
 
-# 메시지 타입 및 서비스/토픽 정의
 class MessageType(Enum):
     SERVICE = "service"
     TOPIC = "topic"
@@ -26,6 +26,7 @@ class ServiceType(Enum):
     UPDATE_DESTINATION = "/vehicle/destination/update"  # 목적지 업데이트
     RETURN = "/vehicle/return"                    # 렌트 종료
     MODULE_MOUNT = "/vehicle/module/mount"        # 모듈 장착 영상
+    MODULE_RETURN = "/vehicle/module/return"      # 모듈 반납 영상
 
 class TopicType(Enum):
     VEHICLE_STATUS = "/vehicle/status"            # 차량 상태
@@ -90,9 +91,8 @@ async def handle_module_mount(client_id: str, payload: dict) -> dict:
     try:
         decoded_video = base64.b64decode(video_content)
         video_file_obj = BytesIO(decoded_video)
-        from app.core import s3_storage
         video_url = s3_storage.upload_file_generic(
-            video_file_obj, "videos", rent_id, filename=filename, default_ext=".mp4",
+            video_file_obj, "videos/mount", rent_id, filename=filename, default_ext=".mp4",
             ExtraArgs={"ACL": "public-read", "ContentType": "video/mp4"}
         )
     except Exception as e:
@@ -100,11 +100,35 @@ async def handle_module_mount(client_id: str, payload: dict) -> dict:
     
     print(f"영상 저장 완료: {video_url}")
     return {"success": True, "message": "Module mount video processed successfully", "video_url": video_url}
+  
+  
+async def handle_module_return(client_id: str, payload: dict) -> dict:
+    rent_id = payload.get("rent_id")
+    video_content = payload.get("video")
+    if not rent_id or not video_content:
+        return {"success": False, "message": "rent_id 또는 video 데이터가 누락되었습니다."}
+    
+    # 파일 이름 생성 (예: module_mount_1676582345.mp4)
+    filename = f"module_return_{int(time.time())}.mp4"
+    
+    try:
+        decoded_video = base64.b64decode(video_content)
+        video_file_obj = BytesIO(decoded_video)
+        video_url = s3_storage.upload_file_generic(
+            video_file_obj, "videos/return", rent_id, filename=filename, default_ext=".mp4",
+            ExtraArgs={"ACL": "public-read", "ContentType": "video/mp4"}
+        )
+    except Exception as e:
+        return {"success": False, "message": f"영상 업로드 실패: {str(e)}"}
+    
+    print(f"영상 저장 완료: {video_url}")
+    return {"success": True, "message": "Module return video processed successfully", "video_url": video_url}
 
 service_handlers = {
     ServiceType.CONNECT_VEHICLE.value: handle_connect_vehicle,
     ServiceType.RENT_REQUEST.value: handle_rent_request,
     ServiceType.MODULE_MOUNT.value: handle_module_mount,
+    ServiceType.MODULE_RETURN.value: handle_module_return
 }
 
 async def process_message(client_id: str, message: dict) -> dict:
