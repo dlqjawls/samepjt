@@ -7,12 +7,16 @@ import asyncio
 from enum import Enum
 from io import BytesIO
 from typing import Dict, Any
+
 from app.core import s3_storage
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 
 from app.core.redis import redis_handler
+from app.services.video_service import VideoService
+from app.core.database import get_session
+from app.utils.lut_constants import VideoType
 
 router = APIRouter()
 
@@ -97,6 +101,8 @@ async def handle_module_mount(client_id: str, payload: dict) -> dict:
         )
     except Exception as e:
         return {"success": False, "message": f"영상 업로드 실패: {str(e)}"}
+      
+    VideoService.store_video(session = Depends(get_session),rent_id= rent_id,video_type_id=VideoType.MODULE.ID, video_url=video_url)
     
     print(f"영상 저장 완료: {video_url}")
     return {"success": True, "message": "Module mount video processed successfully", "video_url": video_url}
@@ -120,6 +126,8 @@ async def handle_module_return(client_id: str, payload: dict) -> dict:
         )
     except Exception as e:
         return {"success": False, "message": f"영상 업로드 실패: {str(e)}"}
+      
+    VideoService.store_video(session = Depends(get_session),rent_id= rent_id,video_type_id=VideoType.AUTONOMOUS_DRIVING.ID, video_url=video_url)
     
     print(f"영상 저장 완료: {video_url}")
     return {"success": True, "message": "Module return video processed successfully", "video_url": video_url}

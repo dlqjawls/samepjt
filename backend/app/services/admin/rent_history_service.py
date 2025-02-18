@@ -4,13 +4,13 @@ from app.db.models.rent_history import RentHistory
 from app.db.models.vehicle import Vehicle
 from app.utils.exceptions import NotFoundError, DatabaseError
 from app.db.crud.usage_history import usage_history_crud
-from app.db.crud.vehicle import vehicle_crud
 from app.db.crud.option import option_crud
 from app.db.crud.rent_history import rent_history_crud
 from app.api.schemas.admin.rent_history_schema import RentHistoryResponse, RentHistoryData, RentHistoryItem, RentVideoItem, RentVideoData, RentVideoResponse
-from app.utils.lut_constants import ItemType, RentStatus
+from app.utils.lut_constants import ItemType, RentStatus, VideoType
 from datetime import datetime
 from typing import Any, Dict, cast
+from app.db.crud.video_storage import video_storage_crud
 
 
 class RentHistoryService:
@@ -106,37 +106,25 @@ class RentHistoryService:
         )
 
     @staticmethod
-    def get_rent_videos(session: Session, rent_id: int, video_type: str) -> RentVideoResponse:
+    def get_rent_videos(session: Session, rent_id: int, video_type_id: int) -> RentVideoResponse:
         """특정 대여(rent_id)에 대한 영상을 조회합니다."""
         
-        # TODO: 클라우드 스토리지와 연동하여 rent_id/video_type 기반의 영상을 실제로 조회하도록 구현합니다.
-        dummy_videos = [
-            {
-                "video_id": 501,
-                "rent_id": rent_id,
-                "video_type": "module installation",
-                "video_url": "https://example.com/videos/501.mp4",
-                "recorded_at": datetime(2025, 2, 1, 10, 0, 0)
-
-            },
-            {
-                "video_id": 602,
-                "rent_id": rent_id,
-                "video_type": "autonomous driving",
-                "video_url": "https://example.com/videos/602.mp4",
-                "recorded_at": datetime(2025, 2, 1, 10, 15, 0)
-
-            }
-        ]
-        
         #  1. rent_id에 해당하는 영상을 가져옴
-        videos = [video for video in dummy_videos if video["video_type"] == video_type]
-        
+        videos = video_storage_crud.get_by_rent_id(session, rent_id, video_type_id)
         #  2. 영상 목록을 RentVideoItem 형식으로 변환
-        video_items = [RentVideoItem(**cast(Dict[str, Any], video)) for video in videos]    
+        video_items = []
+        for video in videos:
+            video_items.append(
+                RentVideoItem(
+                    video_id=video.video_id,
+                    rent_id=video.rent_id,
+                    video_type=VideoType.get_name(video.video_type_id),
+                    video_url=video.video_url,
+                    recorded_at=video.created_at,
+                )
+            )
         
         #  3. RentVideoResponse 형식으로 반환
-
         return RentVideoResponse.success(
             message="Videos retrieved successfully",
             data=RentVideoData(videos=video_items)

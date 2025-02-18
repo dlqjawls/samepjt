@@ -4,6 +4,7 @@ from app.services.admin.rent_history_service import RentHistoryService
 from app.core.database import get_session
 from app.api.schemas.admin.rent_history_schema import RentHistoryResponse, RentVideoResponse
 from app.core.jwt import JWTPayload, jwt_handler
+from app.utils.lut_constants import VideoType
 
 router = APIRouter()
 
@@ -153,7 +154,7 @@ def get_module_install_videos(
     rent_id: int = Path(..., description="대여 ID"),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
 ):
-    return RentHistoryService.get_rent_videos(session, rent_id, "module installation") 
+    return RentHistoryService.get_rent_videos(session, rent_id, VideoType.MODULE.ID) 
 
 
 
@@ -192,4 +193,4 @@ def get_autonomous_videos(
     rent_id: int = Path(..., description="대여 ID"),
     token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master", "semi"]))
 ):
-    return RentHistoryService.get_rent_videos(session, rent_id, "autonomous driving") 
+    return RentHistoryService.get_rent_videos(session, rent_id, VideoType.AUTONOMOUS_DRIVING.ID) 
