@@ -4,6 +4,7 @@ import axios from "axios";
 import { AdminAuthContext } from "./AdminAuthContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -23,6 +24,8 @@ export const AdminAuthProvider = ({ children }) => {
 
   // ref를 사용하여 로그아웃 처리 중임을 추적
   const isLoggingOutRef = useRef(false);
+  // 현재 진행 중인 토큰 갱신 요청을 저장할 ref
+  const refreshPromiseRef = useRef(null);
 
   const loginAdmin = (adminData) => {
     setAdmin(adminData);
@@ -46,6 +49,92 @@ export const AdminAuthProvider = ({ children }) => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminRefreshToken");
   };
+
+  // 토큰 갱신 함수
+  const refreshTokens = async () => {
+    if (!refreshToken) {
+      throw new Error("리프레시 토큰이 없습니다.");
+    }
+    if (!refreshPromiseRef.current) {
+      refreshPromiseRef.current = axios.post(
+        `${BASE_URL}/auth/refresh-token`,
+        { refresh_token: refreshToken },
+        { headers: { "Content-Type": "application/json" } }
+      );
+    }
+    const refreshResponse = await refreshPromiseRef.current;
+    refreshPromiseRef.current = null;
+    if (refreshResponse.data.resultCode === "SUCCESS") {
+      const newAccessToken = refreshResponse.data.data.access_token;
+      const newRefreshToken = refreshResponse.data.data.refresh_token;
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
+      localStorage.setItem("adminToken", newAccessToken);
+      localStorage.setItem("adminRefreshToken", newRefreshToken);
+      toast.info("세션이 연장되었습니다.");
+      return newAccessToken;
+    } else {
+      throw new Error("토큰 갱신 응답 실패");
+    }
+  };
+
+  const getTimeLeft = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      if (!decoded.exp) return 0;
+      const expiryTime = decoded.exp * 1000;
+      const currentTime = Date.now();
+      return expiryTime - currentTime;
+    } catch (error) {
+      console.error("토큰 디코딩 오류:", error);
+      return 0;
+    }
+  };
+
+  useEffect(() => {
+    if (!accessToken || !refreshToken) return;
+
+    const threshold = 1 * 60 * 1000; // 1분
+    const intervalId = setInterval(async () => {
+      const timeLeft = getTimeLeft(accessToken);
+      // console.log("토큰 남은 시간:", timeLeft);
+      if (timeLeft < threshold) {
+        if (!refreshPromiseRef.current) {
+          refreshPromiseRef.current = axios
+            .post(
+              `${BASE_URL}/auth/refresh-token`,
+              { refresh_token: refreshToken },
+              { headers: { "Content-Type": "application/json" } }
+            )
+            .then((refreshResponse) => {
+              refreshPromiseRef.current = null;
+              if (refreshResponse.data.resultCode === "SUCCESS") {
+                const newAccessToken = refreshResponse.data.data.access_token;
+                const newRefreshToken = refreshResponse.data.data.refresh_token;
+                setAccessToken(newAccessToken);
+                setRefreshToken(newRefreshToken);
+                localStorage.setItem("adminToken", newAccessToken);
+                localStorage.setItem("adminRefreshToken", newRefreshToken);
+                toast.info("세션이 연장되었습니다.");
+              } else {
+                throw new Error("토큰 갱신 응답 실패");
+              }
+            })
+            .catch((error) => {
+              refreshPromiseRef.current = null;
+              console.error("자동 토큰 갱신 실패:", error);
+              if (!isLoggingOutRef.current) {
+                toast.error("세션이 만료되었습니다. 다시 로그인 해주세요.");
+                logoutAdmin();
+                navigate("/admin/login");
+              }
+            });
+        }
+      }
+    }, 30 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, [accessToken, refreshToken, navigate]);
 
   useEffect(() => {
     // 요청 인터셉터: 모든 요청에 Authorization 헤더 자동 설정
@@ -71,31 +160,22 @@ export const AdminAuthProvider = ({ children }) => {
           !originalRequest._retry
         ) {
           originalRequest._retry = true;
-          if (!refreshToken) {
-            console.error("리프레시 토큰이 없습니다.");
-            if (!isLoggingOutRef.current) {
-              toast.error("세션이 만료되었습니다. 다시 로그인 해주세요.");
-              logoutAdmin();
-              navigate("/admin/login");
-            }
-            return Promise.reject(error);
-          }
-          try {
-            console.log("토큰 갱신 시도, 현재 refreshToken:", refreshToken);
-            const refreshResponse = await axios.post(
+          if (!refreshPromiseRef.current) {
+            refreshPromiseRef.current = axios.post(
               `${BASE_URL}/auth/refresh-token`,
               { refresh_token: refreshToken },
               { headers: { "Content-Type": "application/json" } }
             );
+          }
+          try {
+            const refreshResponse = await refreshPromiseRef.current;
+            refreshPromiseRef.current = null; // 갱신 완료 후 초기화
+
             if (refreshResponse.data.resultCode === "SUCCESS") {
               const newAccessToken = refreshResponse.data.data.access_token;
               const newRefreshToken = refreshResponse.data.data.refresh_token;
               setAccessToken(newAccessToken);
               setRefreshToken(newRefreshToken);
-              console.log("Token refreshed successfully:", {
-                newAccessToken,
-                newRefreshToken,
-              });
               localStorage.setItem("adminToken", newAccessToken);
               localStorage.setItem("adminRefreshToken", newRefreshToken);
               originalRequest.headers[
@@ -112,6 +192,7 @@ export const AdminAuthProvider = ({ children }) => {
               return Promise.reject(error);
             }
           } catch (refreshError) {
+            refreshPromiseRef.current = null;
             console.error("토큰 갱신 중 오류:", refreshError);
             if (!isLoggingOutRef.current) {
               toast.error("세션이 만료되었습니다. 다시 로그인 해주세요.");
@@ -133,7 +214,7 @@ export const AdminAuthProvider = ({ children }) => {
 
   return (
     <AdminAuthContext.Provider
-      value={{ admin, loginAdmin, logoutAdmin, accessToken }}
+      value={{ admin, loginAdmin, logoutAdmin, accessToken, refreshTokens }}
     >
       {children}
     </AdminAuthContext.Provider>

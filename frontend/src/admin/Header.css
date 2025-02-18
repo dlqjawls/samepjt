@@ -2,37 +2,36 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: right;
   align-items: center;
   padding: 10px 20px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.header-search {
+.header .header-search {
   display: flex;
   align-items: center;
 }
 
-.header-search input {
+.header .header-search input {
   margin-left: 5px;
   padding: 5px 10px;
   font-size: 16px;
   border-radius: 10px;
   border: 1px #65bbe6 solid;
   outline: none;
-
 }
-.header-search input::placeholder {
+.header .header-search input::placeholder {
   font-size: 13px;
 }
 
-.header-search input:focus {
+.header .header-search input:focus {
   border: 2px #65bbe6 solid;
   box-shadow: 0 0 5px rgba(101, 187, 230, 0.5);
 }
 
-.total-search-button {
+.header .total-search-button {
   background-color: #65bbe6;
   color: white;
   border: none;
@@ -45,24 +44,30 @@
   justify-content: center;
 }
 
-.total-search-button:hover {
+.header .total-search-button:hover {
   background-color: #549acb;
 }
 
-.header-right {
+.header .header-left {
   display: flex;
   align-items: center;
   margin-right: 0px;
 }
 
-.icon {
+.header .header-right {
+  display: flex;
+  align-items: center;
+  margin-right: 0px;
+}
+
+.header .icon {
   margin-left: 24px;
   font-size: 20px;
   cursor: pointer;
-  color: #A0A0A0;
+  color: #a0a0a0;
 }
 
-.profile {
+.header .profile {
   margin-left: 20px;
   position: relative;
   cursor: pointer;
@@ -70,9 +75,9 @@
   align-items: center;
 }
 
-.profile-dropdown {
+.header .profile-dropdown {
   position: absolute;
-  top: 100%; 
+  top: 100%;
   right: 0;
   background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -81,7 +86,7 @@
   border-top: rgba(160, 160, 160, 0.3) 1px solid;
 }
 
-.admin-logout-button {
+.header .admin-logout-button {
   background: none;
   border: none;
   color: #333;
@@ -90,16 +95,46 @@
   margin: 6px 16px;
 }
 
-.profile-name {
+.header .profile-name {
   margin-right: 10px;
   font-weight: 600;
   font-size: 18px;
 }
 
-.profile-image {
+.header .profile-image {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin: 10px;
 }
 
+.header .header-left {
+  border: 1px solid #bbc6d2;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 164px;
+}
+
+.header .token-expiry {
+  /* margin-right: 5px; */
+  min-width: 60px;
+  margin-right: 10px;
+  padding: 8px;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}
+
+.header .token-refresh-button {
+  padding: 8px 10px;
+  font-size: 14px;
+  background-color: #bbc6d2;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
