@@ -119,7 +119,7 @@ def seed_data(session: Session) -> None:
         session.add_all(payment_methods)
 
         # 📌 사용자 데이터 삽입
-        base_date = datetime.now()
+        base_date = datetime(2025, 1, 1)
         dummy_users = [
             User(
                 user_pk=1,
@@ -264,26 +264,144 @@ def seed_data(session: Session) -> None:
                 dummy_options.append(option)
                 current_id += 1
         session.add_all(dummy_options)
-
-        # 📌 모듈 세트 정의
-        module_set_definitions = [
-         ]
-
+        
+        
+        module_set_definitions = [  ]
+        
         # 📌 모듈 세트 데이터 삽입
         dummy_module_sets = [
             ModuleSet(
-                module_set_id=i + 1,
-                module_set_name=module_set_def.name,
-                description="",
-                module_set_images="https://github.com/user-attachments/assets/caaa16b4-702b-4708-8973-c1ac948c5ef4,https://github.com/user-attachments/assets/edb03e19-1008-49f3-8e6d-208e9f6d478e",
-                module_set_features="",  # 옵션 타입에 기반하여 업데이트될 것임
+                module_set_id=1,
+                module_set_name="기본 모듈",
+                description="옵션이 없는 기본 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/1/1.JPG",
+                module_set_features="",  
                 module_type_id=1,
                 created_at=base_date,
                 updated_at=base_date,
                 created_by=1,
                 updated_by=1
-            )
-            for i, module_set_def in enumerate(module_set_definitions)
+            ),
+            ModuleSet(
+                module_set_id=2,
+                module_set_name="배송 모듈",
+                description="배송용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/2/2.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=3,
+                module_set_name="캠핑핑 모듈",
+                description="캠핑용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/3/3.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=4,
+                module_set_name="화장실 모듈",
+                description="화장실용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/4/4.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=5,
+                module_set_name="푸드트럭 모듈",
+                description="푸드트럭용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/5/5.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=6,
+                module_set_name="카페 모듈",
+                description="카페용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/6/6.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=7,
+                module_set_name="게임 모듈",
+                description="게임용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/7/7.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=8,
+                module_set_name="스크린골프 모듈",
+                description="스크린골프용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/8/8.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=9,
+                module_set_name="영화관 모듈",
+                description="영화관용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/9/9.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=10,
+                module_set_name="냉동 모듈",
+                description="냉동용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/10/10.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            ModuleSet(
+                module_set_id=11,
+                module_set_name="세탁실 모듈",
+                description="세탁실용 모듈 세트입니다.",
+                module_set_images="https://moducar.s3.amazonaws.com/moduletype/11/11.JPG",
+                module_set_features="",  
+                module_type_id=1,
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
         ]
         session.add_all(dummy_module_sets)
 
