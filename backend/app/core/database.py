@@ -49,20 +49,6 @@ async def initialize_database() -> None:
         logger.info("🔹 데이터베이스 스키마 생성 중...")
         SQLModel.metadata.create_all(engine)
         logger.info("✅ 데이터베이스 스키마 생성 완료")
-            
-        logger.info("🔹 초기 데이터 삽입 중...")
-        with Session(engine) as session:
-            try:
-                from app import seed
-                seed.seed_data(session)
-                session.commit()
-                logger.info("✅ 초기 데이터 삽입 완료")
-            except Exception as e:
-                session.rollback()
-                raise DatabaseError(
-                    message="Failed to insert seed data",
-                    detail={"error": str(e)}
-                )
                 
     except Exception as e:
         if isinstance(e, DatabaseError):

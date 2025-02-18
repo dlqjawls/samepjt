@@ -226,35 +226,6 @@ def seed_data(session: Session) -> None:
 
         # 📌 옵션 유형 데이터 삽입
         option_type_definitions = [
-            OptionTypeDefinition("침대", [], "푹신한 침대입니다."),
-            OptionTypeDefinition("테이블", [], "넓은 테이블입니다."),
-            OptionTypeDefinition("의자", [], "편안한 의자입니다."),
-            OptionTypeDefinition("냉장고", [], "음식을 보관할 수 있습니다."),
-            OptionTypeDefinition("배터리", ["배터리 잔여량"], "전력을 공급합니다."),
-            OptionTypeDefinition("수납장", [], "물건을 보관할 수 있습니다."),
-            OptionTypeDefinition("물탱크", ["물탱크 잔여량", "폐수량"], "물을 저장합니다."),
-            OptionTypeDefinition("냉난방기", ["실내온도"], "실내 온도를 조절합니다."),
-            OptionTypeDefinition("조명", ["조명세기"], "실내 조명을 제공합니다."),
-            OptionTypeDefinition("대형모니터", [], "대형 화면을 제공합니다."),
-            OptionTypeDefinition("좌변기", [], "좌변기 옵션입니다."),
-            OptionTypeDefinition("세면대", [], "세면대 옵션입니다."),
-            OptionTypeDefinition("거울", [], "거울 옵션입니다."),
-            OptionTypeDefinition("간이계단", [], "간이계단 옵션입니다."),
-            OptionTypeDefinition("LPG", [], "LPG 옵션입니다."),
-            OptionTypeDefinition("버너", [], "버너 옵션입니다."),
-            OptionTypeDefinition("싱크대", [], "싱크대 옵션입니다."),
-            OptionTypeDefinition("튀김기", [], "튀김기 옵션입니다."),
-            OptionTypeDefinition("냄비", [], "냄비 옵션입니다."),
-            OptionTypeDefinition("전자레인지", [], "전자레인지 옵션입니다."),
-            OptionTypeDefinition("에어컨", ["실내온도"], "에어컨 옵션입니다."),
-            OptionTypeDefinition("커피 머신", ["커피머신 잔량"], "커피 머신 옵션입니다."),
-            OptionTypeDefinition("자판기", ["자판기 물품 재고량"], "자판기 옵션입니다."),
-            OptionTypeDefinition("스크린 골프", [], "스크린 골프 옵션입니다."),
-            OptionTypeDefinition("탁구", [], "탁구 옵션입니다."),
-            OptionTypeDefinition("보드게임", [], "보드게임 옵션입니다."),
-            OptionTypeDefinition("게임기", [], "게임기 옵션입니다."),
-            OptionTypeDefinition("리클라이닝 의자", [], "리클라이닝 의자 옵션입니다."),
-            OptionTypeDefinition("가스경보기", [], "가스경보기 옵션입니다.")
         ]
 
         dummy_option_types = [
@@ -296,16 +267,7 @@ def seed_data(session: Session) -> None:
 
         # 📌 모듈 세트 정의
         module_set_definitions = [
-            ModuleSetDefinition("기본 모듈", ["조명"]),
-            ModuleSetDefinition("캠핑 모듈", ["침대", "테이블", "의자", "냉장고", "배터리", "수납장", "물탱크", "냉난방기", "조명"]),
-            ModuleSetDefinition("오피스 모듈", ["테이블", "의자", "대형모니터", "배터리", "냉장고"]),
-            ModuleSetDefinition("화장실 모듈", ["좌변기", "세면대", "거울", "간이계단"]),
-            ModuleSetDefinition("푸드트럭 모듈", ["LPG", "버너", "싱크대", "튀김기", "냄비", "냉장고", "전자레인지", "의자", "에어컨", "가스경보기"]),
-            ModuleSetDefinition("카페 모듈", ["테이블", "의자", "커피 머신", "자판기", "냉난방기", "싱크대"]),
-            ModuleSetDefinition("스포츠 모듈", ["스크린 골프", "탁구", "보드게임"]),
-            ModuleSetDefinition("게임 모듈", ["대형모니터", "테이블", "배터리", "게임기", "냉난방기"]),
-            ModuleSetDefinition("영화관 모듈", ["대형모니터", "리클라이닝 의자", "테이블", "냉난방기", "배터리"])
-        ]
+         ]
 
         # 📌 모듈 세트 데이터 삽입
         dummy_module_sets = [
