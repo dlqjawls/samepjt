@@ -250,12 +250,415 @@ def seed_data(session: Session) -> None:
         dummy_option_types = [
             OptionType(
                 option_type_id=1,
-                option_type_name="테스트",
+                option_type_name="TV",
                 option_type_size="1x1",
-                option_type_cost=30000,
-                description="테스트옵션",
-                option_type_images=fake.image_url() + ", " + fake.image_url(),
-                option_type_features="테스트 기능1, 테스트 기능2",
+                option_type_cost=3000,
+                description="벽걸이형 TV 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/1/1_TV.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=2,
+                option_type_name="테이블",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="소형 테이블 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/2/2_%ED%85%8C%EC%9D%B4%EB%B8%94.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=3,
+                option_type_name="침대",
+                option_type_size="1x1",
+                option_type_cost=5000,
+                description="소형 침대 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/3/3_%EC%B9%A8%EB%8C%80.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=4,
+                option_type_name="냉장고",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="냉장고 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/4/4_%EB%83%89%EC%9E%A5%EA%B3%A0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=5,
+                option_type_name="옷장",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="옷장 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/5/5_%EC%98%B7%EC%9E%A5.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=6,
+                option_type_name="수납장",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="소형 수납장 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/6/6_%EC%88%98%EB%82%A9%EC%9E%A5.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=7,
+                option_type_name="싱크대",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="싱크대 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/7/7_%EC%8B%B1%ED%81%AC%EB%8C%80.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=8,
+                option_type_name="세탁기",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="세탁기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/8/8_%EC%84%B8%ED%83%81%EA%B8%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=9,
+                option_type_name="인덕션",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="요리용 인덕션 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/9/9_%EC%9D%B8%EB%8D%95%EC%85%98.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=10,
+                option_type_name="후드",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="요리용 후드 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/10/10_%ED%9B%84%EB%93%9C.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=11,
+                option_type_name="세면대",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="세면대 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/11/1_%EC%84%B8%EB%A9%B4%EB%8C%80.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=12,
+                option_type_name="거울",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="벽걸이형 거울 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/12/2_%EA%B1%B0%EC%9A%B8.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=13,
+                option_type_name="쓰레기통",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="소형 쓰레기통 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/13/3_%EC%93%B0%EB%A0%88%EA%B8%B0%ED%86%B5.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=14,
+                option_type_name="양변기",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="양변기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/14/4_%EC%96%91%EB%B3%80%EA%B8%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),            
+            OptionType(
+                option_type_id=15,
+                option_type_name="남성용 소변기",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="남성용 소변기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/15/5_%EB%82%A8%EC%84%B1%EC%86%8C%EB%B3%80%EA%B8%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=16,
+                option_type_name="수전",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="수전 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/16/6_%EC%88%98%EC%A0%84.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=17,
+                option_type_name="대형그릇",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="대형 그릇 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/17/6_%EB%8C%80%ED%98%95%EA%B7%B8%EB%A6%87.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=18,
+                option_type_name="가스레인지",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="조리용 가스레인지 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/18/8_%EA%B0%80%EC%8A%A4%EB%A0%88%EC%9D%B8%EC%A7%80.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=19,
+                option_type_name="에어컨",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="에어컨 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/19/1_%EC%97%90%EC%96%B4%EC%BB%A8.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=20,
+                option_type_name="대형 냄비",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="대형 냄비 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/20/3_%EB%8C%80%ED%98%95%EB%83%84%EB%B9%84.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=21,
+                option_type_name="중형 냄비",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="중형 냄비 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/21/4_%EC%A4%91%ED%98%95%EB%83%84%EB%B9%84.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=22,
+                option_type_name="소형 냄비",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="소형 냄비 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/22/5_%EC%86%8C%ED%98%95%EB%83%84%EB%B9%84.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=23,
+                option_type_name="가판대",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="가판대 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/23/10_%EA%B0%80%ED%8C%90%EB%8C%80.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=24,
+                option_type_name="커피 머신",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="커피 머신 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/24/2_%EC%BB%A4%ED%94%BC%EB%A8%B8%EC%8B%A0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=25,
+                option_type_name="대형 테이블",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="대형 테이블 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/25/3_%EB%8C%80%ED%98%95%ED%83%81%EC%9E%90.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=26,
+                option_type_name="포스기",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="포스기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/26/6_%ED%8F%AC%EC%8A%A4%EA%B8%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=27,
+                option_type_name="스크린골프용 스크린",
+                option_type_size="3x1",
+                option_type_cost=5000,
+                description="스크린골프용 스크린 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/27/1_%EC%8A%A4%ED%81%AC%EB%A6%B0%EA%B3%A8%ED%94%84%EC%9A%A9_%EC%8A%A4%ED%81%AC%EB%A6%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=28,
+                option_type_name="골프채",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="골프채 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/28/2_%EA%B3%A8%ED%94%84%EC%B1%84.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=29,
+                option_type_name="골프채 거치대",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="골프채 거치대 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/29/3_%EA%B3%A8%ED%94%84%EC%B1%84_%EA%B1%B0%EC%B9%98%EB%8C%80.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=30,
+                option_type_name="골프공",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="골프공 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/30/4_%EA%B3%A8%ED%94%84%EA%B3%B5.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=31,
+                option_type_name="골프 카펫",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="골프 카펫 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/31/5_%EA%B3%A8%ED%94%84%EC%B9%B4%ED%8E%AB.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=32,
+                option_type_name="스코어 스크린",
+                option_type_size="1x1",
+                option_type_cost=4000,
+                description="스코어 스크린 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/32/6_%EC%8A%A4%EC%BD%94%EC%96%B4_%EC%8A%A4%ED%81%AC%EB%A6%B0.JPG",
+                option_type_features="",
                 created_at=base_date,
                 updated_at=base_date,
                 created_by=1,
@@ -311,7 +714,7 @@ def seed_data(session: Session) -> None:
             ),
             ModuleSet(
                 module_set_id=3,
-                module_set_name="캠핑핑 모듈",
+                module_set_name="캠핑 모듈",
                 description="캠핑용 모듈 세트입니다.",
                 module_set_images="https://moducar.s3.amazonaws.com/moduletype/3/3.JPG",
                 module_set_features="",  
@@ -421,14 +824,88 @@ def seed_data(session: Session) -> None:
         session.add_all(dummy_module_sets)
 
         # 📌 모듈 세트 옵션 타입 데이터 삽입
-        dummy_module_set_option_types = []
-        dummy_module_set_option_types.append(
+        dummy_module_set_option_types= [
             ModuleSetOptionTypes(
-                module_set_id=1,
+                module_set_id=3,
                 option_type_id=1,
                 option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=2,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=3,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=4,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=5,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=6,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=7,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=8,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=9,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=3,
+                option_type_id=10,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=4,
+                option_type_id=11,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=4,
+                option_type_id=12,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=4,
+                option_type_id=13,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=4,
+                option_type_id=14,
+                option_quantity=3
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=4,
+                option_type_id=15,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=4,
+                option_type_id=16,
+                option_quantity=2
             )
-        )
+        ]
       
         session.add_all(dummy_module_set_option_types)
         session.commit()
