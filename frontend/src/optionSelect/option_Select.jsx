@@ -13,6 +13,7 @@ const OptionDetailsModal = ({ option, onClose }) => {
           ×
         </button>
         <img src={option.imgUrls[0]} alt={option.optionTypeName} className="modal-image" />
+       
         <h2>{option.optionTypeName}</h2>
         <div className="modal-details">
           <p>
@@ -198,6 +199,7 @@ const ExistOptionsPage = () => {
                 <div key={option.optionTypeId} className="custom-card" onClick={() => setSelectedOptionDetails(option)}>
                   <div className="custom-info">
                     <img src={option.imgUrls[0]} alt={option.optionTypeName} className="custom-image" />
+                    
                     <div className="custom-details">
                       <h3>{option.optionTypeName}</h3>
                       <p>{option.description}</p>

@@ -37,6 +37,8 @@
   font-weight: bold;
   margin-bottom: 10px;
   transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 2;
 }
 
 .step.active .step-circle {
@@ -77,14 +79,25 @@
 .step:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: 20px;
+  top: 22px;  /* step-circle의 중앙에 맞춤 */
   right: -50%;
   width: 100%;
   height: 2px;
-  background-color: #ccc;
-  z-index: 0;
+  background-color: #e0e0e0;
+  z-index: 1;  /* step-circle보다 아래에 위치하도록 함 */
 }
 
 .step.active:not(:last-child)::after {
   background-color: #4caf50;
+}
+.arrival-text {
+  animation: blink 1.5s infinite;
+  font-weight: bold;
+  color: black;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
