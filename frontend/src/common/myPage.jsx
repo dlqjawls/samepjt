@@ -154,7 +154,7 @@ const MyPage = () => {
   useEffect(() => {
     const token = sessionStorage.getItem("token")
     if (token) {
-      fetchUserInfo()
+      // fetchUserInfo()
       fetchRentStatus(token)
       fetchRentHistory()
     }
@@ -304,14 +304,15 @@ const MyPage = () => {
                 {userInfo && (
                   <form
                     className="profile-form"
-                    onSubmit={(e) => {
-                      e.preventDefault()
-                      handleProfileUpdate({
-                        name: e.target.name.value,
-                        email: e.target.email.value,
-                        phone: e.target.phone.value,
-                      })
-                    }}
+                  //   onSubmit={(e) => {
+                  //     e.preventDefault()
+                  //     handleProfileUpdate({
+                  //       name: e.target.name.value,
+                  //       email: e.target.email.value,
+                  //       phone: e.target.phone.value,
+                  //     })
+                  //   }
+                  // }
                   >
                     <div className="form-group">
                       <label>이름</label>

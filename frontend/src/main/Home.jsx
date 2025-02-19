@@ -43,11 +43,11 @@ function Home() {
     <div>
       <div className="image-container">
         <img src="modulecar.jpg" alt="car" className="full-screen-image" onClick={goToRentalPage} />
-        <div className="headline-content">
+        {/* <div className="headline-content">
           <h2>모두가 원하는차</h2>
           <h3>모두카</h3>
           <p>아 퇴근하고싶다 정말 야근해야하나</p>
-        </div>
+        </div> */}
       </div>
       {/* <button onClick={goToRentalPage}>대여페이지</button> */}
 
