@@ -180,6 +180,10 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             except json.JSONDecodeError:
                 error_msg = {"type": "error", "payload": {"message": "Invalid JSON message"}}
                 await manager.send_personal_message(error_msg, client_id)
+            except Exception as e:
+                # 개별 메시지 처리시 발생한 기타 예외를 catch하여 연결이 끊어지지 않도록 함
+                error_msg = {"type": "error", "payload": {"message": f"처리 중 오류 발생: {str(e)}"}}
+                await manager.send_personal_message(error_msg, client_id)
     except WebSocketDisconnect:
         manager.disconnect(client_id)
         try:
