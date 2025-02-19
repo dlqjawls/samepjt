@@ -91,10 +91,11 @@ export const AdminAuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
+  /**
+   *   useEffect(() => {
     if (!accessToken || !refreshToken) return;
 
-    const threshold = 1 * 60 * 1000; // 1분
+    const threshold = 1 * 60 * 1000; // 지금은 1분, 해당 시간이 되면 자동으로 토큰을 갱신 시도한다.
     const intervalId = setInterval(async () => {
       const timeLeft = getTimeLeft(accessToken);
       // console.log("토큰 남은 시간:", timeLeft);
@@ -131,10 +132,11 @@ export const AdminAuthProvider = ({ children }) => {
             });
         }
       }
-    }, 30 * 1000);
+    }, 30 * 1000); // 현재는 30초마다 확인을 한다.
 
     return () => clearInterval(intervalId);
   }, [accessToken, refreshToken, navigate]);
+   */
 
   useEffect(() => {
     // 요청 인터셉터: 모든 요청에 Authorization 헤더 자동 설정
@@ -148,7 +150,26 @@ export const AdminAuthProvider = ({ children }) => {
       (error) => Promise.reject(error)
     );
 
-    // 응답 인터셉터: 401 에러 발생 시 토큰 갱신 시도
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+        if (
+          error.response &&
+          error.response.status === 401 &&
+          !originalRequest._retry
+        ) {
+          toast.error("세션이 만료되었습니다. 다시 로그인 해주세요.");
+          logoutAdmin();
+          navigate("/admin/login");
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    /**
+     * 
+     * // 응답 인터셉터: 401 에러 발생 시 토큰 갱신 시도
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -205,6 +226,7 @@ export const AdminAuthProvider = ({ children }) => {
         return Promise.reject(error);
       }
     );
+     */
 
     return () => {
       axios.interceptors.request.eject(requestInterceptor);

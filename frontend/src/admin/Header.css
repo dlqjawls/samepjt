@@ -138,3 +138,8 @@
   flex-shrink: 0;
   transition: background-color 0.2s;
 }
+
+.header .token-refresh-button:disabled {
+  background-color: #ff6666;
+  cursor: not-allowed;
+}
