@@ -31,7 +31,7 @@ const Total_reciept = () => {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/option-types`, {
           params: {
             page: 1,
-            page_size: 30, // 최대 30개 아이템 요청
+            page_size: 100, // 최대 30개 아이템 요청
           },
         })
 

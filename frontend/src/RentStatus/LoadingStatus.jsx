@@ -10,7 +10,7 @@ const LoadingStatus = () => {
     // 각 단계별 타이밍 설정
     const timer1 = setTimeout(() => setCurrentStep(2), 13000); // 2초 후 출발 단계
     const timer2 = setTimeout(() => setCurrentStep(3), 25000); // 4초 후 도착 단계
-    const timer3 = setTimeout(() => navigate("/dashboard"), 30000); // 6초 후 대시보드로 이동
+    const timer3 = setTimeout(() => navigate("/car_status"), 30000); // 6초 후 대시보드로 이동
 
     return () => {
       clearTimeout(timer1);
