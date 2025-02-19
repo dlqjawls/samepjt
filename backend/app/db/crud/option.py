@@ -13,7 +13,7 @@ class OptionCRUD(CRUDBase[Option]):
         
     def get_by_id(self, session: Session, option_id: int) -> Optional[Option]:
         """주어진 ID에 해당하는 옵션을 조회합니다"""
-        option = self.get_by_field(session, self.model.option_id, "option_id")
+        option = self.get_by_field(session, option_id, "option_id")
         return option
 
     def get_options_by_type(
