@@ -17,6 +17,7 @@
   background: #fff;
   border-radius: 8px;
   padding: 20px;
+  min-height: 200px;
   max-width: 600px;
   width: 90%;
   max-height: 90vh;

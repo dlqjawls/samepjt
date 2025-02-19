@@ -83,6 +83,7 @@
 .module-management-list .detail-item {
   padding: 8px 0;
   border-bottom: 1px solid #ddd;
+  margin-bottom: 8px;
 }
 
 .module-management-list .detail-item:last-child {
@@ -153,14 +154,13 @@
   background-color: #d5d5d5;
 }
 
-/* 인라인 편집 input 스타일 (필드별 너비는 필요 시 추가 조정) */
-.module-management-list .edit-module-nfc-tag-id,
+/* .module-management-list .edit-module-nfc-tag-id,
 .module-management-list .edit-module-type-id {
   padding: 6px;
   font-size: 14px;
   border: 1px solid #aaa;
   border-radius: 4px;
-}
+} */
 
 /* 메인 행 일반 스타일 */
 .module-management-list .main-row {
@@ -221,7 +221,7 @@
 
 .module-management-list .form-group select,
 .module-management-list .edit-module-type-id {
-  width: 50%;
+  width: 220px;
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -237,13 +237,11 @@
   display: none;
 }
 
-/* 선택 영역에 hover 효과 */
 .module-management-list .form-group select:hover,
 .module-management-list .edit-module-type-id:hover {
   border-color: #999;
 }
 
-/* 선택 영역 포커스 스타일 */
 .module-management-list .form-group select:focus,
 .module-management-list .edit-module-type-id:focus {
   outline: none;

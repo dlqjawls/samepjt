@@ -563,7 +563,7 @@ function OptionTypeManagement() {
                               <div className="detail-item">
                                 <div className="detail-label">등록 일시</div>
                                 <div className="detail-value">
-                                  {ot.created_at}
+                                  {new Date(ot.created_at).toLocaleString()}
                                 </div>
                               </div>
                               <div className="detail-item">
@@ -575,7 +575,7 @@ function OptionTypeManagement() {
                               <div className="detail-item">
                                 <div className="detail-label">수정 일시</div>
                                 <div className="detail-value">
-                                  {ot.updated_at}
+                                  {new Date(ot.updated_at).toLocaleString()}
                                 </div>
                               </div>
                               <div className="detail-item">

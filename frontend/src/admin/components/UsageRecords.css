@@ -69,6 +69,7 @@
   .usage-container .detail-item {
     padding: 8px 0;
     border-bottom: 1px solid #ddd;
+    margin-bottom: 8px;
   }
   
   .usage-container .detail-item:last-child {
