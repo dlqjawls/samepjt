@@ -11,6 +11,7 @@ from app.utils.lut_constants import ItemType, RentStatus, VideoType
 from datetime import datetime
 from typing import Any, Dict, cast
 from app.db.crud.video_storage import video_storage_crud
+from app.db.crud.option_type import option_type_crud
 
 
 class RentHistoryService:
@@ -38,7 +39,7 @@ class RentHistoryService:
                 message="Option type ID is required",
                 detail={"option_id": option_id}
             )
-        return str(option.option_type_id)
+        return option_type_crud.get_option_name_by_id(session, option.option_type_id)
 
     @staticmethod
     def _process_usage_entries(session: Session, rent_id: int) -> tuple[str, list[str]]:

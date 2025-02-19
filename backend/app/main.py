@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
     yield
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="ModuCar API", lifespan=lifespan)
+    app = FastAPI(title="ModuCar API", lifespan=lifespan, openapi_prefix="/api")
 
     # 전역 예외 처리
     for exc, handler in get_exception_handlers().items():
@@ -47,6 +47,6 @@ def create_app() -> FastAPI:
     app.include_router(api_router)
     
     # WebSocket 라우터 등록
-    app.include_router(websocket.router, prefix="/api/socket")
+    app.include_router(websocket.router)
     
     return app

@@ -18,7 +18,7 @@ from app.services.video_service import VideoService
 from app.core.database import get_session
 from app.utils.lut_constants import VideoType
 
-router = APIRouter()
+router = APIRouter(prefix="/socket")
 
 class MessageType(Enum):
     SERVICE = "service"
@@ -102,7 +102,8 @@ async def handle_module_mount(client_id: str, payload: dict) -> dict:
     except Exception as e:
         return {"success": False, "message": f"영상 업로드 실패: {str(e)}"}
       
-    VideoService.store_video(session = Depends(get_session),rent_id= rent_id,video_type_id=VideoType.MODULE.ID, video_url=video_url)
+    session = next(get_session())
+    VideoService.store_video(session=session, rent_id=rent_id, video_type_id=VideoType.MODULE.ID, video_url=video_url)
     
     print(f"영상 저장 완료: {video_url}")
     return {"success": True, "message": "Module mount video processed successfully", "video_url": video_url}
@@ -178,6 +179,10 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     await manager.send_personal_message(response, client_id)
             except json.JSONDecodeError:
                 error_msg = {"type": "error", "payload": {"message": "Invalid JSON message"}}
+                await manager.send_personal_message(error_msg, client_id)
+            except Exception as e:
+                # 개별 메시지 처리시 발생한 기타 예외를 catch하여 연결이 끊어지지 않도록 함
+                error_msg = {"type": "error", "payload": {"message": f"처리 중 오류 발생: {str(e)}"}}
                 await manager.send_personal_message(error_msg, client_id)
     except WebSocketDisconnect:
         manager.disconnect(client_id)
