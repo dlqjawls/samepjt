@@ -102,7 +102,8 @@ async def handle_module_mount(client_id: str, payload: dict) -> dict:
     except Exception as e:
         return {"success": False, "message": f"영상 업로드 실패: {str(e)}"}
       
-    VideoService.store_video(session = Depends(get_session),rent_id= rent_id,video_type_id=VideoType.MODULE.ID, video_url=video_url)
+    session = next(get_session())
+    VideoService.store_video(session=session, rent_id=rent_id, video_type_id=VideoType.MODULE.ID, video_url=video_url)
     
     print(f"영상 저장 완료: {video_url}")
     return {"success": True, "message": "Module mount video processed successfully", "video_url": video_url}
