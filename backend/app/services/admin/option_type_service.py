@@ -33,7 +33,7 @@ class OptionTypeService:
     @staticmethod
     def _save_option_type_images(option_type_images: UploadFile, option_type_id: int) -> str:
         """옵션 타입 이미지 저장 후 이미지 경로 문자열 반환"""
-        saved_images = s3_storage.upload_file_generic(option_type_images.file, "optiontype", option_type_id, filename=option_type_images.filename, default_ext=".jpg")
+        saved_images = s3_storage.upload_file_generic(option_type_images.file, "optiontype", option_type_id, filename=option_type_images.filename, default_ext=".jpg", ExtraArgs={"ACL": "public-read", "ContentType": "image/jpeg"})
         return saved_images
       
     @staticmethod

@@ -48,7 +48,16 @@ class ModuleSetService:
     @staticmethod
     def _save_module_set_images(module_set_images: UploadFile, module_set_id: int) -> str:
         """모듈 세트 이미지 저장 후 이미지 경로 문자열 반환"""
-        saved_images = s3_storage.upload_file_generic(module_set_images.file, "moduletype", module_set_id, filename=module_set_images.filename, default_ext=".jpg")
+        content_type = module_set_images.content_type if module_set_images.content_type else "image/jpeg"
+        print(content_type)
+        saved_images = s3_storage.upload_file_generic(
+            module_set_images.file,
+            "moduletype",
+            module_set_id,
+            filename=module_set_images.filename,
+            default_ext=".jpg",
+            ExtraArgs={"ACL": "public-read", "ContentType": content_type}
+        )
         return saved_images
 
     @staticmethod
