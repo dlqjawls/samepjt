@@ -18,7 +18,7 @@ from app.services.video_service import VideoService
 from app.core.database import get_session
 from app.utils.lut_constants import VideoType
 
-router = APIRouter()
+router = APIRouter(prefix="/socket")
 
 class MessageType(Enum):
     SERVICE = "service"
