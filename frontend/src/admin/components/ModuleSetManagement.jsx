@@ -680,6 +680,7 @@ const ModuleSetManagement = () => {
                                                     imgUrl
                                                   );
                                                 }}
+                                                className="module-set-image-delete-button"
                                               >
                                                 삭제
                                               </button>
@@ -735,6 +736,7 @@ const ModuleSetManagement = () => {
                                                   opt.option_type_id
                                                 );
                                               }}
+                                              className="option-delete-button"
                                             >
                                               삭제
                                             </button>

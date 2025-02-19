@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  margin-bottom: 100px;
 }
 
 .dot {
@@ -26,7 +27,9 @@
 }
 
 @keyframes dotPulse {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(1);
   }
   40% {

@@ -151,7 +151,7 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
 
 /* 인라인 수정 필드 스타일 (각 필드마다 너비 조정 가능) */
 .module-set-management .edit-module-set-name {
-  width: 30%;
+  width: 150px;
   padding: 6px;
   font-size: 14px;
   border: 1px solid #aaa;
@@ -284,4 +284,23 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
 .module-set-management .add-image button:hover,
 .module-set-management .add-option button:hover {
   background-color: #45a049;
+}
+
+.module-set-management .module-set-image-delete-button {
+  border: none;
+}
+.module-set-management .edit-module-set-features {
+  width: 500px;
+}
+.module-set-management .edit-module-type-id {
+  width: 250px;
+}
+
+.module-set-management .option-delete-button {
+  border: none;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background-color: red;
+  color: white;
 }
