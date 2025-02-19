@@ -31,7 +31,7 @@ function Header() {
       const decoded = jwtDecode(token);
       // console.log("디코딩된 토큰:", decoded);
       if (!decoded.exp) {
-        console.error("토큰에 exp 클레임이 없습니다.");
+        console.error("토큰에 exp가 없습니다.");
         return 0;
       }
       const expiryTime = decoded.exp * 1000;
@@ -63,6 +63,25 @@ function Header() {
     const seconds = String(totalSeconds % 60).padStart(2, "0");
     return `${minutes}분 ${seconds}초`;
     // return `${hours}시간 ${minutes}분 ${seconds}초`;
+  };
+
+  const refreshToken = localStorage.getItem("adminRefreshToken");
+
+  const isRefreshTokenExpired = () => {
+    if (!refreshToken) {
+      return true;
+    }
+    try {
+      const decoded = jwtDecode(refreshToken);
+      if (!decoded.exp) {
+        return true;
+      }
+      const expiryTime = decoded.exp * 1000;
+      return expiryTime < Date.now();
+    } catch (error) {
+      console.log("리프레시 토큰 디코딩 오류:", error);
+      return true;
+    }
   };
 
   const handleManualRefresh = async () => {
@@ -99,8 +118,9 @@ function Header() {
           <button
             className="token-refresh-button"
             onClick={handleManualRefresh}
+            disabled={isRefreshTokenExpired()}
           >
-            시간 연장
+            {isRefreshTokenExpired() ? "연장 불가" : "시간 연장"}
           </button>
         )}
         {accessToken && (
