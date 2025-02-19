@@ -263,7 +263,7 @@ def seed_data(session: Session) -> None:
             ),            
             OptionType(
                 option_type_id=2,
-                option_type_name="테이블",
+                option_type_name="소형 테이블",
                 option_type_size="1x1",
                 option_type_cost=2000,
                 description="소형 테이블 입니다",
@@ -663,6 +663,175 @@ def seed_data(session: Session) -> None:
                 updated_at=base_date,
                 created_by=1,
                 updated_by=1
+            ),
+            OptionType(
+                option_type_id=33,
+                option_type_name="TV 다이",
+                option_type_size="3x1",
+                option_type_cost=2000,
+                description="TV 다이 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/33/2_%EB%8B%A4%EC%9D%B4.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=34,
+                option_type_name="플레이스테이션",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="플레이스테이션 게임기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/34/3_%EA%B2%8C%EC%9E%84%EA%B8%B01.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=35,
+                option_type_name="닌텐도",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="닌텐도 게임기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/35/4_%EA%B2%8C%EC%9E%84%EA%B8%B02.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=36,
+                option_type_name="중형 테이블",
+                option_type_size="2x1",
+                option_type_cost=2000,
+                description="중형 테이블 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/36/6_%EC%A4%91%EA%B0%84_%ED%85%8C%EC%9D%B4%EB%B8%94.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=37,
+                option_type_name="소파",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="소파 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/37/7_%EC%86%8C%ED%8C%8C.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=38,
+                option_type_name="리클라이닝 소파",
+                option_type_size="1x1",
+                option_type_cost=4000,
+                description="리클라이닝 소파 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/38/6_%EB%A6%AC%ED%81%B4%EB%9D%BC%EC%9D%B4%EB%8B%9D_%EC%86%8C%ED%8C%8C.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=39,
+                option_type_name="벽걸이 스피커",
+                option_type_size="1x1",
+                option_type_cost=2000,
+                description="벽걸이 스피커 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/39/1_%EB%B2%BD%EA%B1%B8%EC%9D%B4_%EC%8A%A4%ED%94%BC%EC%BB%A4.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=40,
+                option_type_name="영사기",
+                option_type_size="1x1",
+                option_type_cost=5000,
+                description="영사기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/40/2_%EC%98%81%EC%82%AC%EA%B8%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=41,
+                option_type_name="스탠드 스피커",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="스탠드 스피커 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/41/4_%EC%8A%A4%ED%94%BC%EC%BB%A4.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=42,
+                option_type_name="스크린",
+                option_type_size="3X1",
+                option_type_cost=5000,
+                description="스크린 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/42/5_%EC%8A%A4%ED%81%AC%EB%A6%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=43,
+                option_type_name="냉동용 강력 에어컨",
+                option_type_size="1x1",
+                option_type_cost=10000,
+                description="-18C까지 냉동이 가능한 강력 에어컨 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/43/1_%EB%83%89%EB%8F%99%EC%9A%A9_%EA%B0%95%EB%A0%A5_%EC%97%90%EC%96%B4%EC%BB%A8.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=44,
+                option_type_name="건조기",
+                option_type_size="1x1",
+                option_type_cost=3000,
+                description="건조기 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/44/3_%EA%B1%B4%EC%A1%B0%EA%B8%B0.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
+            ),
+            OptionType(
+                option_type_id=45,
+                option_type_name="의자",
+                option_type_size="1x1",
+                option_type_cost=1000,
+                description="의자 입니다",
+                option_type_images="https://moducar.s3.ap-northeast-2.amazonaws.com/optiontype/45/6_%EC%9D%98%EC%9E%90.JPG",
+                option_type_features="",
+                created_at=base_date,
+                updated_at=base_date,
+                created_by=1,
+                updated_by=1
             )
         ]
         session.add_all(dummy_option_types)
@@ -904,6 +1073,216 @@ def seed_data(session: Session) -> None:
                 module_set_id=4,
                 option_type_id=16,
                 option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=19,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=1,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=20,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=21,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=22,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=17,
+                option_quantity=3
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=7,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=18,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=4,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=5,
+                option_type_id=23,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=6,
+                option_type_id=1,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=6,
+                option_type_id=24,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=6,
+                option_type_id=25,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=6,
+                option_type_id=26,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=6,
+                option_type_id=2,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=6,
+                option_type_id=37,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=7,
+                option_type_id=27,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=7,
+                option_type_id=28,
+                option_quantity=5
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=7,
+                option_type_id=29,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=7,
+                option_type_id=3.,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=7,
+                option_type_id=31,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=7,
+                option_type_id=32,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=8,
+                option_type_id=1,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=8,
+                option_type_id=33,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=8,
+                option_type_id=34,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=8,
+                option_type_id=35,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=8,
+                option_type_id=36,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=8,
+                option_type_id=37,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=8,
+                option_type_id=19,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=9,
+                option_type_id=39,
+                option_quantity=3
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=9,
+                option_type_id=40,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=9,
+                option_type_id=41,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=9,
+                option_type_id=42,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=9,
+                option_type_id=2,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=9,
+                option_type_id=38,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=10,
+                option_type_id=43,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=11,
+                option_type_id=8,
+                option_quantity=3
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=11,
+                option_type_id=44,
+                option_quantity=3
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=11,
+                option_type_id=1,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=11,
+                option_type_id=19,
+                option_quantity=1
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=11,
+                option_type_id=45,
+                option_quantity=2
+            ),
+            ModuleSetOptionTypes(
+                module_set_id=11,
+                option_type_id=2,
+                option_quantity=1
             )
         ]
       
