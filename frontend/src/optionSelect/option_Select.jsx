@@ -55,7 +55,7 @@ const ExistOptionsPage = () => {
       const firstResponse = await axios.get(`${import.meta.env.VITE_API_URL}/user/option-types`, {
         params: {
           page: 1,
-          page_size: 10,
+          page_size: 100,
         },
       })
       console.log(firstResponse)
@@ -67,7 +67,7 @@ const ExistOptionsPage = () => {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/option-types`, {
           params: {
             page: page,
-            page_size: 10,
+            page_size: 100,
           },
         })
 
