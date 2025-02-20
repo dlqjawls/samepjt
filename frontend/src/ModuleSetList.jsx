@@ -12,7 +12,7 @@ function ModuleSetList() {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    pageSize: 10,
+    pageSize: 100,
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
