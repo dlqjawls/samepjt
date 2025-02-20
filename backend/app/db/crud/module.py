@@ -9,7 +9,11 @@ from typing import Optional
 class ModuleCRUD(CRUDBase[Module]):
     def __init__(self):
         super().__init__(Module)    
-        
+    
+    def get_module_by_module_type(self, session: Session, module_type_id: int) -> Optional[Module]:
+        """Return the module with the specified module type ID, if exists."""
+        return self.get_by_field(session, module_type_id, "module_type_id")
+    
     def get_first_available_module(self, session: Session, item_status_id: int = ItemStatus.INACTIVE.ID) -> Module:
         """첫 번째 사용 가능한 모듈을 조회합니다"""
         try:
