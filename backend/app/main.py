@@ -1,5 +1,4 @@
 import logging
-import os
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
@@ -17,13 +16,6 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # [선택] SQLite DB 파일 삭제
-    if settings.DATABASE_URL.startswith("sqlite:///"):
-        db_path = settings.DATABASE_URL.replace("sqlite:///", "")
-        if os.path.exists(db_path):
-            logger.info(f"🗑  이전 DB 파일 삭제: {db_path}")
-            os.remove(db_path)
-    
     # DB 초기화
     await initialize_database()
     yield
