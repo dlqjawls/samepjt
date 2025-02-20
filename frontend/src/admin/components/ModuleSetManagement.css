@@ -272,7 +272,7 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 }
 .module-set-management .image-item {
   display: flex;
@@ -285,13 +285,33 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.module-set-management .option-item {
+
+.option-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.option-list .option-item {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: #fff;
+  margin-bottom: 8px;
+  background-color: #fdfdfd;
+}
+.option-list .option-name {
+  font-size: 14px;
+  font-weight: 500;
+  width: 150px;
+}
+
+.option-list .option-quantity {
+  font-size: 14px;
+  color: #555;
+  margin-left: 10px;
+  width: 30px;
 }
 
 .module-set-management .add-image,
@@ -311,6 +331,21 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   border-radius: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+.module-set-management .add-option select {
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  width: 200px;
+}
+.module-set-management .add-option input {
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  width: 50px;
 }
 
 .module-set-management .add-image button:hover,
@@ -337,7 +372,8 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
 .module-set-management .option-delete-button {
   border: none;
   text-align: center;
-  padding: 2px 8px;
+  padding: 4px 8px;
+  margin-left: 20px;
   border-radius: 10px;
   background-color: red;
   color: white;

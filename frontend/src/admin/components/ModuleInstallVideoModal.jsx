@@ -45,39 +45,43 @@ function ModuleInstallVideoModal({ rentId, onClose }) {
   return (
     <div className="video-modal-overlay" onClick={onClose}>
       <div className="video-modal" onClick={(e) => e.stopPropagation()}>
-        <h2>모듈 설치 영상</h2>
-        <button className="close-button" onClick={onClose}>
-          &times;
-        </button>
-        {loading ? (
-          <LoadingSpinner />
-        ) : error ? (
-          <p className="error">{error}</p>
-        ) : videos.length > 0 ? (
-          videos.map((video) => (
-            <div key={video.video_id} className="video-item">
-              <p>
-                <strong>비디오 ID:</strong> {video.video_id}
-              </p>
-              <p>
-                <strong>대여 ID:</strong> {video.rent_id}
-              </p>
-              <p>
-                <strong>타입:</strong> {video.video_type}
-              </p>
-              <p>
-                <strong>녹화 시각:</strong>{" "}
-                {new Date(video.recorded_at).toLocaleString()}
-              </p>
-              <video width="100%" controls>
-                <source src={video.video_url} type="video/mp4" />
-                브라우저가 동영상을 지원하지 않습니다.
-              </video>
-            </div>
-          ))
-        ) : (
-          <p>영상이 없습니다.</p>
-        )}
+        <div className="video-modal-header">
+          <h2>모듈 설치 영상</h2>
+          <button className="close-button" onClick={onClose}>
+            &times;
+          </button>
+        </div>
+        <div className="video-modal-body">
+          {loading ? (
+            <LoadingSpinner />
+          ) : error ? (
+            <p className="error">{error}</p>
+          ) : videos.length > 0 ? (
+            videos.map((video) => (
+              <div key={video.video_id} className="video-item">
+                <p>
+                  <strong>비디오 ID:</strong> {video.video_id}
+                </p>
+                <p>
+                  <strong>대여 ID:</strong> {video.rent_id}
+                </p>
+                <p>
+                  <strong>타입:</strong> {video.video_type}
+                </p>
+                <p>
+                  <strong>녹화 시각:</strong>{" "}
+                  {new Date(video.recorded_at).toLocaleString()}
+                </p>
+                <video width="100%" controls>
+                  <source src={video.video_url} type="video/mp4" />
+                  브라우저가 동영상을 지원하지 않습니다.
+                </video>
+              </div>
+            ))
+          ) : (
+            <p>영상이 없습니다.</p>
+          )}
+        </div>
       </div>
     </div>
   );

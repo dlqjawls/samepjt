@@ -221,7 +221,7 @@
 
 .module-management-list .form-group select,
 .module-management-list .edit-module-type-id {
-  width: 220px;
+  width: 250px;
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -247,4 +247,8 @@
   outline: none;
   border-color: #4caf50;
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.module-management-list .form-group .add-module-nfc-tag-id {
+  width: 200px;
 }

@@ -145,7 +145,7 @@ const ModuleManagementList = () => {
   // 등록 API 호출
   const handleSubmitAdd = async () => {
     if (!formData.module_nfc_tag_id.trim() || !formData.module_type_id.trim()) {
-      alert("NFC 태그 ID와 모듈 타입 ID는 필수 항목입니다.");
+      alert("필수 항목을 모두 입력하세요.");
       return;
     }
     setLoading(true);
@@ -562,7 +562,8 @@ const ModuleManagementList = () => {
           <input
             type="text"
             name="module_nfc_tag_id"
-            placeholder="예: 13F5F34F10911A"
+            className="add-module-nfc-tag-id"
+            placeholder="예) 043F8E6A6C1D90"
             value={formData.module_nfc_tag_id}
             onChange={handleFormChange}
             required

@@ -65,14 +65,12 @@
   visibility: hidden;
 }
 
-/* 확장된 상세정보 행 */
 .option-type-container .expanded-row {
   outline: 3px solid #2196f3;
   outline-offset: -3px;
   padding: 15px;
 }
 
-/* 상세정보 영역 */
 .option-type-container .detail-info-container {
   padding: 15px;
 }
@@ -93,14 +91,19 @@
 
 .option-type-container .detail-label {
   display: block;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   margin-bottom: 8px;
 }
 
 .option-type-container .detail-value {
   display: block;
-  font-size: 14px;
+  font-size: 16px;
+}
+
+.option-type-container .option-type-image {
+  width: 40%;
+  border-radius: 20px;
 }
 
 .option-type-container .detail-actions {
@@ -165,18 +168,39 @@
 }
 
 .option-type-container .edit-input {
-  width: 100%;
   padding: 6px;
   font-size: 14px;
   border: 1px solid #aaa;
   border-radius: 4px;
 }
 
+.option-type-container .edit-option-type-name {
+  width: 200px;
+}
+
+.option-type-container .edit-option-type-size {
+  width: 100px;
+}
+
+.option-type-container .edit-option-type-cost {
+  width: 100px;
+}
+
+.option-type-container .edit-option-type-features {
+  width: 300px;
+}
+
+.option-type-container .edit-description {
+  width: 400px;
+  height: 200px;
+  outline: none;
+  resize: none;
+}
+
 .option-type-container .main-row {
   cursor: pointer;
 }
 
-/* 페이지네이션 */
 .option-type-container .pagination {
   margin: 20px 0;
   display: flex;
@@ -208,11 +232,6 @@
   margin-bottom: 10px;
 }
 
-.option-type-container .option-type-image-thumb {
-  width: 300px;
-  border-radius: 20px;
-}
-
 /* form-group 스타일 */
 .option-type-container .form-group {
   margin-bottom: 15px;
@@ -231,4 +250,74 @@
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.option-type-container .edit-section {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+.option-type-container .image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.option-type-container .image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.option-type-container .option-type-image-thumb {
+  width: 100px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.option-type-container .add-image {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.option-type-container .add-image button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #4caf50;
+  color: #fff;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.option-type-container .add-image button:hover {
+  background-color: #45a049;
+}
+.option-type-container .option-delete-button {
+  border: none;
+  padding: 4px 8px;
+  margin-top: 6px;
+  border-radius: 10px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+}
+
+.option-type-container .form-group .add-option-type-name {
+  width: 200px;
+}
+.option-type-container .form-group .add-option-type-size {
+  width: 100px;
+}
+.option-type-container .form-group .add-option-type-cost {
+  width: 100px;
+}
+.option-type-container .form-group .add-description {
+  width: 400px;
+  height: 200px;
+  outline: none;
+  resize: none;
+}
+.option-type-container .form-group .add-option-type-features {
+  width: 300px;
 }

@@ -46,11 +46,10 @@ function OptionTypeManagement() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // 각 행의 ref (스크롤 이동용)
   const rowRefs = useRef({});
   const detailInfoRef = useRef(null);
 
-  // 새 이미지 파일 상태 (편집 모드에서 이미지 추가 시 사용)
+  // 새 이미지 파일 상태
   const [newOptionImage, setNewOptionImage] = useState(null);
 
   // 옵션 타입 목록 조회 API 호출
@@ -133,7 +132,7 @@ function OptionTypeManagement() {
       !formData.option_type_name.trim() ||
       !formData.option_type_cost.trim()
     ) {
-      alert("옵션 타입 이름과 기본 가격은 필수 항목입니다.");
+      alert("필수 항목을 모두 입력하세요.");
       return;
     }
     setLoading(true);
@@ -390,7 +389,7 @@ function OptionTypeManagement() {
                       </td>
                       <td>
                         <span className="cell-text">
-                          {ot.option_type_features}
+                          {ot.option_type_features || "없음"}
                         </span>
                       </td>
                       <td>
@@ -428,7 +427,7 @@ function OptionTypeManagement() {
                                     name="option_type_name"
                                     value={formData.option_type_name}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-option-type-name"
                                   />
                                 ) : (
                                   <div className="detail-value">
@@ -446,7 +445,7 @@ function OptionTypeManagement() {
                                     name="option_type_size"
                                     value={formData.option_type_size}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-option-type-size"
                                   />
                                 ) : (
                                   <div className="detail-value">
@@ -464,7 +463,7 @@ function OptionTypeManagement() {
                                     name="option_type_cost"
                                     value={formData.option_type_cost}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-option-type-cost"
                                   />
                                 ) : (
                                   <div className="detail-value">
@@ -481,7 +480,7 @@ function OptionTypeManagement() {
                                     name="description"
                                     value={formData.description}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-description"
                                   />
                                 ) : (
                                   <div className="detail-value">
@@ -496,17 +495,34 @@ function OptionTypeManagement() {
                                 <div className="detail-value">
                                   {ot.option_type_images &&
                                   Array.isArray(ot.option_type_images) &&
-                                  ot.option_type_images.length > 0
-                                    ? ot.option_type_images.map(
-                                        (imgUrl, idx) => (
-                                          <div key={idx} className="image-item">
-                                            <img
-                                              src={imgUrl}
-                                              alt={`옵션 이미지 ${idx}`}
-                                              className="option-type-image-thumb"
-                                            />
-                                            {editingOptionTypeId ===
-                                              ot.option_type_id && (
+                                  ot.option_type_images.length > 0 ? (
+                                    <img
+                                      src={ot.option_type_images[0]}
+                                      alt={ot.option_type_name}
+                                      className="option-type-image"
+                                    />
+                                  ) : (
+                                    "이미지 없음"
+                                  )}
+                                </div>
+                                {editingOptionTypeId === ot.option_type_id && (
+                                  <div className="edit-section">
+                                    <h3>이미지 관리</h3>
+                                    <div className="image-list">
+                                      {ot.option_type_images &&
+                                      Array.isArray(ot.option_type_images) &&
+                                      ot.option_type_images.length > 0 ? (
+                                        ot.option_type_images.map(
+                                          (imgUrl, idx) => (
+                                            <div
+                                              key={idx}
+                                              className="image-item"
+                                            >
+                                              <img
+                                                src={imgUrl}
+                                                alt={`옵션 이미지 ${idx}`}
+                                                className="option-type-image-thumb"
+                                              />
                                               <button
                                                 onClick={(e) => {
                                                   e.stopPropagation();
@@ -515,16 +531,17 @@ function OptionTypeManagement() {
                                                     imgUrl
                                                   );
                                                 }}
+                                                className="option-delete-button"
                                               >
                                                 삭제
                                               </button>
-                                            )}
-                                          </div>
+                                            </div>
+                                          )
                                         )
-                                      )
-                                    : "이미지 없음"}
-                                  {editingOptionTypeId ===
-                                    ot.option_type_id && (
+                                      ) : (
+                                        <p>등록된 이미지가 없습니다.</p>
+                                      )}
+                                    </div>
                                     <div className="add-image">
                                       <input
                                         type="file"
@@ -541,9 +558,10 @@ function OptionTypeManagement() {
                                         이미지 추가
                                       </button>
                                     </div>
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
+
                               <div className="detail-item">
                                 <div className="detail-label">주요 기능</div>
                                 {editingOptionTypeId === ot.option_type_id ? (
@@ -552,11 +570,11 @@ function OptionTypeManagement() {
                                     name="option_type_features"
                                     value={formData.option_type_features}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-option-type-features"
                                   />
                                 ) : (
                                   <div className="detail-value">
-                                    {ot.option_type_features}
+                                    {ot.option_type_features || "없음"}
                                   </div>
                                 )}
                               </div>
@@ -673,7 +691,8 @@ function OptionTypeManagement() {
           <input
             type="text"
             name="option_type_name"
-            placeholder="예: Option A"
+            className="add-option-type-name"
+            placeholder=""
             value={formData.option_type_name}
             onChange={handleFormChange}
             required
@@ -684,7 +703,8 @@ function OptionTypeManagement() {
           <input
             type="text"
             name="option_type_size"
-            placeholder="예: Small"
+            className="add-option-type-size"
+            placeholder=""
             value={formData.option_type_size}
             onChange={handleFormChange}
             required
@@ -695,7 +715,8 @@ function OptionTypeManagement() {
           <input
             type="number"
             name="option_type_cost"
-            placeholder="예: 1000"
+            className="add-option-type-cost"
+            placeholder=""
             value={formData.option_type_cost}
             onChange={handleFormChange}
             required
@@ -705,7 +726,8 @@ function OptionTypeManagement() {
           <label>설명</label>
           <textarea
             name="description"
-            placeholder="옵션 타입에 대한 설명"
+            className="add-description"
+            placeholder=""
             value={formData.description}
             onChange={handleFormChange}
           />
@@ -715,7 +737,8 @@ function OptionTypeManagement() {
           <input
             type="text"
             name="option_type_features"
-            placeholder="예: 기능1, 기능2"
+            className="add-option-type-features"
+            placeholder=""
             value={formData.option_type_features}
             onChange={handleFormChange}
           />
