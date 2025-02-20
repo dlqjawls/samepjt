@@ -13,10 +13,23 @@ import { useNavigate } from "react-router-dom";
 function Dashboard() {
   const navigator = useNavigate();
   const rentStatus = JSON.parse(sessionStorage.getItem("rentStatus"));
-
+  const currentRent = JSON.parse(sessionStorage.getItem("rentTime"));
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+    
+    return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+  };
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   };
   const refreshToken = async () => {
     try {
@@ -202,9 +215,13 @@ function Dashboard() {
           <span className="arrival-badge">
             {rentStatus.isArrive ? "도착완료" : "이동중"}
           </span>
+        
           <span className="eta-info">
-            예상 도착 시간: {formatDate(rentStatus.ETA)}
+            
+            예상 도착 시간: {formatTime(rentStatus.ETA)}
           </span>
+          <div>대여 시작: {currentRent ? formatDate(currentRent.rentStartDate) : "로딩 중..."}</div>
+      <div>대여 종료: {currentRent ? formatDate(currentRent.rentEndDate) : "로딩 중..."}</div>
         </div>
 
         <div className="map-preview">
@@ -269,7 +286,7 @@ function Dashboard() {
             <button onClick={cancelRent}>대여취소</button>
             <button onClick={completeRent}>차량반납</button>
             <span>운행 시작: {formatDate(rentStatus.ETA)}</span>
-            <span>이용 요금: {rentStatus.cost}원</span>
+            <span>추가 이용 요금: 측정중..</span>
           </div>
         </div>
       </div>
