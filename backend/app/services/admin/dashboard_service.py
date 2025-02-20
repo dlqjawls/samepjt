@@ -19,7 +19,7 @@ class DashboardService:
         today = date.today()
         start = datetime.combine(today, time.min)
         end = datetime.combine(today, time.max)
-        query = select(RentHistory).where(RentHistory.created_at >= start, RentHistory.created_at <= end)
+        query = select(RentHistory).where(RentHistory.created_at >= start, RentHistory.created_at <= end, RentHistory.rent_status_id == RentStatus.IN_PROGRESS.ID)
         paginated = rent_history_crud.paginate(session, 1, 1000, query)
         return paginated["pagination"]["totalItems"]
 
@@ -47,8 +47,8 @@ class DashboardService:
         query = (
             select(RentHistory)
             .where(
-                RentHistory.rent_end_date >= start,
-                RentHistory.rent_end_date <= end,
+                RentHistory.updated_at >= start,
+                RentHistory.updated_at <= end,
                 RentHistory.rent_status_id == RentStatus.COMPLETED.ID
             )
         )
