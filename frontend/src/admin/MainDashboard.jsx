@@ -33,9 +33,10 @@ function MainDashboard() {
 
   const [rentalCounts, setRentalCounts] = useState([]);
   const [maintenanceCosts, setMaintenanceCosts] = useState([]);
+  const [populars, setPopulars] = useState([]);
 
-  // PieChart용 색상 배열
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
+  // PieChart 색깔
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
   useEffect(() => {
     const fetchVehicleStats = async () => {
@@ -61,8 +62,12 @@ function MainDashboard() {
               headers: { Authorization: token ? `Bearer ${token}` : undefined },
             }
           ),
-          // 지금은 오늘 반납된 차량 수 API가 없으므로 비워둠
-          Promise.resolve({ data: { data: 0 } }),
+          axios.get(
+            `${BASE_URL}/admin/dashboard/vehicles/today-completed-return-count`,
+            {
+              headers: { Authorization: token ? `Bearer ${token}` : undefined },
+            }
+          ),
         ]);
         setTodayRented(todayRentedRes.data.data);
         setCurrentlyRenting(currentlyRentingRes.data.data);
@@ -129,11 +134,26 @@ function MainDashboard() {
       }
     };
 
+    const fetchPopular = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/admin/dashboard/options/popular`,
+          {
+            headers: { Authorization: token ? `Bearer ${token}` : undefined },
+          }
+        );
+        setPopulars(response.data.data);
+      } catch (error) {
+        console.error("월별 정비 비용 조회 오류:", error);
+      }
+    };
+
     fetchVehicleStats();
     fetchStatusCharts();
     fetchRentalCounts();
     fetchMaintenanceCosts();
-  }, [token]);
+    fetchPopular();
+  }, [token, BASE_URL]);
 
   return (
     <div className="main-dashboard">
@@ -306,7 +326,7 @@ function MainDashboard() {
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
+              <XAxis dataKey="month" tick={{ fontSize: 14 }} />
               <YAxis />
               <Tooltip />
               <Legend />
@@ -315,22 +335,26 @@ function MainDashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* <div className="section">
+        <div className="section">
           <h2>옵션 선호도</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
-              data={dummySalesChartData}
+              data={populars}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
+              <XAxis
+                dataKey="option_type_name"
+                interval={0}
+                tick={{ fontSize: 12 }}
+              />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="sales" fill="#8884d8" />
+              <Bar dataKey="count" fill="#8884d8" />
             </BarChart>
           </ResponsiveContainer>
-        </div> */}
+        </div>
       </div>
     </div>
   );
