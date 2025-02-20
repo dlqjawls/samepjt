@@ -345,7 +345,13 @@ const MaintenanceRecords = () => {
                       <td>{record.maintenance_id}</td>
                       <td>
                         <span className="cell-text">
-                          {record.item_type_name}
+                          {record.item_type_name === "vehicle"
+                            ? "차량"
+                            : record.item_type_name === "module"
+                            ? "모듈"
+                            : record.item_type_name === "option"
+                            ? "옵션"
+                            : "알 수 없음"}
                         </span>
                       </td>
                       <td>
@@ -358,11 +364,19 @@ const MaintenanceRecords = () => {
                       </td>
                       <td>
                         <span className="cell-text">
-                          {record.maintenance_status_name}
+                          {record.maintenance_status_name === "pending"
+                            ? "대기"
+                            : record.maintenance_status_name === "in_progress"
+                            ? "진행 중"
+                            : record.maintenance_status_name === "completed"
+                            ? "완료"
+                            : "알 수 없음"}
                         </span>
                       </td>
                       <td>
-                        <span className="cell-text">{record.created_at}</span>
+                        <span className="cell-text">
+                          {new Date(record.created_at).toLocaleString()}
+                        </span>
                       </td>
                     </tr>
                     {expandedRecordId === record.maintenance_id && (
@@ -394,7 +408,13 @@ const MaintenanceRecords = () => {
                                   </select>
                                 ) : (
                                   <div className="detail-value">
-                                    {record.item_type_name}
+                                    {record.item_type_name === "vehicle"
+                                      ? "차량"
+                                      : record.item_type_name === "module"
+                                      ? "모듈"
+                                      : record.item_type_name === "option"
+                                      ? "옵션"
+                                      : "알 수 없음"}
                                   </div>
                                 )}
                               </div>
@@ -459,7 +479,16 @@ const MaintenanceRecords = () => {
                                   </select>
                                 ) : (
                                   <div className="detail-value">
-                                    {record.maintenance_status_name}
+                                    {record.maintenance_status_name ===
+                                    "pending"
+                                      ? "대기"
+                                      : record.maintenance_status_name ===
+                                        "in_progress"
+                                      ? "진행 중"
+                                      : record.maintenance_status_name ===
+                                        "completed"
+                                      ? "완료"
+                                      : "알 수 없음"}
                                   </div>
                                 )}
                               </div>
@@ -477,7 +506,9 @@ const MaintenanceRecords = () => {
                                   />
                                 ) : (
                                   <div className="detail-value">
-                                    {record.scheduled_at}
+                                    {new Date(
+                                      record.scheduled_at
+                                    ).toLocaleString()}
                                   </div>
                                 )}
                               </div>
@@ -495,7 +526,9 @@ const MaintenanceRecords = () => {
                                   />
                                 ) : (
                                   <div className="detail-value">
-                                    {record.completed_at}
+                                    {new Date(
+                                      record.completed_at
+                                    ).toLocaleString()}
                                   </div>
                                 )}
                               </div>

@@ -318,7 +318,9 @@ function VehicleManagement() {
                         <span className="cell-text">{vehicle.mileage}</span>
                       </td>
                       <td>
-                        <span className="cell-text">{vehicle.created_at}</span>
+                        <span className="cell-text">
+                          {new Date(vehicle.created_at).toLocaleString()}
+                        </span>
                       </td>
                     </tr>
                     {expandedVehicleId === vehicle.vehicle_id && (
@@ -391,7 +393,9 @@ function VehicleManagement() {
                                 </div>
                                 <div className="detail-value">
                                   {vehicle.last_maintenance_at
-                                    ? vehicle.last_maintenance_at
+                                    ? new Date(
+                                        vehicle.last_maintenance_at
+                                      ).toLocaleString()
                                     : "미정"}
                                 </div>
                               </div>
@@ -401,14 +405,18 @@ function VehicleManagement() {
                                 </div>
                                 <div className="detail-value">
                                   {vehicle.next_maintenance_at
-                                    ? vehicle.next_maintenance_at
+                                    ? new Date(
+                                        vehicle.next_maintenance_at
+                                      ).toLocaleString()
                                     : "미정"}
                                 </div>
                               </div>
                               <div className="detail-item">
                                 <div className="detail-label">등록 일자</div>
                                 <div className="detail-value">
-                                  {vehicle.created_at}
+                                  {new Date(
+                                    vehicle.created_at
+                                  ).toLocaleString()}
                                 </div>
                               </div>
                               <div className="detail-item">
@@ -420,7 +428,9 @@ function VehicleManagement() {
                               <div className="detail-item">
                                 <div className="detail-label">수정 일자</div>
                                 <div className="detail-value">
-                                  {vehicle.updated_at}
+                                  {new Date(
+                                    vehicle.updated_by
+                                  ).toLocaleString()}
                                 </div>
                               </div>
                               <div className="detail-item">

@@ -115,7 +115,7 @@ const ModuleManagementList = () => {
   const closeAddModal = () => setIsAddModalOpen(false);
 
   // 모듈 타입 목록 조회 함수
-  const fetchModuleTypes = async () => {
+  const fetchModuleTypes = useCallback(async () => {
     try {
       const response = await axios.get(`${BASE_URL}/admin/module-types`, {
         headers: {
@@ -131,7 +131,7 @@ const ModuleManagementList = () => {
     } catch (err) {
       console.error("모듈 타입 목록 불러오는 중 오류:", err);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchModules();
@@ -140,7 +140,7 @@ const ModuleManagementList = () => {
   // 컴포넌트가 마운트될 때 모듈 타입 목록도 조회
   useEffect(() => {
     fetchModuleTypes();
-  });
+  }, [fetchModuleTypes]);
 
   // 등록 API 호출
   const handleSubmitAdd = async () => {
@@ -417,7 +417,9 @@ const ModuleManagementList = () => {
                                 </div>
                                 <div className="detail-value">
                                   {module.last_maintenance_at
-                                    ? module.last_maintenance_at
+                                    ? new Date(
+                                        module.last_maintenance_at
+                                      ).toLocaleString()
                                     : "미정"}
                                 </div>
                               </div>
@@ -427,7 +429,9 @@ const ModuleManagementList = () => {
                                 </div>
                                 <div className="detail-value">
                                   {module.next_maintenance_at
-                                    ? module.next_maintenance_at
+                                    ? new Date(
+                                        module.next_maintenance_at
+                                      ).toLocaleString()
                                     : "미정"}
                                 </div>
                               </div>
@@ -446,7 +450,7 @@ const ModuleManagementList = () => {
                               <div className="detail-item">
                                 <div className="detail-label">등록 일시</div>
                                 <div className="detail-value">
-                                  {module.created_at}
+                                  {new Date(module.created_at).toLocaleString()}
                                 </div>
                               </div>
                               <div className="detail-item">
@@ -458,7 +462,7 @@ const ModuleManagementList = () => {
                               <div className="detail-item">
                                 <div className="detail-label">수정 일시</div>
                                 <div className="detail-value">
-                                  {module.updated_at}
+                                  {new Date(module.updated_at).toLocaleString()}
                                 </div>
                               </div>
                               <div className="detail-item">

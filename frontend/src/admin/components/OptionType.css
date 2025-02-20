@@ -208,6 +208,11 @@
   margin-bottom: 10px;
 }
 
+.option-type-container .option-type-image-thumb {
+  width: 300px;
+  border-radius: 20px;
+}
+
 /* form-group 스타일 */
 .option-type-container .form-group {
   margin-bottom: 15px;

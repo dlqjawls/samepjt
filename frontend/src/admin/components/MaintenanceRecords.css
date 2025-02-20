@@ -89,6 +89,7 @@
 .maintenance-records .detail-item {
   padding: 8px 0;
   border-bottom: 1px solid #ddd;
+  margin-bottom: 8px;
 }
 
 .maintenance-records .detail-item:last-child {

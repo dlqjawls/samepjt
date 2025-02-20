@@ -69,6 +69,7 @@
 .rental-container .detail-item {
   padding: 8px 0;
   border-bottom: 1px solid #ddd;
+  margin-bottom: 8px;
 }
 
 .rental-container .detail-item:last-child {
@@ -118,4 +119,14 @@
 .rental-container .error {
   color: red;
   margin-bottom: 10px;
+}
+
+.rental-container .open-video-button {
+  border: none;
+  padding: 8px;
+  margin: 10px 12px 6px 0px;
+  border-radius: 16px;
+  color: white;
+  background-color: goldenrod;
+  cursor: pointer;
 }
