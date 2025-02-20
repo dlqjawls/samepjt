@@ -18,7 +18,7 @@ def test_create_option_success(client, session, master_token, first_three_option
         "option_type_id": first_three_option_type_ids[0],
     }
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -39,7 +39,7 @@ def test_create_option_unauthorized(client, first_three_option_type_ids):
         "option_type_id": first_three_option_type_ids[0],
     }
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data
     )
     assert response.status_code == 401
@@ -50,7 +50,7 @@ def test_create_option_forbidden(client, user_token, first_three_option_type_ids
         "option_type_id": first_three_option_type_ids[0],
     }
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data,
         headers={"Authorization": f"Bearer {user_token}"}
     )
@@ -70,7 +70,7 @@ def test_create_option_invalid_option_type_id_format(client, master_token, inval
         "option_type_id": invalid_option_type_id,
     }
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -87,7 +87,7 @@ def test_create_option_non_existent_option_type_id(client, master_token, non_exi
         "option_type_id": non_existent_option_type_id,
     } 
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -100,7 +100,7 @@ def test_create_option_non_existent_option_type_id(client, master_token, non_exi
 def test_create_option_missing_fields(client, master_token, missing_field):
     """필수 필드 누락 테스트"""
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=missing_field,
         headers={"Authorization": f"Bearer {master_token}"}
     )

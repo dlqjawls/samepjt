@@ -13,7 +13,7 @@ def test_create_vehicle_success(client, session, master_token):
         "vehicle_number": "PBV-1234",
     }
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=vehicle_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -36,7 +36,7 @@ def test_create_vehicle_unauthorized(client):
         "vehicle_number": "PBV-1234",
     }
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=vehicle_data
     )
     assert response.status_code == 401
@@ -48,7 +48,7 @@ def test_create_vehicle_forbidden(client, user_token):
         "vehicle_number": "PBV-1234",
     }
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=vehicle_data,
         headers={"Authorization": f"Bearer {user_token}"}
     )
@@ -63,7 +63,7 @@ def test_create_vehicle_duplicate_vin(client, session, master_token, create_dumm
         "vehicle_number": "PBV-1234",
     }
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=duplicate_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -82,7 +82,7 @@ def test_create_vehicle_duplicate_vehicle_number(client, session, master_token, 
         "vehicle_number": vehicle.vehicle_number
     }
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=duplicate_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -108,7 +108,7 @@ def test_create_vehicle_invalid_vin_format(client, master_token, invalid_vin):
         "vehicle_number": "PBV-1234"
     }
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=vehicle_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -131,7 +131,7 @@ def test_create_vehicle_invalid_number_format(client, master_token, invalid_numb
         "vehicle_number": invalid_number
     }
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=vehicle_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -146,7 +146,7 @@ def test_create_vehicle_invalid_number_format(client, master_token, invalid_numb
 def test_create_vehicle_missing_fields(client, master_token, missing_field):
     """필수 필드 누락 테스트"""
     response = client.post(
-        "/admin/vehicles",
+        "/api/admin/vehicles",
         json=missing_field,
         headers={"Authorization": f"Bearer {master_token}"}
     )

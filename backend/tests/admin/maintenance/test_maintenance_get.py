@@ -43,7 +43,7 @@ def test_get_maintenance_history_list_success(client, session, create_dummy_main
 
     # WHEN: /admin/maintenance-history 엔드포인트를 GET 요청
     response = client.get(
-        "/admin/maintenance-history?page=1&pageSize=10",
+        "/api/admin/maintenance-history?page=1&pageSize=10",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 200
@@ -56,7 +56,7 @@ def test_get_maintenance_history_list_success(client, session, create_dummy_main
 
 def test_get_maintenance_history_list_unauthorized(client):
     # 인증 토큰 없이 호출 시 401 Unauthorized 반환 확인
-    response = client.get("/admin/maintenance-history?page=1&pageSize=10")
+    response = client.get("/api/admin/maintenance-history?page=1&pageSize=10")
     assert response.status_code == 401
 
 def test_get_maintenance_history_list_non_admin(client, session, create_dummy_maintenance_histories, user_token):
@@ -65,7 +65,7 @@ def test_get_maintenance_history_list_non_admin(client, session, create_dummy_ma
 
     # WHEN: /admin/maintenance-history 엔드포인트를 비관리자 토큰으로 호출
     response = client.get(
-        "/admin/maintenance-history?page=1&pageSize=10",
+        "/api/admin/maintenance-history?page=1&pageSize=10",
         headers={"Authorization": f"Bearer {user_token}"}
     )
     # THEN: 403 Forbidden 응답이 발생함
@@ -78,7 +78,7 @@ def test_get_maintenance_history_list_empty(client, session, master_token):
 
     # WHEN: 관리자 토큰으로 빈 정비 기록 목록 조회 요청
     response = client.get(
-        "/admin/maintenance-history?page=1&pageSize=10",
+        "/api/admin/maintenance-history?page=1&pageSize=10",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     # THEN: 응답 결과는 빈 리스트이어야 함
@@ -96,15 +96,15 @@ def test_get_maintenance_history_list_pagination(client, session, create_dummy_m
 
     # WHEN: 페이지 사이즈 3으로 각 페이지 요청 (page1, page2, page3)
     response1 = client.get(
-        "/admin/maintenance-history?page=1&pageSize=3",
+        "/api/admin/maintenance-history?page=1&pageSize=3",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     response2 = client.get(
-        "/admin/maintenance-history?page=2&pageSize=3",
+        "/api/admin/maintenance-history?page=2&pageSize=3",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     response3 = client.get(
-        "/admin/maintenance-history?page=3&pageSize=3",
+        "/api/admin/maintenance-history?page=3&pageSize=3",
         headers={"Authorization": f"Bearer {master_token}"}
     )
 
@@ -122,7 +122,7 @@ def test_get_maintenance_history_list_pagination(client, session, create_dummy_m
 ])
 def test_get_maintenance_history_list_invalid_queries(client, master_token, page, pageSize):
     response = client.get(
-        f"/admin/maintenance-history?page={page}&pageSize={pageSize}",
+        f"/api/admin/maintenance-history?page={page}&pageSize={pageSize}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 422
@@ -139,7 +139,7 @@ def test_get_maintenance_history_query_filters(client, session, create_dummy_mai
 
     # WHEN: 특정 아이템 타입 "vehicle" (item_type_id=1)으로 필터링
     response = client.get(
-        "/admin/maintenance-history?page=1&pageSize=10&item_type=vehicle",
+        "/api/admin/maintenance-history?page=1&pageSize=10&item_type=vehicle",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 200
@@ -151,7 +151,7 @@ def test_get_maintenance_history_query_filters(client, session, create_dummy_mai
 
     # WHEN: 특정 item_type "module"과 특정 item_id (예: 11)로 필터링
     response = client.get(
-        "/admin/maintenance-history?page=1&pageSize=10&item_type=module&item_id=11",
+        "/api/admin/maintenance-history?page=1&pageSize=10&item_type=module&item_id=11",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 200

@@ -19,14 +19,14 @@ def non_admin_token():
 
 def test_get_module_types_success(client: TestClient, master_token):
     headers = {"Authorization": f"Bearer {master_token}"}
-    response = client.get("/admin/module-types", headers=headers)
+    response = client.get("/api/admin/module-types", headers=headers)
     assert response.status_code == 200
     assert response.json()["resultCode"] == "SUCCESS"
     assert response.json()["data"]["module_types"]
 
 def test_get_module_types_unauthorized(client: TestClient, non_admin_token):
     headers = {"Authorization": f"Bearer {non_admin_token}"}
-    response = client.get("/admin/module-types", headers=headers)
+    response = client.get("/api/admin/module-types", headers=headers)
     assert response.status_code == 403
     assert response.json()["resultCode"] == "FAILURE"
     assert response.json()["message"] == "Permission denied"
@@ -37,7 +37,7 @@ def test_get_module_types_empty(client: TestClient, master_token, session):
     session.commit()
 
     headers = {"Authorization": f"Bearer {master_token}"}
-    response = client.get("/admin/module-types", headers=headers)
+    response = client.get("/api/admin/module-types", headers=headers)
     assert response.status_code == 200
     assert response.json()["resultCode"] == "SUCCESS"
     assert response.json()["data"]["module_types"] == []

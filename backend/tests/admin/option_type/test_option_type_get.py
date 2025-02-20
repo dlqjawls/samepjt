@@ -45,7 +45,7 @@ def test_get_option_type_list_success(client, session, clear_option_types, creat
     
     # WHEN: /admin/option-types 엔드포인트를 GET 요청
     response = client.get(
-        "/admin/option-types?page=1&pageSize=10",
+        "/api/admin/option-types?page=1&pageSize=10",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     
@@ -74,7 +74,7 @@ def test_get_option_type_list_success(client, session, clear_option_types, creat
 
 def test_get_option_type_list_unauthorized(client):
     # 인증 토큰 없이 호출 시 401 Unauthorized 반환 확인
-    response = client.get("/admin/option-types?page=1&pageSize=10")
+    response = client.get("/api/admin/option-types?page=1&pageSize=10")
     assert response.status_code == 401
 
 def test_get_option_type_list_non_admin(client, session, create_dummy_option_types, user_token):
@@ -83,7 +83,7 @@ def test_get_option_type_list_non_admin(client, session, create_dummy_option_typ
 
     # WHEN: /admin/option-types 엔드포인트를 비관리자 토큰으로 호출
     response = client.get(
-        "/admin/option-types?page=1&pageSize=10",
+        "/api/admin/option-types?page=1&pageSize=10",
         headers={"Authorization": f"Bearer {user_token}"}
     )
     # THEN: 403 Forbidden 응답이 발생함
@@ -96,7 +96,7 @@ def test_get_option_type_list_empty(client, session, master_token):
 
     # WHEN: 관리자 토큰으로 빈 옵션 타입 목록 조회 요청
     response = client.get(
-        "/admin/option-types?page=1&pageSize=10",
+        "/api/admin/option-types?page=1&pageSize=10",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     # THEN: 응답 결과는 빈 리스트이어야 함
@@ -114,15 +114,15 @@ def test_get_option_type_list_pagination(client, session, create_dummy_option_ty
 
     # WHEN: 페이지 사이즈 3으로 각 페이지 요청 (page1, page2, page3)
     response1 = client.get(
-        "/admin/option-types?page=1&pageSize=3",
+        "/api/admin/option-types?page=1&pageSize=3",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     response2 = client.get(
-        "/admin/option-types?page=2&pageSize=3",
+        "/api/admin/option-types?page=2&pageSize=3",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     response3 = client.get(
-        "/admin/option-types?page=3&pageSize=3",
+        "/api/admin/option-types?page=3&pageSize=3",
         headers={"Authorization": f"Bearer {master_token}"}
     )
 
@@ -138,7 +138,7 @@ def test_get_option_type_list_invalid_page(client, master_token):
     # GIVEN: 관리자 토큰 생성
     # WHEN: page 값이 0으로 GET 요청 시
     response = client.get(
-        "/admin/option-types?page=0&pageSize=10",
+        "/api/admin/option-types?page=0&pageSize=10",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     # THEN: 유효성 검사 실패로 422 에러가 발생함
@@ -148,7 +148,7 @@ def test_get_option_type_list_invalid_page_size(client, master_token):
     # GIVEN: 관리자 토큰 생성
     # WHEN: pageSize 값이 0으로 GET 요청 시
     response = client.get(
-        "/admin/option-types?page=1&pageSize=0",
+        "/api/admin/option-types?page=1&pageSize=0",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     # THEN: 유효성 검사 실패로 422 에러가 발생함
@@ -161,7 +161,7 @@ def test_option_type_field_conversion(client, session, create_dummy_option_types
 
     # WHEN: 관리자 토큰으로 단일 옵션 타입 조회 GET 요청 수행
     response = client.get(
-        "/admin/option-types?page=1&pageSize=10",
+        "/api/admin/option-types?page=1&pageSize=10",
         headers={"Authorization": f"Bearer {master_token}"}
     )
 

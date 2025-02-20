@@ -6,7 +6,7 @@ def test_delete_module_success(client, session, master_token, create_dummy_modul
     """ 모듈 삭제 성공 테스트"""
     modules = create_dummy_modules() 
     response = client.delete(
-        f"/admin/modules/{modules[0].module_id}",
+        f"/api/admin/modules/{modules[0].module_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
 
@@ -41,7 +41,7 @@ def test_delete_module_with_non_master_token(client, session, create_dummy_modul
     """ 일반 관리자(권한 부족) 토큰으로 모듈 삭제 시도 테스트"""
     modules = create_dummy_modules()  
     response = client.delete(
-        f"/admin/modules/{modules[0].module_id}",
+        f"/api/admin/modules/{modules[0].module_id}",
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
     assert response.status_code == 403
@@ -53,7 +53,7 @@ def test_delete_module_with_non_master_token(client, session, create_dummy_modul
 def test_delete_module_invalid_id(client, master_token, invalid_module_id):
     """ 잘못된 형식의 모듈 ID로 삭제 시도 테스트"""
     response = client.delete(
-        f"/admin/modules/{invalid_module_id}",
+        f"/api/admin/modules/{invalid_module_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 422
@@ -66,7 +66,7 @@ def test_delete_module_already_deleted(client, session, master_token, create_dum
     # 첫 번째 삭제 시도 -> 성공 (soft delete)
     modules = create_dummy_modules()
     response_first = client.delete(
-        f"/admin/modules/{modules[0].module_id}",
+        f"/api/admin/modules/{modules[0].module_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_first.status_code == 200
@@ -75,7 +75,7 @@ def test_delete_module_already_deleted(client, session, master_token, create_dum
     
     # 두 번째 삭제 시도 -> 이미 삭제되어 존재하지 않으므로 404 Not Found
     response_second = client.delete(
-        f"/admin/modules/{modules[0].module_id}",
+        f"/api/admin/modules/{modules[0].module_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_second.status_code == 404

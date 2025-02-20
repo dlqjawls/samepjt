@@ -40,7 +40,7 @@ def test_delete_option_type_success(client, session, master_token, test_option_t
     
     # DELETE 요청
     response = client.delete(
-        f"/admin/option-types/{option_type_id}",
+        f"/api/admin/option-types/{option_type_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 200, (
@@ -52,7 +52,7 @@ def test_delete_option_type_success(client, session, master_token, test_option_t
     
     # 같은 ID로 재삭제 시도 -> 존재하지 않으므로 404
     response2 = client.delete(
-        f"/admin/option-types/{option_type_id}",
+        f"/api/admin/option-types/{option_type_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response2.status_code == 404, (
@@ -87,7 +87,7 @@ def test_delete_option_type_with_non_master_token(client, session, test_option_t
     """❌ 권한 없는 사용자의 옵션 타입 삭제 시도 테스트"""
     option_type_id = get_option_type_id(session, test_option_type.option_type_name)
     response = client.delete(
-        f"/admin/option-types/{option_type_id}",
+        f"/api/admin/option-types/{option_type_id}",
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
     assert response.status_code == 403, (

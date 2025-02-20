@@ -17,7 +17,7 @@ def test_create_module_success(client, session, master_token, module_type_id):
         "module_type_id": module_type_id,
     }
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=module_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -39,7 +39,7 @@ def test_create_module_unauthorized(client):
         "module_type_id": ModuleType.MEDIUM.ID,
     }
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=module_data
     )
     assert response.status_code == 401
@@ -51,7 +51,7 @@ def test_create_module_forbidden(client, user_token):
         "module_type_id": ModuleType.MEDIUM.ID,
     }
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=module_data,
         headers={"Authorization": f"Bearer {user_token}"}
     )
@@ -66,7 +66,7 @@ def test_create_module_duplicate_module_nfc_tag_id(client, session, master_token
         "module_type_id": ModuleType.MEDIUM.ID,
     }
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=duplicate_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -92,7 +92,7 @@ def test_create_module_invalid_module_nfc_tag_id_format(client, master_token, in
         "module_type_id": ModuleType.MEDIUM.ID,
     }
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=module_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -114,7 +114,7 @@ def test_create_module_invalid_module_type_id_format(client, master_token, inval
         "module_type_id": invalid_module_type_id,
     }
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=module_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -132,7 +132,7 @@ def test_create_module_non_existent_module_type_id(client, master_token, non_exi
         "module_type_id": non_existent_module_type_id,
     } 
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=module_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -147,7 +147,7 @@ def test_create_module_non_existent_module_type_id(client, master_token, non_exi
 def test_create_module_missing_fields(client, master_token, missing_field):
     """필수 필드 누락 테스트"""
     response = client.post(
-        "/admin/modules",
+        "/api/admin/modules",
         json=missing_field,
         headers={"Authorization": f"Bearer {master_token}"}
     )

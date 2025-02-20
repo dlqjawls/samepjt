@@ -16,7 +16,7 @@ def test_update_module_success(client, session, master_token, create_dummy_modul
         "module_type_id": ModuleType.MEDIUM.ID, # 모듈 타입 업데이트
     }
     response = client.patch(
-        f"/admin/modules/{module.module_id}",
+        f"/api/admin/modules/{module.module_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -38,7 +38,7 @@ def test_update_module_unauthorized(client, create_dummy_modules):
         "module_type_id": ModuleType.MEDIUM.ID
     }
     response = client.patch(
-        f"/admin/modules/{module.module_id}",
+        f"/api/admin/modules/{module.module_id}",
         json=update_data
     )
     assert response.status_code == 401
@@ -51,7 +51,7 @@ def test_update_module_forbidden(client, create_dummy_modules, user_token):
         "module_type_id": ModuleType.MEDIUM.ID
     }
     response = client.patch(
-        f"/admin/modules/{module.module_id}",
+        f"/api/admin/modules/{module.module_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {user_token}"}
     )
@@ -63,7 +63,7 @@ def test_update_nonexistent_module(client, master_token):
         "module_type_id": ModuleType.MEDIUM.ID
     }
     response = client.patch(
-        "/admin/modules/99999",  # 존재하지 않는 모듈 ID
+        "/api/admin/modules/99999",  # 존재하지 않는 모듈 ID
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -79,7 +79,7 @@ def test_update_module_invalid_id(client, master_token, invalid_module_id):
         "module_type_id": ModuleType.MEDIUM.ID
     }
     response = client.patch(
-        f"/admin/modules/{invalid_module_id}",
+        f"/api/admin/modules/{invalid_module_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -102,7 +102,7 @@ def test_update_module_invalid_module_type_id(client, master_token, create_dummy
     }
 
     response = client.patch(
-        f"/admin/modules/{module.module_id}",
+        f"/api/admin/modules/{module.module_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -125,7 +125,7 @@ def test_update_module_non_existing_module_type_id(client, master_token, create_
     }
 
     response = client.patch(
-        f"/admin/modules/{module.module_id}",
+        f"/api/admin/modules/{module.module_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )

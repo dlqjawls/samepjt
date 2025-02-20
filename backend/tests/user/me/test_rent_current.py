@@ -21,7 +21,7 @@ def test_get_current_rent_success(client, non_admin_token, current_rent_id):
     - /user/me/rent/current 엔드포인트 호출 시, 생성한 rent_id가 응답에 포함되어야 합니다.
     """
     response = client.get(
-        "/user/me/rent/current",
+        "/api/user/me/rent/current",
         headers={"Authorization": f"Bearer {non_admin_token}"}
     )
     assert response.status_code == 200
@@ -32,24 +32,23 @@ def test_get_current_rent_success(client, non_admin_token, current_rent_id):
 
 def test_get_current_rent_not_found(client):
     """
-    현재 진행 중인 렌트가 없을 경우 404 응답을 검증합니다.
+    현재 진행 중인 렌트가 없을 경우 200 응답을 검증합니다.
     """
     access_token = register_and_login(client, "testuser2", "test1234")
 
     response = client.get(
-        "/user/me/rent/current",
+        "/api/user/me/rent/current",
         headers={"Authorization": f"Bearer {access_token}"}
     )
-    assert response.status_code == 404
+    assert response.status_code == 200
     data = response.json()
-    assert data["resultCode"] == "FAILURE"
-    assert "진행 중인 렌트 정보가 존재하지 않습니다" in data["message"]
-
+    assert data["resultCode"] == "SUCCESS"
+    assert data["data"] is None
 def test_get_current_rent_without_token(client):
     """
     인증 토큰 없이 요청 시 401 Unauthorized 응답을 검증합니다.
     """
-    response = client.get("/user/me/rent/current")
+    response = client.get("/api/user/me/rent/current")
     assert response.status_code == 401
 
 def test_get_current_rent_invalid_token(client):
@@ -57,7 +56,7 @@ def test_get_current_rent_invalid_token(client):
     잘못된 형식의 토큰으로 요청 시 401 Unauthorized 응답을 검증합니다.
     """
     response = client.get(
-        "/user/me/rent/current",
+        "/api/user/me/rent/current",
         headers={"Authorization": "Bearer invalid.token.string"}
     )
     assert response.status_code == 401
@@ -73,7 +72,7 @@ def test_current_rent_flow(client, non_admin_token):
     # 1. 렌트 신청 → 현재 진행 중인 렌트 조회
     rent_id1 = create_test_rent(client, non_admin_token)
     response = client.get(
-        "/user/me/rent/current",
+        "/api/user/me/rent/current",
         headers={"Authorization": f"Bearer {non_admin_token}"}
     )
     assert response.status_code == 200
@@ -81,17 +80,18 @@ def test_current_rent_flow(client, non_admin_token):
     assert data["resultCode"] == "SUCCESS"
     assert data["data"]["rent_id"] == rent_id1
 
-    # 2. 렌트 완료 → 진행 중 렌트 조회 시 404 반환
+    # 2. 렌트 완료 → 진행 중 렌트 조회 시 Null 반환
     response = client.post(
-        f"/user/rent/{rent_id1}/complete",
+        f"/api/user/rent/{rent_id1}/complete",
         headers={"Authorization": f"Bearer {non_admin_token}"}
     )
     assert response.status_code == 200
     data = response.json()
     assert data["resultCode"] == "SUCCESS"
+    assert data["data"] is None
 
     response = client.get(
-        "/user/me/rent/current",
+        "/api/user/me/rent/current",
         headers={"Authorization": f"Bearer {non_admin_token}"}
     )
     assert response.status_code == 404
@@ -102,7 +102,7 @@ def test_current_rent_flow(client, non_admin_token):
     # 3. 재렌트 신청 → 진행 중 렌트 조회 시 새 rent_id 반환
     rent_id2 = create_test_rent(client, non_admin_token)
     response = client.get(
-        "/user/me/rent/current",
+        "/api/user/me/rent/current",
         headers={"Authorization": f"Bearer {non_admin_token}"}
     )
     assert response.status_code == 200

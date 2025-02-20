@@ -171,7 +171,7 @@ def create_test_rent(client: TestClient, access_token: str) -> int:
     """
     rent_request = create_valid_rent_request()
     response = client.post(
-        "/user/rent",
+        "/api/user/rent",
         json=rent_request,
         headers={"Authorization": f"Bearer {access_token}"}
     )

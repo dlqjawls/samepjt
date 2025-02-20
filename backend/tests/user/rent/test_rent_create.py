@@ -7,7 +7,7 @@ def test_create_rent_success(client):
 
     rent_request = create_valid_rent_request()
     response = client.post(
-        "/user/rent",
+        "/api/user/rent",
         json=rent_request,
         headers={"Authorization": f"Bearer {access_token}"}
     )
@@ -33,7 +33,7 @@ def test_create_rent_with_different_quantities(client, option_quantity, expected
     rent_request["selectedOptionTypes"][0]["quantity"] = option_quantity
     
     response = client.post(
-        "/user/rent", 
+        "/api/user/rent", 
         json=rent_request,
         headers={"Authorization": f"Bearer {access_token}"}
     )
@@ -63,7 +63,7 @@ def test_create_rent_with_invalid_coordinates(client, coordinates, expected_stat
     rent_request["autonomousArrivalPoint"] = coordinates
     
     response = client.post(
-        "/user/rent",
+        "/api/user/rent",
         json=rent_request,
         headers={"Authorization": f"Bearer {access_token}"}
     )

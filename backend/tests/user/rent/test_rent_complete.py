@@ -9,7 +9,7 @@ def test_complete_rent_success(client):
     rent_id = create_test_rent(client, access_token)
 
     response = client.post(
-        f"/user/rent/{rent_id}/complete",
+        f"/api/user/rent/{rent_id}/complete",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
@@ -30,7 +30,7 @@ def test_complete_other_user_rent(client):
 
     second_user_token = register_and_login(client, "user2")
     response = client.post(
-        f"/user/rent/{rent_id}/complete",
+        f"/api/user/rent/{rent_id}/complete",
         headers={"Authorization": f"Bearer {second_user_token}"}
     )
 
@@ -45,7 +45,7 @@ def test_complete_nonexistent_rent(client):
     access_token = register_and_login(client)
 
     response = client.post(
-        "/user/rent/99999/complete",
+        "/api/user/rent/99999/complete",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
@@ -62,13 +62,13 @@ def test_complete_already_completed_rent(client):
 
     # 첫 번째 완료
     client.post(
-        f"/user/rent/{rent_id}/complete",
+        f"/api/user/rent/{rent_id}/complete",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
     # 두 번째 완료 시도
     response = client.post(
-        f"/user/rent/{rent_id}/complete",
+        f"/api/user/rent/{rent_id}/complete",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
@@ -85,13 +85,13 @@ def test_complete_canceled_rent(client):
 
     # 렌트 취소
     client.delete(
-        f"/user/rent/{rent_id}",
+        f"/api/user/rent/{rent_id}",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
     # 취소된 렌트 완료 시도
     response = client.post(
-        f"/user/rent/{rent_id}/complete",
+        f"/api/user/rent/{rent_id}/complete",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
@@ -117,7 +117,7 @@ def test_complete_rent_invalid_id(client, invalid_rent_id):
     access_token = register_and_login(client)
 
     response = client.post(
-        f"/user/rent/{invalid_rent_id}/complete",
+        f"/api/user/rent/{invalid_rent_id}/complete",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 

@@ -28,7 +28,7 @@ def test_create_option_type_success(client, session, master_token, clear_option_
 
     # When: 마스터 권한으로 옵션 등록 요청
     response = client.post(
-        "/admin/option-types",
+        "/api/admin/option-types",
         json=option_type_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -56,7 +56,7 @@ def test_create_option_type_unauthorized(client):
         "option_type_description": "TEST_OPTION_TYPE_DESCRIPTION",
         "option_type_features": "TEST_OPTION_TYPE_FEATURES"
     } 
-    response = client.post("/admin/option-types", json=option_type_data)
+    response = client.post("/api/admin/option-types", json=option_type_data)
     assert response.status_code == 401
 
 def test_create_option_type_forbidden(client, semi_admin_token):
@@ -69,7 +69,7 @@ def test_create_option_type_forbidden(client, semi_admin_token):
         "option_type_features": "TEST_OPTION_TYPE_FEATURES"
     }
     response = client.post(
-        "/admin/option-types",
+        "/api/admin/option-types",
         json=option_type_data,
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
@@ -86,7 +86,7 @@ def test_create_option_type_forbidden(client, semi_admin_token):
 def test_create_option_type_missing_fields(client, master_token, invalid_option_type_data):
     """❌ 필수 필드 누락 테스트"""
     response = client.post(
-        "/admin/option-types",
+        "/api/admin/option-types",
         json=invalid_option_type_data,
         headers={"Authorization": f"Bearer {master_token}"}
         )

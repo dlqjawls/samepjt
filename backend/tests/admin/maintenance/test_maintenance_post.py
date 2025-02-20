@@ -29,7 +29,7 @@ def test_create_maintenance_history_success(client, session, master_token, clear
 
     # When: 마스터 권한으로 정비 기록 등록 요청
     response = client.post(
-        "/admin/maintenance-history",
+        "/api/admin/maintenance-history",
         json=maintenance_history_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -61,7 +61,7 @@ def test_create_maintenance_history_unauthorized(client, create_dummy_vehicles):
         "scheduled_at": "2025-01-01T00:00:00Z",
         "completed_at": "2025-01-01T00:00:00Z"
     } 
-    response = client.post("/admin/maintenance-history", json=maintenance_history_data)
+    response = client.post("/api/admin/maintenance-history", json=maintenance_history_data)
     assert response.status_code == 401
 
 def test_create_maintenance_history_forbidden(client, semi_admin_token, create_dummy_vehicles):
@@ -75,7 +75,7 @@ def test_create_maintenance_history_forbidden(client, semi_admin_token, create_d
         "completed_at": "2025-01-01T00:00:00Z"
     }
     response = client.post(
-        "/admin/maintenance-history",
+        "/api/admin/maintenance-history",
         json=maintenance_history_data,
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
@@ -98,7 +98,7 @@ def test_create_maintenance_history_missing_fields(client, master_token, invalid
         invalid_maintenance_history_data["item_id"] = create_dummy_vehicles()[0].vehicle_id
 
     response = client.post(
-        "/admin/maintenance-history",
+        "/api/admin/maintenance-history",
         json=invalid_maintenance_history_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )

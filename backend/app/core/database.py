@@ -5,6 +5,7 @@ import logging
 from typing import Any, Dict, Generator
 from datetime import datetime
 import time
+import os
 
 from app.db.models import (
     Role, ItemStatus, ItemType, ModuleType, MaintenanceStatus,
@@ -46,23 +47,33 @@ def get_session() -> Generator[Session, None, None]:
 async def initialize_database() -> None:
     """데이터베이스 초기화 및 시드 데이터 삽입"""
     try:
+        # 먼저 데이터베이스 파일의 존재 여부를 확인합니다.
+        db_path = settings.DATABASE_URL.replace("sqlite:///", "")
+        seed_required = not os.path.exists(db_path)
+        if seed_required:
+            logger.info("🔹 데이터베이스 파일이 존재하지 않습니다. 초기 데이터 삽입을 진행합니다.")
+        else:
+            logger.info("✅ 데이터베이스 파일이 존재합니다. 초기 데이터 삽입을 생략합니다.")
+        
         logger.info("🔹 데이터베이스 스키마 생성 중...")
         SQLModel.metadata.create_all(engine)
         logger.info("✅ 데이터베이스 스키마 생성 완료")
-            
-        logger.info("🔹 초기 데이터 삽입 중...")
-        with Session(engine) as session:
-            try:
-                from app import seed
-                seed.seed_data(session)
-                session.commit()
-                logger.info("✅ 초기 데이터 삽입 완료")
-            except Exception as e:
-                session.rollback()
-                raise DatabaseError(
-                    message="Failed to insert seed data",
-                    detail={"error": str(e)}
-                )
+        
+        # 데이터베이스 파일이 처음 생성된 경우에만 seed_data()를 호출합니다.
+        if seed_required:
+            logger.info("🔹 초기 데이터 삽입 중...")
+            with Session(engine) as session:
+                try:
+                    from app import seed
+                    seed.seed_data(session)
+                    session.commit()
+                    logger.info("✅ 초기 데이터 삽입 완료")
+                except Exception as e:
+                    session.rollback()
+                    raise DatabaseError(
+                        message="Failed to insert seed data",
+                        detail={"error": str(e)}
+                    )
                 
     except Exception as e:
         if isinstance(e, DatabaseError):

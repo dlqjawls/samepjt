@@ -11,7 +11,7 @@ from tests.helpers import master_token, semi_admin_token
 def test_maintenance_history(session: Session):
     """테스트용 정비 기록 데이터 생성"""
     maintenance_history = MaintenanceHistory(
-        maintenance_id=1,
+        maintenance_id=11,
         item_type_id=1,
         item_id=1,
         issue="Test Issue",
@@ -47,7 +47,7 @@ def test_update_maintenance_history_success(client, session, master_token, test_
 
     # When: 마스터 권한으로 정비 기록 정보 업데이트 요청
     response = client.patch(
-        f"/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
+        f"/api/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -76,7 +76,7 @@ def test_update_maintenance_history_unauthorized(client, session, test_maintenan
     }
 
     response = client.patch(
-        f"/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
+        f"/api/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
         json=update_data,
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
@@ -95,7 +95,7 @@ def test_update_nonexistent_maintenance_history(client, session, master_token):
     }
 
     response = client.patch(
-        "/admin/maintenance-history/99999",
+        "/api/admin/maintenance-history/99999",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -115,7 +115,7 @@ def test_update_maintenance_history_without_token(client, session, test_maintena
     }
 
     response = client.patch(
-        f"/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
+        f"/api/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
         json=update_data
     )
 
