@@ -1,4 +1,4 @@
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 import math
 from sqlmodel import Session, select, func
 from app.db.models.rent_history import RentHistory
@@ -9,6 +9,8 @@ from app.db.models.option import Option
 from app.db.crud.rent_history import rent_history_crud
 from app.db.crud.lut import item_status, item_type
 from app.db.models.usage_history import UsageHistory
+from app.utils.lut_constants import ItemType, RentStatus
+from app.db.crud.option_type import option_type_crud
 
 class DashboardService:
     # 차량 관련 데이터
@@ -23,8 +25,7 @@ class DashboardService:
 
     @staticmethod
     def get_currently_renting_vehicles_count(session: Session) -> int:
-        RENTING_STATUS_ID = 1  # 현재 대여중인 상태
-        query = select(RentHistory).where(RentHistory.rent_status_id == RENTING_STATUS_ID)
+        query = select(RentHistory).where(RentHistory.rent_status_id == RentStatus.IN_PROGRESS.ID)
         results = session.exec(query).all()
         return len(results)
 
@@ -34,6 +35,23 @@ class DashboardService:
         start = datetime.combine(today, time.min)
         end = datetime.combine(today, time.max)
         query = select(RentHistory).where(RentHistory.rent_end_date >= start, RentHistory.rent_end_date <= end)
+        results = session.exec(query).all()
+        return len(results)
+
+    @staticmethod
+    def get_today_completed_returns_count(session: Session) -> int:
+        """ 오늘 날짜에 반납 완료된 차량 건수를 조회합니다. """
+        today = date.today()
+        start = datetime.combine(today, time.min)
+        end = datetime.combine(today, time.max)
+        query = (
+            select(RentHistory)
+            .where(
+                RentHistory.rent_end_date >= start,
+                RentHistory.rent_end_date <= end,
+                RentHistory.rent_status_id == RentStatus.COMPLETED.ID
+            )
+        )
         results = session.exec(query).all()
         return len(results)
 
@@ -73,11 +91,7 @@ class DashboardService:
     # 판매 통계 관련 데이터
     @staticmethod
     def get_rental_counts_by_date(session: Session) -> list:
-        """
-        월별 대여 건수를 조회합니다.
-        예를 들어, 쿼리 결과가 [('06', 5), ('07', 8)] 형태로 반환된다면,
-        이를 [{"month": "6월", "count": 5}, {"month": "7월", "count": 8}]로 변환하여 반환합니다.
-        """
+        """월별 대여 건수를 조회합니다."""
         query = (
             select(
                 func.strftime("%Y-%m", RentHistory.rent_start_date).label("year_month"),
@@ -94,11 +108,7 @@ class DashboardService:
 
     @staticmethod
     def get_maintenance_cost_by_month(session: Session) -> list:
-        """
-        월별 정비 비용을 조회합니다.
-        예를 들어, 쿼리 결과가 [('2025-06', 2000.0), ('2025-07', 1500.0)] 형태로 반환된다면,
-        이를 [{"month": "2025-06", "cost": 2000.0}, {"month": "2025-07", "cost": 1500.0}] 형식으로 변환하여 반환합니다.
-        """
+        """월별 정비 비용을 조회합니다."""
         query = (
             select(
                 func.strftime("%Y-%m", MaintenanceHistory.scheduled_at).label("year_month"),
@@ -109,6 +119,33 @@ class DashboardService:
         results = session.exec(query).all()  # results: 리스트 형태 [(year_month, cost), ...]
         monthly_costs = [{"month": year_month, "cost": cost} for year_month, cost in results]
         return monthly_costs
-      
-      # 오늘 반납된 차량 조회 API가 없는 것을 확인
-      # 옵션 선호도 API가 없는 것을 확인
+
+    @staticmethod
+    def get_popular_option_types(session: Session) -> list:
+        """
+        최근 3개월 내 대여된 옵션 기록을 기반으로 
+        옵션 타입별 사용 건수를 집계하고 상위 5개 항목을 반환합니다.
+        """
+        three_months_ago = datetime.now() - timedelta(days=90)
+        stmt = (
+            select(Option.option_type_id, func.count(UsageHistory.usage_id).label("cnt"))
+            .join(Option, Option.option_id == UsageHistory.item_id)
+            .where(
+                UsageHistory.item_type_id == ItemType.OPTION.ID,
+                UsageHistory.created_at >= three_months_ago
+            )
+            .group_by(Option.option_type_id)
+            .order_by(func.count(UsageHistory.usage_id).desc())
+            .limit(5)
+        )
+        results = session.exec(stmt).all()
+        popular = []
+        for opt_type_id, count in results:
+            # 조회된 옵션 타입 이름을 가져옴
+            name = option_type_crud.get_option_name_by_id(session, opt_type_id)
+            popular.append({
+                "option_type_id": opt_type_id,
+                "option_type_name": name,
+                "count": count
+            })
+        return popular

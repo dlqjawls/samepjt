@@ -67,3 +67,14 @@ class MaintenanceCostListResponse(ResponseBase[List[MaintenanceCostItem]]):
                 ]
             }
         }
+
+
+class OptionPopularityItem(BaseModel):
+    option_type_id: int 
+    option_type_name: str
+    count: int
+
+class OptionPopularityResponse(BaseModel):
+    resultCode: str
+    message: str
+    data: List[OptionPopularityItem]

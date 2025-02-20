@@ -7,7 +7,7 @@ import json
 import os
 from typing import List
 from faker import Faker
-from sqlmodel import Session
+from sqlmodel import Session, select
 import logging
 
 from app.db.models import (
@@ -1385,7 +1385,20 @@ def create_dummy_rent_and_usage(session: Session, start_date: datetime, end_date
         updated_at=rent_end
     )
     session.add(usage_module)
-        
-        # 필요에 따라 옵션 사용 기록을 추가할 수 있음.
+    
+    # 사용 기록 생성 - 옵션: 0~10개의 옵션 기록을 생성
+    # Option 테이블에서 모든 옵션 id를 조회 
+    option_ids = [opt.option_id for opt in session.exec(select(Option)).all()]
+    num_options = random.randint(0, 10)
+    for _ in range(num_options):
+        usage_option = UsageHistory(
+            rent_id=rent_history.rent_id,
+            item_id=random.choice(option_ids),
+            item_type_id=ItemTypeLUT.OPTION.ID,
+            usage_status_id=UsageStatusLUT.COMPLETED.ID,
+            created_at=rent_start,
+            updated_at=rent_end
+        )
+        session.add(usage_option)
         
     session.commit()
