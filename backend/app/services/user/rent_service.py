@@ -248,7 +248,7 @@ class RentService:
         """새로운 렌트 프로세스를 생성합니다."""
         # 차량 및 모듈 가용성 검증
         vehicle = vehicle_crud.get_first_available_vehicle(session)
-        module = module_crud.get_first_available_module(session)
+        module = module_crud.get_module_by_module_type(session, rent_request.moduleTypeId)
         
         # 차량 연결 상태 검증
         vehicle_key = f"vehicle:{vehicle.vin}"
