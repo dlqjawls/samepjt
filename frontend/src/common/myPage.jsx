@@ -12,11 +12,24 @@ const MyPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [rentStatus, setRentStatus] = useState(null)
   const [rentHistory, setRentHistory] = useState([])
-
+  const currentRent = JSON.parse(sessionStorage.getItem("rentTime"));
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`
-  }
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+    
+    return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+  };
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
   const fetchRentHistory = async () => {
     try {
       let token = sessionStorage.getItem("token")
@@ -212,11 +225,13 @@ const MyPage = () => {
                   <div className="vehicle-card">
                     <div className="arrival-status">
                       <span className="arrival-badge">{rentStatus.isArrive ? "도착완료" : "이동중"}</span>
-                      <span className="eta-info">예상 도착 시간: {formatDate(rentStatus.ETA)}</span>
+                      <span className="eta-info">예상 도착 시간: {formatTime(rentStatus.ETA)}</span>
+                    <div>대여 시작: {currentRent ? formatDate(currentRent.rentStartDate) : "로딩 중..."}</div>
+                    <div>대여 종료: {currentRent ? formatDate(currentRent.rentEndDate) : "로딩 중..."}</div>
                     </div>
-
                     <div className="map-preview">
                       <div className="coordinates">
+
                         <div>
                           <FaMapMarkerAlt /> 현재 위치:
                           <div>위도: {rentStatus.location?.x}</div>
@@ -245,9 +260,10 @@ const MyPage = () => {
                       </div>
                       <div className="stat-item">
                         <div className="stat-label">
-                          <FaCar /> 이용 요금
+                          <FaCar /> 추가 이용 요금
                         </div>
-                        <div className="stat-value">{rentStatus.cost?.toLocaleString()}원</div>
+                        <div className="stat-value">측정중..</div>
+                        {/* <div className="stat-value">{rentStatus.cost?.toLocaleString()}원</div> */}
                       </div>
                     </div>
 

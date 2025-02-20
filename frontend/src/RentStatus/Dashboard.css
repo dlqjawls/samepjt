@@ -19,14 +19,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .arrival-badge {
-  background: #0066ff;
+  background: black;
   color: white;
   padding: 4px 12px;
   border-radius: 16px;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .eta-info {
@@ -185,4 +187,113 @@
   justify-content: space-between;
   gap: 12px;
   margin-top: 16px;
+}
+/* 기존 스타일 유지 */
+
+/* 모바일 대응을 위한 미디어 쿼리 추가 */
+@media screen and (max-width: 480px) {
+  .dashboard-container {
+    padding: 10px;
+  }
+
+  .vehicle-card {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3열 유지 */
+    gap: 8px; /* 간격 축소 */
+  }
+
+  .stat-value {
+    font-size: 14px; /* 통계 값 글자 크기 더 축소 */
+  }
+
+  .stat-label {
+    font-size: 11px; /* 통계 라벨 글자 크기 더 축소 */
+  }
+
+  .score-ranks {
+    flex-direction: column; /* 버튼을 세로로 배치 */
+    gap: 8px;
+    width: 100%;
+  }
+
+  .score-ranks button {
+    width: 100%; /* 버튼 너비 100%로 설정 */
+    padding: 12px 10px; /* 패딩 조정 */
+    font-size: 13px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  }
+
+  .vehicle-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .stat-value {
+    font-size: 16px; /* 통계 값 글자 크기 축소 */
+  }
+
+  .stat-label {
+    font-size: 12px; /* 통계 라벨 글자 크기 축소 */
+  }
+  .arrival-status {
+    padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .arrival-badge {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+  }
+
+  .eta-info {
+    font-size: 12px;
+    width: 100%;
+    text-align: left;
+    word-break: keep-all; 
+  }
+}
+
+/* 더 작은 화면을 위한 추가 미디어 쿼리 */
+@media screen and (max-width: 320px) {
+  .dashboard-container {
+    padding: 8px;
+  }
+
+  .vehicle-card {
+    padding: 12px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr; /* 1열로 변경 */
+  }
+
+  .score-ranks button {
+    font-size: 12px;
+    padding: 10px 8px;
+  }
+  .arrival-status {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .arrival-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+
+  .eta-info {
+    font-size: 11px;
+  }
 }

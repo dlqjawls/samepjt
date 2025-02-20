@@ -1,13 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoadingStatus.css";
+import axios from "axios";
 
 const LoadingStatus = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 각 단계별 타이밍 설정
+    const fetchCurrentRent = async () => {
+      const token = sessionStorage.getItem("token");
+      try {
+        const currentRentResponse = await axios.get(
+          `${import.meta.env.VITE_API_URL}/user/me/rent/current`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (currentRentResponse.data.resultCode === "SUCCESS") {
+          console.log("현재 진행 중인 렌트 정보 조회 완료:", currentRentResponse.data);
+          sessionStorage.setItem("rentTime", JSON.stringify(currentRentResponse.data.data));
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log("진행 중인 렌트 정보가 없습니다.");
+        } else {
+          console.error("현재 진행 중인 렌트 정보 조회 중 오류:", error);
+        }
+      }
+    };
+
+    // API 호출 실행
+    fetchCurrentRent();
     const timer1 = setTimeout(() => setCurrentStep(2), 13000); // 2초 후 출발 단계
     const timer2 = setTimeout(() => setCurrentStep(3), 25000); // 4초 후 도착 단계
     const timer3 = setTimeout(() => navigate("/car_status"), 30000); // 6초 후 대시보드로 이동
