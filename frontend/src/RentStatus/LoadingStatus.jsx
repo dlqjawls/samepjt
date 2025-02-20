@@ -35,9 +35,9 @@ const LoadingStatus = () => {
 
     // API 호출 실행
     fetchCurrentRent();
-    const timer1 = setTimeout(() => setCurrentStep(2), 13000); // 2초 후 출발 단계
-    const timer2 = setTimeout(() => setCurrentStep(3), 25000); // 4초 후 도착 단계
-    const timer3 = setTimeout(() => navigate("/car_status"), 30000); // 6초 후 대시보드로 이동
+    const timer1 = setTimeout(() => setCurrentStep(2), 13000); 
+    const timer2 = setTimeout(() => setCurrentStep(3), 25000); 
+    const timer3 = setTimeout(() => navigate("/car_status"), 30000); 
 
     return () => {
       clearTimeout(timer1);
