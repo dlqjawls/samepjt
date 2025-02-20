@@ -113,7 +113,7 @@ const ModuleSetManagement = () => {
   }, [fetchModuleSets]);
 
   // 모듈 타입 목록 조회 함수
-  const fetchModuleTypes = async () => {
+  const fetchModuleTypes = useCallback(async () => {
     try {
       const response = await axios.get(`${BASE_URL}/admin/module-types`, {
         headers: {
@@ -129,12 +129,12 @@ const ModuleSetManagement = () => {
     } catch (err) {
       console.error("모듈 타입 목록 불러오는 중 오류:", err);
     }
-  };
+  }, [token]);
 
   // 컴포넌트가 마운트될 때 모듈 타입 목록도 조회
   useEffect(() => {
     fetchModuleTypes();
-  });
+  }, [fetchModuleTypes]);
 
   // 옵션 타입 목록 조회
   const fetchOptionTypes = useCallback(async () => {
@@ -692,10 +692,13 @@ const ModuleSetManagement = () => {
                                       )}
                                     </div>
                                     <div className="add-image">
-                                      <input
-                                        type="file"
-                                        onChange={handleImageChange}
-                                      />
+                                      <label className="file-upload">
+                                        <input
+                                          type="file"
+                                          onChange={handleImageChange}
+                                        />
+                                        이미지 등록
+                                      </label>
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation();
@@ -936,40 +939,44 @@ const ModuleSetManagement = () => {
         onSubmit={handleSubmitAdd}
         title="신규 모듈 세트 등록"
       >
-        <div className="form-group">
+        <div className="form-group add-module-set-name">
           <label>모듈 세트 이름</label>
           <input
             type="text"
             name="module_set_name"
-            placeholder="예: 모듈 세트 A"
+            placeholder=""
             value={formData.module_set_name}
             onChange={handleFormChange}
             required
+            className=""
           />
         </div>
-        <div className="form-group">
+        <div className="form-group add-description">
           <label>설명</label>
           <textarea
             name="description"
-            placeholder="모듈 세트에 대한 설명"
+            placeholder=""
             value={formData.description}
             onChange={handleFormChange}
+            className=""
           />
         </div>
-        <div className="form-group">
+        <div className="form-group add-module-set-features">
           <label>모듈 세트 특징</label>
           <input
             type="text"
             name="module_set_features"
-            placeholder="예: 기능1, 기능2"
+            placeholder=""
             value={formData.module_set_features}
             onChange={handleFormChange}
+            className=""
           />
         </div>
-        <div className="form-group">
+        <div className="form-group add-module-type">
           <label>모듈 타입</label>
           <select
             name="module_type_id"
+            className=""
             value={formData.module_type_id}
             onChange={handleFormChange}
             required

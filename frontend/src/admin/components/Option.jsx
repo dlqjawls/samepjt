@@ -539,6 +539,7 @@ function Option() {
             value={formData.option_type_id}
             onChange={handleFormChange}
             required
+            className="add-option-type"
           >
             <option value="">옵션 타입 선택</option>
             {optionTypes &&

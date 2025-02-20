@@ -1,34 +1,37 @@
 .admin-login-overlay {
-  margin-top: 10%;
   position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
   box-sizing: border-box;
 }
 
-.admin-login-content {
+.admin-login-overlay .admin-login-content {
   padding: 24px;
-  position: relative;
   max-width: 500px;
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
+  overflow-y: auto; 
+  margin-bottom: 10%;
 }
 
-.admin-login-content img {
+.admin-login-overlay .admin-login-content img {
   display: block;
-  margin: 0 auto; /* 가로 가운데 정렬 */
+  margin: 0 auto; 
 }
 
-.close-button:hover {
-  color: #333333; /* 호버 시 색상 변화 */
+.admin-login-overlay .close-button:hover {
+  color: #333333; 
 }
 
-.highlight-text {
+.admin-login-overlay .highlight-text {
   color: #239edb;
 }
 
-/* 제목 스타일 */
-h2 {
+
+.admin-login-overlay  h2 {
   font-size: 26px;
   font-weight: 600;
   text-align: center;
@@ -36,13 +39,13 @@ h2 {
   color: #333333;
 }
 
-.modal-regist {
+.admin-login-overlay .modal-regist {
   align-content: center;
   text-align: center;
   justify-content: center;
 }
-/* 오류 메시지 */
-.error-message {
+
+.admin-login-overlay .error-message {
   background-color: #ffecec;
   color: #ff4d4d;
   border: 1px solid #ff9999;
@@ -53,12 +56,12 @@ h2 {
   text-align: center;
 }
 
-.input-group {
+.admin-login-overlay .input-group {
   position: relative;
   margin-bottom: 16px;
 }
 
-.input-group input {
+.admin-login-overlay .input-group input {
   width: 100%;
   padding: 16px;
   border: 1px solid #cccccc;
@@ -69,11 +72,11 @@ h2 {
   box-sizing: border-box;
 }
 
-.input-group input::placeholder {
-  color: transparent; /* 기본 placeholder 텍스트 숨김 */
+.admin-login-overlay .input-group input::placeholder {
+  color: transparent; 
 }
 
-.floating-label {
+.admin-login-overlay .floating-label {
   position: absolute;
   left: 16px;
   top: 16px;
@@ -83,9 +86,8 @@ h2 {
   transition: all 0.2s ease;
 }
 
-/* 포커스 또는 값이 있을 때 라벨 이동 및 크기 축소 */
-.input-group input:focus + .floating-label,
-.input-group input:not(:placeholder-shown) + .floating-label {
+.admin-login-overlay .input-group input:focus + .floating-label,
+.admin-login-overlay .input-group input:not(:placeholder-shown) + .floating-label {
   top: -8px;
   left: 12px;
   font-size: 12px;
@@ -94,8 +96,7 @@ h2 {
   padding: 0 4px;
 }
 
-/* 로그인 버튼 스타일 */
-.admin-login-content button[type="submit"] {
+.admin-login-overlay .admin-login-content button[type="submit"] {
   width: 100%;
   padding: 14px;
   background-color: #239edb;
@@ -109,33 +110,31 @@ h2 {
   margin-top: 16px;
 }
 
-.admin-login-content button[type="submit"]:disabled {
+.admin-login-overlay .admin-login-content button[type="submit"]:disabled {
   background-color: gray;
 }
 
-.admin-login-content button[type="submit"]:hover {
+.admin-login-overlay .admin-login-content button[type="submit"]:hover {
   background-color: #007bff;
 }
 
-.admin-login-content button[type="submit"]:disabled {
+.admin-login-overlay .admin-login-content button[type="submit"]:disabled {
   background-color: #cccccc;
   cursor: default;
 }
 
-/* 회원가입 링크 스타일 */
-.text-blue-600 {
+.admin-login-overlay .text-blue-600 {
   color: #007bff;
   font-size: 14px;
   text-align: center;
 }
 
-.text-blue-600:hover {
+.admin-login-overlay .text-blue-600:hover {
   text-decoration: underline;
   color: #0056b3;
 }
 
-/* 폼 레이블 */
-label {
+.admin-login-overlay label {
   font-size: 14px;
   font-weight: 500;
   color: #333333;

@@ -115,7 +115,7 @@ const ModuleManagementList = () => {
   const closeAddModal = () => setIsAddModalOpen(false);
 
   // 모듈 타입 목록 조회 함수
-  const fetchModuleTypes = async () => {
+  const fetchModuleTypes = useCallback(async () => {
     try {
       const response = await axios.get(`${BASE_URL}/admin/module-types`, {
         headers: {
@@ -131,7 +131,7 @@ const ModuleManagementList = () => {
     } catch (err) {
       console.error("모듈 타입 목록 불러오는 중 오류:", err);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchModules();
@@ -140,7 +140,7 @@ const ModuleManagementList = () => {
   // 컴포넌트가 마운트될 때 모듈 타입 목록도 조회
   useEffect(() => {
     fetchModuleTypes();
-  });
+  }, [fetchModuleTypes]);
 
   // 등록 API 호출
   const handleSubmitAdd = async () => {

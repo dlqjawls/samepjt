@@ -207,6 +207,7 @@ function RentalRecords() {
                                     e.stopPropagation();
                                     openModuleVideoModal(log.rent_id);
                                   }}
+                                  className="open-video-button"
                                 >
                                   모듈 설치 영상
                                 </button>
@@ -215,6 +216,7 @@ function RentalRecords() {
                                     e.stopPropagation();
                                     openAutonomousVideoModal(log.rent_id);
                                   }}
+                                  className="open-video-button"
                                 >
                                   자율 주행 영상
                                 </button>

@@ -68,12 +68,10 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   padding: 15px;
 }
 
-/* 상세정보 컨테이너 */
 .module-set-management .detail-info-container {
   padding: 15px;
 }
 
-/* 상세 정보 항목 */
 .module-set-management .detail-item {
   padding: 8px 0;
   border-bottom: 1px solid #ddd;
@@ -98,7 +96,6 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   border-radius: 20px;
 }
 
-/* 상세정보 액션 영역: 우하단 정렬 */
 .module-set-management .detail-actions {
   margin-top: 10px;
   display: flex;
@@ -157,8 +154,26 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   border: 1px solid #aaa;
   border-radius: 4px;
 }
-.module-set-management .edit-description,
-.module-set-management .edit-module-set-features,
+.module-set-management .edit-description {
+  width: 400px;
+  height: 200px;
+  outline: none;
+  resize: none;
+  font-family: sans-serif;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.module-set-management .edit-module-set-features {
+  width: 300px;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
 .module-set-management .edit-module-type-id {
   width: 100%;
   padding: 6px;
@@ -228,6 +243,23 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   border-radius: 4px;
 }
 
+.module-set-management .add-module-type {
+  width: 200px;
+}
+.module-set-management .add-module-set-name {
+  width: 200px;
+}
+.module-set-management .add-description textarea {
+  width: 400px;
+  height: 200px;
+  outline: none;
+  resize: none;
+  font-family: sans-serif;
+}
+.module-set-management .add-module-set-features {
+  width: 300px;
+}
+
 .module-set-management .edit-section {
   margin-top: 20px;
   padding: 10px;
@@ -288,6 +320,12 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
 
 .module-set-management .module-set-image-delete-button {
   border: none;
+  border-radius: 16px;
+  padding: 2px 8px;
+  margin: 6px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
 }
 .module-set-management .edit-module-set-features {
   width: 500px;
@@ -303,4 +341,21 @@ src/admin/components/ModuleSetManagement.css .module-set-management {
   border-radius: 10px;
   background-color: red;
   color: white;
+  cursor: pointer;
 }
+
+/* .module-set-management .file-upload input[type="file"] {
+  display: none;
+}
+
+.module-set-management .file-upload {
+  display: inline-block;
+  padding: 4px 8px;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: #239edb;
+  color: #fff;
+  border-radius: 16px;
+  border: 1px solid #239edb;
+  transition: background-color 0.3s ease;
+} */

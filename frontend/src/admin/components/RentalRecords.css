@@ -120,3 +120,13 @@
   color: red;
   margin-bottom: 10px;
 }
+
+.rental-container .open-video-button {
+  border: none;
+  padding: 8px;
+  margin: 10px 12px 6px 0px;
+  border-radius: 16px;
+  color: white;
+  background-color: goldenrod;
+  cursor: pointer;
+}
