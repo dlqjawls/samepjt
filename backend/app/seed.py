@@ -218,7 +218,7 @@ def seed_data(session: Session) -> None:
         dummy_modules = [
             Module(
                 module_id=1,
-                module_nfc_tag_id=fake.hexify(text='^^^^^^^^^^^^^^', upper=True),  # 14자리 16진수 생성 (7바이트)
+                module_nfc_tag_id="043F8E6A6C1D90",  # 14자리 16진수 생성 (7바이트)
                 module_type_id=1,
                 item_status_id=2,
                 last_maintenance_at=base_date,
@@ -232,8 +232,8 @@ def seed_data(session: Session) -> None:
             ),
             Module(
                 module_id=2,
-                module_nfc_tag_id=fake.hexify(text='^^^^^^^^^^^^^^', upper=True),  # 14자리 16진수 생성 (7바이트)
-                module_type_id=1,
+                module_nfc_tag_id="043F926A6C1D90",  # 14자리 16진수 생성 (7바이트)
+                module_type_id=2,
                 item_status_id=2,
                 last_maintenance_at=base_date,
                 next_maintenance_at=base_date,
@@ -887,7 +887,7 @@ def seed_data(session: Session) -> None:
                 description="캠핑용 모듈 세트입니다.",
                 module_set_images="https://moducar.s3.amazonaws.com/moduletype/3/3.JPG",
                 module_set_features="",  
-                module_type_id=1,
+                module_type_id=2,
                 created_at=base_date,
                 updated_at=base_date,
                 created_by=1,
