@@ -23,7 +23,7 @@ def test_get_usage_history_success(client, master_token):
     관리자 토큰으로 사용 이력 조회 시 올바른 응답을 받는지 확인합니다.
     """
     response = client.get(
-        "/admin/usage-history?page=1&page_size=10",
+        "/api/admin/usage-history?page=1&page_size=10",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 200, response.text
@@ -38,7 +38,7 @@ def test_get_usage_history_include_deleted(client, master_token):
     include_deleted 옵션으로 삭제된 항목도 포함하여 조회할 수 있는지 확인합니다.
     """
     response = client.get(
-        "/admin/usage-history?page=1&page_size=10&include_deleted=true",
+        "/api/admin/usage-history?page=1&page_size=10&include_deleted=true",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 200, response.text
@@ -49,7 +49,7 @@ def test_get_usage_history_unauthorized(client):
     """
     인증 없이 사용 이력을 조회할 경우 401 Unauthorized 응답을 받는지 확인합니다.
     """
-    response = client.get("/admin/usage-history?page=1&page_size=10")
+    response = client.get("/api/admin/usage-history?page=1&page_size=10")
     assert response.status_code == 401
 
 def test_get_usage_history_forbidden(client, non_admin_token):
@@ -57,7 +57,7 @@ def test_get_usage_history_forbidden(client, non_admin_token):
     일반 사용자 토큰을 사용하여 사용 이력을 조회할 경우 403 Forbidden 응답을 받는지 확인합니다.
     """
     response = client.get(
-        "/admin/usage-history?page=1&page_size=10",
+        "/api/admin/usage-history?page=1&page_size=10",
         headers={"Authorization": f"Bearer {non_admin_token}"}
     )
     assert response.status_code == 403 

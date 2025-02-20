@@ -45,7 +45,7 @@ def test_update_module_set_success(client, session, master_token, test_module_se
 
     # When: 마스터 권한으로 모듈 세트 정보 업데이트 요청
     response = client.patch(
-        f"/admin/module-sets/{get_module_set_id(session, test_module_set.module_set_name)}",
+        f"/api/admin/module-sets/{get_module_set_id(session, test_module_set.module_set_name)}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -75,7 +75,7 @@ def test_update_module_set_unauthorized(client, session, test_module_set, semi_a
     }
 
     response = client.patch(
-        f"/admin/module-sets/{get_module_set_id(session, test_module_set.module_set_name)}",
+        f"/api/admin/module-sets/{get_module_set_id(session, test_module_set.module_set_name)}",
         json=update_data,
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
@@ -95,7 +95,7 @@ def test_update_nonexistent_module_set(client, session, master_token):
     }
 
     response = client.patch(
-        "/admin/module-sets/99999",
+        "/api/admin/module-sets/99999",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -116,7 +116,7 @@ def test_update_module_set_without_token(client, session, test_module_set):
     }
 
     response = client.patch(
-        f"/admin/module-sets/{get_module_set_id(session, test_module_set.module_set_name)}",
+        f"/api/admin/module-sets/{get_module_set_id(session, test_module_set.module_set_name)}",
         json=update_data
     )
 

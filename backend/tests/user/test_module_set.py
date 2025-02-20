@@ -5,7 +5,7 @@ def test_get_module_sets_success(client):
     """✅ 정상적인 모듈 세트 목록 조회 테스트"""
     
     # Given: 서버에 기본 데이터가 있는 상태
-    response = client.get("user/module-sets?page=1&page_size=10")
+    response = client.get("/api/user/module-sets?page=1&page_size=10")
 
     # Then: 응답 검증
     assert response.status_code == 200
@@ -23,7 +23,7 @@ def test_get_module_sets_not_found(client, session):
     session.commit()
 
     # When: 모듈 세트 조회 요청
-    response = client.get("user/module-sets?page=1&page_size=10")
+    response = client.get("/api/user/module-sets?page=1&page_size=10")
 
     # Then: 200 OK + 빈 리스트 응답 검증 (API가 빈 리스트 반환하는 경우)
     assert response.status_code == 200
@@ -36,7 +36,7 @@ def test_get_module_sets_invalid_page(client):
     """🚨 유효하지 않은 페이지 번호 요청 테스트"""
 
     # When: `page=0` (잘못된 값)으로 요청
-    response = client.get("user/module-sets?page=0&page_size=10")
+    response = client.get("/api/user/module-sets?page=0&page_size=10")
 
     # Then: 422 응답 검증
     assert response.status_code == 422
@@ -48,7 +48,7 @@ def test_get_module_sets_invalid_page_size(client):
     """🚨 유효하지 않은 페이지 크기 요청 테스트"""
 
     # When: `page_size=0` (잘못된 값)으로 요청
-    response = client.get("user/module-sets?page=1&page_size=0")
+    response = client.get("/api/user/module-sets?page=1&page_size=0")
 
     # Then: 422 응답 검증
     assert response.status_code == 422
@@ -60,7 +60,7 @@ def test_get_module_sets_large_page_number(client):
     """🚨 페이지 번호가 너무 클 때 빈 리스트 반환 테스트 (404 → 200으로 수정)"""
 
     # When: `page=999` (너무 큰 값)으로 요청
-    response = client.get("user/module-sets?page=999&page_size=10")
+    response = client.get("/api/user/module-sets?page=999&page_size=10")
 
     # Then: 200 OK + 빈 리스트 응답 검증
     assert response.status_code == 200
@@ -78,7 +78,7 @@ def test_get_module_sets_empty_database(client, session):
     session.commit()
 
     # When: 모듈 세트 조회 요청
-    response = client.get("user/module-sets?page=1&page_size=10")
+    response = client.get("/api/user/module-sets?page=1&page_size=10")
 
     # Then: 200 OK + 빈 리스트 응답 검증
     assert response.status_code == 200

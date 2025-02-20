@@ -23,7 +23,7 @@ def test_create_option_success(client, session, master_token, clear_options):
 
     # When: 마스터 권한으로 옵션 등록 요청
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -53,7 +53,7 @@ def test_create_option_invalid_format(client, master_token, invalid_option_type_
     }
 
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -66,7 +66,7 @@ def test_create_option_unauthorized(client):
     option_data = {
         "option_type_id": 1
     } 
-    response = client.post("/admin/options", json=option_data)
+    response = client.post("/api/admin/options", json=option_data)
     assert response.status_code == 401
 
 def test_create_option_forbidden(client, semi_admin_token):
@@ -75,7 +75,7 @@ def test_create_option_forbidden(client, semi_admin_token):
         "option_type_id": 1
     }
     response = client.post(
-        "/admin/options",
+        "/api/admin/options",
         json=option_data,
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )

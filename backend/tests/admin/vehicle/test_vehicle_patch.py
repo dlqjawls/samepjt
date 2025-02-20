@@ -16,7 +16,7 @@ def test_update_vehicle_success(client, session, master_token, create_dummy_vehi
         "vehicle_number": "PBV-9999", # 차량 번호 업데이트
     }
     response = client.patch(
-        f"/admin/vehicles/{vehicle.vehicle_id}",
+        f"/api/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -38,7 +38,7 @@ def test_update_vehicle_unauthorized(client, create_dummy_vehicles):
         "vehicle_number": "PBV-9999"
     }
     response = client.patch(
-        f"/admin/vehicles/{vehicle.vehicle_id}",
+        f"/api/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data
     )
     assert response.status_code == 401
@@ -51,7 +51,7 @@ def test_update_vehicle_forbidden(client, create_dummy_vehicles, user_token):
         "vehicle_number": "PBV-9999"
     }
     response = client.patch(
-        f"/admin/vehicles/{vehicle.vehicle_id}",
+        f"/api/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {user_token}"}
     )
@@ -63,7 +63,7 @@ def test_update_nonexistent_vehicle(client, master_token):
         "vehicle_number": "PBV-9999"
     }
     response = client.patch(
-        "/admin/vehicles/99999",  # 존재하지 않는 차량 ID
+        "/api/admin/vehicles/99999",  # 존재하지 않는 차량 ID
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -79,7 +79,7 @@ def test_update_vehicle_invalid_id(client, master_token, invalid_vehicle_id):
         "vehicle_number": "PBV-9999"
     }
     response = client.patch(
-        f"/admin/vehicles/{invalid_vehicle_id}",
+        f"/api/admin/vehicles/{invalid_vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -104,7 +104,7 @@ def test_update_vehicle_invalid_number_format(client, master_token, create_dummy
     }
 
     response = client.patch(
-        f"/admin/vehicles/{vehicle.vehicle_id}",
+        f"/api/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -124,7 +124,7 @@ def test_update_vehicle_duplicate_number(client, session, master_token, create_d
     }
 
     response = client.patch(
-        f"/admin/vehicles/{vehicle.vehicle_id}",
+        f"/api/admin/vehicles/{vehicle.vehicle_id}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )

@@ -6,7 +6,7 @@ def test_delete_option_success(client, session, master_token, create_dummy_optio
     """ 옵션 삭제 성공 테스트"""
     options = create_dummy_options() 
     response = client.delete(
-        f"/admin/options/{options[0].option_id}",
+        f"/api/admin/options/{options[0].option_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
 
@@ -25,7 +25,7 @@ def test_delete_option_not_found(client, master_token):
     assert response.status_code == 404
     data = response.json()
     assert data["resultCode"] == "FAILURE"
-    assert data["message"] == "Option with option_id=9999 not found"
+    assert data["message"] == "Option not found"
     assert data["error_code"] == "NOT_FOUND"
 
 def test_delete_option_without_token(client, session, create_dummy_options):
@@ -41,7 +41,7 @@ def test_delete_option_with_non_master_token(client, session, create_dummy_optio
     """ 일반 관리자(권한 부족) 토큰으로 옵션 삭제 시도 테스트"""
     options = create_dummy_options()  
     response = client.delete(
-        f"/admin/options/{options[0].option_id}",
+        f"/api/admin/options/{options[0].option_id}",
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
     assert response.status_code == 403
@@ -53,7 +53,7 @@ def test_delete_option_with_non_master_token(client, session, create_dummy_optio
 def test_delete_option_invalid_id(client, master_token, invalid_option_id):
     """ 잘못된 형식의 옵션 ID로 삭제 시도 테스트"""
     response = client.delete(
-        f"/admin/options/{invalid_option_id}",
+        f"/api/admin/options/{invalid_option_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 422
@@ -66,7 +66,7 @@ def test_delete_option_already_deleted(client, session, master_token, create_dum
     # 첫 번째 삭제 시도 -> 성공 (soft delete)
     options = create_dummy_options()
     response_first = client.delete(
-        f"/admin/options/{options[0].option_id}",
+        f"/api/admin/options/{options[0].option_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_first.status_code == 200
@@ -75,11 +75,11 @@ def test_delete_option_already_deleted(client, session, master_token, create_dum
     
     # 두 번째 삭제 시도 -> 이미 삭제되어 존재하지 않으므로 404 Not Found
     response_second = client.delete(
-        f"/admin/options/{options[0].option_id}",
+        f"/api/admin/options/{options[0].option_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_second.status_code == 404
     data_second = response_second.json()
     assert data_second["resultCode"] == "FAILURE"
-    assert data_second["message"] == f"Option with option_id={options[0].option_id} not found"
+    assert data_second["message"] == f"Option not found"
     assert data_second["error_code"] == "NOT_FOUND"

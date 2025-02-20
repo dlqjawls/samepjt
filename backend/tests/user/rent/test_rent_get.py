@@ -8,7 +8,7 @@ def test_get_rent_success(client):
     rent_id = create_test_rent(client, access_token)
 
     response = client.get(
-        f"/user/rent/{rent_id}",
+        f"/api/user/rent/{rent_id}",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
@@ -26,7 +26,7 @@ def test_get_other_user_rent(client):
 
     second_user_token = register_and_login(client, "user2")
     response = client.get(
-        f"/user/rent/{rent_id}",
+        f"/api/user/rent/{rent_id}",
         headers={"Authorization": f"Bearer {second_user_token}"}
     )
 
@@ -41,7 +41,7 @@ def test_get_nonexistent_rent(client):
     access_token = register_and_login(client)
 
     response = client.get(
-        "/user/rent/99999",
+        "/api/user/rent/99999",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
@@ -58,13 +58,13 @@ def test_get_canceled_rent(client):
 
     # 렌트 취소
     client.delete(
-        f"/user/rent/{rent_id}",
+        f"/api/user/rent/{rent_id}",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
     # 취소된 렌트 조회 시도
     response = client.get(
-        f"/user/rent/{rent_id}",
+        f"/api/user/rent/{rent_id}",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 
@@ -77,7 +77,7 @@ def test_get_canceled_rent(client):
 # ❌ 인증 없이 렌트 조회
 def test_get_rent_without_token(client):
     """❌ 인증 없이 렌트 조회 시도 테스트"""
-    response = client.get("/user/rent/1")
+    response = client.get("/api/user/rent/1")
     
     assert response.status_code == 401
     data = response.json()
@@ -91,7 +91,7 @@ def test_get_rent_invalid_id(client, invalid_rent_id):
     access_token = register_and_login(client)
 
     response = client.get(
-        f"/user/rent/{invalid_rent_id}",
+        f"/api/user/rent/{invalid_rent_id}",
         headers={"Authorization": f"Bearer {access_token}"}
     )
 

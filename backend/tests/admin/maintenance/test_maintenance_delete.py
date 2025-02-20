@@ -10,7 +10,7 @@ from tests.helpers import master_token, semi_admin_token
 def test_maintenance_history(session: Session):
     """테스트용 정비 기록 데이터 생성"""
     history = MaintenanceHistory(
-        maintenance_id=1,
+        maintenance_id=11,
         item_id=1,
         item_type_id=1,
         issue="Test Issue",
@@ -39,7 +39,7 @@ def get_maintenance_history_id(session: Session, maintenance_id: int) -> int:
 def test_delete_maintenance_history_success(client, session, master_token, test_maintenance_history):
     """✅ 정비 기록 삭제 성공 테스트"""
     response = client.delete( 
-        f"/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
+        f"/api/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
 
@@ -74,7 +74,7 @@ def test_delete_maintenance_history_without_token(client, session, test_maintena
 def test_delete_maintenance_history_with_non_master_token(client, session, test_maintenance_history, semi_admin_token):
     """❌ 일반 관리자(권한 부족) 토큰으로 정비 기록 삭제 시도 테스트"""
     response = client.delete(
-        f"/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
+        f"/api/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
     assert response.status_code == 403
@@ -88,7 +88,7 @@ def test_delete_maintenance_history_with_non_master_token(client, session, test_
 def test_delete_maintenance_history_invalid_id(client, master_token, invalid_maintenance_history_id):
     """🚨 잘못된 형식의 정비 기록 ID로 삭제 시도 테스트"""
     response = client.delete(
-        f"/admin/maintenance-history/{invalid_maintenance_history_id}",
+        f"/api/admin/maintenance-history/{invalid_maintenance_history_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 422    
@@ -102,7 +102,7 @@ def test_delete_maintenance_history_already_deleted(client, session, master_toke
     """✅ 이미 삭제된 정비 기록 재삭제 시도 테스트"""
     # 첫 번째 삭제 시도 -> 성공 (soft delete)
     response_first = client.delete(
-        f"/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
+        f"/api/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_first.status_code == 200
@@ -111,7 +111,7 @@ def test_delete_maintenance_history_already_deleted(client, session, master_toke
     
     # 두 번째 삭제 시도 -> 이미 삭제되어 존재하지 않으므로 404 Not Found
     response_second = client.delete(
-        f"/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
+        f"/api/admin/maintenance-history/{get_maintenance_history_id(session, test_maintenance_history.maintenance_id)}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_second.status_code == 404

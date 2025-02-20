@@ -46,7 +46,7 @@ def test_update_option_type_success(client, session, master_token, test_option_t
     }
     # When: 마스터 권한으로 옵션 타입 정보 업데이트 요청
     response = client.patch(
-        f"/admin/option-types/{get_option_type_id(session, test_option_type.option_type_name)}",
+        f"/api/admin/option-types/{get_option_type_id(session, test_option_type.option_type_name)}",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -77,7 +77,7 @@ def test_update_option_type_unauthorized(client, session, test_option_type, semi
     }
 
     response = client.patch(
-        f"/admin/option-types/{get_option_type_id(session, test_option_type.option_type_name)}",
+        f"/api/admin/option-types/{get_option_type_id(session, test_option_type.option_type_name)}",
         json=update_data,
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
@@ -98,7 +98,7 @@ def test_update_nonexistent_option_type(client, session, master_token):
     }
 
     response = client.patch(
-        "/admin/option-types/99999",
+        "/api/admin/option-types/99999",
         json=update_data,
         headers={"Authorization": f"Bearer {master_token}"}
     )
@@ -120,7 +120,7 @@ def test_update_option_type_without_token(client, session, test_option_type):
     }
 
     response = client.patch(
-        f"/admin/option-types/{get_option_type_id(session, test_option_type.option_type_name)}",
+        f"/api/admin/option-types/{get_option_type_id(session, test_option_type.option_type_name)}",
         json=update_data
     )
 

@@ -6,7 +6,7 @@ def test_delete_vehicle_success(client, session, master_token, create_dummy_vehi
     """ 차량 삭제 성공 테스트"""
     vehicles = create_dummy_vehicles() 
     response = client.delete(
-        f"/admin/vehicles/{vehicles[0].vehicle_id}",
+        f"/api/admin/vehicles/{vehicles[0].vehicle_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
 
@@ -41,7 +41,7 @@ def test_delete_vehicle_with_non_master_token(client, session, create_dummy_vehi
     """ 일반 관리자(권한 부족) 토큰으로 차량 삭제 시도 테스트"""
     vehicles = create_dummy_vehicles()  
     response = client.delete(
-        f"/admin/vehicles/{vehicles[0].vehicle_id}",
+        f"/api/admin/vehicles/{vehicles[0].vehicle_id}",
         headers={"Authorization": f"Bearer {semi_admin_token}"}
     )
     assert response.status_code == 403
@@ -53,7 +53,7 @@ def test_delete_vehicle_with_non_master_token(client, session, create_dummy_vehi
 def test_delete_vehicle_invalid_id(client, master_token, invalid_vehicle_id):
     """ 잘못된 형식의 차량 ID로 삭제 시도 테스트"""
     response = client.delete(
-        f"/admin/vehicles/{invalid_vehicle_id}",
+        f"/api/admin/vehicles/{invalid_vehicle_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response.status_code == 422
@@ -66,7 +66,7 @@ def test_delete_vehicle_already_deleted(client, session, master_token, create_du
     # 첫 번째 삭제 시도 -> 성공 (soft delete)
     vehicles = create_dummy_vehicles()
     response_first = client.delete(
-        f"/admin/vehicles/{vehicles[0].vehicle_id}",
+        f"/api/admin/vehicles/{vehicles[0].vehicle_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_first.status_code == 200
@@ -75,7 +75,7 @@ def test_delete_vehicle_already_deleted(client, session, master_token, create_du
     
     # 두 번째 삭제 시도 -> 이미 삭제되어 존재하지 않으므로 404 Not Found
     response_second = client.delete(
-        f"/admin/vehicles/{vehicles[0].vehicle_id}",
+        f"/api/admin/vehicles/{vehicles[0].vehicle_id}",
         headers={"Authorization": f"Bearer {master_token}"}
     )
     assert response_second.status_code == 404
