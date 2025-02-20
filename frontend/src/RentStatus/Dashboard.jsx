@@ -253,28 +253,27 @@ function Dashboard() {
 
         <div className="stats-grid">
           <div className="stat-item">
-            <div className="stat-label">총 주행거리</div>
+            <div className="stat-label">
+              <FaCar /> 총 주행거리</div>
             <div className="stat-value">
               {(rentStatus.distanceTravelled / 1000).toFixed(3)}km
             </div>
           </div>
           <div className="stat-item">
-            <div className="stat-label">주행 가능거리</div>
+            <div className="stat-label">
+            <FaRoute /> 주행 가능거리</div>
             <div className="stat-value">287km</div>
           </div>
           <div className="stat-item">
-            <div className="stat-label">배터리 잔량</div>
+            <div className="stat-label">
+               <FaBatteryThreeQuarters />배터리 잔량</div>
             <div className="stat-value">
               {rentStatus.status.vehicle.batteryLevel}%
             </div>
           </div>
         </div>
 
-        <div className="icon-row">
-          <FaBatteryThreeQuarters size={24} color="#FF4444" />
-          <FaRoute size={24} color="#FFB800" />
-          <FaCar size={24} color="#CCCCCC" />
-        </div>
+      
 
         <div className="score-section">
           <div className="score-title">차량 상태</div>
