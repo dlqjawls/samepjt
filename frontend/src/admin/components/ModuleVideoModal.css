@@ -14,15 +14,31 @@
 }
 
 .video-modal-overlay .video-modal {
-  background: #fff;
+  background-color: #fff;
+  width: 500px;
   border-radius: 8px;
-  padding: 20px;
-  min-height: 200px;
-  max-width: 600px;
-  width: 90%;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
-  overflow-y: auto;
   position: relative;
+}
+
+.video-modal-overlay .video-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f2f2f2;
+  padding: 15px 20px;
+}
+
+.video-modal-overlay .video-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.video-modal-overlay .video-modal-body {
+  padding: 20px;
+  overflow-y: auto;
 }
 
 .video-modal-overlay .close-button {
@@ -43,4 +59,10 @@
 
 .video-modal-overlay .video-item p {
   margin: 4px 0;
+}
+
+.video-modal-overlay .video-player {
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
 }

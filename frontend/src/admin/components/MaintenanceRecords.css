@@ -244,3 +244,41 @@
   border-color: #4caf50;
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
+
+.maintenance-records .form-group .add-item-type-name {
+  width: 100px;
+}
+.maintenance-records .form-group .add-item-id {
+  width: 100px;
+}
+.maintenance-records .form-group .add-issue {
+  width: 300px;
+}
+.maintenance-records .form-group .add-cost {
+  width: 150px;
+}
+.maintenance-records .form-group .add-scheduled-at {
+  width: 250px;
+}
+.maintenance-records .form-group .add-completed-at {
+  width: 250px;
+}
+
+.maintenance-records .edit-item-type-name {
+  width: 100px;
+}
+.maintenance-records .edit-issue {
+  width: 300px;
+}
+.maintenance-records .edit-cost {
+  width: 135px;
+}
+.maintenance-records .edit-maintenance-status-id {
+  width: 150px;
+}
+.maintenance-records .edit-scheduled-at {
+  width: 250px;
+}
+.maintenance-records .edit-completed-at {
+  width: 250px;
+}

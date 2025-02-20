@@ -590,7 +590,7 @@ function VehicleManagement() {
         title="차량 삭제 확인"
         message={
           selectedVehicle
-            ? `${selectedVehicle.vehicle_number} 차량을 삭제하시겠습니까?`
+            ? `차량 ${selectedVehicle.vehicle_number}을 삭제하시겠습니까?`
             : ""
         }
       />

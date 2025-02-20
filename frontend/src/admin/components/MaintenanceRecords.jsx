@@ -217,10 +217,16 @@ const MaintenanceRecords = () => {
   const startEditing = (record) => {
     setSelectedRecord(record);
     setFormData({
-      maintenance_status_id: record.maintenance_status_id,
+      maintenance_status_id: record.maintenance_status_id
+        ? record.maintenance_status_id.toString()
+        : "",
       cost: record.cost,
-      scheduled_at: record.scheduled_at,
-      completed_at: record.completed_at,
+      scheduled_at: record.scheduled_at
+        ? new Date(record.scheduled_at).toISOString().slice(0, 16)
+        : "",
+      completed_at: record.completed_at
+        ? new Date(record.completed_at).toISOString().slice(0, 16)
+        : "",
       issue: record.issue,
     });
     setEditingRecordId(record.maintenance_id);
@@ -231,7 +237,7 @@ const MaintenanceRecords = () => {
           block: "start",
         });
       }
-    }, 100); // 약간의 딜레이 후 스크롤 호출 (렌더링 완료 후)
+    }, 100); // 약간의 딜레이 후 스크롤 호출
   };
 
   // 인라인 수정 API 호출
@@ -400,7 +406,7 @@ const MaintenanceRecords = () => {
                                     name="item_type_name"
                                     value={formData.item_type_name}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-item-type-name"
                                   >
                                     <option value="vehicle">vehicle</option>
                                     <option value="module">module</option>
@@ -434,10 +440,10 @@ const MaintenanceRecords = () => {
                                     name="issue"
                                     value={formData.issue}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-issue"
                                   />
                                 ) : (
-                                  <div className="detail-value">
+                                  <div className="detail-value edit-issue">
                                     {record.issue}
                                   </div>
                                 )}
@@ -450,7 +456,7 @@ const MaintenanceRecords = () => {
                                     name="cost"
                                     value={formData.cost}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-cost"
                                   />
                                 ) : (
                                   <div className="detail-value">
@@ -465,7 +471,7 @@ const MaintenanceRecords = () => {
                                     name="maintenance_status_id"
                                     value={formData.maintenance_status_id}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-maintenance-status-id"
                                   >
                                     <option value="">선택하세요</option>
                                     {maintenanceStatuses.map((ms) => (
@@ -473,7 +479,16 @@ const MaintenanceRecords = () => {
                                         key={ms.maintenance_status_id}
                                         value={ms.maintenance_status_id}
                                       >
-                                        {ms.maintenance_status_name}
+                                        {ms.maintenance_status_name ===
+                                        "pending"
+                                          ? "대기"
+                                          : ms.maintenance_status_name ===
+                                            "in_progress"
+                                          ? "진행 중"
+                                          : ms.maintenance_status_name ===
+                                            "completed"
+                                          ? "완료"
+                                          : "알 수 없음"}
                                       </option>
                                     ))}
                                   </select>
@@ -502,7 +517,7 @@ const MaintenanceRecords = () => {
                                     name="scheduled_at"
                                     value={formData.scheduled_at}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-scheduled-at"
                                   />
                                 ) : (
                                   <div className="detail-value">
@@ -522,7 +537,7 @@ const MaintenanceRecords = () => {
                                     name="completed_at"
                                     value={formData.completed_at}
                                     onChange={handleFormChange}
-                                    className="edit-input"
+                                    className="edit-input edit-completed-at"
                                   />
                                 ) : (
                                   <div className="detail-value">
@@ -629,6 +644,7 @@ const MaintenanceRecords = () => {
             <label>정비 대상</label>
             <select
               name="item_type_name"
+              className="add-item-type-name"
               value={formData.item_type_name}
               onChange={handleFormChange}
               required
@@ -643,6 +659,7 @@ const MaintenanceRecords = () => {
             <input
               type="number"
               name="item_id"
+              className="add-item-id"
               value={formData.item_id}
               onChange={handleFormChange}
               placeholder="정비 대상의 고유 ID"
@@ -653,6 +670,7 @@ const MaintenanceRecords = () => {
             <input
               type="text"
               name="issue"
+              className="add-issue"
               value={formData.issue}
               onChange={handleFormChange}
             />
@@ -662,6 +680,7 @@ const MaintenanceRecords = () => {
             <input
               type="number"
               name="cost"
+              className="add-cost"
               value={formData.cost}
               onChange={handleFormChange}
             />
@@ -671,6 +690,7 @@ const MaintenanceRecords = () => {
             <input
               type="datetime-local"
               name="scheduled_at"
+              className="add-scheduled-at"
               value={formData.scheduled_at}
               onChange={handleFormChange}
             />
@@ -680,6 +700,7 @@ const MaintenanceRecords = () => {
             <input
               type="datetime-local"
               name="completed_at"
+              className="add-completed-at"
               value={formData.completed_at}
               onChange={handleFormChange}
             />

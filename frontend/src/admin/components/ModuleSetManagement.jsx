@@ -212,7 +212,7 @@ const ModuleSetManagement = () => {
   // 신규 모듈 세트 등록 API 호출
   const handleSubmitAdd = async () => {
     if (!formData.module_set_name.trim() || !formData.module_type_id.trim()) {
-      alert("모듈 세트 이름과 모듈 타입 아이디는 필수 항목입니다.");
+      alert("필수 항목을 모두 입력하세요.");
       return;
     }
     setLoading(true);
@@ -654,6 +654,7 @@ const ModuleSetManagement = () => {
                                     "이미지 없음"
                                   )}
                                 </div>
+
                                 {editingModuleSetId === set.module_set_id && (
                                   <div className="edit-section">
                                     <h3>이미지 관리</h3>
@@ -692,13 +693,11 @@ const ModuleSetManagement = () => {
                                       )}
                                     </div>
                                     <div className="add-image">
-                                      <label className="file-upload">
-                                        <input
-                                          type="file"
-                                          onChange={handleImageChange}
-                                        />
-                                        이미지 등록
-                                      </label>
+                                      <input
+                                        type="file"
+                                        onChange={handleImageChange}
+                                      />
+
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation();
@@ -720,32 +719,38 @@ const ModuleSetManagement = () => {
                                   <div className="option-list">
                                     {set.module_set_option_types &&
                                     set.module_set_option_types.length > 0 ? (
-                                      set.module_set_option_types.map((opt) => (
-                                        <div
-                                          key={opt.option_type_id}
-                                          className="option-item"
-                                        >
-                                          <span>
-                                            {opt.option_type_name} (수량:{" "}
-                                            {opt.quantity})
-                                          </span>
-                                          {editingModuleSetId ===
-                                            set.module_set_id && (
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteOption(
-                                                  set.module_set_id,
-                                                  opt.option_type_id
-                                                );
-                                              }}
-                                              className="option-delete-button"
+                                      <ul>
+                                        {set.module_set_option_types.map(
+                                          (opt) => (
+                                            <li
+                                              key={opt.option_type_id}
+                                              className="option-item"
                                             >
-                                              삭제
-                                            </button>
-                                          )}
-                                        </div>
-                                      ))
+                                              <span className="option-name">
+                                                {opt.option_type_name}
+                                              </span>
+                                              <span className="option-quantity">
+                                                x{opt.quantity}
+                                              </span>
+                                              {editingModuleSetId ===
+                                                set.module_set_id && (
+                                                <button
+                                                  className="option-delete-button"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteOption(
+                                                      set.module_set_id,
+                                                      opt.option_type_id
+                                                    );
+                                                  }}
+                                                >
+                                                  삭제
+                                                </button>
+                                              )}
+                                            </li>
+                                          )
+                                        )}
+                                      </ul>
                                     ) : (
                                       <p>등록된 옵션이 없습니다.</p>
                                     )}
@@ -782,6 +787,7 @@ const ModuleSetManagement = () => {
                                           quantity: e.target.value,
                                         }))
                                       }
+                                      min="0"
                                     />
                                     <button
                                       onClick={(e) => {
@@ -999,7 +1005,7 @@ const ModuleSetManagement = () => {
         title="모듈 세트 삭제 확인"
         message={
           selectedModuleSet
-            ? `${selectedModuleSet.module_set_name} 모듈 세트를 삭제하시겠습니까?`
+            ? `${selectedModuleSet.module_set_name} 세트를 삭제하시겠습니까?`
             : ""
         }
       />
