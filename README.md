@@ -76,9 +76,19 @@
 
 ## **개발 환경**
 
-### 
+**FrontEnd**
+- React
 
-### **2. 시스템 아키텍처**
+**BackEnd**
+- Python 3.9
+
+**Embedded**
+- Python 3.9
+
+**Etc**
+- Python 3.9
+
+**시스템 아키텍처**
 
 ![프로젝트 이미지](assets/readme/moducar.png)
 
@@ -112,4 +122,65 @@
 
 ## **개발 내용**
 
+```
+├─assets
+├─backend
+│  ├─.devcontainer
+│  ├─.pytest_cache
+│  ├─.vscode
+│  ├─app
+│  │  ├─api
+│  │  │  ├─routes
+│  │  │  │  ├─admin
+│  │  │  │  └─user
+│  │  │  └─schemas
+│  │  │      ├─admin
+│  │  │      └─user
+│  │  ├─core
+│  │  ├─db
+│  │  │  ├─crud
+│  │  │  └─models
+│  │  ├─services
+│  │  │  ├─admin
+│  │  │  └─user
+│  │  ├─utils
+│  │  └─websocket
+│  └─tests
+│      ├─admin
+│      ├─auth
+│      └─user
+├─frontend
+│  ├─public
+│  └─src
+│      ├─admin
+│      │  ├─components
+│      │  └─context
+│      ├─assets
+│      │  └─font
+│      ├─common
+│      ├─finishSelect
+│      ├─main
+│      ├─moduleSelect
+│      ├─optionSelect
+│      ├─rentForm
+│      ├─RentStatus
+│      ├─signup
+│      ├─user
+│      └─utils
+└─modeling
+```
+
+### **Modeling**
+
+
 ### **FrontEnd**
+
+
+### **BackEnd**
+
+
+### **Embedded**
+
+
+### **배포**
+
