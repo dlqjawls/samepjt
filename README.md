@@ -489,4 +489,56 @@ async def create_module_set(
 ```
 
 ### **배포**
+**기술 스택** : Amazon EC2, Nginx, DuckDNS
+**배포 과정**
+EC2 설정 
+    SSAFY에서 제공(instance ID : t2.xlarge)
+패키지 설치
+    nginx, ufw, python3
+방화벽 설정
+    ufw allow 80, 443, 22/tcp
+DuckDNS 설정:
+    도메인 네임 설정: moducar
+Nginx 설정:
+    nginx conf 내용
+    ```
+    server {
+        if ($host = moducar.duckdns.org) {
+           return 301 https://$host$request_uri;
+        } # managed by Certbot
 
+
+        listen 80;
+        server_name moducar.duckdns.org;
+        return 301 https://$host$request_uri;  # HTTP -> HTTPS 리디렉션
+    }
+    
+    server {
+        listen 443 ssl http2;
+        listen [::]:443 ssl http2;
+        server_name moducar.duckdns.org;
+        # SSL 인증서 경로 (확인 필요)
+        ssl_certificate /etc/letsencrypt/live/moducar.duckdns.org/fullchain.pem; # managed by Certbot
+        ssl_certificate_key /etc/letsencrypt/live/moducar.duckdns.org/privkey.pem; # managed by Certbot
+
+    # FastAPI API 요청 프록시
+        location /api/ {
+        proxy_pass http://127.0.0.1:8000/;  # FastAPI가 실행 중인 주소와 포트
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # React 정적 파일 서빙
+    location / {
+        root /home/ubuntu/dist;  # React 빌드 결과물이 위치한 디렉토리
+        index index.html;
+        try_files $uri $uri/ /index.html;  # React Router 경로 설정
+    }
+
+}
+```
+
+**Troubleshooting**
+자주 발생하는 문제와 해결 방법 (예: Nginx 502 Bad Gateway 등)
