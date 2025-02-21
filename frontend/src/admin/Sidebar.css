@@ -1,0 +1,172 @@
+/* Sidebar.css */
+
+.sidebar {
+  width: 210px;
+  height: 100vh;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  border-right: 1px solid #e0e0e0;
+}
+
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto; /* 메뉴가 많을 경우 스크롤 가능하게 함 */
+}
+
+.sidebar-logo {
+  padding: 50px 20px;
+  /* 기본 배경 이미지: moducarLogo */
+  background: url("../assets/moducar_logo.svg") no-repeat center;
+  background-size: 75%;
+  transition: background-image 0.3s ease, padding 0.3s ease;
+}
+
+/* 미디어 쿼리: 화면 너비가 1024px 이하인 경우 */
+@media (max-width: 1024px) {
+  .sidebar-logo {
+    padding: 30px 15px;
+    /* 배경 이미지를 blueCar로 변경 */
+    background: url("../assets/blue_car.svg") no-repeat center;
+    background-size: 40%;
+  }
+}
+
+.sidebar-menu ul {
+  list-style: none;
+  padding: 0;
+  font-size: 1.2rem;
+}
+
+.sidebar-menu li {
+  flex: initial;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 50px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.nav-link:hover {
+  background-color: #e2e6ea;
+  color: #65bbe6;
+}
+
+.nav-link.active {
+  background-color: #65bbe6;
+  color: #fff;
+}
+
+.nav-link.active .nav-icon {
+  color: #fff;
+}
+
+.nav-icon {
+  margin-right: 12px;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.sidebar-footer {
+  margin: 0px 0px 0px 0px;
+}
+
+.settings-button {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  padding: 30px 50px;
+  width: 100%;
+  font-size: 20px;
+  font-weight: 700;
+  background: none;
+  background-color: gray;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.settings-button .nav-icon {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.settings-button.active {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.settings-button.active .nav-icon {
+  color: #fff;
+}
+
+/* 미디어 쿼리: 창의 너비가 1024px 이하일 때 */
+/* 768px로 바꿀 수도 있다.*/
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 80px; /* 사이드바 축소 */
+  }
+
+  .sidebar-logo img {
+    width: 50%;
+    padding: 20px 15px;
+  }
+
+  .nav-link {
+    padding: 15px 20px; /* 패딩 축소 */
+    justify-content: center; /* 아이콘 중앙 정렬 */
+  }
+
+  .nav-text {
+    display: none; /* 텍스트 숨기기 */
+  }
+
+  .nav-icon {
+    margin-right: 0; /* 아이콘과 텍스트 간격 제거 */
+  }
+
+  .sidebar-footer {
+    padding: 0px 0;
+  }
+
+  .settings-button {
+    padding: 20px 0;
+    justify-content: center;
+  }
+
+  .settings-button .nav-icon {
+    margin-right: 0;
+  }
+}
+
+/* Webkit 기반 브라우저용 스크롤바 스타일링 */
+.sidebar-menu::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+  border: 2px solid #f1f1f1;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

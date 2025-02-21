@@ -1,0 +1,299 @@
+.dashboard-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.vehicle-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.arrival-status {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.arrival-badge {
+  background: black;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.eta-info {
+  color: #666;
+  font-size: 14px;
+}
+
+.map-preview {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.coordinates {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.vehicle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.vehicle-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vehicle-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.vehicle-number {
+  color: #666;
+  font-size: 14px;
+}
+
+.key-info {
+  display: flex;
+  gap: 4px;
+  color: #0066ff;
+  font-size: 12px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.icon-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.score-section {
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.score-title {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.score-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-number {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.score-change {
+  color: #22c55e;
+  font-size: 14px;
+}
+
+.score-ranks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* ...existing code... */
+
+.score-ranks button {
+  padding: 10px 20px;
+  border: 2px solid #000;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.score-ranks button:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.score-ranks button:active {
+  transform: scale(0.98);
+}
+
+/* 대여취소 버튼 특별 스타일 */
+.score-ranks button:first-child {
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.score-ranks button:first-child:hover {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+/* 차량반납 버튼 특별 스타일 */
+.score-ranks button:nth-child(2) {
+  border-color: #000;
+}
+
+/* 버튼 사이 간격 조정 */
+.score-ranks {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+/* 기존 스타일 유지 */
+
+/* 모바일 대응을 위한 미디어 쿼리 추가 */
+@media screen and (max-width: 480px) {
+  .dashboard-container {
+    padding: 10px;
+  }
+
+  .vehicle-card {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3열 유지 */
+    gap: 8px; /* 간격 축소 */
+  }
+
+  .stat-value {
+    font-size: 14px; /* 통계 값 글자 크기 더 축소 */
+  }
+
+  .stat-label {
+    font-size: 11px; /* 통계 라벨 글자 크기 더 축소 */
+  }
+
+  .score-ranks {
+    flex-direction: column; /* 버튼을 세로로 배치 */
+    gap: 8px;
+    width: 100%;
+  }
+
+  .score-ranks button {
+    width: 100%; /* 버튼 너비 100%로 설정 */
+    padding: 12px 10px; /* 패딩 조정 */
+    font-size: 13px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  }
+
+  .vehicle-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .stat-value {
+    font-size: 16px; /* 통계 값 글자 크기 축소 */
+  }
+
+  .stat-label {
+    font-size: 12px; /* 통계 라벨 글자 크기 축소 */
+  }
+  .arrival-status {
+    padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .arrival-badge {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+  }
+
+  .eta-info {
+    font-size: 12px;
+    width: 100%;
+    text-align: left;
+    word-break: keep-all; 
+  }
+}
+
+/* 더 작은 화면을 위한 추가 미디어 쿼리 */
+@media screen and (max-width: 320px) {
+  .dashboard-container {
+    padding: 8px;
+  }
+
+  .vehicle-card {
+    padding: 12px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr; /* 1열로 변경 */
+  }
+
+  .score-ranks button {
+    font-size: 12px;
+    padding: 10px 8px;
+  }
+  .arrival-status {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .arrival-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+
+  .eta-info {
+    font-size: 11px;
+  }
+}

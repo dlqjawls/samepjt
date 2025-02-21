@@ -1,0 +1,254 @@
+/* src/admin/components/ModuleListManagement.css */
+
+/* .module-management-list {
+  padding: 20px;
+} */
+
+.module-management-list .module-management-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.module-management-list .add-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.module-management-list .add-button:hover {
+  background-color: #45a049;
+}
+
+.module-management-list .table-wrapper {
+  overflow-x: auto;
+}
+
+.module-management-list .module-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+}
+
+.module-management-list .module-table th,
+.module-management-list .module-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.module-management-list .module-table th {
+  background-color: #f2f2f2;
+  font-size: 16px;
+}
+
+/* 기본 셀 내 텍스트 (토글 전) */
+.module-management-list .cell-text {
+  visibility: visible;
+}
+
+/* 토글 확장 시: 확장된 메인 행의 모든 셀 배경을 #2196f3로, 첫 번째 셀 텍스트는 흰색, 나머지는 숨김 */
+.module-management-list .expanded-main-row td {
+  background-color: #2196f3;
+  color: #fff;
+  font-weight: bold;
+}
+.module-management-list .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
+}
+
+/* 확장된 상세정보 행: 전체 영역에 outline 적용 */
+.module-management-list .expanded-row {
+  background-color: #f9f9f9;
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
+}
+
+/* 상세정보 영역 */
+.module-management-list .detail-info-container {
+  padding: 15px;
+}
+
+.module-management-list .detail-info {
+  margin-bottom: 15px;
+}
+
+.module-management-list .detail-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 8px;
+}
+
+.module-management-list .detail-item:last-child {
+  border-bottom: none;
+}
+
+.module-management-list .detail-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.module-management-list .detail-value {
+  font-size: 14px;
+}
+
+/* 상세정보 영역 액션 버튼 (우측 하단 정렬) */
+.module-management-list .detail-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.module-management-list .detail-edit-button,
+.module-management-list .detail-delete-button,
+.module-management-list .detail-save-button,
+.module-management-list .detail-cancel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 19px;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.module-management-list .detail-edit-button {
+  background-color: #ffc107;
+  color: #fff;
+}
+.module-management-list .detail-edit-button:hover {
+  background-color: #e0a800;
+}
+
+.module-management-list .detail-delete-button {
+  background-color: #f44336;
+  color: #fff;
+}
+.module-management-list .detail-delete-button:hover {
+  background-color: #da190b;
+}
+
+.module-management-list .detail-save-button {
+  background-color: #4caf50;
+  color: #fff;
+}
+.module-management-list .detail-save-button:hover {
+  background-color: #45a049;
+}
+
+.module-management-list .detail-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+}
+.module-management-list .detail-cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+/* .module-management-list .edit-module-nfc-tag-id,
+.module-management-list .edit-module-type-id {
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+} */
+
+/* 메인 행 일반 스타일 */
+.module-management-list .main-row {
+  cursor: pointer;
+}
+
+/* 페이지네이션 */
+.module-management-list .pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.module-management-list .pagination button {
+  padding: 6px 12px;
+  background-color: #e7e7e7;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.module-management-list .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+
+.module-management-list .pagination button:disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+.module-management-list .error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* form-group 스타일 */
+.module-management-list .form-group {
+  margin-bottom: 15px;
+}
+
+.module-management-list .form-group label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.module-management-list .form-group input,
+.module-management-list .form-group textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.module-management-list .form-group select,
+.module-management-list .edit-module-type-id {
+  width: 250px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  /* appearance: none; */
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none; */
+}
+
+/* select 요소 오른쪽에 기본 화살표 아이콘 숨길 수 있다.*/
+.module-management-list .form-group select::-ms-expand {
+  display: none;
+}
+
+.module-management-list .form-group select:hover,
+.module-management-list .edit-module-type-id:hover {
+  border-color: #999;
+}
+
+.module-management-list .form-group select:focus,
+.module-management-list .edit-module-type-id:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.module-management-list .form-group .add-module-nfc-tag-id {
+  width: 200px;
+}

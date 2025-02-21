@@ -1,0 +1,198 @@
+.mypage-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.mypage-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.mypage-header h1 {
+  font-size: 2rem;
+  color: #000;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* 탭 네비게이션 */
+.tab-navigation {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab-button {
+  padding: 0.75rem 2rem;
+  border: 1px solid #000;
+  background: transparent;
+  color: #000;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  height: 44px;
+  min-width: 140px;
+  font-size: 0.9rem;
+}
+
+.tab-button:hover,
+.tab-button.active {
+  background: #000;
+  color: #fff;
+}
+
+/* 대시보드 섹션 */
+.vehicle-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-2px);
+}
+
+.arrival-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.arrival-badge {
+  background: #000;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* 대여 이력 카드 */
+.history-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.history-number {
+  font-weight: 600;
+  color: #000;
+}
+
+.history-details {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* 버튼 통일 */
+.cancel-btn,
+.complete-btn,
+.update-profile-btn {
+  height: 44px;
+  padding: 0 2rem;
+  border: 1px solid #000;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: #000;
+}
+
+.complete-btn,
+.update-profile-btn {
+  background: #000;
+  color: #fff;
+}
+
+.cancel-btn:hover {
+  background: #000;
+  color: #fff;
+}
+
+.complete-btn:hover,
+.update-profile-btn:hover {
+  background: transparent;
+  color: #000;
+}
+
+/* 미디어 쿼리 */
+@media screen and (max-width: 768px) {
+  .mypage-container {
+    padding: 1rem;
+  }
+
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+
+  .tab-button {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+  }
+
+  .vehicle-card,
+  .history-card {
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+
+  .history-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .history-details {
+    grid-template-columns: 1fr;
+  }
+
+  .rental-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cancel-btn,
+  .complete-btn,
+  .update-profile-btn {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .mypage-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .arrival-badge {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,53 @@
+.dashboard-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  text-align: center;
+  /* transition: transform 0.2s ease, box-shadow 0.2s ease; */
+  margin: 10px;
+  position: relative;
+}
+
+.dashboard-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(to bottom, #65bbe6, #45a049);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+/* .dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+} */
+
+.dashboard-card .dashboard-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 12px;
+  margin-left: 10px;
+  margin-top: 6px;
+  text-align: left;
+}
+
+.dashboard-card .dashboard-card-value {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 60px;
+  font-weight: 700;
+  color: #007bff;
+  text-align: right;
+  margin-right: 30px;
+}
+
+.dashboard-card .dashboard-card-icon {
+  font-size: 36px;
+  color: #6c757d;
+  margin-bottom: 8px;
+}

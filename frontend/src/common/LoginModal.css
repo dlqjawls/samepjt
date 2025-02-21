@@ -1,0 +1,152 @@
+/* 모달 오버레이 */
+.lm-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* 모달 콘텐츠 */
+.lm-content {
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 24px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  overflow-y: auto;
+  align-content: center;
+}
+
+/* 닫기 버튼 */
+.lm-close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #888888;
+  cursor: pointer;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.lm-close-button:hover {
+  color: #333333;
+}
+
+/* 제목 스타일 */
+.lm-title {
+  font-size: 26px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333333;
+}
+
+
+
+/* 오류 메시지 */
+.lm-error-message {
+  background-color: #ffecec;
+  color: #ff4d4d;
+  border: 1px solid #ff9999;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* 입력 필드 스타일 */
+.lm-input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #000000;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.lm-input::placeholder {
+  color: #999999;
+}
+
+.lm-input:focus {
+  outline: 1px;
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+}
+
+
+.lm-submit-button, .lm-register-button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-sizing: border-box;  /* 추가: border를 포함한 크기 계산 */
+  height: 48px;  /* 추가: 명시적 높이 설정 */
+}
+
+.lm-submit-button {
+  background-color: #cccccc;  /* 비활성화 색상 */
+  color: #ffffff;
+  border: none;
+  margin-top: 16px;
+  transition: background-color 0.4s ease;
+}
+.lm-submit-button.active {
+  background-color: black;  /* 활성화 색상 */
+}
+
+.lm-register-button {
+  background-color: #ffffff;
+  color: black;
+  border: 0.1px solid #cccccc;
+  margin-top: 10px;
+  transition: background-color 0.4s ease;
+}
+
+.lm-submit-button:hover {
+  background-color: rgb(16, 15, 15);
+}
+
+/* 비활성화된 버튼 호버 효과 제거 */
+.lm-submit-button:disabled:hover {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* active 클래스가 있을 때만 호버 효과 적용 */
+.lm-submit-button.active:hover:not(:disabled) {
+  background-color: rgb(42, 37, 37);
+}
+.lm-register-button:hover {
+
+ background-color: rgb(219, 219, 219);
+}
+/* 폼 레이블 */
+.lm-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 8px;
+}
+
+.lm-button-container{
+  display: flex;
+  /* justify-content: space-between; */
+  /* align-items: center; */
+  flex-direction: column;
+}

@@ -1,0 +1,70 @@
+/* src/admin/components/DeleteModal.css */
+
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-modal-content {
+  background-color: #fff;
+  width: 400px;
+  border-radius: 8px;
+  padding: 20px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.delete-modal-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.delete-modal-body p {
+  font-size: 18px;
+  margin: 50px 0;
+  color: #333;
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: right;
+  gap: 10px;
+}
+
+.delete-delete-button {
+  background-color: #f44336;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-delete-button:hover {
+  background-color: #da190b;
+}
+
+.delete-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-cancel-button:hover {
+  background-color: #d5d5d5;
+}

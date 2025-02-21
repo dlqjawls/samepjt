@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ROS2 Style Vehicle Control</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      h1, h2 { color: #333; }
+      label { display: inline-block; width: 140px; }
+      input, select { padding: 5px; margin: 5px 0; }
+      .section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; }
+    </style>
+  </head>
+  <body>
+    <h1>Vehicle Control Interface</h1>
+    
+    <!-- 차량 연결 폼 -->
+    <div class="section">
+      <h2>Connect Vehicle</h2>
+      <form id="connectForm">
+        <label for="vehicleId">Vehicle ID:</label>
+        <input type="text" id="vehicleId" placeholder="ex: PBVVINNUMBER00001" required />
+        <button type="button" id="connectBtn">Connect</button>
+      </form>
+    </div>
+
+    <!-- 메시지 로그 -->
+    <div class="section">
+      <h2>Messages</h2>
+      <ul id="messages"></ul>
+    </div>
+    
+    <!-- 서비스 전송 폼 (Swagger 스타일) -->
+    <div class="section">
+      <h2>Send Service Message</h2>
+      <form id="serviceForm">
+        <label for="serviceSelect">Select Service:</label>
+        <select id="serviceSelect">
+          <option value="/vehicle/connect">Connect Vehicle</option>
+          <option value="/vehicle/rent">Rent Request</option>
+          <option value="/vehicle/return">Return</option>
+        </select>
+        <br/>
+        <div id="service-parameters"></div>
+        <button type="submit" style="margin-top:10px;">Send Service Message</button>
+      </form>
+    </div>
+    
+    <!-- 모듈 마운트 영상 업로드 폼 (별도) -->
+    <div class="section">
+      <h2>Module Mount Video Upload</h2>
+      <form id="videoForm">
+        <label for="rentId">Rent ID:</label>
+        <input type="number" id="rentId" placeholder="Enter Rent ID" required />
+        <br/>
+        <label for="videoFile">Video File:</label>
+        <input type="file" id="videoFile" accept="video/x-msvideo,video/avi,video/*" required />
+        <br/>
+        <button type="submit">Upload Video</button>
+      </form>
+    </div>
+    
+    <script>
+      var ws;
+      var vehicleId;
+
+      // 메시지 출력 헬퍼 함수
+      function addMessage(text) {
+        var messages = document.getElementById('messages');
+        var message = document.createElement('li');
+        message.textContent = text;
+        messages.appendChild(message);
+      }
+
+      // 연결 폼 이벤트 처리
+      document.getElementById("connectBtn").addEventListener("click", function() {
+        vehicleId = document.getElementById("vehicleId").value.trim();
+        if (vehicleId === "") {
+          alert("차량 ID를 입력해주세요.");
+          return;
+        }
+        ws = new WebSocket(`wss://backend-wandering-river-6835.fly.dev/api/socket/ws/${vehicleId}`);
+        //ws = new WebSocket(`ws://localhost:8000/api/socket/ws/${vehicleId}`);
+        ws.onopen = function() {
+          addMessage("웹소켓 연결됨: " + vehicleId);
+        };
+        ws.onmessage = function(event) {
+          addMessage("수신 메시지: " + event.data);
+        };
+        ws.onerror = function(error) {
+          addMessage("웹소켓 오류: " + error);
+        };
+        ws.onclose = function() {
+          addMessage("웹소켓 연결 종료");
+        };
+      });
+
+      // 서비스 선택에 따른 파라미터 입력 필드 업데이트
+      var serviceParamsDiv = document.getElementById("service-parameters");
+      document.getElementById("serviceSelect").addEventListener("change", function() {
+        var selected = this.value;
+        serviceParamsDiv.innerHTML = "";
+        if (selected === "/vehicle/rent") {
+          serviceParamsDiv.innerHTML =
+            '<label for="rentIdService">Rent ID:</label>' +
+            '<input type="number" id="rentIdService" placeholder="Enter Rent ID" required /><br/>' +
+            '<label for="moduleNfcTag">Module NFC Tag:</label>' +
+            '<input type="text" id="moduleNfcTag" placeholder="Enter NFC Tag" required /><br/>';
+        } else if (selected === "/vehicle/return") {
+          serviceParamsDiv.innerHTML =
+            '<label for="rentIdService">Rent ID:</label>' +
+            '<input type="number" id="rentIdService" placeholder="Enter Rent ID" required /><br/>' +
+            '<label for="moduleNfcTag">Module NFC Tag:</label>' +
+            '<input type="text" id="moduleNfcTag" placeholder="Enter NFC Tag" required /><br/>';
+        } else {
+          serviceParamsDiv.innerHTML = "";
+        }
+      });
+
+      // 초기 파라미터 렌더링 (기본: Connect Vehicle)
+      document.getElementById("serviceSelect").dispatchEvent(new Event("change"));
+
+      // 서비스 메시지 전송 처리
+      document.getElementById("serviceForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+          alert("먼저 차량에 연결해주세요.");
+          return;
+        }
+        var servicePath = document.getElementById("serviceSelect").value;
+        var payload = {};
+        if (servicePath === "/vehicle/rent" || servicePath === "/vehicle/return") {
+          payload.rent_id = parseInt(document.getElementById("rentIdService").value.trim());
+          payload.module_nfc_tag = document.getElementById("moduleNfcTag").value.trim();
+        }
+        var message = {
+          type: "service",
+          path: servicePath,
+          payload: payload
+        };
+        ws.send(JSON.stringify(message));
+        addMessage("서비스 메시지 전송: " + JSON.stringify(message));
+      });
+
+      // 모듈 마운트 영상 업로드 폼 이벤트 처리
+      document.getElementById("videoForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+          alert("먼저 차량에 연결해주세요.");
+          return;
+        }
+        var rentId = document.getElementById("rentId").value.trim();
+        var fileInput = document.getElementById("videoFile");
+        var file = fileInput.files[0];
+        if (!rentId || !file) {
+          alert("Rent ID와 비디오 파일을 선택해주세요.");
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(evt) {
+          var base64String = evt.target.result.split(",")[1];
+          var message = {
+            type: "service",
+            path: "/vehicle/module/mount",
+            payload: {
+              rent_id: parseInt(rentId),
+              video: base64String
+            }
+          };
+          ws.send(JSON.stringify(message));
+          addMessage("모듈 마운트 영상 메시지 전송됨: " + JSON.stringify(message));
+        };
+        reader.onerror = function(error) {
+          alert("파일 읽기 에러: " + error);
+        };
+        reader.readAsDataURL(file);
+      });
+    </script>
+  </body>
+</html>

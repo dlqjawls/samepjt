@@ -1,0 +1,166 @@
+.image-container {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.full-screen-image {
+  object-position: 100% 100%;
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.headline-content {
+  position: absolute;
+  bottom: 60px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  max-width: 80%;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+.headline-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.headline-content h3 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.headline-content p {
+  font-size: 1.2rem;
+  margin-bottom: 0;
+}
+/* Hover 시 효과 */
+.image-container:hover .headline-content {
+  opacity: 1;
+  transform: translateX(50px); /* 부드럽게 올라오는 애니메이션 */
+  animation: slide-in 0.5s ease-out forwards;
+}
+
+/* 텍스트가 오른쪽에서 왼쪽으로 애니메이션 */
+.image-container .headline-content h2,
+.image-container .headline-content h3,
+.image-container .headline-content p {
+  color: white;
+  opacity: 0;
+  transform: translateX(50px); /* 오른쪽에서 시작 */
+  animation: slide-in 0.5s ease-out forwards;
+}
+
+.image-container:hover .headline-content h2 {
+  animation-delay: 0.4s; /* 첫 번째 줄 딜레이 */
+}
+
+.image-container:hover .headline-content h3 {
+  animation-delay: 0.6s; /* 두 번째 줄 딜레이 */
+}
+
+.image-container:hover .headline-content p {
+  animation-delay: 0.8s; /* 세 번째 줄 딜레이 */
+}
+
+/* 텍스트가 오른쪽에서 왼쪽으로 이동 */
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(50px); /* 오른쪽에서 시작 */
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0); /* 원래 위치로 이동 */
+  }
+}
+@media screen and (max-width: 768px) {
+  .headline-content {
+    bottom: 20px;
+    left: 10px;
+    padding: 15px;
+    max-width: 90%;
+  }
+
+  .headline-content h2 {
+    font-size: 1.8rem;
+  }
+
+  .headline-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .headline-content p {
+    font-size: 1rem;
+  }
+
+  .image-container:hover .headline-content {
+    transform: translateX(20px);
+  }
+}
+
+/* 작은 모바일 화면 대응 */
+@media screen and (max-width: 480px) {
+  .image-container {
+    height: 87vh;
+  }
+  .full-screen-image {
+    object-position: 48%;
+    
+  }
+  .headline-content {
+    bottom: 15px;
+    left: 5px;
+    padding: 12px;
+    max-width: 95%;
+  }
+
+  .headline-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .headline-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .headline-content p {
+    font-size: 0.9rem;
+  }
+
+  .image-container:hover .headline-content {
+    transform: translateX(10px);
+  }
+}
+
+/* 가로 모드 대응 */
+@media screen and (max-height: 480px) {
+  .headline-content {
+    bottom: 10px;
+    padding: 10px;
+  }
+
+  .headline-content h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .headline-content h3 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .headline-content p {
+    font-size: 0.8rem;
+  }
+}

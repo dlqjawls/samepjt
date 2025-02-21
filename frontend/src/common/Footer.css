@@ -1,0 +1,119 @@
+.footer {
+  background-color: #222;
+  color: #fff;
+  padding: 20px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-left-content {
+  display: flex;
+  align-items: center;
+}
+
+.footer-right-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+#terms {
+  color: #ccc;
+}
+
+#announcements {
+  color: #ccc;
+}
+
+.car-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-links span {
+  color: #ccc;
+}
+
+.customer-center {
+  font-size: 14px;
+}
+
+.copyright {
+  font-size: 12px;
+  color: #888;
+}
+.모듀카 {
+  padding-left: 20px;
+  font-size: x-large;
+}
+@media screen and (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .footer-left-content {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .footer-right-content {
+    align-items: center;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .모듀카 {
+    padding-left: 0;
+    margin-top: 10px;
+  }
+}
+
+/* 모바일 반응형 스타일 */
+@media screen and (max-width: 480px) {
+  .footer {
+    padding: 15px 10px;
+  }
+
+  .footer-links {
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .customer-center {
+    font-size: 12px;
+  }
+
+  .copyright {
+    font-size: 11px;
+  }
+
+  .모듀카 {
+    font-size: 18px;
+  }
+
+  .car-icon {
+    width: 30px;
+    height: 30px;
+  }
+}

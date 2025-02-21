@@ -1,0 +1,163 @@
+.navbar {
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 2px solid #000;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+  color: #000;
+  gap: 10px;
+}
+
+@font-face {
+  font-family: "EnglishFont";
+  src: url("../assets/font/Cafe24Decobox/Cafe24Decobox.ttf") format("opentype");
+}
+
+.navbar-logo span {
+  font-family: "EnglishFont";
+}
+
+.navbar-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.hide-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.navbar-login {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 공통 버튼 스타일 */
+.login-button,
+.rent-status-button,
+.my-page-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px solid #000000;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* 로그인 버튼 */
+.login-button {
+  background-color: #000000;
+  color: #ffffff;
+  margin-left: 10px;
+}
+
+.login-button:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* 대여 상태 버튼 */
+.rent-status-button {
+  background-color: #ffffff;
+  color: #000000;
+  margin-right: 10px;
+}
+
+.rent-status-button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* 마이페이지 버튼 */
+.my-page-button {
+  background-color: #ffffff;
+  color: #000000;
+  margin-left: 10px;
+}
+
+.my-page-button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* 공통 active 효과 */
+.login-button:active,
+.rent-status-button:active,
+.my-page-button:active {
+  transform: scale(0.98);
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 768px) {
+  .navbar {
+    padding: 8px 12px;
+  }
+
+  .navbar-container {
+    max-width: 100%;
+  }
+
+  .navbar-logo {
+    font-size: 16px;
+    gap: 6px;
+  }
+
+  .navbar-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .navbar-login {
+    gap: 8px;
+  }
+
+  /* 모바일 버튼 공통 스타일 */
+  .login-button,
+  .rent-status-button,
+  .my-page-button {
+    padding: 6px 12px;
+    font-size: 12px;
+    margin: 0 5px;
+    white-space: nowrap;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .navbar-logo span {
+    display: none;
+  }
+
+  /* 작은 화면 버튼 공통 스타일 */
+  .login-button,
+  .rent-status-button,
+  .my-page-button {
+    padding: 6px 8px;
+    font-size: 11px;
+    margin: 0 3px;
+  }
+}
