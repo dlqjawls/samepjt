@@ -87,8 +87,9 @@
 - AWS S3
 
 **Embedded**
-- Python 3.9
+- Python 3.10
 - OpenCV
+- Raspberry Pi camera module v2
 
 **Etc**
 - Fly.io
@@ -182,10 +183,228 @@
 ### **FrontEnd**
 
 
+**상태 관리 & 인증**
+```javascript
+// 토큰 기반 인증 관리
+const AdminAuthContext = createContext({
+  isAuthenticated: false,
+  token: null,
+  login: () => {},
+  logout: () => {},
+});
+```
+
+**UI/컴포넌트**
+- Recharts (대시보드 차트)
+- React Icons
+- 커스텀 컴포넌트
+  - Modal System
+  - LoadingSpinner
+  - DashboardCards
+
+**스타일링**
+```css
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 10px;
+  }
+}
+```
+
+#### **2. 주요 기능**
+
+**대시보드 시스템**
+```javascript
+// 실시간 데이터 시각화
+const DashboardChart = ({ data }) => {
+  return (
+    <BarChart width={600} height={300} data={data}>
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Bar dataKey="value" fill="#8884d8" />
+    </BarChart>
+  );
+};
+```
+
+**차량 관리 시스템**
+- 모듈 CRUD 작업
+- 옵션 관리
+- 실시간 상태 추적
+
+**지도 서비스 연동**
+```javascript
+// Kakao Maps 통합
+const MapContainer = () => {
+  useEffect(() => {
+    const container = document.getElementById('map');
+    const options = {
+      center: new kakao.maps.LatLng(33.450701, 126.570667),
+      level: 3
+    };
+    const map = new kakao.maps.Map(container, options);
+  }, []);
+};
+```
+
+#### **3. 성능 최적화**
+
+**코드 스플리팅**
+```javascript
+// 지연 로딩 구현
+const DashboardPage = lazy(() => import('./pages/Dashboard'));
+const OptionsPage = lazy(() => import('./pages/Options'));
+```
+
+**캐싱 전략**
+```javascript
+// API 응답 캐싱
+const useCachedData = (key) => {
+  const [data, setData] = useState(null);
+  
+  useEffect(() => {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      setData(JSON.parse(cached));
+    }
+  }, [key]);
+};
+```
+
+#### **4. 보안**
+
+**토큰 관리**
+```javascript
+// JWT 인터셉터 설정
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+```
+
+**접근 제어**
+```javascript
+// 보호된 라우트 구현
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+```
+
+
 ### **BackEnd**
 
 
 ### **Embedded**
+1. Raspberry Pi 5
+- 초음파 센서 (HC-SR04P)
+    - HC-SR04P를 활용하여 모듈과의 거리를 측정하였습니다.
+
+```python
+# 초음파 센서 거리 측정 함수
+def measure_distance(sensor):
+    TRIG = sensor["TRIG"]
+    ECHO = sensor["ECHO"]
+
+     ...
+     
+		# 센서값 기반 거리 측정
+        if pulse_start and pulse_end:
+            distance = (pulse_end - pulse_start) * 17150
+            with lock:
+                sensor_data[sensor["name"]] = round(distance, 2)
+
+        time.sleep(0.1)  # 측정 간격 0.1초
+```
+
+- NFC 리더기 (PN532)
+    - PN532로 NFC태그를 인식하여 모듈이 장착된 것을 확인하였습니다.
+
+```python
+# NFC 데이터 감지 함수
+def nfc_task():
+    print("NFC 카드 감지 대기 중...")
+    while True:
+        uid = pn532.read_passive_target(timeout=0.5)
+        
+        with lock:
+            if uid:
+                uid_str = ' '.join([f'{i:02X}' for i in uid])
+                sensor_data["NFC_UID"] = uid_str  # 새 태그 감지되면 업데이트
+                # print(f"NFC 카드 감지됨: {uid_str}")
+            else:
+                sensor_data["NFC_UID"] = None  # 태그가 없으면 None으로 설정
+
+        time.sleep(0.5)
+```
+
+2. Jetson orin nano
+- Keyestudio 전자석 모듈
+    - 전자석 모듈로 자동차에 모듈이 탈/부착이 될 수 있도록 하였습니다.
+
+```python
+def electromagnet_on():
+    """ 전자석을 100% 출력으로 켜기 """
+    pwm.ChangeDutyCycle(100)  # 100% 듀티 사이클 (전자석 ON)
+
+def electromagnet_off():
+    """ 전자석을 완전히 끄기 (잔류 전류 제거) """
+    pwm.ChangeDutyCycle(10)  # 약한 PWM을 짧게 줘서 잔류 전류 제거
+    time.sleep(0.1)  # 0.1초 동안 유지
+    pwm.ChangeDutyCycle(0)  # PWM 0%로 설정하여 완전히 OFF
+```
+
+3. *Bayesian* Optimization
+- 베이지안 최적화로 PID 계수 최적화를 진행하였습니다.
+
+```python
+from skopt import gp_minimize
+
+# 1. 초기 데이터
+x0 = [
+    [0.07,0.015,0.005,0.06,0.012,0.004,0.025,0.008,0.002],
+    [0.06,0.013,0.004,0.055,0.011,0.0035,0.022,0.007,0.0018],
+    # ... 계수 데이터들
+]
+y0 = [
+    20.226991415023804,
+    22.767025470733643,
+    # ... 정렬 시간 데이터들
+]
+
+# 2. 탐색 공간 정의: 각 PID 계수에 대해 실험할 범위를 지정
+dimensions = [
+    (0.05, 0.09),    # pid_x Kp
+    (0.01, 0.02),    # pid_x Ki
+    (0.003, 0.01),   # pid_x Kd
+    #... 계수 범위 지정
+]
+
+# 3. 베이지안 최적화 실행: 추가로 20회의 실험 포인트를 추천받음
+#  func: 여기서는 이미 데이터를 warm start 했으므로 dummy 함수를 사용(실제 사용 시 objective 함수를 정의)
+res = gp_minimize(
+    func=lambda params: 0,  
+    dimensions=dimensions,
+    n_calls=30,             # 10번의 평가로 최적 후보 추천
+    x0=x0,                  # 기존 파라미터 조합 데이터
+    y0=y0,                  # 기존 성능 평가 데이터
+    random_state=42 
+    #... 최적화 파라미터
+)
+print("AI가 제안한 새로운 PID 계수 세트:", res.x)
+
+```
 
 ### **Security**
 **1. JWT Token**
