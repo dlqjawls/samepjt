@@ -21,8 +21,7 @@ function ModuleSetList() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const navigate = useNavigate()
-  // const API_URL = `https://backend-wandering-river-6835.fly.dev/user/module-sets`
-
+ 
   const fetchModuleSets = useCallback(
     async (page, size) => {
       setLoading(true)

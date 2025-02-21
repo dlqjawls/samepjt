@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import LoginModal from "../LoginModal"
+import LoginModal from "./LoginModal"
 import { toast } from "react-toastify";
 import axios from "axios";
 const LoginButton = () => {

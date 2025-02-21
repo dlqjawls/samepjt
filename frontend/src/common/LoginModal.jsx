@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toast } from "react-toastify"
 import "./LoginModal.css"
-import { encryptData } from "./utils/crypto"
+import { encryptData } from "../utils/crypto"
 
 const LoginModal = ({ onClose }) => {
   const [formData, setFormData] = useState({

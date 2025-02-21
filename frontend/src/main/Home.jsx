@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import LoginModal from "../LoginModal"
+import LoginModal from "../common/LoginModal"
 import { Meta, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toast } from "react-toastify"
