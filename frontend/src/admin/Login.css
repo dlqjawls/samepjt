@@ -1,0 +1,142 @@
+.admin-login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.admin-login-overlay .admin-login-content {
+  padding: 24px;
+  max-width: 500px;
+  overflow-y: auto; 
+  margin-bottom: 10%;
+}
+
+.admin-login-overlay .admin-login-content img {
+  display: block;
+  margin: 0 auto; 
+}
+
+.admin-login-overlay .close-button:hover {
+  color: #333333; 
+}
+
+.admin-login-overlay .highlight-text {
+  color: #239edb;
+}
+
+
+.admin-login-overlay  h2 {
+  font-size: 26px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333333;
+}
+
+.admin-login-overlay .modal-regist {
+  align-content: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.admin-login-overlay .error-message {
+  background-color: #ffecec;
+  color: #ff4d4d;
+  border: 1px solid #ff9999;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.admin-login-overlay .input-group {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.admin-login-overlay .input-group input {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #000;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.admin-login-overlay .input-group input::placeholder {
+  color: transparent; 
+}
+
+.admin-login-overlay .floating-label {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  font-size: 14px;
+  color: #999;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.admin-login-overlay .input-group input:focus + .floating-label,
+.admin-login-overlay .input-group input:not(:placeholder-shown) + .floating-label {
+  top: -8px;
+  left: 12px;
+  font-size: 12px;
+  color: #007bff;
+  background: #fff;
+  padding: 0 4px;
+}
+
+.admin-login-overlay .admin-login-content button[type="submit"] {
+  width: 100%;
+  padding: 14px;
+  background-color: #239edb;
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 16px;
+}
+
+.admin-login-overlay .admin-login-content button[type="submit"]:disabled {
+  background-color: gray;
+}
+
+.admin-login-overlay .admin-login-content button[type="submit"]:hover {
+  background-color: #007bff;
+}
+
+.admin-login-overlay .admin-login-content button[type="submit"]:disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+.admin-login-overlay .text-blue-600 {
+  color: #007bff;
+  font-size: 14px;
+  text-align: center;
+}
+
+.admin-login-overlay .text-blue-600:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.admin-login-overlay label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 8px;
+}

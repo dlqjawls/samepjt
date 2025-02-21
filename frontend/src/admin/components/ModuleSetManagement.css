@@ -1,0 +1,397 @@
+src/admin/components/ModuleSetManagement.css .module-set-management {
+  padding: 20px;
+}
+
+.module-set-management .module-set-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.module-set-management .add-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.module-set-management .add-button:hover {
+  background-color: #45a049;
+}
+
+.module-set-management .table-wrapper {
+  overflow-x: auto;
+}
+
+.module-set-management .module-set-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+}
+
+.module-set-management .module-set-table th,
+.module-set-management .module-set-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.module-set-management .module-set-table th {
+  background-color: #f2f2f2;
+  font-size: 16px;
+}
+
+.module-set-management .module-set-table td {
+  font-size: 14px;
+  background-color: #fff;
+}
+
+/* 메인 행 클릭 시 확장된 상태: 모든 셀의 배경색을 #2196f3, 텍스트는 흰색 (첫 번째 셀은 굵게) */
+.module-set-management .expanded-main-row td {
+  background-color: #2196f3;
+  color: #fff;
+}
+.module-set-management .expanded-main-row td:first-child {
+  font-weight: bold;
+}
+
+.module-set-management .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
+}
+
+.module-set-management .expanded-row {
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
+}
+
+.module-set-management .detail-info-container {
+  padding: 15px;
+}
+
+.module-set-management .detail-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 8px;
+}
+.module-set-management .detail-item:last-child {
+  border-bottom: none;
+}
+.module-set-management .detail-label {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.module-set-management .detail-value {
+  display: block;
+  font-size: 16px;
+}
+
+.module-set-management .detail-value .module-set-image {
+  width: 40%;
+  border-radius: 20px;
+}
+
+.module-set-management .detail-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+/* 인라인 수정 및 일반 액션 버튼 */
+.module-set-management .detail-edit-button,
+.module-set-management .detail-delete-button,
+.module-set-management .detail-save-button,
+.module-set-management .detail-cancel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.module-set-management .detail-edit-button {
+  background-color: #ffc107;
+  color: #fff;
+}
+.module-set-management .detail-edit-button:hover {
+  background-color: #e0a800;
+}
+.module-set-management .detail-delete-button {
+  background-color: #f44336;
+  color: #fff;
+}
+.module-set-management .detail-delete-button:hover {
+  background-color: #da190b;
+}
+.module-set-management .detail-save-button {
+  background-color: #4caf50;
+  color: #fff;
+}
+.module-set-management .detail-save-button:hover {
+  background-color: #45a049;
+}
+.module-set-management .detail-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+}
+.module-set-management .detail-cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+/* 인라인 수정 필드 스타일 (각 필드마다 너비 조정 가능) */
+.module-set-management .edit-module-set-name {
+  width: 150px;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+.module-set-management .edit-description {
+  width: 400px;
+  height: 200px;
+  outline: none;
+  resize: none;
+  font-family: sans-serif;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.module-set-management .edit-module-set-features {
+  width: 300px;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.module-set-management .edit-module-type-id {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+/* 메인 행 일반 스타일 */
+.module-set-management .main-row {
+  cursor: pointer;
+}
+
+/* 페이지네이션 */
+.module-set-management .pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.module-set-management .pagination button {
+  padding: 6px 12px;
+  background-color: #e7e7e7;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.module-set-management .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+.module-set-management .pagination button:disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+.module-set-management .error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* form-group 스타일 */
+.module-set-management .form-group {
+  margin-bottom: 15px;
+}
+.module-set-management .form-group label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.module-set-management .form-group input,
+.module-set-management .form-group textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.module-set-management .form-group select,
+.module-set-management .edit-module-type-id {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.module-set-management .add-module-type {
+  width: 200px;
+}
+.module-set-management .add-module-set-name {
+  width: 200px;
+}
+.module-set-management .add-description textarea {
+  width: 400px;
+  height: 200px;
+  outline: none;
+  resize: none;
+  font-family: sans-serif;
+}
+.module-set-management .add-module-set-features {
+  width: 300px;
+}
+
+.module-set-management .edit-section {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.module-set-management .image-list,
+.module-set-management .option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.module-set-management .image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.module-set-management .module-set-image-thumb {
+  width: 100px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.option-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.option-list .option-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background-color: #fdfdfd;
+}
+.option-list .option-name {
+  font-size: 14px;
+  font-weight: 500;
+  width: 150px;
+}
+
+.option-list .option-quantity {
+  font-size: 14px;
+  color: #555;
+  margin-left: 10px;
+  width: 30px;
+}
+
+.module-set-management .add-image,
+.module-set-management .add-option {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.module-set-management .add-image button,
+.module-set-management .add-option button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #4caf50;
+  color: #fff;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.module-set-management .add-option select {
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  width: 200px;
+}
+.module-set-management .add-option input {
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  width: 50px;
+}
+
+.module-set-management .add-image button:hover,
+.module-set-management .add-option button:hover {
+  background-color: #45a049;
+}
+
+.module-set-management .module-set-image-delete-button {
+  border: none;
+  border-radius: 16px;
+  padding: 2px 8px;
+  margin: 6px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+}
+.module-set-management .edit-module-set-features {
+  width: 500px;
+}
+.module-set-management .edit-module-type-id {
+  width: 250px;
+}
+
+.module-set-management .option-delete-button {
+  border: none;
+  text-align: center;
+  padding: 4px 8px;
+  margin-left: 20px;
+  border-radius: 10px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+}
+
+/* .module-set-management .file-upload input[type="file"] {
+  display: none;
+}
+
+.module-set-management .file-upload {
+  display: inline-block;
+  padding: 4px 8px;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: #239edb;
+  color: #fff;
+  border-radius: 16px;
+  border: 1px solid #239edb;
+  transition: background-color 0.3s ease;
+} */

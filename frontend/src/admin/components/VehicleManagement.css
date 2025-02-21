@@ -1,0 +1,266 @@
+/* src/admin/components/VehicleManagement.css */
+
+.vehicle-container {
+  padding: 20px;
+}
+
+.vehicle-container .vehicle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.vehicle-container .add-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.vehicle-container .add-button:hover {
+  background-color: #45a049;
+}
+
+.vehicle-container .table-wrapper {
+  overflow-x: auto;
+}
+
+.vehicle-container .vehicle-table {
+  min-width: 800px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vehicle-container .vehicle-table th,
+.vehicle-container .vehicle-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.vehicle-container .vehicle-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+  font-size: 16px;
+}
+
+.vehicle-container .vehicle-table td {
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.vehicle-container .expanded-main-row td {
+  background-color: #2196f3;
+  color: #2196f3;
+}
+.vehicle-container .expanded-main-row td:first-child {
+  font-weight: bold;
+  color: #fff;
+}
+
+.vehicle-container .expanded-row {
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
+}
+
+.vehicle-container .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
+}
+
+.vehicle-container .detail-info-container {
+  /* border: 1px solid #2196f3; */
+  padding: 15px;
+  /* margin-top: 5px; */
+}
+
+/* .vehicle-container .detail-info {
+} */
+
+.vehicle-container .detail-item {
+  padding: 8px 0px;
+
+  margin-top: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.vehicle-container .detail-item:last-child {
+  border-bottom: none;
+}
+
+.vehicle-container .detail-label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.vehicle-container .detail-value {
+  display: block;
+  font-size: 14px;
+}
+
+.vehicle-container .detail-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.vehicle-container .detail-edit-button,
+.vehicle-container .detail-delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 19px;
+  margin-left: 2px;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.vehicle-container .detail-save-button,
+.vehicle-container .detail-cancel-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.vehicle-container .detail-edit-button {
+  background-color: #ffc107;
+  color: #fff;
+}
+.vehicle-container .detail-edit-button:hover {
+  background-color: #e0a800;
+}
+
+.vehicle-container .detail-delete-button {
+  background-color: #f44336;
+  color: #fff;
+}
+.vehicle-container .detail-delete-button:hover {
+  background-color: #da190b;
+}
+
+.vehicle-container .detail-save-button {
+  background-color: #4caf50;
+  color: #fff;
+}
+.vehicle-container .detail-save-button:hover {
+  background-color: #45a049;
+}
+
+.vehicle-container .detail-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+}
+.vehicle-container .detail-cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+.vehicle-container .edit-vehicle-number {
+  width: 5rem;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.vehicle-container .expanded-row {
+  background-color: #f9f9f9;
+}
+
+.vehicle-container .main-row {
+  cursor: pointer;
+}
+
+.vehicle-container .pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vehicle-container .pagination button {
+  padding: 6px 12px;
+  margin: 0 10px;
+  background-color: #e7e7e7;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.vehicle-container .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+
+.vehicle-container .pagination button:disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+.vehicle-container .error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.vehicle-container .form-group {
+  margin-bottom: 20px;
+}
+.vehicle-container .form-group label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.vehicle-container .form-group input {
+  width: 50%;
+  padding: 8px;
+  margin-bottom: 4px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 입력폼 내 검증 피드백 공통 스타일 */
+.vehicle-container .form-group .validation-feedback {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 14px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.vehicle-container .form-group .validation-feedback.grey {
+  color: #9e9e9e;
+}
+
+.vehicle-container .form-group .validation-feedback.green {
+  color: #4caf50;
+}
+
+.vehicle-container .form-group .validation-feedback.red {
+  color: #f44336;
+}
+
+.vehicle-container .form-group .validation-feedback .icon {
+  font-size: 14px;
+  cursor: default;
+  margin-left: 0;
+}
+
+.vehicle-container .form-group .validation-feedback.grey .icon {
+  color: #9e9e9e;
+}
+.vehicle-container .form-group .validation-feedback.green .icon {
+  color: #4caf50;
+}
+.vehicle-container .form-group .validation-feedback.red .icon {
+  color: #f44336;
+}

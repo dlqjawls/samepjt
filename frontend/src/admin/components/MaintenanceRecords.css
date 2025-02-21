@@ -1,0 +1,284 @@
+/* src/admin/components/MaintenanceRecords.css */
+
+.maintenance-records {
+  padding: 20px;
+}
+
+.maintenance-records .maintenance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.maintenance-records .maintenance-header h1 {
+  font-size: 2em;
+}
+
+.maintenance-records .add-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.maintenance-records .add-button:hover {
+  background-color: #45a049;
+}
+
+.maintenance-records .table-wrapper {
+  overflow-x: auto;
+}
+
+.maintenance-records .maintenance-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+}
+
+.maintenance-records .maintenance-table th,
+.maintenance-records .maintenance-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.maintenance-records .maintenance-table th {
+  background-color: #f2f2f2;
+  font-size: 16px;
+}
+
+.maintenance-records .cell-text {
+  visibility: visible;
+}
+
+.maintenance-records .main-row {
+  cursor: pointer;
+}
+
+.maintenance-records .expanded-main-row td {
+  background-color: #2196f3;
+  color: #fff;
+  font-weight: bold;
+}
+.maintenance-records .expanded-main-row td:not(:first-child) .cell-text {
+  visibility: hidden;
+}
+
+/* 확장된 상세정보 행 */
+.maintenance-records .expanded-row {
+  background-color: #f9f9f9;
+  outline: 3px solid #2196f3;
+  outline-offset: -3px;
+  padding: 15px;
+}
+
+/* 상세정보 영역 */
+.maintenance-records .detail-info-container {
+  padding: 15px;
+}
+
+.maintenance-records .detail-info {
+  margin-bottom: 15px;
+}
+
+.maintenance-records .detail-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 8px;
+}
+
+.maintenance-records .detail-item:last-child {
+  border-bottom: none;
+}
+
+.maintenance-records .detail-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.maintenance-records .detail-value {
+  font-size: 14px;
+}
+
+/* 상세정보 액션 버튼 */
+.maintenance-records .detail-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.maintenance-records .detail-edit-button,
+.maintenance-records .detail-delete-button,
+.maintenance-records .detail-save-button,
+.maintenance-records .detail-cancel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 19px;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.maintenance-records .detail-edit-button {
+  background-color: #ffc107;
+  color: #fff;
+}
+.maintenance-records .detail-edit-button:hover {
+  background-color: #e0a800;
+}
+
+.maintenance-records .detail-delete-button {
+  background-color: #f44336;
+  color: #fff;
+}
+.maintenance-records .detail-delete-button:hover {
+  background-color: #da190b;
+}
+
+.maintenance-records .detail-save-button {
+  background-color: #4caf50;
+  color: #fff;
+}
+.maintenance-records .detail-save-button:hover {
+  background-color: #45a049;
+}
+
+.maintenance-records .detail-cancel-button {
+  background-color: #e7e7e7;
+  color: #333;
+}
+.maintenance-records .detail-cancel-button:hover {
+  background-color: #d5d5d5;
+}
+
+/* 인라인 편집 input 스타일 */
+.maintenance-records .edit-input {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+/* 페이지네이션 */
+.maintenance-records .pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.maintenance-records .pagination button {
+  padding: 6px 12px;
+  background-color: #e7e7e7;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.maintenance-records .pagination button:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+
+.maintenance-records .pagination button:disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+.maintenance-records .error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* Form 그룹 */
+.maintenance-records .form-group {
+  margin-bottom: 15px;
+}
+.maintenance-records .form-group label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.maintenance-records .form-group input,
+.maintenance-records .form-group textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.maintenance-records .form-group select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  /* appearance: none; */
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none; */
+}
+
+.maintenance-records .form-group select::-ms-expand {
+  display: none;
+}
+
+.maintenance-records .form-group select:hover {
+  border-color: #999;
+}
+
+.maintenance-records .form-group select:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.maintenance-records .form-group .add-item-type-name {
+  width: 100px;
+}
+.maintenance-records .form-group .add-item-id {
+  width: 100px;
+}
+.maintenance-records .form-group .add-issue {
+  width: 300px;
+}
+.maintenance-records .form-group .add-cost {
+  width: 150px;
+}
+.maintenance-records .form-group .add-scheduled-at {
+  width: 250px;
+}
+.maintenance-records .form-group .add-completed-at {
+  width: 250px;
+}
+
+.maintenance-records .edit-item-type-name {
+  width: 100px;
+}
+.maintenance-records .edit-issue {
+  width: 300px;
+}
+.maintenance-records .edit-cost {
+  width: 135px;
+}
+.maintenance-records .edit-maintenance-status-id {
+  width: 150px;
+}
+.maintenance-records .edit-scheduled-at {
+  width: 250px;
+}
+.maintenance-records .edit-completed-at {
+  width: 250px;
+}

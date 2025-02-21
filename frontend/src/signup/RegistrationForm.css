@@ -1,0 +1,148 @@
+/* 전체 레이아웃 */
+.registration-container {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+  padding: 20px;
+}
+
+.registration-form {
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  
+}
+
+.form-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.success-message {
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.rf-submit-button,
+.rf-cancel-button {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.rf-submit-button {
+  background-color: black;
+  color: white;
+  border: none;
+  transition: color 0.3s ease;
+}
+
+.rf-submit-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: gray;
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.rf-submit-button:hover::before {
+  left: 0;
+}
+
+.rf-submit-button:hover {
+  color: white;
+}
+
+.rf-cancel-button {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  transition: color 0.3s ease;
+}
+
+.rf-cancel-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: lightgray;
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.rf-cancel-button:hover::before {
+  left: 0;
+}
+
+.rf-cancel-button:hover {
+  color: black;
+}

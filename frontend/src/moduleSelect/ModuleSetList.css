@@ -1,0 +1,348 @@
+.module-list-container {
+  padding: 20px 5px 0px px;
+  background-color: #f5f5f5;
+}
+
+.module-list-container h1 {
+  text-align: center;
+}
+
+/* 모듈 리스트 */
+.module-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /*border: 1px solid #e0e0e0; 기아자동차 웹페이지와 비슷하게 하려고 없앰*/
+  overflow: hidden;
+  border-radius: 13px;
+  padding: 6px 10px 10px 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+}
+.module-card h4 {
+  margin: 10px;
+}
+.module-card img {
+  width: 100%;
+  height: 108px;
+  object-fit: cover;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.module-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.module-set-card-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(50, 50, 50, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.module-set-card-modal-content {
+  position: relative;
+  width: 90%;
+  height: auto;
+  max-height: 90vh;
+  max-width: 800px; 
+  background-color: white;
+  border-radius: 12px;
+  overflow-y: auto;
+}
+
+
+.module-set-modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.module-set-modal-header h2 {
+  margin: 0;
+}
+
+.module-set-modal-close-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: rgb(180, 171, 171);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+
+.module-set-modal-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+.module-set-modal-body img {
+  width: 100%; 
+  height: 200px;
+  object-fit: contain;
+  border-radius: 8px; 
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: cover; 
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.module-modal-details {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px;
+  margin:10px;
+}
+.module-modal-details h3 {
+  margin: 0;
+}
+
+
+.module-modal-details p,
+.module-modal-details li {
+  color: #787777;
+}
+
+
+.total-cost-korean {
+  display: inline;
+}
+.module-total-cost-won {
+  display: inline;
+  color: rgb(153, 12, 78);
+}
+
+.module-set-modal-close-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+  z-index: -1;
+}
+
+
+.module-set-modal-close-button:hover::before {
+  left: 100%;
+}
+
+.module-set-modal-close-button:hover {
+  background-color: rgb(61, 60, 60);
+  transform: translateY(-3px);
+}
+
+.module-set-modal-close-button:active {
+  transform: scale(0.95);
+  background-color: rgb(80, 78, 78);
+}
+
+.module-set-modal-close-button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(61, 60, 60, 0.5);
+}
+
+.module-set-modal-next-button {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background-color: black;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.module-set-modal-next-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(61, 60, 60);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.module-set-modal-next-button:hover::before {
+  left: 0;
+}
+
+.module-set-modal-next-button:hover {
+  color: white;
+}
+
+.module-set-modal-next-button:active {
+  background-color: rgb(30, 30, 30);
+}
+
+.module-set-modal-next-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1px;
+  margin: 10px auto; 
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* 반응형 스타일링 */
+@media screen and (max-width: 768px) {
+  .module-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+  }
+}
+
+@media (max-width: 768px) {
+  .module-grid {
+    grid-template-columns: repeat(2, 1fr); 
+  }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.loading-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+ 
+}
+
+.loading-image {
+  width: 100%;
+  height: auto;
+  max-width: 100vw;
+  max-height: 100vh;
+  object-fit: contain;
+  transform: translateY(-30%);
+
+}
+
+.loading-text {
+  position: absolute;
+  bottom: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #333;
+  font-size: 1.5em;
+  font-weight: 500;
+  text-align: center;
+  
+  white-space: nowrap;
+}
+
+.loading-progress {
+  position: absolute;
+  bottom: 27vh; ; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 6px;
+  background-color: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.loading-text {
+  position: absolute;
+  bottom: 30vh; 
+  left: 50%;
+  transform: translateX(-50%)translateY(-50%);
+  
+  color: #333;
+  font-size: 1.5em;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.loading-progress-bar {
+  height: 100%;
+  background-color: #000;
+  animation: progressAnimation 10s ease-in-out forwards;
+}
+
+@keyframes progressAnimation {
+  0% {
+    width: 0;
+  }
+  25% {
+    width: 35%;
+  }
+  50% {
+    width: 65%;
+  }
+  75% {
+    width: 85%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+

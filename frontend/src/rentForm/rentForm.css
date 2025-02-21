@@ -1,0 +1,320 @@
+
+.rent-form-wrapper-unique {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  padding: 20px;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+
+.map-container-unique {
+  flex: 1;
+  max-width: 800px;
+  height: fit-content;
+  margin: 0 auto;
+}
+.location-info {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+.map-image-unique {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.form-container-unique {
+  margin: 10px;
+  flex: 1; 
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 500px; 
+  width: 100%; 
+  box-sizing: border-box;
+}
+
+
+.form-title-unique {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* 입력 폼 그룹 */
+.form-group-unique {
+  margin-bottom: 15px;
+}
+
+.form-group-unique label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-input-unique {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* 버튼 스타일 */
+.reset-button-unique {
+  padding: 10px 15px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.next-button-unique {
+  padding: 10px 15px;
+  background-color: black;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.next-button-unique:hover {
+  background-color: gray;
+}
+.location-group {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.location-group h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.location-info-form {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.location-info-form span {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.location-info-form.start {
+  color: #e74c3c;
+}
+
+.location-info-form.end {
+  color: #3498db;
+}
+
+.location-warning {
+  color: #e74c3c;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.location-info-form p {
+  margin: 5px 0;
+  word-break: keep-all;
+  line-height: 1.4;
+}
+@media (max-width: 768px) {
+  .rent-form-wrapper-unique {
+    flex-direction: column;
+    padding: 10px;
+    height: auto;
+    gap: 10px;
+  }
+
+  .map-container-unique {
+    width: 100%;
+    height: 300px; /* 모바일에서 지도 높이 고정 */
+    margin-bottom: 10px;
+  }
+
+  /* 지도 내부 div 크기 조절 */
+  .map-container-unique > div {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .form-container-unique {
+    width: 100%;
+    margin: 0;
+    padding: 15px;
+  }
+
+  .location-info {
+    margin-top: 5px;
+    font-size: 14px;
+  }
+}
+
+/* 더 작은 화면 대응 */
+@media (max-width: 480px) {
+  .map-container-unique {
+    height: 250px;
+  }
+
+  .form-container-unique {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .rent-form-wrapper-unique {
+    flex-direction: column;
+  }
+
+  .map-container-unique {
+    flex: none;
+    height: 50%;
+  }
+
+  .form-container-unique {
+    flex: none;
+    height: auto;
+  }
+}
+
+.form-content-unique {
+  flex: 1;
+}
+
+.error-message-unique {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffe6e6;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.button-group-unique {
+  margin-top: 20px;
+}
+
+.form-input-unique:invalid {
+  border-color: #dc3545;
+}
+
+.form-group-unique {
+  margin-bottom: 20px;
+}
+
+.reset-button-unique:hover {
+  background-color: #e2e2e2;
+}
+
+@media (max-width: 768px) {
+  .rent-form-wrapper-unique {
+    flex-direction: column;
+    padding: 10px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .map-container-unique {
+    flex: none;
+    height: 300px;
+    margin-bottom: 20px;
+  }
+
+  .form-container-unique {
+    flex: none;
+    margin: 0;
+    padding: 15px;
+    max-width: 100%;
+    box-shadow: none;
+  }
+
+  .form-title-unique {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+
+  .form-group-unique {
+    margin-bottom: 15px;
+  }
+
+  .form-input-unique {
+    padding: 12px;
+    font-size: 16px; /* 모바일에서 자동 확대 방지 */
+  }
+
+  .button-group-unique {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reset-button-unique,
+  .next-button-unique {
+    padding: 15px;
+    font-size: 16px;
+    height: 50px;
+    margin-top: 0;
+  }
+
+  .error-message-unique {
+    margin: 8px 0;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-container-unique {
+    height: 250px;
+  }
+
+  .form-container-unique {
+    padding: 10px;
+  }
+
+  .form-title-unique {
+    font-size: 1.2rem;
+  }
+
+  .form-input-unique {
+    padding: 10px;
+  }
+}
+
+/* 터치 인터페이스 최적화 */
+@media (hover: none) {
+  .reset-button-unique,
+  .next-button-unique {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .form-input-unique {
+    -webkit-appearance: none;
+  }
+}
