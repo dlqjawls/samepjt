@@ -77,16 +77,22 @@
 ## **개발 환경**
 
 **FrontEnd**
-- React
+- React 18.3.1
 
 **BackEnd**
 - Python 3.9
+- FastAPI 0.115.7
+- SQLite
+- Upstash Redis
+- AWS S3
 
 **Embedded**
 - Python 3.9
+- OpenCV
 
 **Etc**
-- Python 3.9
+- Fly.io
+- AWS EC2
 
 **시스템 아키텍처**
 
@@ -181,6 +187,87 @@
 
 ### **Embedded**
 
+### **Security**
+**1. JWT Token**
+
+JWT Token을 이용하여 사용자 인증 구현 및 Redis에 Refresh Token을 저장하여 리소스를 관리하였습니다.
+
+```
+def _create_access_token(self, user_pk: int, encrypted_role: str) -> str:
+        try:
+            expires_at = datetime.now() + timedelta(seconds=self.settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+            payload = JWTPayload(
+                exp=expires_at,
+                user_pk=user_pk,
+                role=encrypted_role,
+                type="access"
+            ).to_dict()
+            return jwt.encode(
+                payload,
+                self.settings.JWT_SECRET_KEY,
+                algorithm=self.settings.JWT_ALGORITHM
+            )
+        except Exception as e:
+            raise JWTError(
+                message="Failed to create access token",
+                detail={"error": str(e)}
+            )
+```
+
+**2. bcrypt**
+
+bcrypt hash를 이용하여 비밀번호 저장 및 검증을 구현하였습니다.
+
+```
+import bcrypt
+
+def hash_password(password: str) -> str:
+    """
+    주어진 비밀번호를 `bcrypt`로 해싱하는 함수
+
+    Args:
+        password (str): 원본 비밀번호
+
+    Returns:
+        str: 해싱된 비밀번호
+    """
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    입력된 비밀번호가 저장된 해시와 일치하는지 검증하는 함수
+
+    Args:
+        plain_password (str): 입력된 원본 비밀번호
+        hashed_password (str): 데이터베이스에 저장된 해싱된 비밀번호
+
+    Returns:
+        bool: 비밀번호 일치 여부
+    """
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+```
+
+**3. 역할 기반 접근 제어(Role Based Access Control, RBAC)**
+
+JWT Token을 이용하여 Role을 관리하고, 관리자 페이지에서 Role에 따라 기능 제한 로직을 구현하였습니다.
+
+```
+async def get_module_set_list(
+    page: int = Query(1, gt=0, description="현재 페이지 (최소 1)"),
+    pageSize: int = Query(10, gt=0, description="페이지 당 모듈 세트 개수 (최소 1)"),
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["semi", "master"]))
+):
+    return ModuleSetService.get_module_set_list(session, page, pageSize)
+
+async def create_module_set(
+    register_request: ModuleSetRegisterRequest,
+    session: Session = Depends(get_session),
+    token_data: JWTPayload = Depends(jwt_handler.jwt_auth_dependency(allowed_roles=["master"]))
+) -> ModuleSetMessageResponse:
+    return ModuleSetService.register_module_set(session, register_request, token_data.user_pk)
+
+```
 
 ### **배포**
 
