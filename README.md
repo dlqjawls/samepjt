@@ -181,12 +181,6 @@
 
 ### **FrontEnd**
 
-#### **1. 기술 스택**
-
-**Core**
-- React 18.3.1
-- Vite.js
-- JavaScript/JSX
 
 **상태 관리 & 인증**
 ```javascript
@@ -307,21 +301,6 @@ const ProtectedRoute = ({ children }) => {
 };
 ```
 
-#### **5. 프로젝트 구조**
-
-```
-frontend/
-├── src/
-│   ├── admin/
-│   │   ├── components/
-│   │   └── context/
-│   ├── assets/
-│   ├── common/
-│   ├── moduleSelect/
-│   ├── optionSelect/
-│   ├── rentForm/
-│   └── utils/
-```
 
 ### **BackEnd**
 
