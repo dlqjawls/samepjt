@@ -87,8 +87,9 @@
 - AWS S3
 
 **Embedded**
-- Python 3.9
+- Python 3.10
 - OpenCV
+- Raspberry Pi camera module v2
 
 **Etc**
 - Fly.io
@@ -306,6 +307,89 @@ const ProtectedRoute = ({ children }) => {
 
 
 ### **Embedded**
+1. Raspberry Pi 5
+- 초음파 센서 (HC-SR04P)
+    - HC-SR04P를 활용하여 모듈과의 거리를 측정하였습니다.
+
+```python
+# 초음파 센서 거리 측정 함수
+def measure_distance(sensor):
+    TRIG = sensor["TRIG"]
+    ECHO = sensor["ECHO"]
+
+     ...
+     
+		# 센서값 기반 거리 측정
+        if pulse_start and pulse_end:
+            distance = (pulse_end - pulse_start) * 17150
+            with lock:
+                sensor_data[sensor["name"]] = round(distance, 2)
+
+        time.sleep(0.1)  # 측정 간격 0.1초
+```
+
+- NFC 리더기 (PN532)
+    - PN532로 NFC태그를 인식하여 모듈이 장착된 것을 확인하였습니다.
+
+```python
+# NFC 데이터 감지 함수
+def nfc_task():
+    print("NFC 카드 감지 대기 중...")
+    while True:
+        uid = pn532.read_passive_target(timeout=0.5)
+        
+        with lock:
+            if uid:
+                uid_str = ' '.join([f'{i:02X}' for i in uid])
+                sensor_data["NFC_UID"] = uid_str  # 새 태그 감지되면 업데이트
+                # print(f"NFC 카드 감지됨: {uid_str}")
+            else:
+                sensor_data["NFC_UID"] = None  # 태그가 없으면 None으로 설정
+
+        time.sleep(0.5)
+```
+
+2. Jetson orin nano
+- Keyestudio 전자석 모듈
+    - 전자석 모듈로 자동차에 모듈이 탈/부착이 될 수 있도록 하였습니다.
+
+```python
+def electromagnet_on():
+    """ 전자석을 100% 출력으로 켜기 """
+    pwm.ChangeDutyCycle(100)  # 100% 듀티 사이클 (전자석 ON)
+
+def electromagnet_off():
+    """ 전자석을 완전히 끄기 (잔류 전류 제거) """
+    pwm.ChangeDutyCycle(10)  # 약한 PWM을 짧게 줘서 잔류 전류 제거
+    time.sleep(0.1)  # 0.1초 동안 유지
+    pwm.ChangeDutyCycle(0)  # PWM 0%로 설정하여 완전히 OFF
+```
+
+3. *Bayesian* Optimization
+- 베이지안 최적화로 PID 계수 최적화를 진행하였습니다.
+
+```python
+from skopt import gp_minimize
+
+# 1. 초기 데이터x0 = [
+    # ... 계수 데이터들
+]
+y0 = [
+    # ... 정렬 시간 데이터들
+]
+
+# 2. 탐색 공간 정의: 각 PID 계수에 대해 실험할 범위를 지정
+dimensions = [
+    #... 계수 범위 지정
+]
+
+# 3. 베이지안 최적화 실행: 추가로 20회의 실험 포인트를 추천받음
+res = gp_minimize(
+    #... 최적화 파라미터
+)
+print("AI가 제안한 새로운 PID 계수 세트:", res.x)
+
+```
 
 ### **Security**
 **1. JWT Token**
