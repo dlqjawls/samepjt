@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import "./RegistrationForm.css"
-import { encryptData } from "./utils/crypto"
+import { encryptData } from "../utils/crypto"
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
     id: "",

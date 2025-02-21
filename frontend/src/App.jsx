@@ -4,9 +4,8 @@ import React, { useState } from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import Home from "./main/Home"
 import MyPage from "./common/myPage"
-import SignupPage from "./SignupPage"
-import RegistrationForm from "./RegistrationForm"
-import ModuleSetList from "./ModuleSetList"
+import RegistrationForm from "./signup/RegistrationForm"
+import ModuleSetList from "./moduleSelect/ModuleSetList"
 import AdminLogin from "./admin/Login"
 import AdminLayout from "./admin/AdminLayout"
 import MainDashboard from "./admin/MainDashboard"
@@ -32,7 +31,7 @@ function App() {
         <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
           <Route path="myPage" element={<MyPage />} />
-          <Route path="signup" element={<SignupPage />} />
+          
           <Route path="RegistrationForm" element={<RegistrationForm />} />
           <Route path="ModuleSetList" element={<ModuleSetList />} />
           <Route path="option_select" element={<ExistOptionsPage />}></Route>

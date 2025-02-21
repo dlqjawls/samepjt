@@ -54,7 +54,7 @@ const CreditReward = () => {
       if (touchCount === 11) {
         console.log("Last touch")
       }
-      if (touchCount === 100) {
+      if (touchCount === 12) {
         localStorage.setItem("best", "team")
         window.location.reload()
       }

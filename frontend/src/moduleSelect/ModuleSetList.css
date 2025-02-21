@@ -18,7 +18,7 @@
   padding: 6px 10px 10px 10px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  /*background-color: white;*/
+  
 }
 .module-card h4 {
   margin: 10px;
@@ -36,7 +36,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/*  모달  */
+
 .module-set-card-modal-overlay {
   position: fixed;
   top: 0;
@@ -55,13 +55,13 @@
   width: 90%;
   height: auto;
   max-height: 90vh;
-  max-width: 800px; /* 최대 너비 800px */
+  max-width: 800px; 
   background-color: white;
   border-radius: 12px;
   overflow-y: auto;
 }
 
-/* 모달 헤더*/
+
 .module-set-modal-header {
   display: flex;
   justify-content: space-between;
@@ -90,7 +90,7 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* 모달 바디 */
+
 .module-set-modal-body {
   padding: 10px;
   display: flex;
@@ -128,13 +128,13 @@
   margin: 0;
 }
 
-/*모달 모듈 디테일 설명*/
+
 .module-modal-details p,
 .module-modal-details li {
   color: #787777;
 }
 
-/* 모달 총 비용*/
+
 .total-cost-korean {
   display: inline;
 }
@@ -143,7 +143,6 @@
   color: rgb(153, 12, 78);
 }
 
-/* 오버레이 효과 */
 .module-set-modal-close-button::before {
   content: "";
   position: absolute;
@@ -156,7 +155,7 @@
   z-index: -1;
 }
 
-/* 호버 효과 */
+
 .module-set-modal-close-button:hover::before {
   left: 100%;
 }
@@ -223,29 +222,29 @@
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
-/* module-grid: 카드 3개씩 배치 */
+
 .module-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 반응형 1~3열 */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1px;
-  margin: 10px auto; /* 중앙 정렬 */
+  margin: 10px auto; 
 }
 
 .module-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Default: 3 columns */
+  grid-template-columns: repeat(3, 1fr);
 }
 
 /* 반응형 스타일링 */
 @media screen and (max-width: 768px) {
   .module-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 작은 화면에서는 더 작은 카드 */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
   }
 }
 
 @media (max-width: 768px) {
   .module-grid {
-    grid-template-columns: repeat(2, 1fr); /* Change to 2 columns on small screens */
+    grid-template-columns: repeat(2, 1fr); 
   }
 }
 
@@ -272,7 +271,7 @@
   justify-content: center;
   align-items: center;
 
-  /* transform: translateY(-10%); */
+ 
 }
 
 .loading-image {
@@ -300,7 +299,7 @@
 
 .loading-progress {
   position: absolute;
-  bottom: 27vh; ; /* 80px에서 160px로 수정 */
+  bottom: 27vh; ; 
   left: 50%;
   transform: translateX(-50%);
   width: 300px;
@@ -312,7 +311,7 @@
 
 .loading-text {
   position: absolute;
-  bottom: 30vh; /* 120px에서 200px로 수정 */
+  bottom: 30vh; 
   left: 50%;
   transform: translateX(-50%)translateY(-50%);
   

@@ -1,4 +1,4 @@
-/* 전체 레이아웃 */
+
 .rent-form-wrapper-unique {
   display: flex;
   flex-direction: row;
@@ -8,7 +8,7 @@
   box-sizing: border-box;
 }
 
-/* 지도 컨테이너 */
+
 .map-container-unique {
   flex: 1;
   max-width: 800px;
@@ -24,28 +24,28 @@
 .map-image-unique {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 이미지 크기에 맞춰 보기 좋게 조정 */
+  object-fit: cover; 
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 폼 컨테이너 */
+
 .form-container-unique {
   margin: 10px;
-  flex: 1; /* 폼 영역 */
+  flex: 1; 
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 버튼을 아래에 고정 */
-  max-width: 500px; /* 최대 너비 설정 */
-  width: 100%; /* 반응형 너비 */
+  justify-content: space-between;
+  max-width: 500px; 
+  width: 100%; 
   box-sizing: border-box;
 }
 
-/* 제목 스타일 */
+
 .form-title-unique {
   font-size: 1.5rem;
   margin-bottom: 20px;
