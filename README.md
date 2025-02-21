@@ -181,6 +181,147 @@
 
 ### **FrontEnd**
 
+#### **1. 기술 스택**
+
+**Core**
+- React 18.3.1
+- Vite.js
+- JavaScript/JSX
+
+**상태 관리 & 인증**
+```javascript
+// 토큰 기반 인증 관리
+const AdminAuthContext = createContext({
+  isAuthenticated: false,
+  token: null,
+  login: () => {},
+  logout: () => {},
+});
+```
+
+**UI/컴포넌트**
+- Recharts (대시보드 차트)
+- React Icons
+- 커스텀 컴포넌트
+  - Modal System
+  - LoadingSpinner
+  - DashboardCards
+
+**스타일링**
+```css
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 10px;
+  }
+}
+```
+
+#### **2. 주요 기능**
+
+**대시보드 시스템**
+```javascript
+// 실시간 데이터 시각화
+const DashboardChart = ({ data }) => {
+  return (
+    <BarChart width={600} height={300} data={data}>
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Bar dataKey="value" fill="#8884d8" />
+    </BarChart>
+  );
+};
+```
+
+**차량 관리 시스템**
+- 모듈 CRUD 작업
+- 옵션 관리
+- 실시간 상태 추적
+
+**지도 서비스 연동**
+```javascript
+// Kakao Maps 통합
+const MapContainer = () => {
+  useEffect(() => {
+    const container = document.getElementById('map');
+    const options = {
+      center: new kakao.maps.LatLng(33.450701, 126.570667),
+      level: 3
+    };
+    const map = new kakao.maps.Map(container, options);
+  }, []);
+};
+```
+
+#### **3. 성능 최적화**
+
+**코드 스플리팅**
+```javascript
+// 지연 로딩 구현
+const DashboardPage = lazy(() => import('./pages/Dashboard'));
+const OptionsPage = lazy(() => import('./pages/Options'));
+```
+
+**캐싱 전략**
+```javascript
+// API 응답 캐싱
+const useCachedData = (key) => {
+  const [data, setData] = useState(null);
+  
+  useEffect(() => {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      setData(JSON.parse(cached));
+    }
+  }, [key]);
+};
+```
+
+#### **4. 보안**
+
+**토큰 관리**
+```javascript
+// JWT 인터셉터 설정
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+```
+
+**접근 제어**
+```javascript
+// 보호된 라우트 구현
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+```
+
+#### **5. 프로젝트 구조**
+
+```
+frontend/
+├── src/
+│   ├── admin/
+│   │   ├── components/
+│   │   └── context/
+│   ├── assets/
+│   ├── common/
+│   ├── moduleSelect/
+│   ├── optionSelect/
+│   ├── rentForm/
+│   └── utils/
+```
 
 ### **BackEnd**
 
