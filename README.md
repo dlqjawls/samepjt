@@ -501,7 +501,9 @@ DuckDNS 설정:
     도메인 네임 설정: moducar
 Nginx 설정:
     nginx conf 내용
-    ```
+    
+
+```
     server {
         if ($host = moducar.duckdns.org) {
            return 301 https://$host$request_uri;
