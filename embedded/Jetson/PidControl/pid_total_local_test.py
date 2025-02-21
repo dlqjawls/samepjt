@@ -20,9 +20,12 @@ import queue
 import websocket  # pip install websocket-client
 import ssl
 
+
 """
-수정 1
-1. Opencv 메인루프에서 실행
+수정 2
+1. 여러 스레드에서 접근 제한
+2. 계산, 제어 로그 확인
+3. rent에서 target_found 수정
 """
 
 # =============================================================================
@@ -47,13 +50,12 @@ min_speed = 0.10
 loop_time = 0.2
 
 # =============================================================================
-# 전역 변수 (GUI 업데이트용)
+# 스레드 안전 제어를 위한 락 (servo, motor 등 공유 자원 보호)
 # =============================================================================
-latest_frame = None       # 메인 스레드에서 화면 표시할 최신 프레임
-nfc_simulated = False     # 메인 루프에서 'n' 키 입력 시 NFC 시뮬레이션 신호
+control_lock = threading.Lock()
 
 # =============================================================================
-# 웹소켓 명령 처리를 위한 큐(Queue) 및 상태
+# 웹소켓 명령 처리를 위한 큐 및 상태
 # =============================================================================
 command_queue = queue.Queue()  # ("rent", payload) 또는 ("return", payload) 형태
 current_thread = None          # 현재 동작(장착/반납) 스레드
@@ -106,15 +108,16 @@ def websocket_thread():
     """웹소켓을 유지하는 스레드: 연결 & 메시지 수신 루프"""
     global ws_app
     ws_app = websocket.WebSocketApp(
-        f"ws://192.168.100.106:9001/api/socket/ws/{clientId}",
+        f"wss://backend-wandering-river-6835.fly.dev/api/socket/ws/{clientId}",
         on_open=on_open,
         on_message=on_message,
         on_error=on_error,
         on_close=on_close
     )
-    # SSL 옵션 제거 (로컬 테스트)
+    # SSL 인증 무시 예시 (테스트용)
     wst = threading.Thread(
-        target=ws_app.run_forever
+        target=ws_app.run_forever,
+        kwargs={"sslopt": {"cert_reqs": ssl.CERT_NONE}}
     )
     wst.daemon = True
     wst.start()
@@ -174,7 +177,8 @@ class PWMThrottleHat:
 
 motor_hat = PWMThrottleHat(pca)
 kit = ServoKit(channels=16, i2c=i2c, address=0x60)
-kit.servo[0].angle = 88  # 초기 조향값
+with control_lock:
+    kit.servo[0].angle = 88  # 초기 조향값
 
 # =============================================================================
 # 4) 카메라 설정 (ArUco + PID 제어)
@@ -224,11 +228,12 @@ def calculate_x_rotation(corner):
 # 5) 장착/반납 동작 + 녹화 함수 (stop_event 체크 포함)
 # =============================================================================
 def rent_until_nfc(rentId, module_name, ws_send):
-    global latest_frame, nfc_simulated
     print("NFC 인식 전까지 후진 시작...")
-    kit.servo[0].angle = 90
+    with control_lock:
+        kit.servo[0].angle = 90
     electromagnet_on()
-    motor_hat.set_throttle(-0.3)
+    with control_lock:
+        motor_hat.set_throttle(-0.3)
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     video_filename = f"{module_name}_rent_{timestamp}.avi"
@@ -241,7 +246,7 @@ def rent_until_nfc(rentId, module_name, ws_send):
     frame_width, frame_height = frame.shape[1], frame.shape[0]
     fps = 20.0
     out = cv2.VideoWriter(video_filename, fourcc, fps, (frame_width, frame_height))
-    print("녹화 시작 중... (메인 창에서 'n' 키 입력 시 NFC 감지)")
+    print("녹화 시작 중... (시뮬레이션으로 'n' 키 입력 시 NFC 감지)")
 
     while True:
         if stop_event.is_set():
@@ -252,31 +257,34 @@ def rent_until_nfc(rentId, module_name, ws_send):
         ret, frame = cap.read()
         if ret:
             out.write(frame)
-            latest_frame = frame.copy()  # 메인 스레드에 최신 프레임 업데이트
+            cv2.imshow("Aruco Marker Tracking (NFC Detection)", frame)
 
-        # 메인 루프에서 'n' 키 입력 시 nfc_simulated가 True로 설정됨
-        if nfc_simulated:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('n'):
             print("NFC 감지됨! 즉시 정지")
-            motor_hat.set_throttle(0)
+            with control_lock:
+                motor_hat.set_throttle(0)
             out.release()
             ws_send("mount_complete")
-            nfc_simulated = False
             break
 
         time.sleep(0.1)
 
     print("전자석 ON 상태에서 전진 시작 (5초)")
-    kit.servo[0].angle = 88
-    motor_hat.set_throttle(0.4)
+    with control_lock:
+        kit.servo[0].angle = 88
+        motor_hat.set_throttle(0.4)
     time.sleep(1.2)
     electromagnet_off()
     time.sleep(10.0)
-    motor_hat.set_throttle(0)
+    with control_lock:
+        motor_hat.set_throttle(0)
     print("전진 완료, 전자석 OFF 후 정지")
     print("모듈 장착 완료")
 
+    # ffmpeg 변환 및 전송 부분
     temp_file = video_filename
-    output_file = f"{rentId}_{module_name}_rent.mp4"
+    output_file = f"{rentId}_{module_name}_rent_{timestamp}.mp4"
     conversion_cmd = f'ffmpeg -i "{temp_file}" -vcodec libx264 "{output_file}"'
     print(f"변환 명령 실행: {conversion_cmd}")
     os.system(conversion_cmd)
@@ -299,10 +307,10 @@ def rent_until_nfc(rentId, module_name, ws_send):
         print("비디오 파일 전송 중 오류:", e)
 
 def return_until_nfc(rentId, module_name, ws_send):
-    global latest_frame, nfc_simulated
     print("NFC 인식 전까지 후진 시작...")
-    kit.servo[0].angle = 90
-    motor_hat.set_throttle(-0.30)
+    with control_lock:
+        kit.servo[0].angle = 90
+        motor_hat.set_throttle(-0.30)
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     video_filename = f"{module_name}_return_{timestamp}.avi"
@@ -315,7 +323,7 @@ def return_until_nfc(rentId, module_name, ws_send):
     frame_width, frame_height = frame.shape[1], frame.shape[0]
     fps = 20.0
     out = cv2.VideoWriter(video_filename, fourcc, fps, (frame_width, frame_height))
-    print("녹화 시작 중... (메인 창에서 'n' 키 입력 시 NFC 감지)")
+    print("녹화 시작 중... (시뮬레이션으로 'n' 키 입력 시 NFC 감지)")
 
     while True:
         if stop_event.is_set():
@@ -326,29 +334,32 @@ def return_until_nfc(rentId, module_name, ws_send):
         ret, frame = cap.read()
         if ret:
             out.write(frame)
-            latest_frame = frame.copy()
+            cv2.imshow("Aruco Marker Tracking (NFC Detection)", frame)
 
-        if nfc_simulated:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('n'):
             print("NFC 감지됨! 즉시 정지")
-            motor_hat.set_throttle(0)
+            with control_lock:
+                motor_hat.set_throttle(0)
             out.release()
             ws_send("return_complete")
-            nfc_simulated = False
             break
 
         time.sleep(0.1)
 
     print("전자석 ON 상태에서 전진 시작 (5초)")
-    kit.servo[0].angle = 88
-    motor_hat.set_throttle(0.4)
+    with control_lock:
+        kit.servo[0].angle = 88
+        motor_hat.set_throttle(0.4)
     time.sleep(2.0)
     time.sleep(9.0)
-    motor_hat.set_throttle(0)
+    with control_lock:
+        motor_hat.set_throttle(0)
     print("전진 완료, 전자석 OFF 후 정지")
     print("모듈 반납 완료")
 
     temp_file = video_filename
-    output_file = f"{rentId}_{module_name}_return.mp4"
+    output_file = f"{rentId}_{module_name}_return_{timestamp}.mp4"
     conversion_cmd = f'ffmpeg -i "{temp_file}" -vcodec libx264 "{output_file}"'
     print(f"변환 명령 실행: {conversion_cmd}")
     os.system(conversion_cmd)
@@ -359,7 +370,7 @@ def return_until_nfc(rentId, module_name, ws_send):
             encoded_data = base64.b64encode(data).decode("utf-8")
             message = {
                 "type": "service",
-                "path": "/vehicle/module/mount",
+                "path": "/vehicle/module/return",
                 "payload": {
                     "rent_id": rentId,
                     "video": encoded_data
@@ -371,10 +382,10 @@ def return_until_nfc(rentId, module_name, ws_send):
         print("비디오 파일 전송 중 오류:", e)
 
 # =============================================================================
-# 6) 정렬 로직과 모듈 장착/반납을 수행하는 메인 함수 (스레드용)
+# 6) 정렬 로직 및 모듈 장착/반납 프로세스 (스레드용)
 # =============================================================================
 def rent_process(rent_id, ws_send):
-    global lost_object_time, lost_target_time, alignment_start_time, stop_movement, latest_frame
+    global lost_object_time, lost_target_time, alignment_start_time, stop_movement
     target_marker_id = 1
     module_name = module_name_mapping.get(target_marker_id, f"ID_{target_marker_id}")
 
@@ -432,7 +443,8 @@ def rent_process(rent_id, ws_send):
 
                 if abs(error_x) < 10 and abs(x_rotation) < 2 and abs(object_size - target_size) < target_size * 0.1:
                     print("Target marker reached, stopping movement.")
-                    motor_hat.set_throttle(0)
+                    with control_lock:
+                        motor_hat.set_throttle(0)
                     stop_movement = True
                     time.sleep(3)
                     if alignment_start_time is not None:
@@ -450,15 +462,18 @@ def rent_process(rent_id, ws_send):
                         rotation_adjust = pid_rotation(x_rotation)
                         final_steering_adjust = (steer_adjust * 0.7) + (rotation_adjust * 0.3)
                         
-                        new_steering = 88 - (kit.servo[0].angle - 88)
-                        new_steering = max(68, min(108, new_steering + final_steering_adjust))
-                        kit.servo[0].angle = new_steering
+                        with control_lock:
+                            # 전진 시 대칭 적용
+                            new_steering = 88 - (kit.servo[0].angle - 88)
+                            new_steering = max(68, min(108, new_steering + final_steering_adjust))
+                            kit.servo[0].angle = new_steering
                         print(f"Steering Adjust: {steer_adjust:.2f}, Parallel Adjust: {rotation_adjust:.2f}")
                         print(f"Final Steering Adjust: {final_steering_adjust:.2f}, New Steering: {new_steering}")
                         
                         speed_adjust = pid_speed(object_size)
                         speed_adjust = max(min_speed, min(max_speed, speed_adjust))
-                        motor_hat.set_throttle(speed_adjust)
+                        with control_lock:
+                            motor_hat.set_throttle(speed_adjust)
                         print(f"Moving at speed {-speed_adjust:.2f} (Backward), Object Size: {int(object_size)}")
 
                     elif object_size < target_size*0.9 and (abs(error_x)>10 or abs(x_rotation)>2):
@@ -467,23 +482,24 @@ def rent_process(rent_id, ws_send):
                         rotation_adjust = pid_rotation(x_rotation)
                         final_steering_adjust = (steer_adjust * 0.7) + (rotation_adjust * 0.3)
                         
-                        new_steering = min(108, max(68, kit.servo[0].angle + final_steering_adjust))
-                        kit.servo[0].angle = new_steering
+                        with control_lock:
+                            new_steering = min(108, max(68, kit.servo[0].angle + final_steering_adjust))
+                            kit.servo[0].angle = new_steering
                         print(f"Steering Adjust: {steer_adjust:.2f}, Parallel Adjust: {rotation_adjust:.2f}")
                         print(f"Final Steering Adjust: {final_steering_adjust:.2f}, New Steering: {new_steering}")
                         
                         speed_adjust = pid_speed(object_size)
                         speed_adjust = max(min_speed, min(max_speed, speed_adjust))
-                        motor_hat.set_throttle(-speed_adjust)
+                        with control_lock:
+                            motor_hat.set_throttle(-speed_adjust)
                         print(f"Moving at speed {-speed_adjust:.2f} (Backward), Object Size: {int(object_size)}")
 
-            if target_found:
-                lost_target_time = None
-            else:
-                if lost_target_time is None:
-                    lost_target_time = time.time()
-                elif time.time() - lost_target_time > 1.0:
-                    print("Target marker lost, moving forward to find it...")
+            
+            if lost_target_time is None:
+                lost_target_time = time.time()
+            elif time.time() - lost_target_time > 1.0:
+                print("Target marker lost, moving forward to find it...")
+                with control_lock:
                     kit.servo[0].angle = 88
                     motor_hat.set_throttle(0.2)
         else:
@@ -491,19 +507,25 @@ def rent_process(rent_id, ws_send):
                 lost_target_time = time.time()
             elif time.time() - lost_target_time > 1.0:
                 print("Target marker lost, moving forward to find it...")
-                kit.servo[0].angle = 88
-                motor_hat.set_throttle(0.2)
+                with control_lock:
+                    kit.servo[0].angle = 88
+                    motor_hat.set_throttle(0.2)
 
-        latest_frame = frame.copy()  # 메인 스레드에 최신 프레임 업데이트
+        if target_found:
+                lost_target_time = None
 
-        # 스레드 내에서는 waitKey 호출 제거
+        cv2.imshow("Aruco Marker Tracking (PID)", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-    motor_hat.set_throttle(0)
-    kit.servo[0].angle = 88
+    with control_lock:
+        motor_hat.set_throttle(0)
+    with control_lock:
+        kit.servo[0].angle = 88
     print("[rent_process] 종료")
 
 def return_process(rent_id, ws_send):
-    global lost_object_time, lost_target_time, alignment_start_time, stop_movement, latest_frame
+    global lost_object_time, lost_target_time, alignment_start_time, stop_movement
     target_marker_id = 11
     module_name = module_name_mapping.get(target_marker_id, f"ID_{target_marker_id}")
 
@@ -561,7 +583,8 @@ def return_process(rent_id, ws_send):
 
                 if abs(error_x) < 10 and abs(x_rotation) < 2 and abs(object_size - target_size) < target_size * 0.1:
                     print("Target marker reached, stopping movement.")
-                    motor_hat.set_throttle(0)
+                    with control_lock:
+                        motor_hat.set_throttle(0)
                     stop_movement = True
                     time.sleep(3)
                     if alignment_start_time is not None:
@@ -571,7 +594,6 @@ def return_process(rent_id, ws_send):
 
                     return_until_nfc(rent_id, module_name, ws_send)
                     return
-
                 else:
                     if object_size > target_size*1.1 and (abs(error_x)>10 or abs(x_rotation)>2):
                         print("Oversized & misaligned, adjusting position...")
@@ -584,15 +606,17 @@ def return_process(rent_id, ws_send):
                         multiplier = 1 + (1 - min(error_ratio, 1)) * alpha
                         final_steering_adjust *= multiplier
                         
-                        new_steering = 88 - (kit.servo[0].angle - 88)
-                        new_steering = max(68, min(108, new_steering + final_steering_adjust))
-                        kit.servo[0].angle = new_steering
+                        with control_lock:
+                            new_steering = 88 - (kit.servo[0].angle - 88)
+                            new_steering = max(68, min(108, new_steering + final_steering_adjust))
+                            kit.servo[0].angle = new_steering
                         print(f"Steering Adjust: {steer_adjust:.2f}, Parallel Adjust: {rotation_adjust:.2f}")
                         print(f"Final Steering Adjust: {final_steering_adjust:.2f}, New Steering: {new_steering}")
                         
                         speed_adjust = pid_speed(object_size)
                         speed_adjust = max(min_speed, min(max_speed, speed_adjust))
-                        motor_hat.set_throttle(speed_adjust)
+                        with control_lock:
+                            motor_hat.set_throttle(speed_adjust)
                         print(f"Moving at speed {-speed_adjust:.2f} (Backward), Object Size: {int(object_size)}")
 
                     elif object_size < target_size*0.9 and (abs(error_x)>10 or abs(x_rotation)>2):
@@ -606,14 +630,16 @@ def return_process(rent_id, ws_send):
                         multiplier = 1 + (1 - min(error_ratio, 1)) * alpha
                         final_steering_adjust *= multiplier
                         
-                        new_steering = min(108, max(68, kit.servo[0].angle + final_steering_adjust))
-                        kit.servo[0].angle = new_steering
+                        with control_lock:
+                            new_steering = min(108, max(68, kit.servo[0].angle + final_steering_adjust))
+                            kit.servo[0].angle = new_steering
                         print(f"Steering Adjust: {steer_adjust:.2f}, Parallel Adjust: {rotation_adjust:.2f}")
                         print(f"Final Steering Adjust: {final_steering_adjust:.2f}, New Steering: {new_steering}")
                         
                         speed_adjust = pid_speed(object_size)
                         speed_adjust = max(min_speed, min(max_speed, speed_adjust))
-                        motor_hat.set_throttle(-speed_adjust)
+                        with control_lock:
+                            motor_hat.set_throttle(-speed_adjust)
                         print(f"Moving at speed {-speed_adjust:.2f} (Backward), Object Size: {int(object_size)}")
 
             if target_found:
@@ -621,29 +647,35 @@ def return_process(rent_id, ws_send):
             else:
                 if lost_target_time is None:
                     lost_target_time = time.time()
-                elif time.time()-lost_target_time > 1.0:
+                elif time.time() - lost_target_time > 1.0:
                     print("Target marker lost, moving forward to find it...")
-                    kit.servo[0].angle = 88
-                    motor_hat.set_throttle(0.2)
+                    with control_lock:
+                        kit.servo[0].angle = 88
+                        motor_hat.set_throttle(0.2)
         else:
             if lost_target_time is None:
                 lost_target_time = time.time()
-            elif time.time()-lost_target_time > 1.0:
+            elif time.time() - lost_target_time > 1.0:
                 print("Target marker lost, moving forward to find it...")
-                kit.servo[0].angle = 88
-                motor_hat.set_throttle(0.2)
+                with control_lock:
+                    kit.servo[0].angle = 88
+                    motor_hat.set_throttle(0.2)
 
-        latest_frame = frame.copy()
+        cv2.imshow("Aruco Marker Tracking (PID)", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-    motor_hat.set_throttle(0)
-    kit.servo[0].angle = 88
+    with control_lock:
+        motor_hat.set_throttle(0)
+    with control_lock:
+        kit.servo[0].angle = 88
     print("[return_process] 종료")
 
 # =============================================================================
-# 7) 메인 루프: 웹소켓 명령에 따라 rent_process/return_process 실행
+# 7) 메인 루프: 명령에 따라 rent_process/return_process 실행
 # =============================================================================
 def main_loop():
-    global current_thread, stop_event, latest_frame, nfc_simulated
+    global current_thread, stop_event
     while True:
         if current_thread is None or not current_thread.is_alive():
             try:
@@ -689,25 +721,12 @@ def main_loop():
                     )
                     current_thread.start()
             time.sleep(1)
-        
-        # 메인 스레드에서 최신 프레임을 화면에 표시하고 키 입력 처리
-        if latest_frame is not None:
-            cv2.imshow("Aruco Marker Tracking", latest_frame)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
-                print("메인 루프 종료 (q 키 입력)")
-                break
-            elif key == ord('n'):
-                nfc_simulated = True
 
 # =============================================================================
 # 8) 실행부
 # =============================================================================
 if __name__ == "__main__":
     try:
-        # 미리 윈도우 생성 (메인 스레드에서)
-        cv2.namedWindow("Aruco Marker Tracking", cv2.WINDOW_NORMAL)
-        
         ws_thr = threading.Thread(target=websocket_thread, daemon=True)
         ws_thr.start()
 
@@ -720,8 +739,10 @@ if __name__ == "__main__":
         print("예외 발생:", e)
     finally:
         print("Exiting... ")
-        motor_hat.set_throttle(0)
-        kit.servo[0].angle = 88
+        with control_lock:
+            motor_hat.set_throttle(0)
+        with control_lock:
+            kit.servo[0].angle = 88
         pca.deinit()
         GPIO.cleanup()
         cap.release()
