@@ -587,59 +587,152 @@ async def create_module_set(
 
 ```
 
-### **배포**
-**기술 스택** : Amazon EC2, Nginx, DuckDNS
-**배포 과정**
-EC2 설정 
-    SSAFY에서 제공(instance ID : t2.xlarge)
-패키지 설치
-    nginx, ufw, python3
-방화벽 설정
-    ufw allow 80, 443, 22/tcp
-DuckDNS 설정:
-    도메인 네임 설정: moducar
-Nginx 설정:
-    nginx conf 내용
-    
 
-```
-    server {
-        if ($host = moducar.duckdns.org) {
-           return 301 https://$host$request_uri;
-        } # managed by Certbot
+## **배포**
+
+ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React 프론트를 배포되었으며, DuckDNS를 이용한 도메인 설정과 Nginx를 통한 Reverse Proxy를 구성하였습니다.
 
 
-        listen 80;
-        server_name moducar.duckdns.org;
-        return 301 https://$host$request_uri;  # HTTP -> HTTPS 리디렉션
+### **1. 사용 기술 스택**
+- 플랫폼: AWS EC2 (Ubuntu 22.04 LTS)
+- instanceType : t2.xlarge
+- 웹 서버 Nginx
+- 도메인 관리: DuckDNS
+- Backend: FastAPI, Redis, AWS S3
+- Frontend: React
+
+### **2. 배포 과정**
+1. **EC2 인스턴스 생성**
+   - SSAFY 사무국에서 지원
+
+2. **필수 패키지 설치**
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   sudo apt install -y nginx python3-certbot-nginx
+   ```
+
+3. **DuckDNS 설정**
+   - [DuckDNS](https://www.duckdns.org/)에서 서브 도메인[ModuCar](https://www.moducar.duckdns.org)을 생성.
+   - EC2 서버에서 DuckDNS를 자동 업데이트하도록 설정합니다.
+
+4. **Nginx 설정**
+   - Nginx 설정 파일 수정 (`/etc/nginx/sites-available/my.conf`)
+   ```nginx
+   server {
+    if ($host = moducar.duckdns.org) {
+        return 301 https://$host$request_uri;
     }
-    
+
+    listen 80;
+    server_name moducar.duckdns.org;
+    return 301 https://$host$request_uri;
+    }
+
     server {
         listen 443 ssl http2;
         listen [::]:443 ssl http2;
         server_name moducar.duckdns.org;
-        # SSL 인증서 경로 (확인 필요)
-        ssl_certificate /etc/letsencrypt/live/moducar.duckdns.org/fullchain.pem; # managed by Certbot
-        ssl_certificate_key /etc/letsencrypt/live/moducar.duckdns.org/privkey.pem; # managed by Certbot
 
-    # FastAPI API 요청 프록시
-        location /api/ {
-        proxy_pass http://127.0.0.1:8000/;  # FastAPI가 실행 중인 주소와 포트
+    ssl_certificate /etc/letsencrypt/live/moducar.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/moducar.duckdns.org/privkey.pem;
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # React 정적 파일 서빙
     location / {
-        root /home/ubuntu/dist;  # React 빌드 결과물이 위치한 디렉토리
+        root /home/ubuntu/dist;
         index index.html;
-        try_files $uri $uri/ /index.html;  # React Router 경로 설정
+        try_files $uri $uri/ /index.html;
+        }
     }
+   ```
+   - 설정 적용 및 Nginx 재시작
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/my.conf /etc/nginx/sites-enabled/
+   sudo systemctl restart nginx
+   ```
 
+5. **SSL 인증서 적용 (Let’s Encrypt)**
+   ```bash
+   sudo certbot --nginx -d moducar.duckdns.org
+   ```
+   - 자동 갱신 설정 확인
+   ```bash
+   sudo certbot renew --dry-run
+   ```
+
+6. **FastAPI 실행**
+   - FastAPI backend git pull
+   ```bash
+   git pull origin develop
+   ```
+   - 실행 명령어
+   ```bash
+    uvicorn app.main:create_app --host 0.0.0.0 --port 8000
+    --ws-ping-interval 60000 --ws-ping-timeout 60000
+   ```
+
+7. **React 실행**
+   - React frontend git pull
+   ```bash
+   git pull origin develop
+   ```
+   - 실행 명령어
+   ```bash
+   npm i
+   npm run build
+   mv /home/ubuntu/S12P11C102/frontend/dist /home/ubuntu
+   sudo systemctl restart nginx
+   ```
+
+### **3. 배포 후 점검**
+- `http://moducar.duckdns.org` 접속하여 정상적으로 서비스되는지 확인합니다.
+- 서버 상태 확인 명령어:
+  ```bash
+  sudo systemctl status nginx
+  sudo lsof -i : 포트번호
+  ```
+
+위 과정을 통해 ModuCar 프로젝트의 백엔드를 EC2에 배포하고, Nginx와 DuckDNS를 이용해 도메인을 설정하여 서비스할 수 있었습니다.
+
+### **4.Trouble Shooting**
+
+
+
+### **4.트러블슈팅 과정**
+**1. FastAPI 로컬 개발 환경과 EC2 Python 버전 불일치 문제**
+- 로컬 개발 환경에서는 Python 3.9를 사용했으나, EC2에서는 기본적으로 Python 3.10이 설치되어 있었음
+- `pip install -r requirements.txt` 실행 시 패키지 호환성 문제 발생
+
+#### 해결 방법
+1. EC2에서 Python 3.9 설치
+2. `pyenv`를 이용해 Python 3.9 가상환경 생성
+3. 가상환경을 활성화한 후 `pip install -r requirements.txt` 실행하여 정상 설치 확인
+
+**2. React 파일명의 대소문자 문제**
+- `import ModuleSetList from "./moduleSelect/ModuleSetList"` 로 import했지만, 실제 파일명은 `moduleSetList.js`로 되어 있었음
+- 로컬 개발 환경에서는 정상 동작했으나, EC2(Ubuntu)에서는 대소문자를 엄격히 구분하여 `ModuleSetList`를 찾지 못해 빌드 실패
+
+#### 해결 방법
+- `moduleSetList.js` → `ModuleSetList.js`로 변경하여 문제 해결
+
+**3. Nginx 프록시 설정 오류 (`/api/api` 중복 문제)**
+#### 문제
+- Nginx 설정에서 `location /api`로 프록시 요청을 처리했는데, FastAPI의 기본 경로도 `/api`여서 실제 요청이 `/api/api`로 변환되는 문제 발생
+
+#### 해결 방법
+- Nginx 설정을 수정하여 프록시 요청 시 `/api/`를 제거하도록 설정
+
+```nginx
+location /api/ {
+    proxy_pass http://localhost:8000/;
+    rewrite ^/api/(.*)$ /$1 break;
 }
 ```
 
-**Troubleshooting**
-자주 발생하는 문제와 해결 방법 (예: Nginx 502 Bad Gateway 등)
+
