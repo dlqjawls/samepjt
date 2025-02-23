@@ -245,6 +245,13 @@
 | **에어컨** | **중간 테이블** | **소파**  |  |  |
 |<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/5_에어컨.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/6_중간_테이블.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/7_소파.JPG" width="200"/>|||
 
+##### 영화관 모듈 옵션
+| 영화관 모듈 | 벽걸이 스피커 | 영사기 | 테이블 | 스피커 |
+| --- | --- | --- | --- | --- |
+|<img src="assets/3D_modeling/모듈사진/09_영화관모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/1_벽걸이_스피커.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/2_영사기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/3_테이블.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/4_스피커.JPG" width="200"/>|
+| **스크린** | **리클라이닝 소파** |  |  |  |
+|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/5_스크린.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/6_리클라이닝_소파.JPG" width="200"/>||||
+
 ### **FrontEnd**
 
 
