@@ -91,6 +91,13 @@
 - OpenCV
 - Raspberry Pi camera module v2
 
+**3D_Modeling**
+- Dassault Systemes SOLIDWORKS 2023
+- Dassault Systemes SOLIDWORKS PhotoView360 2023
+
+**3D_Print**
+- 3D Systems Figure 4 Standalone
+
 **Etc**
 - Fly.io
 - AWS EC2
