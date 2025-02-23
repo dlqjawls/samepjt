@@ -205,10 +205,11 @@
 | <img src="assets/3D_modeling/모듈사진/10_냉동모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/11_세탁실모듈.JPG" width="200"/> |
 
 **옵션 사진**
-| 캠핑 모듈 | TV | 테이블 | 침대 | 냉장고 | 옷장 | 수납장 | 싱크대 | 세탁기 | 인덕션 | 후드 |
+| 캠핑 모듈 | TV | 테이블 | 침대 | 냉장고 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|<img src="assets/3D_modeling/모듈사진/03_캠핑모듈.JPG" width="100"/> |<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/1_TV.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/2_테이블.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/3_침대.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/4_냉장고.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/5_옷장.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/6_수납장.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/7_싱크대.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/8_세탁기.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/9_인덕션.JPG" width="100"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/10_후드.JPG" width="100"/>|
-
+|<img src="assets/3D_modeling/모듈사진/03_캠핑모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/2_테이블.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/3_침대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/4_냉장고.JPG" width="200"/>|
+| 옷장 | 수납장 | 싱크대 | 세탁기 | 인덕션 | 후드 |
+|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/5_옷장.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/6_수납장.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/7_싱크대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/8_세탁기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/9_인덕션.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/10_후드.JPG" width="200"/>|
 
 ### **FrontEnd**
 
