@@ -184,6 +184,10 @@
 └─modeling
 ```
 
+### 시연
+<img src="assets/3D_modeling/OrinCar/시연.gif" width="1000"/>
+
+
 ### **Modeling**
 
 ### OrinCar 조립 과정 (하부 3D 프린팅, 상부 하드보드지)
