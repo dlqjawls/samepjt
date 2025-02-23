@@ -215,14 +215,7 @@
 | **남성소변기** | **수전** |
 |<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/5_남성소변기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/6_수전.JPG" width="200"/>|
 
-##### 화장실 모듈 옵션
-| 화장실 모듈 | 세면대 | 거울 | 쓰레기통 | 양변기 |
-| --- | --- | --- | --- | --- |
-|<img src="assets/3D_modeling/모듈사진/04_화장실모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/1_세면대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/2_거울.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/3_쓰레기통.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/4_양변기.JPG" width="200"/>|
-| **남성소변기** | **수전** |
-|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/5_남성소변기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/6_수전.JPG" width="200"/>|
-
-#### 푸드트럭 모듈
+##### 푸드트럭 모듈 옵션
 | 푸드트럭 모듈 | 에어컨 | TV | 대형냄비 | 중형냄비 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/05_푸드트럭모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/1_에어컨.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/2_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/3_대형냄비.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/4_중형냄비.JPG" width="200"/>|
