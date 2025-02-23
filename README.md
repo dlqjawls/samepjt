@@ -234,10 +234,16 @@
 ##### 스크린골프 모듈 옵션
 | 스크린골프 모듈 | 스크린골프용 스크린 | 골프채 | 골프채 거치대 | 골프공 |
 | --- | --- | --- | --- | --- |
-|<img src="assets/3D_modeling/모듈사진/07_스크린골프모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/1_스크린골프용_스크린.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/2_골프채.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/3_골프채_거치대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/4_골프공.JPG" width="200"/>|
+|<img src="assets/3D_modeling/모듈사진/08_스크린골프모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/1_스크린골프용_스크린.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/2_골프채.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/3_골프채_거치대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/4_골프공.JPG" width="200"/>|
 | **골프카펫** | **스코어 스크린** |  |  |  |
 |<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/5_골프카펫.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/6_스코어_스크린.JPG" width="200"/>||||
 
+##### 게임 모듈 옵션
+| 게임 모듈 | TV | TV 다이 | 플레이스테이션 | 닌텐도 |
+| --- | --- | --- | --- | --- |
+|<img src="assets/3D_modeling/모듈사진/07_게임모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/2_다이.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/3_게임기1.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/4_게임기2.JPG" width="200"/>|
+| **에어컨** | **중간 테이블** | **소파**  |  |  |
+|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/5_에어컨.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/6_중간_테이블.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/7_소파.JPG" width="200"/>|||
 
 ### **FrontEnd**
 
