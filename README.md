@@ -184,8 +184,11 @@
 └─modeling
 ```
 
-### 시연
+### 시연시뮬레이션
 <img src="assets/3D_modeling/OrinCar/시연.gif" width="1000"/>
+
+### 실제 시연
+<img src="assets/3D_modeling/OrinCar/실제시연.gif" width="1000"/>
 
 
 ### **Modeling**
@@ -494,8 +497,12 @@ res = gp_minimize(
     #... 최적화 파라미터
 )
 print("AI가 제안한 새로운 PID 계수 세트:", res.x)
-
 ```
+
+4. 정렬
+| 크기 정렬 | 평행 정렬 | 중앙 정렬 |
+| --- | --- | --- |
+|<img src="assets/EM/크기정렬.gif" width="300"/>|<img src="assets/EM/평행정렬.gif" width="300"/>|<img src="assets/EM/중앙정렬.gif" width="300"/>
 
 ### **Security**
 **1. JWT Token**
