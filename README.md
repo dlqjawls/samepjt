@@ -186,6 +186,9 @@
 
 ### **Modeling**
 
+### OrinCar 조립 과정 (하부 3D 프린팅, 상부 하드보드지)
+<img src="assets/3D_modeling/OrinCar/OrinCar.gif" width="200"/>
+
 #### 모듈 사진
 
 | 기본 모듈 | 배송 모듈 | 캠핑 모듈 | 화장실 모듈 | 푸드트럭 모듈 
