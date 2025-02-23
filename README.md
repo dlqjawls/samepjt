@@ -189,19 +189,19 @@
 
 | 기본 모듈 | 배송 모듈 | 캠핑 모듈 |
 |:--------:|:---------:|:--------:|
-| <img src="assets/3D_modeling/모듈/사진/01_기본_장착_상태.JPG" width="200"/> | <img src="assets/3D_modeling/모듈/사진/02_배송모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈/사진/03_캠핑모듈.JPG" width="200"/> |
+| <img src="assets/3D_modeling/모듈사진/01_기본_장착_상태.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/02_배송모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/03_캠핑모듈.JPG" width="200"/> |
 
 | 화장실 모듈 | 푸드트럭 모듈 | 카페 모듈 |
 |:--------:|:----------:|:--------:|
-| <img src="assets/3D_modeling/모듈/사진/04_화장실모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈/사진/05_푸드트럭모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈/사진/06_카페모듈.JPG" width="200"/> |
+| <img src="assets/3D_modeling/모듈사진/04_화장실모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/05_푸드트럭모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/06_카페모듈.JPG" width="200"/> |
 
 | 게임 모듈 | 스크린골프 모듈 | 영화관 모듈 |
 |:--------:|:-----------:|:--------:|
-| <img src="assets/3D_modeling/모듈/사진/07_게임모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈/사진/08_스크린골프모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈/사진/09_영화관모듈.JPG" width="200"/> |
+| <img src="assets/3D_modeling/모듈사진/07_게임모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/08_스크린골프모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/09_영화관모듈.JPG" width="200"/> |
 
 | 냉동 모듈 | 세탁실 모듈 | |
 |:--------:|:---------:|:--------:|
-| <img src="assets/3D_modeling/모듈/사진/10_냉동모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈/사진/11_세탁실모듈.JPG" width="200"/> |  |
+| <img src="assets/3D_modeling/모듈사진/10_냉동모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/11_세탁실모듈.JPG" width="200"/> |  |
 
 
 
