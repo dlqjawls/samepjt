@@ -500,9 +500,10 @@ print("AI가 제안한 새로운 PID 계수 세트:", res.x)
 ```
 
 4. 정렬
+
 | 크기 정렬 | 평행 정렬 | 중앙 정렬 |
 | --- | --- | --- |
-|<img src="assets/EM/크기정렬.gif" width="300"/>|<img src="assets/EM/평행정렬.gif" width="300"/>|<img src="assets/EM/중앙정렬.gif" width="300"/>
+|<img src="assets/EM/크기정렬.gif" width="300"/>|<img src="assets/EM/평행정렬.gif" width="300"/>|<img src="assets/EM/중앙정렬.gif" width="300"/>|
 
 ### **Security**
 **1. JWT Token**
