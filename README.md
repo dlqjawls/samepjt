@@ -211,6 +211,10 @@
 | **옷장** | **수납장** | **싱크대** | **세탁기** | **인덕션** | **후드** |
 |<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/5_옷장.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/6_수납장.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/7_싱크대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/8_세탁기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/9_인덕션.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/10_후드.JPG" width="200"/>|
 
+| 화장실 모듈 | 세면대 | 거울 | 쓰레기통 | 양변기 | 남성소변기 | 수전 |
+| --- | --- | --- | --- | --- | --- | --- |
+|<img src="assets/3D_modeling/모듈사진/04_화장실모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/1_세면대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/2_거울.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/3_쓰레기통.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/4_양변기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/5_남성소변기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/6_수전.JPG" width="200"/>|
+
 ### **FrontEnd**
 
 
