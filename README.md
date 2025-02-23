@@ -252,6 +252,18 @@
 | **스크린** | **리클라이닝 소파** |  |  |  |
 |<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/5_스크린.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/6_리클라이닝_소파.JPG" width="200"/>||||
 
+##### 냉동 모듈 옵션
+| 냉동 모듈 | 냉동용 강력 에어컨 |
+| --- | --- |
+|<img src="assets/3D_modeling/모듈사진/10_냉동모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/09_냉동_모듈_옵션/1_냉동용_강력_에어컨.JPG" width="200"/>|
+
+##### 세탁실 모듈 옵션
+| 세탁실 모듈 | TV | 세탁기 | 건조기 | 에어컨 |
+| --- | --- | --- | --- | --- |
+|<img src="assets/3D_modeling/모듈사진/11_세탁실모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/2_세탁기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/3_건조기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/4_에어컨.JPG" width="200"/>|
+| **탁자** | **의자** |  |  |  |
+|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/5_탁자.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/6_의자.JPG" width="200"/>||||
+
 ### **FrontEnd**
 
 
