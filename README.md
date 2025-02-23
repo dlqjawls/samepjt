@@ -227,9 +227,10 @@
 ##### 카페 모듈 옵션
 | 카페 모듈 | TV | 커피머신 | 대형탁자 | 소파 |
 | --- | --- | --- | --- | --- |
-|<img src="assets/3D_modeling/모듈사진/06_카페모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/05_카페_모듈 옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈 옵션/2_커피머신.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈 옵션/3_대형탁자.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈 옵션/4_소파.JPG" width="200"/>|
+|<img src="assets/3D_modeling/모듈사진/06_카페모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/2_커피머신.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/3_대형탁자.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/4_소파.JPG" width="200"/>|
 | **탁자** | **포스기** |  |  |  |
-|<img src="assets/3D_modeling/옵션사진/05_카페_모듈 옵션/5_탁자.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈 옵션/6_포스기.JPG" width="200"/>||||
+|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/5_탁자.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/6_포스기.JPG" width="200"/>||||
+
 
 ### **FrontEnd**
 
