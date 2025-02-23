@@ -701,15 +701,11 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
 위 과정을 통해 ModuCar 프로젝트의 백엔드를 EC2에 배포하고, Nginx와 DuckDNS를 이용해 도메인을 설정하여 서비스할 수 있었습니다.
 
 ### **4.Trouble Shooting**
-
-
-
-### **4.트러블슈팅 과정**
 **1. FastAPI 로컬 개발 환경과 EC2 Python 버전 불일치 문제**
 - 로컬 개발 환경에서는 Python 3.9를 사용했으나, EC2에서는 기본적으로 Python 3.10이 설치되어 있었음
 - `pip install -r requirements.txt` 실행 시 패키지 호환성 문제 발생
 
-#### 해결 방법
+**해결 방법**
 1. EC2에서 Python 3.9 설치
 2. `pyenv`를 이용해 Python 3.9 가상환경 생성
 3. 가상환경을 활성화한 후 `pip install -r requirements.txt` 실행하여 정상 설치 확인
@@ -718,14 +714,13 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
 - `import ModuleSetList from "./moduleSelect/ModuleSetList"` 로 import했지만, 실제 파일명은 `moduleSetList.js`로 되어 있었음
 - 로컬 개발 환경에서는 정상 동작했으나, EC2(Ubuntu)에서는 대소문자를 엄격히 구분하여 `ModuleSetList`를 찾지 못해 빌드 실패
 
-#### 해결 방법
+**해결 방법**
 - `moduleSetList.js` → `ModuleSetList.js`로 변경하여 문제 해결
 
 **3. Nginx 프록시 설정 오류 (`/api/api` 중복 문제)**
-#### 문제
-- Nginx 설정에서 `location /api`로 프록시 요청을 처리했는데, FastAPI의 기본 경로도 `/api`여서 실제 요청이 `/api/api`로 변환되는 문제 발생
+Nginx 설정에서 `location /api`로 프록시 요청을 처리했는데, FastAPI의 기본 경로도 `/api`여서 실제 요청이 `/api/api`로 변환되는 문제 발생
 
-#### 해결 방법
+**해결 방법**
 - Nginx 설정을 수정하여 프록시 요청 시 `/api/`를 제거하도록 설정
 
 ```nginx
