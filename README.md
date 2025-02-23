@@ -186,6 +186,7 @@
 
 ### **Modeling**
 
+모듈사진
 
 | 기본 모듈 | 배송 모듈 | 캠핑 모듈 |
 |:--------:|:---------:|:--------:|
@@ -199,9 +200,9 @@
 |:--------:|:-----------:|:--------:|
 | <img src="assets/3D_modeling/모듈사진/07_게임모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/08_스크린골프모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/09_영화관모듈.JPG" width="200"/> |
 
-| 냉동 모듈 | 세탁실 모듈 | |
-|:--------:|:---------:|:--------:|
-| <img src="assets/3D_modeling/모듈사진/10_냉동모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/11_세탁실모듈.JPG" width="200"/> |  |
+| 냉동 모듈 | 세탁실 모듈 |
+|:--------:|:---------:|
+| <img src="assets/3D_modeling/모듈사진/10_냉동모듈.JPG" width="200"/> | <img src="assets/3D_modeling/모듈사진/11_세탁실모듈.JPG" width="200"/> |
 
 
 
