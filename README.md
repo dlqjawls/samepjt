@@ -1084,8 +1084,7 @@ async def create_module_set(
    - 실행 명령어
 
    ```bash
-    uvicorn app.main:create_app --host 0.0.0.0 --port 8000
-    --ws-ping-interval 60000 --ws-ping-timeout 60000
+    uvicorn app.main:create_app --host 0.0.0.0 --port 8000 --ws-ping-interval 60000 --ws-ping-timeout 60000
    ```
 
 7. **React 실행**
@@ -1134,6 +1133,5 @@ async def create_module_set(
 ```nginx
 location /api/ {
     proxy_pass http://localhost:8000/;
-    rewrite ^/api/(.*)$ /$1 break;
 }
 ```
