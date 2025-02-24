@@ -45,16 +45,16 @@
                 <a href="https://github.com/sms1875">@sms1875</a>
             </td>
             <td>
-                <img src="https://avatars.githubusercontent.com/u/67058185?v=4" height="150" width="150"><br/>
-                <a href="https://github.com/sms1875">@sms1875</a>
+                <img src="https://avatars.githubusercontent.com/u/175459308?v=4" height="150" width="150"><br/>
+                <a href="https://github.com/mjbori96">@mjbori96</a>
             </td>
             <td>
                 <img src="https://avatars.githubusercontent.com/u/67058185?v=4" height="150" width="150"><br/>
                 <a href="https://github.com/sms1875">@sms1875</a>
             </td>
             <td>
-                <img src="https://github.com/dlqjawls" height="150" width="150"><br/>
-                <a href="https://avatars.githubusercontent.com/u/175274929?v=4">@dlqjawls</a>
+                <img src="https://avatars.githubusercontent.com/u/175274929?v=4" height="150" width="150"><br/>
+                <a href="https://github.com/dlqjawls">@dlqjawls</a>
             </td>
             <td>
                 <img src="https://avatars.githubusercontent.com/u/178548456?v=4" height="150" width="150"><br/>
@@ -67,7 +67,7 @@
             <td>Embedded</td>
             <td>BackEnd</td>
             <td>FrontEnd</td>
-            <td>6</td>
+            <td>Infra</td>
         </tr>
     </table>
 </div>
@@ -77,9 +77,11 @@
 ## **개발 환경**
 
 **FrontEnd**
+
 - React 18.3.1
 
 **BackEnd**
+
 - Python 3.9
 - FastAPI 0.115.7
 - SQLite
@@ -87,18 +89,22 @@
 - AWS S3
 
 **Embedded**
+
 - Python 3.10
 - OpenCV
 - Raspberry Pi camera module v2
 
 **3D_Modeling**
+
 - Dassault Systemes SOLIDWORKS 2023
 - Dassault Systemes SOLIDWORKS PhotoView360 2023
 
 **3D_Print**
+
 - 3D Systems Figure 4 Standalone
 
 **Etc**
+
 - Fly.io
 - AWS EC2
 
@@ -112,49 +118,50 @@
 
 ### **1. 사용자 페이지**
 
-| 로그인/회원가입 |
-|----------|
+| 로그인/회원가입                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------- |
 | <img src="assets/readme/사용자/로그인.gif" width="200"/> <img src="assets/readme/사용자/회원가입.gif" width="200"/> |
 
 - 로그인/회원가입 기능을 제공합니다.
 
-| 모듈 조회/선택 |
-|----------|
+| 모듈 조회/선택                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------- |
 | <img src="assets/readme/사용자/모듈세트조회.gif" width="200"/> <img src="assets/readme/사용자/모듈선택.gif" width="200"/> |
 
 - 모듈 조회 및 선택 기능을 제공합니다.
 - 모듈을 선택하면 해당 모듈의 옵션을 선택할 수 있습니다.
 
-| 옵션 검색/추가/삭제 |
-|----------|
+| 옵션 검색/추가/삭제                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------- |
 | <img src="assets/readme/사용자/옵션목록조회.gif" width="200"/> <img src="assets/readme/사용자/옵션검색선택.gif" width="200"/> |
 
 - 옵션 목록 조회 및 검색 기능을 제공합니다.
 - 옵션을 선택하면 선택한 옵션을 추가할 수 있습니다.
 - 추가한 옵션을 삭제할 수 있습니다.
 
-| 렌트 |
-|----------|
+| 렌트                                                                                                                          |
+| ----------------------------------------------------------------------------------------------------------------------------- |
 | <img src="assets/readme/사용자/렌트정보설정.gif" width="200"/> <img src="assets/readme/사용자/렌트정보조회.gif" width="200"/> |
 
 - 렌트 정보 설정 및 신청 기능을 제공합니다.
 - 렌트 정보를 조회할 수 있습니다.
 
-| 마이페이지 |
-|----------|
-| <img src="assets/readme/사용자/마이페이지.gif" width="200"/>|
+| 마이페이지                                                   |
+| ------------------------------------------------------------ |
+| <img src="assets/readme/사용자/마이페이지.gif" width="200"/> |
 
 - 렌트 정보와 히스토리를 조회할 수 있습니다.
-
 
 ### **2. 관리자 페이지**
 
 ### **3. 임베디드 시스템**
 
 #### 시연 시뮬레이션
+
 <img src="assets/3D_modeling/OrinCar/시연.gif" width="1000"/>
 
 #### 시연 영상
+
 <img src="assets/3D_modeling/OrinCar/실제시연.gif" width="1000"/>
 
 ## **개발 내용**
@@ -208,7 +215,6 @@
 │      └─utils
 └─modeling
 ```
-
 
 ### **Modeling**
 
@@ -309,6 +315,7 @@ const AdminAuthContext = createContext({
 ```
 
 **UI/컴포넌트**
+
 - Recharts (대시보드 차트)
 - React Icons
 - 커스텀 컴포넌트
@@ -317,6 +324,7 @@ const AdminAuthContext = createContext({
   - DashboardCards
 
 **스타일링**
+
 ```css
 /* 반응형 디자인 */
 @media (max-width: 768px) {
@@ -330,6 +338,7 @@ const AdminAuthContext = createContext({
 #### **2. 주요 기능**
 
 **대시보드 시스템**
+
 ```javascript
 // 실시간 데이터 시각화
 const DashboardChart = ({ data }) => {
@@ -408,6 +417,7 @@ axios.interceptors.request.use(
 ```
 
 **접근 제어**
+
 ```javascript
 // 보호된 라우트 구현
 const ProtectedRoute = ({ children }) => {
@@ -431,7 +441,7 @@ FastAPI의 API, Service, CRUD, DB Model 계층을 분리하여 확장성과 유�
 )
 async def register(request: auth_schema.RegisterRequest, session: Session = Depends(get_session)):
     return AuthService.register(session, request)
-``` 
+```
 
 - 서비스 계층
 
@@ -452,7 +462,7 @@ class AuthService:
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
-        
+
         user_crud.create(session, new_user)
 
         return auth_schema.RegisterResponse.success(
@@ -558,15 +568,12 @@ def handle_transaction(func: Callable[..., T]) -> Callable[..., T]:
                 detail={"origin": str(db_err)}
             ) from db_err
 
-          
+
         except Exception as e:
-            session.rollback()  
+            session.rollback()
             raise e
     return wrapper
 ```
-
-
-
 
 #### **3. API 문서화**
 
@@ -659,12 +666,91 @@ def handle_transaction(func: Callable[..., T]) -> Callable[..., T]:
 )
 ```
 
+#### **4. Database**
+
+- Look Up Table을 활용하여 상태를 관리하였습니다.
+- constant에 정의하여 불필요한 쿼리 요청을 개선해 응답 성능을 향상시켰습니다.
+
+```python
+
+class LookUpTableCRUD(Generic[T]):
+    def __init__(self, model: Type[T], id_field: str, name_field: str):
+        self.model = model
+        self.id_field = id_field
+        self.name_field = name_field
+        
+    def get_all(self, session: Session) -> List[T]:
+        return list(session.exec(select(self.model)).all())
+
+    def get_by_id(self, session: Session, id: int) -> Optional[T]:
+        result = session.exec(select(self.model).where(getattr(self.model, self.id_field) == id)).first()
+        return result
+      
+    def get_by_name(self, session: Session, name: str) -> Optional[T]:
+        result = session.exec(select(self.model).where(getattr(self.model, self.name_field) == name)).first()
+        return result
+
+
+role = LookUpTableCRUD(Role, "role_id", "role_name")
+item_status = LookUpTableCRUD(ItemStatus, "item_status_id", "item_status_name")
+item_type = LookUpTableCRUD(ItemType, "item_type_id", "item_type_name")
+module_type = LookUpTableCRUD(ModuleType, "module_type_id", "module_type_name")
+maintenance_status = LookUpTableCRUD(MaintenanceStatus, "maintenance_status_id", "maintenance_status_name")
+usage_status = LookUpTableCRUD(UsageStatus, "usage_status_id", "usage_status_name") 
+rent_status = LookUpTableCRUD(RentStatus, "rent_status_id", "rent_status_name")
+video_type = LookUpTableCRUD(VideoType, "video_type_id", "video_type_name")
+payment_status = LookUpTableCRUD(PaymentStatus, "payment_status_id", "payment_status_name")
+payment_method = LookUpTableCRUD(PaymentMethod, "payment_method_id", "payment_method_name")
+
+
+class BaseConstant:
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+
+    @classmethod
+    def _initialize_mappings(cls) -> None:
+        """Initialize ID-NAME mappings from nested classes"""
+        for attr_name in dir(cls):
+            attr = getattr(cls, attr_name)
+            if isinstance(attr, type) and hasattr(attr, 'ID') and hasattr(attr, 'NAME'):
+                cls._ID_TO_NAME[attr.ID] = attr.NAME
+                cls._NAME_TO_ID[attr.NAME] = attr.ID
+
+    @classmethod
+    def get_name(cls, id: int) -> str:
+        if not cls._ID_TO_NAME:
+            cls._initialize_mappings()
+        return cls._ID_TO_NAME[id]
+
+    @classmethod
+    def get_id(cls, name: str) -> int:
+        if not cls._NAME_TO_ID:
+            cls._initialize_mappings()
+        return cls._NAME_TO_ID[name]
+
+class Role(BaseConstant):
+    _ID_TO_NAME: ClassVar[Dict[int, str]] = {}
+    _NAME_TO_ID: ClassVar[Dict[str, int]] = {}
+    class MASTER:
+        ID = 1
+        NAME = "master"
+    
+    class SEMI:
+        ID = 2
+        NAME = "semi"
+    
+    class USER:
+        ID = 3
+        NAME = "user"
+
+```
 
 ### **Embedded**
 
 #### **1. Raspberry Pi 5**
+
 - 초음파 센서 (HC-SR04P)
-    - HC-SR04P를 활용하여 모듈과의 거리를 측정하였습니다.
+  - HC-SR04P를 활용하여 모듈과의 거리를 측정하였습니다.
 
 ```python
 # 초음파 센서 거리 측정 함수
@@ -673,7 +759,7 @@ def measure_distance(sensor):
     ECHO = sensor["ECHO"]
 
      ...
-     
+
 		# 센서값 기반 거리 측정
         if pulse_start and pulse_end:
             distance = (pulse_end - pulse_start) * 17150
@@ -684,7 +770,7 @@ def measure_distance(sensor):
 ```
 
 - NFC 리더기 (PN532)
-    - PN532로 NFC태그를 인식하여 모듈이 장착된 것을 확인하였습니다.
+  - PN532로 NFC태그를 인식하여 모듈이 장착된 것을 확인하였습니다.
 
 ```python
 # NFC 데이터 감지 함수
@@ -692,7 +778,7 @@ def nfc_task():
     print("NFC 카드 감지 대기 중...")
     while True:
         uid = pn532.read_passive_target(timeout=0.5)
-        
+
         with lock:
             if uid:
                 uid_str = ' '.join([f'{i:02X}' for i in uid])
@@ -705,8 +791,9 @@ def nfc_task():
 ```
 
 #### **2. Jetson orin nano**
+
 - Keyestudio 전자석 모듈
-    - 전자석 모듈로 자동차에 모듈이 탈/부착이 될 수 있도록 하였습니다.
+  - 전자석 모듈로 자동차에 모듈이 탈/부착이 될 수 있도록 하였습니다.
 
 ```python
 def electromagnet_on():
@@ -721,6 +808,7 @@ def electromagnet_off():
 ```
 
 #### **3. Bayesian Optimization**
+
 - 베이지안 최적화로 PID 계수 최적화를 진행하였습니다.
 
 ```python
@@ -749,12 +837,12 @@ dimensions = [
 # 3. 베이지안 최적화 실행: 추가로 20회의 실험 포인트를 추천받음
 #  func: 여기서는 이미 데이터를 warm start 했으므로 dummy 함수를 사용(실제 사용 시 objective 함수를 정의)
 res = gp_minimize(
-    func=lambda params: 0,  
+    func=lambda params: 0,
     dimensions=dimensions,
     n_calls=30,             # 10번의 평가로 최적 후보 추천
     x0=x0,                  # 기존 파라미터 조합 데이터
     y0=y0,                  # 기존 성능 평가 데이터
-    random_state=42 
+    random_state=42
     #... 최적화 파라미터
 )
 print("AI가 제안한 새로운 PID 계수 세트:", res.x)
@@ -762,12 +850,13 @@ print("AI가 제안한 새로운 PID 계수 세트:", res.x)
 
 #### **4. 정렬**
 
-| 크기 정렬 | 평행 정렬 | 중앙 정렬 |
-| --- | --- | --- |
-|<img src="assets/EM/크기정렬.gif" width="300"/>|<img src="assets/EM/평행정렬.gif" width="300"/>|<img src="assets/EM/중앙정렬.gif" width="300"/>|
+| 크기 정렬                                       | 평행 정렬                                       | 중앙 정렬                                       |
+| ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| <img src="assets/EM/크기정렬.gif" width="300"/> | <img src="assets/EM/평행정렬.gif" width="300"/> | <img src="assets/EM/중앙정렬.gif" width="300"/> |
 
 ### **Security**
-#### *1. JWT Token**
+
+#### **1. JWT Token**
 
 JWT Token을 이용하여 사용자 인증 구현 및 Redis에 Refresh Token을 저장하여 리소스를 관리하였습니다.
 
@@ -848,13 +937,12 @@ async def create_module_set(
 
 ```
 
-
 ## **배포**
 
 ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React 프론트를 배포되었으며, DuckDNS를 이용한 도메인 설정과 Nginx를 통한 Reverse Proxy를 구성하였습니다.
 
-
 ### **1. 사용 기술 스택**
+
 - 플랫폼: AWS EC2 (Ubuntu 22.04 LTS)
 - instanceType : t2.xlarge
 - 웹 서버 Nginx
@@ -863,21 +951,27 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
 - Frontend: React
 
 ### **2. 배포 과정**
+
 1. **EC2 인스턴스 생성**
+
    - SSAFY 사무국에서 지원
 
 2. **필수 패키지 설치**
+
    ```bash
    sudo apt update && sudo apt upgrade -y
    sudo apt install -y nginx python3-certbot-nginx
    ```
 
 3. **DuckDNS 설정**
+
    - [DuckDNS](https://www.duckdns.org/)에서 서브 도메인[ModuCar](https://www.moducar.duckdns.org)을 생성.
    - EC2 서버에서 DuckDNS를 자동 업데이트하도록 설정합니다.
 
 4. **Nginx 설정**
+
    - Nginx 설정 파일 수정 (`/etc/nginx/sites-available/my.conf`)
+
    ```nginx
    server {
     if ($host = moducar.duckdns.org) {
@@ -912,27 +1006,36 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
         }
     }
    ```
+
    - 설정 적용 및 Nginx 재시작
+
    ```bash
    sudo ln -s /etc/nginx/sites-available/my.conf /etc/nginx/sites-enabled/
    sudo systemctl restart nginx
    ```
 
 5. **SSL 인증서 적용 (Let’s Encrypt)**
+
    ```bash
    sudo certbot --nginx -d moducar.duckdns.org
    ```
+
    - 자동 갱신 설정 확인
+
    ```bash
    sudo certbot renew --dry-run
    ```
 
 6. **FastAPI 실행**
+
    - FastAPI backend git pull
+
    ```bash
    git pull origin develop
    ```
+
    - 실행 명령어
+
    ```bash
     uvicorn app.main:create_app --host 0.0.0.0 --port 8000
     --ws-ping-interval 60000 --ws-ping-timeout 60000
@@ -952,6 +1055,7 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
    ```
 
 ### **3. 배포 후 점검**
+
 - `http://moducar.duckdns.org` 접속하여 정상적으로 서비스되는지 확인합니다.
 - 서버 상태 확인 명령어:
   ```bash
@@ -962,26 +1066,32 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
 위 과정을 통해 ModuCar 프로젝트의 백엔드를 EC2에 배포하고, Nginx와 DuckDNS를 이용해 도메인을 설정하여 서비스할 수 있었습니다.
 
 ### **4.Trouble Shooting**
+
 **1. FastAPI 로컬 개발 환경과 EC2 Python 버전 불일치 문제**
+
 - 로컬 개발 환경에서는 Python 3.9를 사용했으나, EC2에서는 기본적으로 Python 3.10이 설치되어 있었음
 - `pip install -r requirements.txt` 실행 시 패키지 호환성 문제 발생
 
 **해결 방법**
+
 1. EC2에서 Python 3.9 설치
 2. `pyenv`를 이용해 Python 3.9 가상환경 생성
 3. 가상환경을 활성화한 후 `pip install -r requirements.txt` 실행하여 정상 설치 확인
 
 **2. React 파일명의 대소문자 문제**
+
 - `import ModuleSetList from "./moduleSelect/ModuleSetList"` 로 import했지만, 실제 파일명은 `moduleSetList.js`로 되어 있었음
 - 로컬 개발 환경에서는 정상 동작했으나, EC2(Ubuntu)에서는 대소문자를 엄격히 구분하여 `ModuleSetList`를 찾지 못해 빌드 실패
 
 **해결 방법**
+
 - `moduleSetList.js` → `ModuleSetList.js`로 변경하여 문제 해결
 
 **3. Nginx 프록시 설정 오류 (`/api/api` 중복 문제)**
 Nginx 설정에서 `location /api`로 프록시 요청을 처리했는데, FastAPI의 기본 경로도 `/api`여서 실제 요청이 `/api/api`로 변환되는 문제 발생
 
 **해결 방법**
+
 - Nginx 설정을 수정하여 프록시 요청 시 `/api/`를 제거하도록 설정
 
 ```nginx
@@ -990,5 +1100,3 @@ location /api/ {
     rewrite ^/api/(.*)$ /$1 break;
 }
 ```
-
-
