@@ -41,8 +41,8 @@
                 <a href="https://github.com/khy0728kr">@khy0728kr</a>
             </td>
             <td>
-                <img src="https://avatars.githubusercontent.com/u/67058185?v=4" height="150" width="150"><br/>
-                <a href="https://github.com/sms1875">@sms1875</a>
+                <img src="https://avatars.githubusercontent.com/u/175382894?v=4" height="150" width="150"><br/>
+                <a href="https://github.com/corlexvusR">@corlexvusR</a>
             </td>
             <td>
                 <img src="https://avatars.githubusercontent.com/u/175459308?v=4" height="150" width="150"><br/>
@@ -110,7 +110,7 @@
 
 **시스템 아키텍처**
 
-![프로젝트 이미지](assets/readme/moducar.png)
+![시스템 아키텍처](assets/readme/시스템아키텍처.png)
 
 <br>
 
@@ -153,6 +153,47 @@
 - 렌트 정보와 히스토리를 조회할 수 있습니다.
 
 ### **2. 관리자 페이지**
+
+| 로그인 |
+| ------------------------------------------------------------ |
+| <img src="assets/readme/관리자/로그인과 대시보드, 그리고 관리자 페이지 전반.gif" width="200"/> |
+
+- 관리자자 페이지에 로그인하고 항목을 확인할 수 있습니다.
+- 관리자 계정이 아니면 접근을 제한합니다.
+
+| 대여 기록 및 사용 기록 조회 |
+| ------------------------------------------------------------ |
+| <img src="assets/readme/관리자/기록 조회_대여 기록 및 사용 기록 조회.gif" width="200"/> |
+
+- 대여 기록을 조회할 수 있습니다.
+- 각 차량, 모듈, 옵션의 사용 기록을 조회할 수 있습니다.
+
+| 차량 관리 |
+| ------------------------------------------------------------ |
+| <img src="assets/readme/관리자/차량 관리.gif" width="200"/> |
+
+- 각 차량을 관리할 수 있습니다.
+
+
+| 모듈 관리 |
+| ------------------------------------------------------------ |
+| <img src="assets/readme/관리자/모듈 관리_모듈.gif" width="200"/> <img src="assets/readme/관리자/모듈 관리_모듈 세트_1.gif" width="200"/> <img src="assets/readme/관리자/모듈 관리_모듈 세트_2.gif" width="200"/> |
+
+- 사용자에게 보여지는 모듈 세트와 각 모듈을 관리할 수 있습니다.
+
+| 옵션 관리 |
+| ------------------------------------------------------------ |
+| <img src="assets/readme/관리자/옵션 관리_옵션.gif" width="200"/> <img src="assets/readme/관리자/옵션 관리_옵션 타입_1.gif" width="200"/> <img src="assets/readme/관리자/옵션 관리_옵션 타입_2.gif" width="200"/> |
+
+- 사용자에게 보여지는 옵션 타입과 각 옵션을 관리할 수 있습니다.
+
+| 정비 기록 |
+| ------------------------------------------------------------ |
+| <img src="assets/readme/관리자/정비 기록.gif" width="200"/> |
+
+- 각 차량, 모듈, 옵션의 정비 기록 조회를 할 수 있습니다.
+- 관리자의 권한에 따라 추가, 수정, 삭제할 수 있습니다.
+
 
 ### **3. 임베디드 시스템**
 
@@ -750,7 +791,6 @@ class Role(BaseConstant):
 - pytest를 활용하여 API 테스트를 진행하였습니다.
 
 <img src="assets/readme/서버/pytest.png" width="1000"/>
-
 
 
 ### **Embedded**
