@@ -987,7 +987,7 @@ async def create_module_set(
 
 ## **배포**
 
-ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React 프론트를 배포되었으며, DuckDNS를 이용한 도메인 설정과 Nginx를 통한 Reverse Proxy를 구성하였습니다.
+본 프로젝트는 AWS EC2 인스턴스에서 배포되었으며, DuckDNS를 이용한 도메인 설정과 Nginx를 통한 Reverse Proxy를 구성하였습니다.
 
 ### **1. 사용 기술 스택**
 
@@ -1013,8 +1013,7 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
 
 3. **DuckDNS 설정**
 
-   - [DuckDNS](https://www.duckdns.org/)에서 서브 도메인[ModuCar](https://www.moducar.duckdns.org)을 생성.
-   - EC2 서버에서 DuckDNS를 자동 업데이트하도록 설정합니다.
+   - [DuckDNS](https://www.duckdns.org/)에서 서브 도메인 [ModuCar](https://www.moducar.duckdns.org)을 생성
 
 4. **Nginx 설정**
 
@@ -1104,43 +1103,33 @@ ModuCar 프로젝트는 AWS EC2 인스턴스에서 FastAPI 백엔드와 React �
 
 ### **3. 배포 후 점검**
 
-- `http://moducar.duckdns.org` 접속하여 정상적으로 서비스되는지 확인합니다.
+- `http://moducar.duckdns.org`에 접속하여 정상적으로 서비스되는지 확인합니다.
 - 서버 상태 확인 명령어:
   ```bash
   sudo systemctl status nginx
-  sudo lsof -i : 포트번호
+  sudo lsof -i : [포트번호]
   ```
 
-위 과정을 통해 ModuCar 프로젝트의 백엔드를 EC2에 배포하고, Nginx와 DuckDNS를 이용해 도메인을 설정하여 서비스할 수 있었습니다.
+위 과정을 통해 ModuCar 프로젝트의 백엔드와 프론트엔드를 EC2에 배포하고, Nginx와 DuckDNS를 이용해 도메인을 설정하여 서비스할 수 있었습니다.
 
 ### **4.Trouble Shooting**
 
 **1. FastAPI 로컬 개발 환경과 EC2 Python 버전 불일치 문제**
 
-- 로컬 개발 환경에서는 Python 3.9를 사용했으나, EC2에서는 기본적으로 Python 3.10이 설치되어 있었음
-- `pip install -r requirements.txt` 실행 시 패키지 호환성 문제 발생
-
-**해결 방법**
-
-1. EC2에서 Python 3.9 설치
-2. `pyenv`를 이용해 Python 3.9 가상환경 생성
-3. 가상환경을 활성화한 후 `pip install -r requirements.txt` 실행하여 정상 설치 확인
+- 트러블 : `pip install -r requirements.txt` 실행 시 패키지 호환성 문제가 발생하였습니다.
+- 원인 : 로컬 개발 환경에서는 Python 3.9를 사용했으나, EC2에서는 기본적으로 Python 3.10이 설치되어 있었습니다
+- 해결 방법 : EC2에 Python 3.9 설치를 설치한 후 3.9버젼의 가상환경 생성 후 가상환경을 활성화하였습니다.
 
 **2. React 파일명의 대소문자 문제**
 
-- `import ModuleSetList from "./moduleSelect/ModuleSetList"` 로 import했지만, 실제 파일명은 `moduleSetList.js`로 되어 있었음
-- 로컬 개발 환경에서는 정상 동작했으나, EC2(Ubuntu)에서는 대소문자를 엄격히 구분하여 `ModuleSetList`를 찾지 못해 빌드 실패
-
-**해결 방법**
-
-- `moduleSetList.js` → `ModuleSetList.js`로 변경하여 문제 해결
+- 트러블 : EC2에서 프론트엔드 폴더를 git pull을 받아 빌드를 진행하려 했지만 빌드가 실패하였습니다. 분명 로컬 개발 환경에서는 정상 동작했는데요..
+- 원인 : `import ModuleSetList from "./moduleSelect/ModuleSetList"` 로 import했지만, 실제 파일명은 `moduleSetList.js`로 되어 있었습니다. EC2를 구성하는 운영체제인 Ubuntu에서는 대소문자를 엄격히 구분하여 `ModuleSetList`를 찾지 못했나봅니다. *반면 React에서는 대소문자를 구분하지 않고 유동적으로 변환하나 봅니다(?)*
+- 해결 방법 : `moduleSetList.js` → `ModuleSetList.js`로 변경하여 문제 해결했습니다.
 
 **3. Nginx 프록시 설정 오류 (`/api/api` 중복 문제)**
-Nginx 설정에서 `location /api`로 프록시 요청을 처리했는데, FastAPI의 기본 경로도 `/api`여서 실제 요청이 `/api/api`로 변환되는 문제 발생
-
-**해결 방법**
-
-- Nginx 설정을 수정하여 프록시 요청 시 `/api/`를 제거하도록 설정
+- 트러블 : 실제 요청이 `/api/api`로 변환되는 문제 발생하였습니다.
+- 원인 : Nginx 설정에서 `location /api`로 프록시 요청을 처리했는데, FastAPI의 기본 경로도 `/api`로 설정하였습니다.
+- 해결 방법 : Nginx 설정을 수정하여 프록시 요청 시 `/api/`를 제거하도록 설정하였습니다.
 
 ```nginx
 location /api/ {
