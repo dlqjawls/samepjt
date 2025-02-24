@@ -745,6 +745,14 @@ class Role(BaseConstant):
 
 ```
 
+#### **5. Test**
+
+- pytest를 활용하여 API 테스트를 진행하였습니다.
+
+<img src="assets/readme/서버/pytest.png" width="1000"/>
+
+
+
 ### **Embedded**
 
 #### **1. Raspberry Pi 5**
