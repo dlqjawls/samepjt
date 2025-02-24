@@ -396,8 +396,248 @@ const ProtectedRoute = ({ children }) => {
 };
 ```
 
-
 ### **BackEnd**
+
+#### **1. FastAPI 계층 구현**
+
+FastAPI의 API, Service, CRUD, DB Model 계층을 분리하여 확장성과 유지보수성을 고려한 구조로 구현하였습니다.
+
+- API 계층
+
+```python
+@router.post(
+    "/register",
+    response_model=auth_schema.RegisterResponse
+)
+async def register(request: auth_schema.RegisterRequest, session: Session = Depends(get_session)):
+    return AuthService.register(session, request)
+``` 
+
+- 서비스 계층
+
+```python
+class AuthService:
+    @staticmethod
+    @handle_transaction
+    def register(session: Session, register_req: auth_schema.RegisterRequest) -> auth_schema.RegisterResponse:
+        hashed_password = hash_password(register_req.password)
+        new_user = User(
+            user_id=register_req.id,
+            user_password=hashed_password,
+            user_email=register_req.email,
+            user_name=register_req.name,
+            user_phone_num=register_req.phoneNum,
+            user_address=register_req.address,
+            role_id=3,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        
+        user_crud.create(session, new_user)
+
+        return auth_schema.RegisterResponse.success(
+            message="User registered successfully"
+        )
+```
+
+- 데이터베이스 CRUD
+
+```python
+class UserCRUD:
+    def get_user(self, db: Session, user_id: int):
+        return db.query(User).filter(User.id == user_id).first()
+
+    def create_user(self, db: Session, user: schemas.UserCreate):
+        db_user = User(
+            username=user.username,
+            email=user.email,
+            hashed_password=hash_password(user.password)
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+
+user_crud = UserCRUD()
+```
+
+- 데이터베이스 모델
+
+```python
+class User(SQLModel, table=True):
+    user_pk: Optional[int] = Field(
+        default=None, 
+        primary_key=True
+    )
+    user_id: str = Field(unique=True, nullable=False, max_length=50)
+    user_password: str = Field(nullable=False, max_length=255, description="Encrypted password")
+    user_email: str = Field(unique=True, nullable=False, max_length=100)
+    user_name: str = Field(nullable=False, max_length=100)
+    user_phone_num: str = Field(nullable=False, max_length=20)
+    user_address: str = Field(nullable=False)
+    role_id: int = Field(foreign_key="lut_roles.role_id", nullable=False)
+
+    created_at: datetime = Field(
+        sa_column=Column("created_at", DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    )
+    created_by: Optional[int] = Field(
+        foreign_key="user.user_pk", 
+        nullable=True, 
+        description="생성한 사용자"
+    )
+    updated_at: datetime = Field(
+        sa_column=Column("updated_at", DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=datetime.now)
+    )
+    updated_by: Optional[int] = Field(
+        foreign_key="user.user_pk", 
+        nullable=True, 
+        description="수정한 사용자"
+    )
+    deleted_at: Optional[datetime] = Field(
+        default=None, 
+        sa_column=Column("deleted_at", DateTime, nullable=True)
+    )
+```
+
+
+#### **2. decorator**
+
+- 서비스 계층에서 트랜잭션 처리를 위한 데코레이터를 구현하였습니다.
+
+```python
+def handle_transaction(func: Callable[..., T]) -> Callable[..., T]:
+    """ SQLAlchemy 세션 트랜잭션 관리 데코레이터 """
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        session: Session = kwargs.get("session") or args[0]
+        if not session:
+            if not args:
+                raise DatabaseError(
+                    message="No session provided",
+                    detail={"function": func.__name__}
+                )
+            session = args[0]
+            if not isinstance(session, Session):
+                raise DatabaseError(
+                    message="First argument must be Session",
+                    detail={
+                        "function": func.__name__,
+                        "argument_type": type(session).__name__
+                    }
+                )
+        try:
+            result = func(*args, **kwargs)  # 함수 실행
+            session.commit()  # 트랜잭션 커밋
+            return result
+
+        except SQLAlchemyError as db_err:
+            # SQLAlchemy 관련 예외 처리
+            session.rollback()
+            raise DatabaseError(
+                message="Database commit error",
+                detail={"origin": str(db_err)}
+            ) from db_err
+
+          
+        except Exception as e:
+            session.rollback()  
+            raise e
+    return wrapper
+```
+
+
+
+
+#### **3. API 문서화**
+
+- FastAPI의 Swagger UI를 활용하여 API 문서를 관리하였습니다.
+
+```python
+@router.post(
+    "/login",
+    response_model=auth_schema.LoginResponse,
+    summary="로그인 API",
+    description="사용자 로그인을 위한 API입니다. 사용자 ID 또는 이메일로 로그인할 수 있습니다.",
+    responses={
+        200: {
+            "description": "로그인 성공",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "resultCode": "SUCCESS",
+                        "message": "User logged in successfully",
+                        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                }
+            }
+        },
+        401: {
+            "description": "인증 실패",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "Unauthorized": {
+                            "summary": "잘못된 자격 증명",
+                            "value": {
+                                "resultCode": "FAILURE",
+                                "message": "Invalid credentials",
+                                "error_code": "UNAUTHORIZED",
+                                "detail": {
+                                    "error": "Invalid user ID or password"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        500: {
+            "description": "서버 오류",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "DatabaseError": {
+                            "summary": "데이터베이스 오류",
+                            "value": {
+                                "resultCode": "FAILURE",
+                                "message": "User primary key is missing",
+                                "error_code": "DATABASE_ERROR",
+                                "detail": {
+                                    "user_id": "user_id",
+                                    "role_id": "role_id"
+                                }
+                            }
+                        },
+                        "JWTError": {
+                            "summary": "JWT 오류",
+                            "value": {
+                                "resultCode": "FAILURE",
+                                "message": "Failed to encrypt role",
+                                "error_code": "JWT_ERROR",
+                                "detail": {
+                                    "error": "error message"
+                                }
+                            }
+                        },
+                        "RedisError": {
+                            "summary": "Redis 오류",
+                            "value": {
+                                "resultCode": "FAILURE",
+                                "message": "Redis store failed",
+                                "error_code": "REDIS_ERROR",
+                                "detail": {
+                                    "error": "error message"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+```
 
 
 ### **Embedded**
