@@ -37,8 +37,8 @@
         </tr>
         <tr align="center">
             <td>
-                <img src="https://avatars.githubusercontent.com/u/67058185?v=4" height="150" width="150"><br/>
-                <a href="https://github.com/sms1875">@sms1875</a>
+                <img src="https://avatars.githubusercontent.com/u/55488481?v=4" height="150" width="150"><br/>
+                <a href="https://github.com/khy0728kr">@khy0728kr</a>
             </td>
             <td>
                 <img src="https://avatars.githubusercontent.com/u/67058185?v=4" height="150" width="150"><br/>
@@ -53,20 +53,20 @@
                 <a href="https://github.com/sms1875">@sms1875</a>
             </td>
             <td>
-                <img src="https://avatars.githubusercontent.com/u/67058185?v=4" height="150" width="150"><br/>
-                <a href="https://github.com/sms1875">@sms1875</a>
+                <img src="https://github.com/dlqjawls" height="150" width="150"><br/>
+                <a href="https://avatars.githubusercontent.com/u/175274929?v=4">@dlqjawls</a>
             </td>
             <td>
-                <img src="https://avatars.githubusercontent.com/u/67058185?v=4" height="150" width="150"><br/>
-                <a href="https://github.com/sms1875">@sms1875</a>
+                <img src="https://avatars.githubusercontent.com/u/178548456?v=4" height="150" width="150"><br/>
+                <a href="https://github.com/magnoliasx03">@magnoliasx03</a>
             </td>
         </tr>
         <tr align="center">
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td>5</td>
+            <td>Embedded</td>
+            <td>FrontEnd</td>
+            <td>Embedded</td>
+            <td>BackEnd</td>
+            <td>FrontEnd</td>
             <td>6</td>
         </tr>
     </table>
@@ -116,25 +116,50 @@
 |----------|
 | <img src="assets/readme/사용자/로그인.gif" width="200"/> <img src="assets/readme/사용자/회원가입.gif" width="200"/> |
 
+- 로그인/회원가입 기능을 제공합니다.
 
 | 모듈 조회/선택 |
 |----------|
 | <img src="assets/readme/사용자/모듈세트조회.gif" width="200"/> <img src="assets/readme/사용자/모듈선택.gif" width="200"/> |
 
+- 모듈 조회 및 선택 기능을 제공합니다.
+- 모듈을 선택하면 해당 모듈의 옵션을 선택할 수 있습니다.
+
 | 옵션 검색/추가/삭제 |
 |----------|
 | <img src="assets/readme/사용자/옵션목록조회.gif" width="200"/> <img src="assets/readme/사용자/옵션검색선택.gif" width="200"/> |
+
+- 옵션 목록 조회 및 검색 기능을 제공합니다.
+- 옵션을 선택하면 선택한 옵션을 추가할 수 있습니다.
+- 추가한 옵션을 삭제할 수 있습니다.
 
 | 렌트 |
 |----------|
 | <img src="assets/readme/사용자/렌트정보설정.gif" width="200"/> <img src="assets/readme/사용자/렌트정보조회.gif" width="200"/> |
 
+- 렌트 정보 설정 및 신청 기능을 제공합니다.
+- 렌트 정보를 조회할 수 있습니다.
+
 | 마이페이지 |
 |----------|
 | <img src="assets/readme/사용자/마이페이지.gif" width="200"/>|
 
+- 렌트 정보와 히스토리를 조회할 수 있습니다.
+
+
+### **2. 관리자 페이지**
+
+### **3. 임베디드 시스템**
+
+#### 시연 시뮬레이션
+<img src="assets/3D_modeling/OrinCar/시연.gif" width="1000"/>
+
+#### 시연 영상
+<img src="assets/3D_modeling/OrinCar/실제시연.gif" width="1000"/>
 
 ## **개발 내용**
+
+### **1. 프로젝트 구조**
 
 ```
 ├─assets
@@ -184,16 +209,11 @@
 └─modeling
 ```
 
-### 시연시뮬레이션
-<img src="assets/3D_modeling/OrinCar/시연.gif" width="1000"/>
-
-### 실제 시연
-<img src="assets/3D_modeling/OrinCar/실제시연.gif" width="1000"/>
-
 
 ### **Modeling**
 
-### OrinCar 조립 과정 (하부 3D 프린팅, 상부 하드보드지)
+#### OrinCar 조립 과정 (하부 3D 프린팅, 상부 하드보드지)
+
 <img src="assets/3D_modeling/OrinCar/OrinCar.gif" width="1000"/>
 
 #### 모듈 사진
@@ -211,21 +231,21 @@
 | <img src="assets/3D_modeling/모듈사진/11_세탁실모듈.JPG" width="200"/> |
 
 #### 옵션 사진
-##### 캠핑 모듈 옵션
+
 | 캠핑 모듈 | TV | 테이블 | 침대 | 냉장고 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/03_캠핑모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/2_테이블.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/3_침대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/4_냉장고.JPG" width="200"/>|
 | **옷장** | **수납장** | **싱크대** | **세탁기** | **인덕션** | **후드** |
 |<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/5_옷장.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/6_수납장.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/7_싱크대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/8_세탁기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/9_인덕션.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/02_캠핑 모듈 옵션/10_후드.JPG" width="200"/>|
 
-##### 화장실 모듈 옵션
+
 | 화장실 모듈 | 세면대 | 거울 | 쓰레기통 | 양변기 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/04_화장실모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/1_세면대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/2_거울.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/3_쓰레기통.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/4_양변기.JPG" width="200"/>|
 | **남성소변기** | **수전** |
 |<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/5_남성소변기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/03_화장실_모듈_옵션/6_수전.JPG" width="200"/>|
 
-##### 푸드트럭 모듈 옵션
+
 | 푸드트럭 모듈 | 에어컨 | TV | 대형냄비 | 중형냄비 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/05_푸드트럭모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/1_에어컨.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/2_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/3_대형냄비.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/4_중형냄비.JPG" width="200"/>|
@@ -234,40 +254,40 @@
 | **가판대** | | | | |
 | <img src="assets/3D_modeling/옵션사진/04_푸드트럭_모듈 옵션/10_가판대.JPG" width="200"/> | | | | |
 
-##### 카페 모듈 옵션
+
 | 카페 모듈 | TV | 커피머신 | 대형탁자 | 소파 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/06_카페모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/2_커피머신.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/3_대형탁자.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/4_소파.JPG" width="200"/>|
 | **탁자** | **포스기** |  |  |  |
 |<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/5_탁자.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/05_카페_모듈_옵션/6_포스기.JPG" width="200"/>||||
 
-##### 스크린골프 모듈 옵션
+
 | 스크린골프 모듈 | 스크린골프용 스크린 | 골프채 | 골프채 거치대 | 골프공 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/08_스크린골프모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/1_스크린골프용_스크린.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/2_골프채.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/3_골프채_거치대.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/4_골프공.JPG" width="200"/>|
 | **골프카펫** | **스코어 스크린** |  |  |  |
 |<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/5_골프카펫.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/06_스크린_골프_모듈_옵션/6_스코어_스크린.JPG" width="200"/>||||
 
-##### 게임 모듈 옵션
+
 | 게임 모듈 | TV | TV 다이 | 플레이스테이션 | 닌텐도 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/07_게임모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/2_다이.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/3_게임기1.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/4_게임기2.JPG" width="200"/>|
 | **에어컨** | **중간 테이블** | **소파**  |  |  |
 |<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/5_에어컨.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/6_중간_테이블.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/07_게임_모듈_옵션/7_소파.JPG" width="200"/>|||
 
-##### 영화관 모듈 옵션
+
 | 영화관 모듈 | 벽걸이 스피커 | 영사기 | 테이블 | 스피커 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/09_영화관모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/1_벽걸이_스피커.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/2_영사기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/3_테이블.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/4_스피커.JPG" width="200"/>|
 | **스크린** | **리클라이닝 소파** |  |  |  |
 |<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/5_스크린.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/08_영화관_모듈_옵션/6_리클라이닝_소파.JPG" width="200"/>||||
 
-##### 냉동 모듈 옵션
+
 | 냉동 모듈 | 냉동용 강력 에어컨 |
 | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/10_냉동모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/09_냉동_모듈_옵션/1_냉동용_강력_에어컨.JPG" width="200"/>|
 
-##### 세탁실 모듈 옵션
+
 | 세탁실 모듈 | TV | 세탁기 | 건조기 | 에어컨 |
 | --- | --- | --- | --- | --- |
 |<img src="assets/3D_modeling/모듈사진/11_세탁실모듈.JPG" width="200"/> |<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/1_TV.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/2_세탁기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/3_건조기.JPG" width="200"/>|<img src="assets/3D_modeling/옵션사진/10_세탁실_모듈_옵션/4_에어컨.JPG" width="200"/>|
@@ -276,7 +296,7 @@
 
 ### **FrontEnd**
 
-
+#### **1. 구조**
 **상태 관리 & 인증**
 ```javascript
 // 토큰 기반 인증 관리
@@ -641,7 +661,8 @@ def handle_transaction(func: Callable[..., T]) -> Callable[..., T]:
 
 
 ### **Embedded**
-1. Raspberry Pi 5
+
+#### **1. Raspberry Pi 5**
 - 초음파 센서 (HC-SR04P)
     - HC-SR04P를 활용하여 모듈과의 거리를 측정하였습니다.
 
@@ -683,7 +704,7 @@ def nfc_task():
         time.sleep(0.5)
 ```
 
-2. Jetson orin nano
+#### **2. Jetson orin nano**
 - Keyestudio 전자석 모듈
     - 전자석 모듈로 자동차에 모듈이 탈/부착이 될 수 있도록 하였습니다.
 
@@ -699,7 +720,7 @@ def electromagnet_off():
     pwm.ChangeDutyCycle(0)  # PWM 0%로 설정하여 완전히 OFF
 ```
 
-3. *Bayesian* Optimization
+#### **3. Bayesian Optimization**
 - 베이지안 최적화로 PID 계수 최적화를 진행하였습니다.
 
 ```python
@@ -739,14 +760,14 @@ res = gp_minimize(
 print("AI가 제안한 새로운 PID 계수 세트:", res.x)
 ```
 
-4. 정렬
+#### **4. 정렬**
 
 | 크기 정렬 | 평행 정렬 | 중앙 정렬 |
 | --- | --- | --- |
 |<img src="assets/EM/크기정렬.gif" width="300"/>|<img src="assets/EM/평행정렬.gif" width="300"/>|<img src="assets/EM/중앙정렬.gif" width="300"/>|
 
 ### **Security**
-**1. JWT Token**
+#### *1. JWT Token**
 
 JWT Token을 이용하여 사용자 인증 구현 및 Redis에 Refresh Token을 저장하여 리소스를 관리하였습니다.
 
@@ -772,7 +793,7 @@ def _create_access_token(self, user_pk: int, encrypted_role: str) -> str:
             )
 ```
 
-**2. bcrypt**
+#### **2. bcrypt**
 
 bcrypt hash를 이용하여 비밀번호 저장 및 검증을 구현하였습니다.
 
@@ -805,7 +826,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 ```
 
-**3. 역할 기반 접근 제어(Role Based Access Control, RBAC)**
+#### **3. 역할 기반 접근 제어(Role Based Access Control, RBAC)**
 
 JWT Token을 이용하여 Role을 관리하고, 관리자 페이지에서 Role에 따라 기능 제한 로직을 구현하였습니다.
 
